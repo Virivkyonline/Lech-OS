@@ -1,0 +1,215 @@
+# Katalóg akcií LECH AI
+#
+# Jediný zoznam akcií, ktoré smie AI navrhnúť. Akcia, ktorá tu nie je, neexistuje.
+# O vykonaní vždy rozhoduje modul pravidiel (lech.ai.policy), nie jazykový model.
+# Popis princípov: docs/04-lech-ai.md
+#
+# Polia:
+#   id        – jednoznačný identifikátor (oblasť.sloveso)
+#   popis     – čo akcia robí
+#   riziko    – R0 | R1 | R2 | R3   (R4 = zakázané, preto nie sú v katalógu)
+#   suhlas    – ziadny | povolenie_zdroja | potvrdenie_pri_vytvoreni | vzdy_potvrdit_s_nahladom
+#   udaje     – triedy údajov, ktoré akcia číta: D0 | D1 | D2   (D3 je pre AI vždy nedostupné)
+#   siet      – nikdy | volitelne_so_suhlasom | vzdy   (či akcia potrebuje odoslať údaje mimo telefón)
+#   vratne    – či sa dá výsledok jednoducho vrátiť
+#
+# Pravidlá, ktoré kontroluje tools/validate_ai_actions.py:
+#   - R3 vyžaduje suhlas „vzdy_potvrdit_s_nahladom“
+#   - R2 vyžaduje aspoň „potvrdenie_pri_vytvoreni“ a musí byť vratné
+#   - akcia s údajmi D2 nesmie mať siet „vzdy“
+#   - akcia so sieťou nesmie mať suhlas „ziadny“
+#   - id sú jedinečné
+
+verzia: 1
+
+pravidla_povodu:
+  # Ak plán vznikol po spracovaní obsahu od tretej strany (správa, e-mail, web, notifikácia),
+  # akcie s týmto alebo vyšším rizikom vždy vyžadujú potvrdenie s náhľadom.
+  nedoveryhodny_obsah_min_riziko_na_potvrdenie: R2
+
+zakazane_pre_ai:
+  # Úroveň R4 – tieto oblasti AI nikdy nesmie ovládať, ani so súhlasom.
+  - zmena bezpečnostných nastavení a zámky obrazovky
+  - správa hesiel, kľúčov a autentifikačných kódov
+  - platby a bankové operácie
+  - inštalácia a odinštalovanie aplikácií
+  - udeľovanie a odoberanie oprávnení aplikáciám
+  - vypnutie panelu „Odchod údajov“ alebo zmena pravidiel súhlasu
+
+akcie:
+
+  # --- Kontakty a komunikácia ---
+
+  - id: kontakty.hladat
+    popis: Vyhľadá kontakt podľa mena alebo prezývky.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  - id: telefon.volat
+    popis: Zavolá na konkrétne číslo vybraného kontaktu.
+    riziko: R3
+    suhlas: vzdy_potvrdit_s_nahladom
+    udaje: [D1]
+    siet: nikdy
+    vratne: false
+
+  - id: spravy.citat
+    popis: Prečíta správy z vybranej konverzácie.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D2]
+    siet: nikdy
+    vratne: true
+
+  - id: spravy.navrhnut_odpoved
+    popis: Pripraví návrh odpovede, ktorý používateľ môže upraviť. Nič neodosiela.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D2]
+    siet: nikdy
+    vratne: true
+
+  - id: spravy.odoslat
+    popis: Odošle správu so schváleným textom konkrétnemu príjemcovi.
+    riziko: R3
+    suhlas: vzdy_potvrdit_s_nahladom
+    udaje: [D2]
+    siet: nikdy   # správu odosiela komunikačná aplikácia, AI údaje mimo telefón neposiela
+    vratne: false
+
+  - id: email.hladat
+    popis: Vyhľadá e-maily v lokálnom indexe.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D2]
+    siet: nikdy
+    vratne: true
+
+  # --- Súbory a obrazovka ---
+
+  - id: subory.hladat
+    popis: Vyhľadá súbory a dokumenty (napr. faktúry) v lokálnom indexe.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  - id: obrazovka.citat
+    popis: Prečíta obsah aktuálne zobrazenej aplikácie (napr. na preklad konverzácie).
+    riziko: R1
+    suhlas: povolenie_zdroja   # povolenie platí len pre jedno použitie
+    udaje: [D2]
+    siet: nikdy
+    vratne: true
+
+  # --- Jazyk ---
+
+  - id: text.prelozit
+    popis: Preloží text lokálnym modelom.
+    riziko: R0
+    suhlas: ziadny
+    udaje: [D0]
+    siet: nikdy
+    vratne: true
+
+  - id: text.zhrnut
+    popis: Zhrnie text alebo zoznam položiek lokálnym modelom.
+    riziko: R0
+    suhlas: ziadny
+    udaje: [D0]
+    siet: nikdy
+    vratne: true
+
+  - id: ai.cloud_spracovat
+    popis: >
+      Odošle požiadavku cloudovému AI poskytovateľovi, ak lokálny model nestačí.
+      Používateľ vidí, aké údaje sa odošlú a ktorému poskytovateľovi.
+    riziko: R3
+    suhlas: vzdy_potvrdit_s_nahladom
+    udaje: [D0, D1]   # D2 len ak používateľ v nastaveniach výslovne povolí konkrétneho poskytovateľa
+    siet: volitelne_so_suhlasom
+    vratne: false
+
+  # --- Poloha a navigácia ---
+
+  - id: poloha.zistit
+    popis: Zistí aktuálnu polohu zariadenia.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  - id: miesta.hladat
+    popis: >
+      Vyhľadá miesta v okolí (napr. čerpacie stanice). Primárne v offline mapových údajoch;
+      online vyhľadávanie len s približnou polohou a so súhlasom.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
+    siet: volitelne_so_suhlasom
+    vratne: true
+
+  - id: navigacia.spustit
+    popis: Spustí navigáciu k vybranému cieľu v mapovej aplikácii.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  # --- Nastavenia a automatizácie ---
+
+  - id: nastavenia.wifi
+    popis: Zapne alebo vypne Wi-Fi.
+    riziko: R2
+    suhlas: potvrdenie_pri_vytvoreni
+    udaje: []
+    siet: nikdy
+    vratne: true
+
+  - id: automatizacia.naplanovat
+    popis: Naplánuje akciu na konkrétny čas alebo opakovane (napr. vypnutie Wi-Fi o 22:00).
+    riziko: R2
+    suhlas: potvrdenie_pri_vytvoreni
+    udaje: []
+    siet: nikdy
+    vratne: true
+
+  - id: budik.nastavit
+    popis: Nastaví budík alebo časovač.
+    riziko: R2
+    suhlas: potvrdenie_pri_vytvoreni
+    udaje: []
+    siet: nikdy
+    vratne: true
+
+  # --- Kalendár a notifikácie ---
+
+  - id: kalendar.citat
+    popis: Prečíta udalosti z kalendára.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  - id: kalendar.vytvorit
+    popis: Vytvorí udalosť v kalendári používateľa (bez pozývania iných ľudí).
+    riziko: R2
+    suhlas: potvrdenie_pri_vytvoreni
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  - id: notifikacie.citat
+    popis: Prečíta dnešné notifikácie na zhrnutie. Spracovanie len lokálne.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D2]
+    siet: nikdy
+    vratne: true
