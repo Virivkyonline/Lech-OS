@@ -41,7 +41,7 @@ Podrobné zdôvodnenie v [ADR-0005](adr/0005-vyvojove-zariadenie.md).
 
 - 2× Google Pixel rovnakého modelu, 12+ GB RAM (kvôli lokálnej AI), kúpený v EÚ bez operátorského zámku.
 - USB-C káble s dátovým prenosom, USB hub s napájaním.
-- Zostavovací server alebo prenájom (pozri [docs/02](02-architektura.md#zostavovacia-infraštruktúra)).
+- Zostavovací počítač – server alebo notebook (pozri [docs/11](11-etapa-2-cuttlefish.md#1-zostavovací-počítač)).
 
 > Pred kúpou overiť: či model umožňuje „OEM unlocking“ v predajnej verzii, dátum konca podpory
 > a aktuálny stav podpory modelu v open-source projektoch.

@@ -40,8 +40,9 @@
 
 Postupne, podľa [ADR-0008](adr/0008-postupny-vyvoj-a-brany.md):
 
-1. **Zabezpečiť zostavovací server** (64+ GB RAM, 400+ GB disk, KVM) – bez neho etapa 2 nezačne
-   ([docs/11](11-etapa-2-cuttlefish.md#1-zostavovací-server)).
+1. **Zabezpečiť zostavovací počítač** – server alebo notebook s Linuxom, aspoň 32 GB RAM (ideálne 64 GB), 400 GB SSD
+   a KVM ([docs/11](11-etapa-2-cuttlefish.md#1-zostavovací-počítač)). Čisté AOSP z hotových obrazov sa dá spustiť
+   a zmerať už na počítači so 16 GB RAM a KVM.
 2. Čistý LECH OS na virtuálnom telefóne Cuttlefish a sieťový audit (úlohy E2-01 až E2-10).
 3. Kúpiť 2× Pixel a nainštalovať LECH OS so zamknutým bootloaderom (E2-11, E2-12).
 4. Splniť **bránu 1 – Overený základ**: aktualizácie vrátane automatického návratu, generálka mesačnej aktualizácie,

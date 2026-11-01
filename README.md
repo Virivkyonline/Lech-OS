@@ -55,7 +55,7 @@ aby sa dalo kedykoľvek zmerať, či ho systém naozaj spĺňa.
 | 08 | [Plán etáp](docs/08-plan-etap.md) | 9 etáp postupne, brány kvality, čo beží popri vývoji |
 | 09 | [Právo, regulácia a licencie](docs/09-pravo-a-licencie.md) | Licencie AOSP/Linux, ochranné známky, GDPR, CRA, AI Act |
 | 10 | [Riziká a otvorené otázky](docs/10-rizika-a-otvorene-otazky.md) | Hlavné riziká, zmiernenie, prijaté a otvorené rozhodnutia |
-| 11 | [Etapa 2: štart na Cuttlefish](docs/11-etapa-2-cuttlefish.md) | Zostavovací server, inštalácia Cuttlefish, zostavenie AOSP, sieťový audit, úlohy etapy 2 |
+| 11 | [Etapa 2: štart na Cuttlefish](docs/11-etapa-2-cuttlefish.md) | Zostavovací počítač (aj notebook), hotové obrazy AOSP, inštalácia Cuttlefish, zostavenie, sieťový audit, úlohy etapy 2 |
 | 12 | [LECH Privacy Control](docs/12-lech-privacy-control.md) | Prehľad súkromia, technické sledovanie prevádzky po aplikáciách, nezávislé overenie |
 | 13 | [Bankové aplikácie](docs/13-bankove-aplikacie.md) | Cieľové banky SK, testovací protokol, hardvérová atestácia, postup rokovaní |
 | 14 | [Aktualizácie a dlhodobá podpora](docs/14-aktualizacie-a-podpora.md) | Záväzky, mesačný proces, tím a náklady, povinnosti EÚ, overenie v etape 2 |

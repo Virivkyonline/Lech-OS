@@ -4,28 +4,48 @@ Prvým „zariadením“ LECH OS je **Cuttlefish** – virtuálny telefón, ktor
 ([ADR-0005](adr/0005-vyvojove-zariadenie.md)). Beží na Linux serveri, ovláda sa cez prehliadač a hodí sa na
 automatické testy. Fyzický Pixel príde na rad, až keď zvládneme celý cyklus na Cuttlefish.
 
-## 1. Zostavovací server
+## 1. Zostavovací počítač
+
+Na zostavenie stačí **server alebo dostatočne vybavený notebook či stolný počítač**. Rozhoduje RAM, rýchly disk
+a virtualizácia KVM.
 
 | Parameter | Minimum | Odporúčané |
 |-----------|---------|------------|
-| Architektúra | x86_64 | x86_64 |
-| Operačný systém | Debian / Ubuntu | Ubuntu LTS |
-| RAM | 64 GB | 128 GB |
-| Voľné miesto na disku | 400 GB | 1 TB NVMe (viac pracovných kópií + cache) |
-| Procesor | 16 vlákien | 32+ vlákien |
-| Virtualizácia | KVM (`/dev/kvm`) | Dedikovaný (bare-metal) server |
+| Architektúra | x86_64 (Intel / AMD) | x86_64 |
+| Operačný systém | Linux (Ubuntu / Debian) nainštalovaný priamo | Ubuntu LTS |
+| RAM | 32 GB + 32 GB swap (pomalšie, menej súbežných úloh) | 64 GB a viac (oficiálne odporúčanie Google) |
+| Voľné miesto na disku | 400 GB SSD | 1 TB NVMe |
+| Procesor | 8 jadier | 16+ jadier |
+| Virtualizácia | KVM (`/dev/kvm`) zapnutá v BIOS/UEFI | – |
 
-- Cuttlefish potrebuje **KVM**. Na cloudových virtuálnych serveroch musí byť zapnutá vnorená virtualizácia
-  (býva pomalšia alebo nedostupná) – preto odporúčame dedikovaný server u európskeho poskytovateľa.
-- Bežný notebook ani malý cloudový kontajner nestačí.
-- Pripravenosť servera overí skript:
+Pripravenosť počítača overí skript – rozlíši, či počítač zvládne **zostavenie**, alebo len **spustenie hotových
+obrazov** (časť 2b):
 
-  ```bash
-  tools/check_build_host.sh            # kontroluje aktuálny priečinok
-  AOSP_DIR=/srv/aosp tools/check_build_host.sh
-  ```
+```bash
+tools/check_build_host.sh            # kontroluje aktuálny priečinok
+AOSP_DIR=/srv/aosp tools/check_build_host.sh
+```
 
-## 2. Inštalácia Cuttlefish na server
+### Notebook ako zostavovací počítač
+
+Notebook môže byť zostavovací počítač, ak spĺňa minimum z tabuľky. Praktické rady:
+
+- **Linux nainštalovaný priamo**, nie vo virtuálnom stroji. Ak je na notebooku Windows, odporúčame Ubuntu na samostatný
+  disk (druhý interný NVMe alebo rýchly externý NVMe cez USB4 / Thunderbolt). Vo WSL sa dá zostavovať, ale Cuttlefish
+  tam oficiálne podporovaný nie je.
+- **Pri 32 GB RAM** treba zväčšiť swap (súbor alebo oddiel aspoň 32 GB) a zostavovať s menším počtom súbežných úloh,
+  napr. `m -j8`. Pri 16 GB RAM zostavenie AOSP prakticky nie je možné.
+- Mnohé notebooky majú RAM prispájkovanú – pred kúpou rozšírenia overiť, či sa dá vymeniť.
+- Prvé úplné zostavenie potrvá na notebooku **niekoľko hodín**, ďalšie (inkrementálne) desiatky minút alebo menej.
+  Notebook musí byť na sieti, dobre chladený a s vypnutým uspávaním.
+
+### Prečo nestačí bežný VPS
+
+Lacné virtuálne servery (VPS) majú spravidla málo RAM na zostavenie AOSP (16–24 GB) a hlavne **nesprístupňujú KVM**,
+takže Cuttlefish na nich nespustíme vôbec. Ak nebude k dispozícii vlastný počítač, treba **dedikovaný (bare-metal)
+server** s 64 GB RAM u európskeho poskytovateľa – nie VPS.
+
+## 2. Inštalácia Cuttlefish
 
 Podľa oficiálneho repozitára [google/android-cuttlefish](https://github.com/google/android-cuttlefish)
 (overené 1. 11. 2026):
@@ -50,6 +70,34 @@ sudo reboot
 
 Balíky sa dajú zostaviť aj zo zdrojového kódu (`tools/buildutils/build_packages.sh` v repozitári android-cuttlefish) –
 vhodné, ak nechceme závisieť od apt repozitára Google.
+
+## 2b. Bez zostavovania: hotové obrazy AOSP
+
+Čisté AOSP pre Cuttlefish Google zostavuje automaticky a dá sa stiahnuť. Na spustenie stačí počítač s KVM,
+16 GB RAM a približne 50 GB voľného miesta. Takto sa dajú urobiť úlohy **E2-02 a E2-03** (spustenie čistého AOSP
+a sieťový audit) ešte pred tým, ako bude k dispozícii počítač na zostavovanie.
+
+Podľa nápovedy nástroja `cvd` v repozitári android-cuttlefish (overené 1. 11. 2026) – súbor `spec.json`:
+
+```json
+{
+  "instances": [
+    {
+      "name": "aosp-baseline",
+      "disk": {
+        "default_build": "@ab/aosp-android-latest-release/aosp_cf_x86_64_only_phone-userdebug"
+      }
+    }
+  ]
+}
+```
+
+```bash
+cvd create --config_file=spec.json   # stiahne hotové obrazy a spustí virtuálny telefón
+cvd fleet                            # stav bežiacich zariadení
+```
+
+Vlastný LECH OS (úlohy E2-04 a ďalej) už vyžaduje zostavenie zo zdrojového kódu.
 
 ## 3. Stiahnutie a zostavenie AOSP
 
@@ -79,15 +127,18 @@ m
 
 ## 4. Spustenie virtuálneho telefónu
 
+Po vlastnom zostavení (v tom istom termináli, kde prebehol `lunch` a `m`), podľa nápovedy nástroja `cvd`:
+
 ```bash
-launch_cvd --daemon        # spustí virtuálny telefón na pozadí
+cvd create                 # spustí virtuálny telefón zo zostavených obrazov
 adb devices                # telefón sa zobrazí ako pripojené zariadenie
 adb shell                  # príkazový riadok v telefóne
-stop_cvd                   # vypnutie
+cvd stop                   # vypnutie; po zmene a novom zostavení (m) znova cvd start
+cvd remove                 # odstránenie zariadenia a jeho údajov
 ```
 
-Obrazovku telefónu zobrazí webové rozhranie na **https://localhost:8443** (pri vzdialenom serveri cez SSH tunel,
-napr. `ssh -L 8443:localhost:8443 server`).
+Obrazovku telefónu zobrazí webové rozhranie na **https://localhost:1443** (pri vzdialenom počítači cez SSH tunel,
+napr. `ssh -L 1443:localhost:1443 server`). Staršie príkazy `launch_cvd` a `stop_cvd` používajú port 8443.
 
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
@@ -116,7 +167,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 
 | ID | Úloha | Hotové, keď |
 |----|-------|-------------|
-| E2-01 | Zostavovací server | `tools/check_build_host.sh` prejde bez chýb |
+| E2-01 | Zostavovací počítač (server alebo notebook) | `tools/check_build_host.sh` skončí výsledkom „zvládne zostavenie aj spustenie“ |
 | E2-02 | Čisté AOSP na Cuttlefish | Virtuálny telefón nabootuje a je ovládateľný cez prehliadač |
 | E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári |
 | E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` |

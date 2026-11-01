@@ -37,10 +37,10 @@ Vlastník projektu určil poradie:
    kontakty s bankami, hľadanie pilotných organizácií, financovanie, právne otázky.
 4. **Automatické testy sa nepovažujú za samostatnú vec.** Sieťový audit, testy aktualizácií a základné kompatibilitné testy
    vznikajú ako súčasť etapy 2 a potom bežia pri každom zostavení.
-5. **Jedna odporúčaná vývojová výnimka:** krátky test realizovateľnosti lokálnej AI v slovenčine
+5. **Jedna vývojová výnimka:** krátky test realizovateľnosti lokálnej AI v slovenčine
    (najviac 2 týždne, jedna osoba), hneď ako budeme mať Pixel. Test beží na bežnom Androide, nezasahuje do LECH OS.
    Dôvod: AI je najdôležitejšia časť projektu a zároveň najväčšia technická neznáma. Ak by malé lokálne modely
-   slovenčinu nezvládali, musíme to vedieť pred etapou 5, nie v nej. Vlastník môže výnimku zrušiť.
+   slovenčinu nezvládali, musíme to vedieť pred etapou 5, nie v nej. **Výnimku potvrdil vlastník projektu 1. 11. 2026.**
 
 ## Dôsledky
 

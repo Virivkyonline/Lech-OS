@@ -160,10 +160,12 @@ Podpisové kľúče **nikdy nie sú v žiadnom repozitári** – pozri [docs/05]
 
 ## Zostavovacia infraštruktúra
 
-Zostavenie AOSP je náročné na hardvér. Podľa oficiálnych požiadaviek Google je potrebných aspoň 64 GB RAM
-a približne 400 GB voľného miesta na disku na jedno pracovné prostredie. Odporúčanie:
+Zostavenie AOSP je náročné na hardvér. Google odporúča 64 GB RAM a približne 400 GB voľného miesta na disku
+na jedno pracovné prostredie; s 32 GB RAM a swapom sa dá zostavovať pomalšie. Podrobnosti vrátane notebooku
+sú v [docs/11](11-etapa-2-cuttlefish.md#1-zostavovací-počítač). Odporúčanie:
 
-- 1–2 výkonné zostavovacie servery (napr. 32+ jadier, 128 GB RAM, rýchle NVMe disky) alebo prenájom v európskom cloude,
+- na začiatok jeden vlastný počítač (aj notebook) s Linuxom; neskôr 1–2 výkonné zostavovacie servery
+  (napr. 32+ jadier, 128 GB RAM, rýchle NVMe disky), vlastné alebo dedikované u európskeho poskytovateľa – nie VPS,
 - cache zostavenia zdieľaná medzi vývojármi,
 - virtuálne zariadenie **Cuttlefish** v CI na automatické testy bez fyzických telefónov.
 

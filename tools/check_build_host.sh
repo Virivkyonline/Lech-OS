@@ -1,61 +1,100 @@
 #!/usr/bin/env bash
-# Checks whether a machine is ready to build AOSP and run Cuttlefish for LECH OS (stage 2).
-# Usage: tools/check_build_host.sh
-# Exit code 0 = all required checks passed, 1 = at least one required check failed.
+# Checks whether a machine (server or notebook) is ready for LECH OS stage 2.
+# It reports two separate verdicts:
+#   1. Building AOSP / LECH OS from source
+#   2. Running Cuttlefish from prebuilt AOSP images (no build needed)
+# Usage: tools/check_build_host.sh            (checks free space in the current directory)
+#        AOSP_DIR=/srv/aosp tools/check_build_host.sh
+# Exit code: 0 = ready for both, 2 = only prebuilt Cuttlefish images can run, 1 = neither.
 # Thresholds follow docs/11-etapa-2-cuttlefish.md.
 
 set -u
 
-MIN_RAM_GB=64
-MIN_DISK_GB=400
-MIN_CPUS=16
+BUILD_MIN_RAM_GB=32       # works with swap and fewer parallel jobs; Google recommends 64 GB
+BUILD_GOOD_RAM_GB=64
+BUILD_MIN_DISK_GB=400
+RUN_MIN_RAM_GB=16
+RUN_MIN_DISK_GB=50
+GOOD_CPUS=16
 
-fail=0
+build_ok=1
+run_ok=1
 pass() { printf '  [OK]    %s\n' "$1"; }
 warn() { printf '  [POZOR] %s\n' "$1"; }
-bad()  { printf '  [CHYBA] %s\n' "$1"; fail=1; }
+bad()  { printf '  [CHYBA] %s\n' "$1"; }
 
-echo "Kontrola zostavovacieho servera LECH OS"
+echo "Kontrola počítača pre etapu 2 LECH OS"
 echo
 
 # Architecture
 arch=$(uname -m)
-if [ "$arch" = "x86_64" ]; then pass "Architektúra: $arch"; else bad "Architektúra $arch – návod počíta s x86_64"; fi
+if [ "$arch" = "x86_64" ]; then pass "Architektúra: $arch"; else bad "Architektúra $arch – návod počíta s x86_64"; build_ok=0; run_ok=0; fi
 
 # Operating system
 if [ -r /etc/os-release ]; then
   . /etc/os-release
   case "${ID:-}" in
     ubuntu|debian) pass "Systém: ${PRETTY_NAME:-$ID}" ;;
-    *) warn "Systém ${PRETTY_NAME:-neznámy} – odporúčané je Ubuntu LTS (balíky Cuttlefish sú pre Debian/Ubuntu)" ;;
+    *) warn "Systém ${PRETTY_NAME:-neznámy} – odporúčané je Ubuntu LTS nainštalované priamo (nie vo virtuálnom stroji)" ;;
   esac
 else
   warn "Nepodarilo sa zistiť operačný systém"
 fi
+if grep -qi microsoft /proc/version 2>/dev/null; then
+  warn "Beží vo WSL (Windows) – zostavenie je možné, Cuttlefish vo WSL oficiálne podporovaný nie je"
+fi
 
 # CPU
 cpus=$(nproc 2>/dev/null || echo 0)
-if [ "$cpus" -ge "$MIN_CPUS" ]; then pass "Procesor: $cpus vlákien"; else warn "Procesor: $cpus vlákien – zostavenie bude pomalé (odporúčané ${MIN_CPUS}+)"; fi
+if [ "$cpus" -ge "$GOOD_CPUS" ]; then pass "Procesor: $cpus vlákien"; else warn "Procesor: $cpus vlákien – prvé zostavenie potrvá niekoľko hodín (odporúčané ${GOOD_CPUS}+)"; fi
 
-# RAM
+# RAM and swap
 ram_kb=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo 2>/dev/null || echo 0)
-ram_gb=$(( ram_kb / 1024 / 1024 ))
-if [ "$ram_gb" -ge "$MIN_RAM_GB" ]; then pass "RAM: ${ram_gb} GB"; else bad "RAM: ${ram_gb} GB – potrebné aspoň ${MIN_RAM_GB} GB"; fi
+swap_kb=$(awk '/^SwapTotal:/ {print $2}' /proc/meminfo 2>/dev/null || echo 0)
+ram_gb=$(( (ram_kb + 524288) / 1024 / 1024 ))
+swap_gb=$(( swap_kb / 1024 / 1024 ))
+# The OS reports less than the nominal size (firmware, integrated graphics), so allow 10 % tolerance.
+has_ram() { [ "$ram_kb" -ge $(( $1 * 1024 * 1024 * 9 / 10 )) ]; }
+if has_ram "$BUILD_GOOD_RAM_GB"; then
+  pass "RAM: ${ram_gb} GB"
+elif has_ram "$BUILD_MIN_RAM_GB"; then
+  if [ $(( ram_kb + swap_kb )) -ge $(( BUILD_GOOD_RAM_GB * 1024 * 1024 * 9 / 10 )) ]; then
+    warn "RAM: ${ram_gb} GB + swap ${swap_gb} GB – zostavenie pôjde, pomalšie; zostavujte s menším počtom úloh (napr. m -j8)"
+  else
+    warn "RAM: ${ram_gb} GB, swap ${swap_gb} GB – pred zostavením zväčšite swap aspoň na $(( BUILD_GOOD_RAM_GB - ram_gb )) GB a zostavujte s menším počtom úloh"
+  fi
+elif has_ram "$RUN_MIN_RAM_GB"; then
+  bad "RAM: ${ram_gb} GB – na zostavenie AOSP nestačí (minimum ${BUILD_MIN_RAM_GB} GB); na spustenie hotových obrazov Cuttlefish stačí"
+  build_ok=0
+else
+  bad "RAM: ${ram_gb} GB – nestačí ani na spustenie Cuttlefish (minimum ${RUN_MIN_RAM_GB} GB)"
+  build_ok=0; run_ok=0
+fi
 
-# Free disk space in the target directory (default: current directory)
+# Free disk space in the target directory
 target_dir=${AOSP_DIR:-$PWD}
 disk_gb=$(df -Pk "$target_dir" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
 disk_gb=${disk_gb:-0}
-if [ "$disk_gb" -ge "$MIN_DISK_GB" ]; then pass "Voľné miesto v $target_dir: ${disk_gb} GB"; else bad "Voľné miesto v $target_dir: ${disk_gb} GB – potrebné aspoň ${MIN_DISK_GB} GB (cieľový priečinok nastavíte premennou AOSP_DIR)"; fi
+if [ "$disk_gb" -ge "$BUILD_MIN_DISK_GB" ]; then
+  pass "Voľné miesto v $target_dir: ${disk_gb} GB"
+elif [ "$disk_gb" -ge "$RUN_MIN_DISK_GB" ]; then
+  bad "Voľné miesto v $target_dir: ${disk_gb} GB – na zostavenie treba ${BUILD_MIN_DISK_GB} GB; na hotové obrazy stačí (cieľový priečinok nastavíte premennou AOSP_DIR)"
+  build_ok=0
+else
+  bad "Voľné miesto v $target_dir: ${disk_gb} GB – nestačí ani na hotové obrazy (minimum ${RUN_MIN_DISK_GB} GB)"
+  build_ok=0; run_ok=0
+fi
+rota=$(lsblk -dno ROTA "$(df -P "$target_dir" 2>/dev/null | awk 'NR==2 {print $1}')" 2>/dev/null | head -1 | tr -d ' ')
+if [ "${rota:-}" = "1" ]; then warn "Disk je rotačný (HDD) – zostavenie bude veľmi pomalé, odporúčaný je NVMe SSD"; fi
 
 # Virtualization for Cuttlefish
 virt=$(grep -c -w -E 'vmx|svm' /proc/cpuinfo 2>/dev/null || true)
-if [ "${virt:-0}" -gt 0 ]; then pass "Procesor podporuje virtualizáciu (vmx/svm)"; else bad "Procesor nehlási virtualizáciu (vmx/svm) – Cuttlefish potrebuje KVM; na cloudovom serveri zapnite vnorenú virtualizáciu"; fi
-
+if [ "${virt:-0}" -gt 0 ]; then pass "Procesor hlási virtualizáciu (vmx/svm)"; else bad "Procesor nehlási virtualizáciu (vmx/svm) – zapnite ju v BIOS/UEFI; na VPS býva nedostupná"; run_ok=0; fi
 if [ -e /dev/kvm ]; then
   if [ -r /dev/kvm ] && [ -w /dev/kvm ]; then pass "/dev/kvm je dostupné"; else warn "/dev/kvm existuje, ale používateľ k nemu nemá prístup – pridajte ho do skupiny kvm"; fi
 else
-  bad "/dev/kvm neexistuje – KVM nie je zapnuté"
+  bad "/dev/kvm neexistuje – Cuttlefish sa nespustí"
+  run_ok=0
 fi
 
 # Cuttlefish user groups (after installing cuttlefish-base / cuttlefish-user)
@@ -69,14 +108,18 @@ done
 
 # Tools
 for tool in git python3 curl; do
-  if command -v "$tool" >/dev/null 2>&1; then pass "Nástroj $tool je nainštalovaný"; else bad "Chýba nástroj $tool"; fi
+  if command -v "$tool" >/dev/null 2>&1; then pass "Nástroj $tool je nainštalovaný"; else bad "Chýba nástroj $tool"; build_ok=0; fi
 done
 if command -v repo >/dev/null 2>&1; then pass "Nástroj repo je nainštalovaný"; else warn "Chýba nástroj repo (inštalácia v docs/11-etapa-2-cuttlefish.md)"; fi
 
 echo
-if [ "$fail" -eq 0 ]; then
-  echo "Výsledok: server spĺňa povinné požiadavky."
+if [ "$build_ok" -eq 1 ] && [ "$run_ok" -eq 1 ]; then
+  echo "Výsledok: počítač zvládne zostavenie LECH OS aj spustenie Cuttlefish."
+  exit 0
+elif [ "$run_ok" -eq 1 ]; then
+  echo "Výsledok: na zostavenie nestačí, ale spustí Cuttlefish z hotových obrazov AOSP (docs/11, časť 2b)."
+  exit 2
 else
-  echo "Výsledok: server NESPĹŇA povinné požiadavky – pozri riadky [CHYBA]."
+  echo "Výsledok: počítač nestačí na zostavenie ani na Cuttlefish – pozri riadky [CHYBA]."
+  exit 1
 fi
-exit "$fail"
