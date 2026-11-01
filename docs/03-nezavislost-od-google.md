@@ -15,7 +15,7 @@ LECH OS stavia **len na AOSP**. Všetko, čo pochádza z GMS, musíme nahradiť 
 
 | Funkcia (Google) | Náhrada v LECH OS | Náročnosť | Poznámka |
 |------------------|-------------------|-----------|----------|
-| Google účet | Žiadne konto; LECH ID len pre LECH Cloud | Nízka | Princíp P2 |
+| Google účet | Žiadne konto; [LECH Identity](06-lech-store-a-cloud.md#lech-identity) len pre dobrovoľné služby | Nízka | Princíp P2 |
 | Play Store | **LECH Store** | Vysoká | Pozri [docs/06](06-lech-store-a-cloud.md) |
 | Synchronizácia kontaktov a kalendára | CardDAV / CalDAV – LECH Cloud alebo vlastný server | Nízka | Otvorené štandardy, existujúce open-source implementácie |
 | Push notifikácie (FCM) | **UnifiedPush** + vlastný push server; FCM len cez vrstvu kompatibility | Stredná | UnifiedPush už podporujú napr. Element, Nextcloud, SimpleX; veľké aplikácie väčšinou len FCM |

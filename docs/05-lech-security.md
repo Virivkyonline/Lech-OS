@@ -41,8 +41,9 @@
 
 ### 4. Sieť a súkromie
 
-- Panel **„Odchod údajov“** – prehľad, ktoré systémové služby a ktoré AI požiadavky odoslali údaje mimo telefón.
-  Pre aplikácie tretích strán štatistika sieťovej aktivity.
+- **LECH Privacy Control** – jeden prehľad: mikrofón, kamera, poloha, senzory, kam a koľko údajov posiela každá aplikácia,
+  systémové služby aj AI; prístup na internet sa dá zakázať jedným dotykom. Panel overujeme meraním mimo telefónu
+  ([docs/12](12-lech-privacy-control.md)).
 - Šifrované DNS predvolene zapnuté, s možnosťou výberu poskytovateľa; voliteľné blokovanie známych trackerov.
 - Náhodná MAC adresa pre každú Wi-Fi sieť.
 - Žiadne predvolené spojenia na servery Google (pozri [docs/03](03-nezavislost-od-google.md#audit-volaní-na-servery-google-v-aosp)).

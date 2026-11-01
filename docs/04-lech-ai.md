@@ -1,5 +1,21 @@
 # 04 – LECH AI
 
+**LECH AI** je platforma v systéme (beh modelov, register akcií, pravidlá súhlasu). **LECH AI Assistant** je asistent,
+s ktorým používateľ hovorí. LECH AI je najdôležitejšia časť projektu: **nie ďalší chatbot, ale systémový asistent,
+ktorý vybavuje úlohy v telefóne.**
+
+## Čo má asistent vedieť
+
+| Schopnosť | Ako ju dosiahneme | Lokálne bez internetu |
+|-----------|-------------------|-----------------------|
+| **Rozumie slovenčine** | Lokálne modely doladené na slovenčinu a češtinu, vlastná testovacia sada | Áno |
+| **Ovláda celý telefón** | Systémové akcie z [registra akcií](../spec/ai-akcie.yaml) – hovory, správy, nastavenia, automatizácie | Áno |
+| **Pracuje s dokumentmi** | Lokálny index, čítanie textu z obrázkov (OCR), zhrnutia, vyhľadanie údajov (napr. suma a splatnosť faktúry) | Áno |
+| **Vybavuje úlohy** | Viackrokové plány s kontrolnými bodmi – používateľ schváli plán, nevratné kroky potvrdí | Áno (ak úloha nepotrebuje internet) |
+| **Ovláda aplikácie** | Akcie, ktoré aplikácie samy zverejnia; ako posledná možnosť ovládanie rozhrania aplikácie | Áno |
+| **Funguje bez internetu** | Lokálny model je predvolený; cloud len voliteľne a so súhlasom | – |
+| **Komunikuje hlasom** | Slovo na prebudenie, rozpoznanie reči a syntéza reči v slovenčine – všetko v telefóne | Áno |
+
 ## Ciele
 
 1. AI je **súčasťou systému**, nie len aplikácia – rozumie funkciám telefónu a vie ich ovládať.
@@ -94,6 +110,37 @@ Pred akýmkoľvek odoslaním AI brána odstráni alebo nahradí osobné údaje, 
 | „Nájdi mi najbližšiu čerpaciu stanicu.“ | `poloha.zistit` → `miesta.hladat` → `navigacia.spustit` | R1 | Offline mapové údaje; online vyhľadávanie len s približnou polohou a súhlasom | Zoznam staníc so vzdialenosťou, tlačidlo Navigovať. |
 | „Vypni Wi-Fi o 22:00.“ | `automatizacia.naplanovat` + `nastavenia.wifi` | R2 | Lokálne | Potvrdenie „Každý deň alebo len dnes?“, automatizácia viditeľná v zozname. |
 | „Zhrň všetky dnešné upozornenia.“ | `notifikacie.citat` → `text.zhrnut` | R1, údaje D2 | **Len lokálne** | Zhrnutie podľa aplikácií a dôležitosti. |
+
+## Ovládanie aplikácií
+
+Asistent má vedieť pracovať aj s aplikáciami tretích strán. Tri úrovne, od najbezpečnejšej:
+
+| Úroveň | Ako funguje | Kedy |
+|--------|-------------|------|
+| **1. Systémové akcie** | Akcie z registra akcií – telefón, správy, nastavenia, kalendár, súbory | Vždy, keď existujú |
+| **2. Akcie aplikácií** | Aplikácia cez SDK zverejní, čo vie (napr. „objednaj taxík na adresu“), s úrovňou rizika | Keď ich aplikácia ponúka |
+| **3. Ovládanie rozhrania** | Asistent „vidí“ obrazovku aplikácie a klikne alebo vyplní políčka za používateľa | Len ak úrovne 1 a 2 nestačia |
+
+Ovládanie rozhrania (úroveň 3) je silné, ale rizikové – rovnaký princíp zneužíva škodlivý softvér cez funkcie
+prístupnosti. Preto platia prísne pravidlá:
+
+- používateľ najprv schváli **plán úlohy s náhľadom** („otvorím aplikáciu X, vyplním Y, pred odoslaním sa opýtam“),
+- **nevratný krok** (odoslanie, objednávka, potvrdenie) vždy vyžaduje samostatné potvrdenie,
+- počas ovládania je na obrazovke **viditeľný indikátor** a tlačidlo na okamžité zastavenie,
+- **zakázané aplikácie:** bankovníctvo, platby, správcovia hesiel, autentifikačné aplikácie a nastavenia zabezpečenia –
+  tie asistent nikdy neovláda (úroveň R4),
+- asistent nepoužíva verejné rozhranie prístupnosti (AccessibilityService), ale vlastné systémové rozhranie,
+  ktoré funguje len pre LECH AI a podlieha modulu pravidiel.
+
+## Práca s dokumentmi a vybavovanie úloh
+
+- **Dokumenty:** PDF, kancelárske dokumenty, fotografie dokumentov (OCR v telefóne). Asistent vie dokument zhrnúť,
+  odpovedať na otázky k nemu a vytiahnuť z neho údaje (napr. suma, IBAN, dátum splatnosti faktúry).
+  Vytiahnuté údaje sú len návrh – nikdy sa automaticky nepoužijú na platbu (platby sú R4).
+- **Úlohy:** asistent rozloží požiadavku na kroky („nájdi poslednú faktúru od dodávateľa, zisti splatnosť,
+  vytvor pripomienku deň vopred“). Používateľ vidí plán, kroky R0–R2 prebehnú podľa pravidiel, R3 vždy s potvrdením.
+- **Pamäť asistenta:** čo si asistent pamätá o používateľovi, je uložené len v telefóne, šifrované, a používateľ
+  to vie prezrieť a vymazať.
 
 ## Ochrana proti zneužitiu AI (prompt injection)
 

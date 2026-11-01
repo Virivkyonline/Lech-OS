@@ -30,7 +30,10 @@ Obchodný model stojí na službách (LECH Cloud, AI servery), podpore, firemný
 
 - **„Android“ je ochranná známka Google.** Nesmie byť súčasťou názvu produktu. Formulácie typu „spúšťa Android aplikácie“
   posúdiť podľa pravidiel Google pre používanie značky.
-- Názov **LECH OS** (alebo finálny názov) overiť v databázach EUIPO a ÚPV SR a zaregistrovať pred verejným prototypom.
+- **LECH OS je pracovný názov.** Pred komerčným uvedením (etapa 9) preveríme ochrannú známku a dostupnosť názvu
+  v databázach EUIPO a ÚPV SR, dostupnosť domén a kolízie s existujúcimi produktmi (rozhodnutie vlastníka, 1. 11. 2026).
+  Odporúčanie: lacnú predbežnú rešerš urobiť už pred verejným prototypom (etapa 8), pretože beta pod týmto názvom
+  začne budovať verejné povedomie a neskoršie premenovanie je drahšie.
   Pri otvorenom kóde je ochranná známka hlavný nástroj, ako zabrániť, aby sa odnože vydávali za LECH OS.
 - Pripraviť pravidlá používania značky (trademark policy) – kedy smie komunita používať názov LECH.
 - Názvy iných projektov (napr. GrapheneOS) nepoužívať v produkte; pri prebratí kódu uviesť autorstvo podľa licencie.

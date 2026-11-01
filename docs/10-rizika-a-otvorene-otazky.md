@@ -4,8 +4,8 @@
 
 | # | Riziko | Pravdepodobnosť | Dopad | Zmiernenie |
 |---|--------|-----------------|-------|------------|
-| R1 | **Bankové aplikácie a platby nefungujú** kvôli Play Integrity | Vysoká | Vysoký | Hardvérová atestácia s našimi kľúčmi, rokovania s bankami SK/CZ od etapy 1, verejná databáza kompatibility, transparentná komunikácia pred kúpou ([docs/03](03-nezavislost-od-google.md#play-integrity--najväčšie-riziko-kompatibility)) |
-| R2 | **Údržba je drahšia ako vývoj** – mesačné záplaty, nové verzie AOSP, WebView, firmvér | Vysoká | Vysoký | Minimalizovať rozsah úprav AOSP (malý „patch set“), automatizácia, malý zoznam podporovaných zariadení, rozpočet na údržbu od začiatku |
+| R1 | **Bankové aplikácie a platby nefungujú** kvôli Play Integrity | Vysoká | Vysoký | Hardvérová atestácia s našimi kľúčmi, rokovania s bankami SK/CZ od etapy 1, verejná databáza kompatibility, transparentná komunikácia pred kúpou – podrobný plán v [docs/13](13-bankove-aplikacie.md) |
+| R2 | **Údržba je drahšia ako vývoj** – mesačné záplaty, nové verzie AOSP, WebView, firmvér | Vysoká | Vysoký | Minimalizovať rozsah úprav AOSP (malý „patch set“), automatizácia, malý zoznam podporovaných zariadení, rozpočet na údržbu od začiatku; celý cyklus overený už v bráne 1 ([docs/14](14-aktualizacie-a-podpora.md)) |
 | R3 | **Google ďalej obmedzí otvorenosť AOSP** (už v roku 2025 prestal zverejňovať device trees Pixel; od roku 2026 zverejňuje zdrojové kódy len dvakrát ročne) | Stredná | Vysoký | Device Support Package vo vlastnej réžii, druhá platforma (Fairphone), partnerstvo s výrobcom, sledovanie zmien |
 | R4 | **Lokálna AI je príliš pomalá alebo slabá v slovenčine** | Stredná | Stredný | Malé špecializované modely, doladenie na SK/CZ, voliteľná cloudová vrstva na vlastných serveroch, merania už v prototype |
 | R5 | **Konkurencia** (GrapheneOS, /e/OS a ďalší, plus partnerstvá s veľkými výrobcami) | Vysoká | Stredný | Jasné odlíšenie: integrovaná súkromná AI, slovenčina a čeština, európska infraštruktúra, produkt s podporou; prípadne zameranie na B2B |
@@ -14,6 +14,8 @@
 | R8 | **Financovanie a tím** – projekt vyžaduje špecialistov, ktorých je na trhu málo | Vysoká | Vysoký | Etapovanie s jasnými míľnikmi pre investorov, otvorený kód ako spôsob získania komunity a talentov |
 | R9 | **Koniec podpory firmvéru výrobcom** skôr, ako sme sľúbili zákazníkom | Stredná | Stredný | Sľubovať dobu podpory len do konca podpory firmvéru výrobcom; zverejniť dátum vopred |
 | R10 | **Bezpečnostný incident** (podvrhnutá aktualizácia, únik kľúča) zničí dôveru | Nízka | Kritický | Offline kľúče v HSM, dve osoby pri podpise, reprodukovateľné zostavy, nezávislé audity |
+| R11 | **Google Play v sandboxe je technicky zložitá** a musí sa udržiavať s každou verziou Google Play Services | Vysoká | Stredný | Rozhodnutie o spôsobe realizácie až v etape 7 s presnými dátami z kompatibilitných testov; preveriť prevzatie overeného open-source riešenia (licencia); dovtedy merať kompatibilitu aj bez Google |
+| R12 | **Panel súkromia ukazuje neúplné údaje** (aplikácia nájde cestu, ktorú panel nezachytí) – stratila by sa dôvera | Stredná | Vysoký | Porovnávanie s meraním mimo telefónu pri každom vydaní, nezávislý audit, zverejnená metodika ([docs/12](12-lech-privacy-control.md#nezávislé-overenie)) |
 
 ## Prijaté rozhodnutia
 
@@ -30,19 +32,25 @@
 | # | Otázka | Možnosti | Odporúčanie | Prečo je dôležitá teraz |
 |---|--------|----------|-------------|-------------------------|
 | O4 | **Financovanie** | Vlastné zdroje / granty EÚ / investori | Kombinácia: granty EÚ na výskum (súkromie, AI, digitálna suverenita) + investor po verejnom prototype | Určuje veľkosť tímu a tempo |
-| O5 | **Finálny názov** | „LECH OS“ alebo iný | Overiť ochrannú známku pred investíciou do značky | Premenovanie po spustení je drahé |
+| O5 | **Finálny názov** | „LECH OS“ zostáva pracovným názvom | Ochrannú známku a dostupnosť názvu preveriť pred komerčným uvedením; predbežnú rešerš odporúčame pred verejným prototypom | Premenovanie po spustení je drahé |
 | O6 | **Jazyky pri spustení** | SK / SK + CZ / SK + CZ + EN | SK + CZ + EN | Ovplyvňuje výber a doladenie AI modelov |
 | O7 | **Režim Google pri prvom spustení** | Ponúknuť „Google Play v sandboxe“ priamo v sprievodcovi / len v nastaveniach | V sprievodcovi, s jasným vysvetlením ([ADR-0003](adr/0003-kompatibilita-google-sluzieb.md)) | Zásadne mení prvý dojem a kompatibilitu |
 
 ## Čo ďalej (najbližšie kroky)
 
+Postupne, podľa [ADR-0008](adr/0008-postupny-vyvoj-a-brany.md):
+
 1. **Zabezpečiť zostavovací server** (64+ GB RAM, 400+ GB disk, KVM) – bez neho etapa 2 nezačne
    ([docs/11](11-etapa-2-cuttlefish.md#1-zostavovací-server)).
-2. Zostaviť a spustiť čisté AOSP na Cuttlefish a urobiť sieťový audit (úlohy E2-01 až E2-03).
-3. Zostaviť zoznam 200 cieľových aplikácií pre SK a CZ – vrátane firemných aplikácií ([ADR-0007](adr/0007-prvy-trh-firmy.md)) –
-   a zoznam bánk na oslovenie.
-4. Overiť a zaregistrovať ochrannú známku „LECH OS“ (pri otvorenom kóde je to hlavná ochrana značky).
-5. Začať hľadať 1–3 pilotné organizácie.
-6. Začať prototyp LECH AI ako bežnú aplikáciu na overenie lokálnych modelov v slovenčine.
-7. Kúpiť 2× Pixel po zvládnutí úloh E2-02 až E2-06 na Cuttlefish.
-8. Rozhodnúť otázku O4 (financovanie) – určuje veľkosť tímu.
+2. Čistý LECH OS na virtuálnom telefóne Cuttlefish a sieťový audit (úlohy E2-01 až E2-10).
+3. Kúpiť 2× Pixel a nainštalovať LECH OS so zamknutým bootloaderom (E2-11, E2-12).
+4. Splniť **bránu 1 – Overený základ**: aktualizácie vrátane automatického návratu, generálka mesačnej aktualizácie,
+   nulové neznáme spojenia overené meraním mimo telefónu.
+5. Po kúpe Pixelu: dvojtýždňový test lokálnej AI v slovenčine (jediná vývojová výnimka).
+
+Popri vývoji (bez kapacity vývojárov):
+
+- kontakty s bankami a príprava technického dokumentu pre banky ([docs/13](13-bankove-aplikacie.md)),
+- zoznam 200 cieľových aplikácií pre SK a CZ vrátane firemných,
+- hľadanie 1–3 pilotných organizácií,
+- financovanie (otázka O4).

@@ -1,59 +1,37 @@
 # 08 – Plán etáp
 
-## Úpravy pôvodného plánu
+## Princíp: jedna vec naraz
 
-Pôvodných 9 etáp ostáva, s tromi úpravami, ktoré znižujú riziko:
+Vývoj ide **postupne**, vždy jedna hlavná vec naraz, a medzi etapami sú **brány kvality** – ďalšia etapa začne,
+až keď predchádzajúca splní merateľné kritériá ([ADR-0008](adr/0008-postupny-vyvoj-a-brany.md)).
+Cieľom je, aby sme o rok nemuseli prerábať polovicu systému.
 
-1. **Bezpečnosť nie je etapa, ale vlastnosť od začiatku.** Overený boot, vlastné kľúče a podpísané aktualizácie
-   musia byť hotové už v etape 2. Etapa 4 pridáva nadstavbové bezpečnostné služby.
-2. **Testovanie kompatibility aplikácií beží priebežne od etapy 2**, nie až v etape 7. Etapa 7 je jeho vyvrcholenie
-   (top 200 aplikácií, banky, verejná databáza).
-3. **Prototyp LECH AI začne skôr** – ako bežná aplikácia, ktorá sa dá rýchlo testovať aj na obyčajnom telefóne.
-   V etape 5 sa presunie do systému.
-
-## Paralelné pracovné prúdy
+Bezpečnosť a aktualizácie nie sú až na konci: overený boot, vlastné kľúče, podpísané aktualizácie a meranie sieťovej
+prevádzky sú súčasťou etapy 2 a brány „Overený základ“. Etapa 4 pridáva nadstavbu (LECH Privacy Control).
 
 ```mermaid
 flowchart LR
-    E1["1 · Architektúra"]
-
-    subgraph PLAT["Prúd: Platforma"]
-        E2["2 · Vlastná zostava AOSP"]
-        E3["3 · Grafické prostredie"]
-        E4["4 · Bezpečnostné služby"]
-    end
-    subgraph AI["Prúd: AI"]
-        P5["Prototyp AI ako aplikácia"]
-        E5["5 · Integrácia AI do systému"]
-    end
-    subgraph EKO["Prúd: Ekosystém"]
-        K["Kompatibilitné testy – priebežne"]
-        E6["6 · LECH Store"]
-        E7["7 · Testovanie aplikácií"]
-    end
-    subgraph UV["Uvedenie"]
-        E8["8 · Verejný prototyp"]
-        E9["9 · Komerčný produkt"]
-    end
-
-    E1 --> E2
-    E1 --> P5
-    E2 --> E3
-    E2 --> E4
-    E2 --> K
-    P5 --> E5
-    E2 --> E5
-    E3 --> E6
-    K --> E7
-    E6 --> E7
-    E4 --> E8
-    E5 --> E8
-    E7 --> E8
-    E8 --> E9
+    E2["2 · LECH OS na Cuttlefish,<br/>potom na Pixeli"] --> B1{{"Brána 1<br/>Overený základ"}}
+    B1 --> E3["3 · Grafické<br/>prostredie"] --> B2{{"Brána 2<br/>Použiteľný systém"}}
+    B2 --> E4["4 · Bezpečnosť a<br/>Privacy Control"] --> B3{{"Brána 3<br/>Overená bezpečnosť"}}
+    B3 --> E5["5 · Lokálna AI"] --> B4{{"Brána 4<br/>Overená AI"}}
+    B4 --> E6["6 · LECH Store"] --> E7["7 · Testovanie<br/>aplikácií"] --> B5{{"Brána 5<br/>Pripravené na pilot"}}
+    B5 --> E8["8 · Pilot a verejný<br/>prototyp"] --> E9["9 · Komerčný<br/>produkt"]
 ```
 
-Šípky znázorňujú závislosti: etapy v rôznych prúdoch bežia súbežne, napr. etapy 3 a 4 začínajú hneď po etape 2
-a prototyp AI vzniká už počas etapy 2.
+Kritériá brán sú v [ADR-0008](adr/0008-postupny-vyvoj-a-brany.md#rozhodnutie).
+
+### Čo beží popri vývoji
+
+Len úlohy, ktoré neberú kapacitu vývojárov a trvajú dlho:
+
+| Úloha | Prečo už teraz |
+|-------|----------------|
+| Kontakty s bankami ([docs/13](13-bankove-aplikacie.md)) | Rokovania trvajú mesiace |
+| Hľadanie 1–3 pilotných organizácií | Pilot v etape 8 treba dohodnúť vopred |
+| Financovanie | Určuje veľkosť tímu |
+| Právne otázky (licencie, ochranná známka pred komerčným uvedením) | Pozri [docs/09](09-pravo-a-licencie.md) |
+| **Test realizovateľnosti lokálnej AI v slovenčine** – jediná vývojová výnimka, najviac 2 týždne | AI je najdôležitejšia časť a najväčšia technická neznáma |
 
 ## Etapy
 
@@ -74,8 +52,8 @@ Postup a zoznam úloh: [docs/11 – štart na Cuttlefish](11-etapa-2-cuttlefish.
 | | |
 |---|---|
 | **Cieľ** | LECH OS beží na Cuttlefish a na Pixel so zamknutým bootloaderom |
-| **Výstupy** | Zostavovacia infraštruktúra a CI; manifest a forky; Device Support Package pre Pixel; vlastné podpisové kľúče; server aktualizácií v0; odstránenie spojení na Google; automatický audit sieťovej prevádzky; prvé kompatibilitné testy |
-| **Hotové, keď** | Pixel nabootuje LECH OS so zamknutým bootloaderom, nainštaluje aktualizáciu z nášho servera a pri prvom spustení nevytvorí žiadne neznáme sieťové spojenie |
+| **Výstupy** | Zostavovacia infraštruktúra a CI; manifest a forky; Device Support Package pre Pixel; vlastné podpisové kľúče; server aktualizácií v0; odstránenie spojení na Google; laboratórne meranie sieťovej prevádzky mimo telefónu; generálka mesačnej aktualizácie ([docs/14](14-aktualizacie-a-podpora.md#overenie-v-etape-2)); prvé kompatibilitné testy |
+| **Hotové, keď** | Splnená **brána 1 – Overený základ** ([ADR-0008](adr/0008-postupny-vyvoj-a-brany.md#rozhodnutie)) |
 
 ### Etapa 3 – Vlastné grafické prostredie
 
@@ -83,23 +61,23 @@ Postup a zoznam úloh: [docs/11 – štart na Cuttlefish](11-etapa-2-cuttlefish.
 |---|---|
 | **Cieľ** | Rozpoznateľný a pohodlný LECH OS |
 | **Výstupy** | Vizuálna identita; launcher; úpravy SystemUI a nastavení; sprievodca prvým spustením s voľbami súkromia (bez konta, voľba vrstvy kompatibility); prístupnosť; lokalizácia SK, CZ, EN |
-| **Hotové, keď** | Testovací používatelia bez technických znalostí prejdú nastavením telefónu bez pomoci |
+| **Hotové, keď** | Splnená **brána 2 – Použiteľný systém**: testovací používatelia bez technických znalostí nastavia a používajú telefón bez pomoci |
 
-### Etapa 4 – Vlastné bezpečnostné služby
+### Etapa 4 – Bezpečnostný systém a LECH Privacy Control
 
 | | |
 |---|---|
 | **Cieľ** | Funkcie súkromia, ktoré bežný Android nemá |
-| **Výstupy** | Povolenia Sieť a Senzory; rozsahy kontaktov a úložiska; panel „Odchod údajov“; lokálny skener aplikácií; spevnenie systému; **základ správy firemných zariadenií** (device owner, pracovný profil, zriadenie cez QR kód – [ADR-0007](adr/0007-prvy-trh-firmy.md)); interná bezpečnostná revízia |
-| **Hotové, keď** | Všetky funkcie z [docs/05](05-lech-security.md) majú automatické testy a prešli internou revíziou |
+| **Výstupy** | **LECH Privacy Control** ([docs/12](12-lech-privacy-control.md)): povolenia Sieť a Senzory, evidencia prevádzky po aplikáciách, prehľad mikrofónu, kamery a polohy; rozsahy kontaktov a úložiska; lokálny skener aplikácií; spevnenie systému; **základ správy firemných zariadenií** (device owner, pracovný profil, zriadenie cez QR kód – [ADR-0007](adr/0007-prvy-trh-firmy.md)); interná bezpečnostná revízia |
+| **Hotové, keď** | Splnená **brána 3 – Overená bezpečnosť**: funkcie z [docs/05](05-lech-security.md) a [docs/12](12-lech-privacy-control.md) majú automatické testy, panel sa zhoduje s meraním mimo telefónu, interná revízia bez kritických nálezov |
 
-### Etapa 5 – Integrácia AI
+### Etapa 5 – Lokálna AI (LECH AI Assistant)
 
 | | |
 |---|---|
 | **Cieľ** | LECH AI ako systémová služba |
 | **Výstupy** | Orchestrátor, register akcií, modul pravidiel, lokálny model, hlasové ovládanie v slovenčine, AI brána s panelom odchodu údajov, testovacia sada (vrátane prompt injection) |
-| **Hotové, keď** | Všetkých 7 príkladových príkazov z [docs/04](04-lech-ai.md#príklady-príkazov) funguje v režime lietadlo (okrem tých, ktoré vyžadujú sieť zo svojej podstaty) a žiadna akcia R3 neprebehne bez potvrdenia |
+| **Hotové, keď** | Splnená **brána 4 – Overená AI**: všetkých 7 príkladových príkazov z [docs/04](04-lech-ai.md#príklady-príkazov) funguje v slovenčine v režime lietadlo (okrem tých, ktoré vyžadujú sieť zo svojej podstaty) a žiadna akcia R3 neprebehne bez potvrdenia |
 
 ### Etapa 6 – Obchod s aplikáciami
 
@@ -115,9 +93,9 @@ Postup a zoznam úloh: [docs/11 – štart na Cuttlefish](11-etapa-2-cuttlefish.
 |---|---|
 | **Cieľ** | Zmeraná a zverejnená kompatibilita |
 | **Výstupy** | Výsledky top 200 aplikácií v troch režimoch; vrstva kompatibility „Google Play v sandboxe“; stav bankových aplikácií SK/CZ a rokovaní s bankami; verejná databáza kompatibility; druhá platforma (Fairphone) |
-| **Hotové, keď** | Splnené cieľové metriky z [docs/03](03-nezavislost-od-google.md#meranie-kompatibility) |
+| **Hotové, keď** | Splnená **brána 5 – Pripravené na pilot**: cieľové metriky z [docs/03](03-nezavislost-od-google.md#meranie-kompatibility) a stav bánk z [docs/13](13-bankove-aplikacie.md) |
 
-### Etapa 8 – Prvý verejný prototyp
+### Etapa 8 – Pilot a prvý verejný prototyp
 
 | | |
 |---|---|

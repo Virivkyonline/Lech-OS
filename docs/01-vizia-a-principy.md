@@ -2,9 +2,36 @@
 
 ## Poslanie
 
-**LECH OS je mobilný operačný systém, v ktorom telefón patrí používateľovi.** Používateľ vie, aké údaje
-z telefónu odchádzajú, kam a prečo – a bez jeho súhlasu neodchádzajú žiadne. Inteligentný asistent je súčasťou
-systému, rozumie funkciám telefónu a pracuje primárne lokálne.
+**Telefón, ktorý patrí používateľovi.**
+
+LECH OS nie je len ďalšia alternatíva Androidu. Je to **operačný systém novej generácie**, v ktorom má používateľ
+kontrolu nad svojimi údajmi a umelá inteligencia je súčasťou samotného systému. Používateľ vie, aké údaje z telefónu
+odchádzajú, kam a prečo – a bez jeho súhlasu neodchádzajú žiadne. Asistent rozumie slovenčine, vybavuje úlohy
+v telefóne a pracuje primárne lokálne.
+
+> **LECH OS je pracovný názov.** Pred komerčným uvedením preveríme ochrannú známku a dostupnosť názvu
+> ([docs/09](09-pravo-a-licencie.md#ochranné-známky)).
+
+## Produktová rada
+
+Rovnaký systém a rovnaké služby slúžia viacerým produktom. Architektúra s oddeleným *Device Support Package*
+([docs/02](02-architektura.md#device-support-package--kľúč-k-cestám-a-aj-b)) to umožňuje bez prepisovania systému.
+
+| Produkt | Pre koho | Kedy |
+|---------|----------|------|
+| **LECH OS pre mobilné telefóny** | Jednotlivci (komunitná verzia), neskôr spotrebiteľský trh | Od verejného prototypu (etapa 8) |
+| **LECH OS pre firemné zariadenia** | Firmy a organizácie – so správou zariadení a firemnou identitou | Pilot v etape 8 ([ADR-0007](adr/0007-prvy-trh-firmy.md)) |
+| **Firemné AI a cloudové služby** | Firmy – AI a LECH Cloud na vlastnej alebo vyhradenej infraštruktúre | Spolu s firemným pilotom |
+| **LECH OS pre tablety** | Firmy a jednotlivci | Po telefónoch; rovnaký systém, iný Device Support Package |
+| **Vlastné telefóny LECH** | Všetky skupiny | Fáza A+ (partnerský výrobca), potom B ([ADR-0001](adr/0001-obchodna-cesta.md)) |
+
+## Kľúčové oblasti
+
+| Oblasť | Čo prináša | Dokument |
+|--------|------------|----------|
+| **LECH AI Assistant** | Systémový asistent, nie chatbot – ovláda telefón, pracuje s dokumentmi, vybavuje úlohy, funguje bez internetu | [docs/04](04-lech-ai.md) |
+| **LECH Privacy Control** | Jeden prehľad: mikrofón, kamera, poloha, kam a koľko údajov odchádza; internet zakázaný jedným dotykom | [docs/12](12-lech-privacy-control.md) |
+| **LECH Identity** | Vlastná identita bez povinného konta Google; synchronizácia a záloha sú dobrovoľné | [docs/06](06-lech-store-a-cloud.md#lech-identity) |
 
 ## Pre koho
 
@@ -25,10 +52,10 @@ a spôsob overenia, ktorý pobeží automaticky v CI alebo pri každom vydaní.
 | # | Princíp | Požiadavka v praxi | Ako to overíme |
 |---|---------|--------------------|----------------|
 | P1 | Súkromie na prvom mieste | Čerstvo nainštalované zariadenie neodošle bez súhlasu žiadne osobné údaje. Povolené sú len nevyhnutné spojenia (kontrola aktualizácií bez identifikátora zariadenia, synchronizácia času, kontrola pripojenia) – všetky na naše alebo používateľom zvolené servery. | Automatický **audit sieťovej prevádzky pri prvom spustení** (emulátor + zachytávanie prevádzky) pri každom vydaní. Akékoľvek nové spojenie zastaví vydanie. |
-| P2 | Žiadne povinné konto | Sprievodca prvým spustením sa dá prejsť bez vytvorenia akéhokoľvek konta. Všetky funkcie systému fungujú bez konta; konto (LECH ID) je potrebné len pre LECH Cloud. | Automatický test sprievodcu „bez konta“. |
+| P2 | Žiadne povinné konto | Sprievodca prvým spustením sa dá prejsť bez vytvorenia akéhokoľvek konta. Všetky funkcie systému fungujú bez konta; konto (LECH Identity) je potrebné len pre dobrovoľné služby LECH Cloud. | Automatický test sprievodcu „bez konta“. |
 | P3 | Žiadne údaje na reklamné účely | V systéme neexistuje reklamný identifikátor. Systémové aplikácie neobsahujú reklamné ani analytické knižnice tretích strán. Zmluvy s partnermi reklamné využitie zakazujú. | Skener knižníc (detekcia známych trackerov) nad všetkými systémovými APK. |
 | P4 | Žiadne marketingové sledovanie | Telemetria je predvolene vypnutá. Ak ju používateľ zapne, je anonymná a jej schéma je verejne zdokumentovaná. | Revízia kódu + verejná dokumentácia schémy telemetrie. |
-| P5 | Používateľ rozhoduje o odchode údajov | Každá aplikácia má povolenie „Sieť“ (dá sa vypnúť). Panel **„Odchod údajov“** ukazuje, ktoré systémové služby a AI požiadavky poslali údaje mimo telefón. | Testy povolení + kontrola, že každá sieťová funkcia systémových služieb sa zapisuje do panelu. |
+| P5 | Používateľ rozhoduje o odchode údajov | Každá aplikácia má povolenie „Sieť“ (dá sa vypnúť). **LECH Privacy Control** ukazuje, kam a koľko údajov posiela každá aplikácia, systémové služby aj AI ([docs/12](12-lech-privacy-control.md)). | Laboratórne meranie mimo telefónu: každé zachytené spojenie musí byť v telefóne priradené aplikácii alebo službe. |
 | P6 | Integrovaná AI | LECH AI je systémová služba, nie len aplikácia. Základné funkcie fungujú bez internetu. Citlivé akcie vyžadujú súhlas. | Testovacia sada príkazov v režime lietadlo; testy pravidiel súhlasu (pozri [spec/ai-akcie.yaml](../spec/ai-akcie.yaml)). |
 | P7 | Kompatibilita s Android aplikáciami | Aplikácie bežia na natívnom Android runtime (ART). Kompatibilitu meriame na zozname najpoužívanejších aplikácií v SK/CZ. | Automatizovaný kompatibilitný test (inštalácia, spustenie, základné scenáre) – výsledky verejne. |
 | P8 | Dlhodobá podpora | Mesačné bezpečnostné aktualizácie. Každé podporované zariadenie má **vopred zverejnený dátum konca podpory**. | Sledovanie oneskorenia záplat (počet dní od zverejnenia v AOSP po vydanie v LECH OS). |

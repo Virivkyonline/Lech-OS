@@ -34,7 +34,8 @@ zakazane_pre_ai:
   - platby a bankové operácie
   - inštalácia a odinštalovanie aplikácií
   - udeľovanie a odoberanie oprávnení aplikáciám
-  - vypnutie panelu „Odchod údajov“ alebo zmena pravidiel súhlasu
+  - vypnutie LECH Privacy Control (panel „Odchod údajov“) alebo zmena pravidiel súhlasu
+  - ovládanie rozhrania bankových, platobných a autentifikačných aplikácií, správcov hesiel a nastavení zabezpečenia
 
 akcie:
 
@@ -103,6 +104,34 @@ akcie:
     riziko: R1
     suhlas: povolenie_zdroja   # povolenie platí len pre jedno použitie
     udaje: [D2]
+    siet: nikdy
+    vratne: true
+
+  # --- Dokumenty ---
+
+  - id: dokument.citat
+    popis: Prečíta dokument (PDF, kancelársky dokument) na zhrnutie alebo odpoveď na otázku.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  - id: obrazok.rozpoznat_text
+    popis: Rozpozná text na fotografii dokumentu (OCR) priamo v telefóne.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  - id: dokument.vytiahnut_udaje
+    popis: >
+      Vytiahne z dokumentu štruktúrované údaje (napr. suma, IBAN, splatnosť faktúry).
+      Výsledok je len návrh – nikdy sa automaticky nepoužije na platbu.
+    riziko: R1
+    suhlas: povolenie_zdroja
+    udaje: [D1]
     siet: nikdy
     vratne: true
 
@@ -187,6 +216,28 @@ akcie:
     udaje: []
     siet: nikdy
     vratne: true
+
+  - id: pripomienka.vytvorit
+    popis: Vytvorí pripomienku na konkrétny čas (napr. deň pred splatnosťou faktúry).
+    riziko: R2
+    suhlas: potvrdenie_pri_vytvoreni
+    udaje: [D1]
+    siet: nikdy
+    vratne: true
+
+  # --- Ovládanie aplikácií ---
+  # Akcie, ktoré zverejnia aplikácie cez SDK, deklarujú vlastné riziko a nie sú v tomto katalógu.
+
+  - id: aplikacia.ovladat_rozhranie
+    popis: >
+      Ovládanie rozhrania aplikácie tretej strany (klikanie, vypĺňanie), ak aplikácia nemá vlastné akcie.
+      Používateľ schváli plán úlohy s náhľadom; nevratný krok potvrdzuje samostatne; počas ovládania
+      je zobrazený indikátor a tlačidlo na zastavenie. Zakázané pre aplikácie zo zoznamu zakazane_pre_ai.
+    riziko: R3
+    suhlas: vzdy_potvrdit_s_nahladom
+    udaje: [D2]
+    siet: nikdy
+    vratne: false
 
   # --- Kalendár a notifikácie ---
 

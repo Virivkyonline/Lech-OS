@@ -1,4 +1,4 @@
-# 06 – LECH Store a LECH Cloud
+# 06 – LECH Store, LECH Cloud a LECH Identity
 
 ## LECH Store
 
@@ -47,7 +47,7 @@ Dlhodobým cieľom je, aby čo najviac vývojárov zverejňovalo aplikácie pria
 
 | Služba | Protokol | Šifrovanie | Vlastný server? |
 |--------|----------|------------|-----------------|
-| LECH ID (konto) | OpenID Connect | – | – |
+| LECH Identity (konto) | OpenID Connect + passkeys | Kľúče pre E2E služby vznikajú v telefóne | Pre firmy: prepojenie s firemnou identitou |
 | Kontakty | CardDAV | Prenos TLS; voliteľne E2E v ďalšej verzii | Áno |
 | Kalendár | CalDAV | Prenos TLS; voliteľne E2E v ďalšej verzii | Áno |
 | Záloha telefónu | Vlastný formát nad WebDAV / S3 | **E2E – kľúč má len používateľ** | Áno |
@@ -60,7 +60,30 @@ Dlhodobým cieľom je, aby čo najviac vývojárov zverejňovalo aplikácie pria
 > Pri E2E šifrovaní kontaktov a kalendára treba nájsť rovnováhu medzi súkromím a kompatibilitou
 > so štandardnými klientmi (CardDAV/CalDAV šifrovanie obsahu štandardne nepodporujú). Rozhodneme v samostatnom ADR.
 
-### Obchodný model cloudu (návrh na diskusiu)
+## LECH Identity
+
+Vlastná identita používateľa **bez povinného konta Google ani žiadneho iného konta**. Telefón funguje úplne bez nej;
+LECH Identity je potrebná len pre dobrovoľné služby (synchronizácia, záloha, hľadanie telefónu, predplatné).
+
+### Zásady
+
+| Zásada | V praxi |
+|--------|---------|
+| **Dobrovoľnosť** | Žiadna funkcia systému nevyžaduje konto. Konto sa dá kedykoľvek zrušiť a údaje vymazať. |
+| **Minimum údajov** | Konto môže byť bez mena aj bez e-mailu: náhodné číslo konta + kľúč na obnovenie. E-mail je voliteľný (na obnovu a faktúry). |
+| **Prihlásenie bez hesla** | Passkeys (FIDO2 / WebAuthn) viazané na bezpečnostný čip telefónu; heslo len ako záloha. |
+| **Kľúče patria používateľovi** | Kľúče na šifrovanie zálohy a súborov vznikajú v telefóne. Server ich nikdy nedostane v čitateľnej podobe – ani my k údajom nemáme prístup. |
+| **Obnova** | Kľúč na obnovenie (vytlačiteľný kód) alebo druhé zariadenie. Bez nich sa šifrované údaje obnoviť nedajú – používateľ o tom vie vopred. |
+| **Žiadne sledovanie** | Konto sa nepoužíva na profilovanie ani reklamu a nie je prepojené s inými službami. |
+| **Otvorené štandardy** | OpenID Connect – rovnakou identitou sa dá prihlásiť aj do vlastného servera firmy alebo do služieb partnerov, ak to používateľ chce. |
+
+### Pre firmy
+
+- Prepojenie s firemnou identitou (OpenID Connect / SAML) – zamestnanec sa prihlási firemným kontom, správca zariadení
+  ([ADR-0007](adr/0007-prvy-trh-firmy.md)) priradí politiky.
+- Pracovný profil s firemnou identitou, osobný profil bez nej – firma nevidí do osobnej časti telefónu.
+
+## Obchodný model cloudu (návrh na diskusiu)
 
 | Úroveň | Obsah |
 |--------|-------|

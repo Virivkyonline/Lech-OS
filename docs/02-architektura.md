@@ -73,7 +73,7 @@ a **GKI – Generic Kernel Image** (spoločné jadro + moduly výrobcu). Pravidl
 | `lech.ai.runtime` | Beh lokálnych AI modelov | **Nie** | Izolovaný proces, len výpočet |
 | `lech.ai.policy` | Rozhoduje, či akcia smie prebehnúť a či treba súhlas | **Nie** | Deterministický kód, nie AI |
 | `lech.ai.gateway` | Volanie cloudových AI poskytovateľov | Áno – len po súhlase | Jediný AI proces so sieťou; všetko zapisuje do panelu „Odchod údajov“ |
-| `lech.guard` | Bezpečnostné politiky, kontrola aplikácií, panel odchodu údajov | Nie | Pozri [docs/05](05-lech-security.md) |
+| `lech.guard` | Bezpečnostné politiky, kontrola aplikácií, LECH Privacy Control | Nie | Pozri [docs/05](05-lech-security.md) a [docs/12](12-lech-privacy-control.md) |
 | `lech.compat` | Voliteľná vrstva kompatibility s Google službami | Podľa voľby používateľa | Pozri [docs/03](03-nezavislost-od-google.md) |
 | `lech.sync` | Kontakty a kalendár (CardDAV/CalDAV) | Áno | Voliteľný server: LECH Cloud alebo vlastný |
 | `lech.backup` | Šifrovaná záloha | Áno | Kľúč má len používateľ |
