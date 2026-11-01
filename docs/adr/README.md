@@ -14,11 +14,13 @@ zmení, vznikne nový ADR, ktorý pôvodný **nahrádza**, a pôvodný dostane s
 
 | ADR | Názov | Stav |
 |-----|-------|------|
-| [0001](0001-obchodna-cesta.md) | Obchodná cesta: A → A+ → B | Navrhnuté |
-| [0002](0002-zaklad-systemu-aosp.md) | Základ systému: AOSP bez GMS | Navrhnuté |
-| [0003](0003-kompatibilita-google-sluzieb.md) | Kompatibilita s Google službami | Navrhnuté |
-| [0004](0004-nezavislost-od-ai-poskytovatela.md) | Nezávislosť od poskytovateľa AI | Navrhnuté |
-| [0005](0005-vyvojove-zariadenie.md) | Vývojové zariadenia | Navrhnuté |
+| [0001](0001-obchodna-cesta.md) | Obchodná cesta: A → A+ → B | Prijaté |
+| [0002](0002-zaklad-systemu-aosp.md) | Základ systému: AOSP bez GMS | Prijaté |
+| [0003](0003-kompatibilita-google-sluzieb.md) | Kompatibilita s Google službami | Prijaté |
+| [0004](0004-nezavislost-od-ai-poskytovatela.md) | Nezávislosť od poskytovateľa AI | Prijaté |
+| [0005](0005-vyvojove-zariadenie.md) | Vývojové zariadenia: Cuttlefish, Pixel, Fairphone | Prijaté |
+| [0006](0006-licencia-otvoreny-kod.md) | Licencia: otvorený kód | Prijaté |
+| [0007](0007-prvy-trh-firmy.md) | Prvý trh: pilot pre firmy + komunitná verzia | Prijaté |
 
 ## Šablóna
 

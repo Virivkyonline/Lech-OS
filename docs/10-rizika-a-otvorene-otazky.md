@@ -15,13 +15,20 @@
 | R9 | **Koniec podpory firmvéru výrobcom** skôr, ako sme sľúbili zákazníkom | Stredná | Stredný | Sľubovať dobu podpory len do konca podpory firmvéru výrobcom; zverejniť dátum vopred |
 | R10 | **Bezpečnostný incident** (podvrhnutá aktualizácia, únik kľúča) zničí dôveru | Nízka | Kritický | Offline kľúče v HSM, dve osoby pri podpise, reprodukovateľné zostavy, nezávislé audity |
 
-## Rozhodnutia, ktoré čakajú na vlastníka projektu
+## Prijaté rozhodnutia
+
+| # | Otázka | Rozhodnutie | Dátum |
+|---|--------|-------------|-------|
+| O1 | Obchodná cesta | **A → A+ → B** ([ADR-0001](adr/0001-obchodna-cesta.md)) | 2026-11-01 |
+| O2 | Licencia kódu | **Otvorený kód** – Apache 2.0 pre systém, AGPL v3 pre servery ([ADR-0006](adr/0006-licencia-otvoreny-kod.md)) | 2026-11-01 |
+| O3 | Prvý cieľový trh | **Pilot pre firmy a organizácie** + komunitná verzia ([ADR-0007](adr/0007-prvy-trh-firmy.md)) | 2026-11-01 |
+| – | Vývojové zariadenia | **Cuttlefish**, potom Pixel ([ADR-0005](adr/0005-vyvojove-zariadenie.md)) | 2026-11-01 |
+| – | Základ systému, Google služby, AI | ADR [0002](adr/0002-zaklad-systemu-aosp.md), [0003](adr/0003-kompatibilita-google-sluzieb.md), [0004](adr/0004-nezavislost-od-ai-poskytovatela.md) | 2026-11-01 |
+
+## Rozhodnutia, ktoré ešte čakajú na vlastníka projektu
 
 | # | Otázka | Možnosti | Odporúčanie | Prečo je dôležitá teraz |
 |---|--------|----------|-------------|-------------------------|
-| O1 | **Obchodná cesta** | A / B / A → A+ → B | **A → A+ → B** ([ADR-0001](adr/0001-obchodna-cesta.md)) | Ovplyvňuje rozpočet, tím aj výber prvého zariadenia |
-| O2 | **Licencia kódu** | Otvorený / čiastočne otvorený / uzavretý | Otvorený kód systému a klientskych aplikácií | Ovplyvňuje štruktúru repozitárov, obchodný model aj dôveru používateľov |
-| O3 | **Prvý cieľový trh** | Spotrebitelia (B2C) / firmy a verejná správa (B2B) / oboje | Začať s **B2B pilotom** (menší počet zariadení, vyššia marža, ochota platiť za súkromie a podporu) + komunitná verzia pre jednotlivcov | Ovplyvňuje priority funkcií (napr. správa zariadení vs. obchod s aplikáciami) |
 | O4 | **Financovanie** | Vlastné zdroje / granty EÚ / investori | Kombinácia: granty EÚ na výskum (súkromie, AI, digitálna suverenita) + investor po verejnom prototype | Určuje veľkosť tímu a tempo |
 | O5 | **Finálny názov** | „LECH OS“ alebo iný | Overiť ochrannú známku pred investíciou do značky | Premenovanie po spustení je drahé |
 | O6 | **Jazyky pri spustení** | SK / SK + CZ / SK + CZ + EN | SK + CZ + EN | Ovplyvňuje výber a doladenie AI modelov |
@@ -29,9 +36,13 @@
 
 ## Čo ďalej (najbližšie kroky)
 
-1. Potvrdiť alebo upraviť ADR 0001–0005.
-2. Rozhodnúť otázky O2 a O3.
-3. Zostaviť zoznam 200 cieľových aplikácií pre SK a CZ a zoznam bánk na oslovenie.
-4. Overiť ochrannú známku „LECH OS“.
-5. Pripraviť zostavovacie prostredie a začať etapu 2 na Cuttlefish; kúpiť 2× Pixel.
+1. **Zabezpečiť zostavovací server** (64+ GB RAM, 400+ GB disk, KVM) – bez neho etapa 2 nezačne
+   ([docs/11](11-etapa-2-cuttlefish.md#1-zostavovací-server)).
+2. Zostaviť a spustiť čisté AOSP na Cuttlefish a urobiť sieťový audit (úlohy E2-01 až E2-03).
+3. Zostaviť zoznam 200 cieľových aplikácií pre SK a CZ – vrátane firemných aplikácií ([ADR-0007](adr/0007-prvy-trh-firmy.md)) –
+   a zoznam bánk na oslovenie.
+4. Overiť a zaregistrovať ochrannú známku „LECH OS“ (pri otvorenom kóde je to hlavná ochrana značky).
+5. Začať hľadať 1–3 pilotné organizácie.
 6. Začať prototyp LECH AI ako bežnú aplikáciu na overenie lokálnych modelov v slovenčine.
+7. Kúpiť 2× Pixel po zvládnutí úloh E2-02 až E2-06 na Cuttlefish.
+8. Rozhodnúť otázku O4 (financovanie) – určuje veľkosť tímu.

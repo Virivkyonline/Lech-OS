@@ -1,6 +1,6 @@
 # ADR-0001: Obchodná cesta – najprv vlastný OS (A), architektúra pripravená na vlastný telefón (B)
 
-- **Stav:** Navrhnuté – čaká na potvrdenie vlastníkom projektu
+- **Stav:** Prijaté (2026-11-01)
 - **Dátum:** 2026-10-31
 
 ## Kontext

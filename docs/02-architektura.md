@@ -153,6 +153,9 @@ Od etapy 2 pribudnú ďalšie repozitáre:
 | `lech-cloud` | Backendové služby a infraštruktúra ako kód |
 | `lech-ci` | Zostavovacie a testovacie pipeline, audit sieťovej prevádzky, kompatibilitné testy |
 
+Licencie repozitárov určuje [ADR-0006](adr/0006-licencia-otvoreny-kod.md): všetko, čo beží v telefóne, je pod Apache 2.0
+(jadro pod GPL v2), serverové časti `lech-cloud` a backend `lech-store` pod AGPL v3.
+
 Podpisové kľúče **nikdy nie sú v žiadnom repozitári** – pozri [docs/05](05-lech-security.md#správa-kľúčov).
 
 ## Zostavovacia infraštruktúra

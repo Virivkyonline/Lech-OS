@@ -4,8 +4,9 @@
 > má zabudovanú umelú inteligenciu fungujúcu primárne priamo v telefóne a nie je závislý od Google, Apple ani
 > od jedného poskytovateľa AI.
 
-**Stav projektu:** Etapa 1 – architektúra a návrh systému. Repozitár zatiaľ obsahuje len dokumentáciu
-a návrhové rozhodnutia. Kód pribudne od etapy 2 (vlastná zostava AOSP).
+**Stav projektu:** Etapa 1 (architektúra a návrh) je uzavretá – kľúčové rozhodnutia sú prijaté (ADR 0001–0007).
+Začína **etapa 2: vlastná zostava AOSP na virtuálnom zariadení Cuttlefish** – postup je v
+[docs/11-etapa-2-cuttlefish.md](docs/11-etapa-2-cuttlefish.md).
 
 ---
 
@@ -47,9 +48,11 @@ aby sa dalo kedykoľvek zmerať, či ho systém naozaj spĺňa.
 | 07 | [Testovacie zariadenia](docs/07-zariadenia.md) | Porovnanie Pixel / Fairphone / Nothing a odporúčanie |
 | 08 | [Plán etáp](docs/08-plan-etap.md) | 9 etáp, výstupy, kritériá dokončenia, paralelné pracovné prúdy |
 | 09 | [Právo, regulácia a licencie](docs/09-pravo-a-licencie.md) | Licencie AOSP/Linux, ochranné známky, GDPR, CRA, AI Act |
-| 10 | [Riziká a otvorené otázky](docs/10-rizika-a-otvorene-otazky.md) | Hlavné riziká, zmiernenie, rozhodnutia, ktoré čakajú na vlastníka |
+| 10 | [Riziká a otvorené otázky](docs/10-rizika-a-otvorene-otazky.md) | Hlavné riziká, zmiernenie, prijaté a otvorené rozhodnutia |
+| 11 | [Etapa 2: štart na Cuttlefish](docs/11-etapa-2-cuttlefish.md) | Zostavovací server, inštalácia Cuttlefish, zostavenie AOSP, sieťový audit, úlohy etapy 2 |
 | –  | [Katalóg AI akcií](spec/ai-akcie.yaml) | Strojovo čitateľný zoznam akcií LECH AI s úrovňami rizika a súhlasu |
 | –  | [Validátor katalógu](tools/validate_ai_actions.py) | Kontrola, že žiadna akcia neobchádza pravidlá súhlasu: `python3 tools/validate_ai_actions.py` |
+| –  | [Kontrola zostavovacieho servera](tools/check_build_host.sh) | Overí RAM, disk, KVM a nástroje pred etapou 2: `tools/check_build_host.sh` |
 
 ## Kľúčové rozhodnutia (ADR)
 
@@ -57,19 +60,23 @@ Zásadné rozhodnutia zapisujeme ako *Architecture Decision Records* do [docs/ad
 
 | ADR | Rozhodnutie | Stav |
 |-----|-------------|------|
-| [0001](docs/adr/0001-obchodna-cesta.md) | Obchodná cesta: najprv **A** (vlastný OS na podporovaných telefónoch), architektúra pripravená na **B** (vlastný telefón) | Navrhnuté – čaká na potvrdenie |
-| [0002](docs/adr/0002-zaklad-systemu-aosp.md) | Základ systému: čisté AOSP bez GMS, vlastné podpisové kľúče, preberanie overených open-source komponentov | Navrhnuté |
-| [0003](docs/adr/0003-kompatibilita-google-sluzieb.md) | Google služby: v systéme žiadne; voliteľne „Google Play v sandboxe“ ako bežná aplikácia bez privilégií | Navrhnuté |
-| [0004](docs/adr/0004-nezavislost-od-ai-poskytovatela.md) | AI: lokálne modely ako predvolené, poskytovatelia zameniteľní cez jedno rozhranie | Navrhnuté |
-| [0005](docs/adr/0005-vyvojove-zariadenie.md) | Vývoj: virtuálne zariadenie Cuttlefish + Google Pixel; Fairphone ako druhá platforma | Navrhnuté |
+| [0001](docs/adr/0001-obchodna-cesta.md) | Obchodná cesta: najprv **A** (vlastný OS na podporovaných telefónoch), architektúra pripravená na **B** (vlastný telefón) | Prijaté |
+| [0002](docs/adr/0002-zaklad-systemu-aosp.md) | Základ systému: čisté AOSP bez GMS, vlastné podpisové kľúče, preberanie overených open-source komponentov | Prijaté |
+| [0003](docs/adr/0003-kompatibilita-google-sluzieb.md) | Google služby: v systéme žiadne; voliteľne „Google Play v sandboxe“ ako bežná aplikácia bez privilégií | Prijaté |
+| [0004](docs/adr/0004-nezavislost-od-ai-poskytovatela.md) | AI: lokálne modely ako predvolené, poskytovatelia zameniteľní cez jedno rozhranie | Prijaté |
+| [0005](docs/adr/0005-vyvojove-zariadenie.md) | Vývoj: virtuálne zariadenie Cuttlefish + Google Pixel; Fairphone ako druhá platforma | Prijaté |
+| [0006](docs/adr/0006-licencia-otvoreny-kod.md) | Otvorený kód: Apache 2.0 pre systém, AGPL v3 pre servery, značka chránená | Prijaté |
+| [0007](docs/adr/0007-prvy-trh-firmy.md) | Prvý trh: pilot pre firmy a organizácie + komunitná verzia pre jednotlivcov | Prijaté |
 
-## Zhrnutie odporúčaní v skratke
+## Prijaté rozhodnutia v skratke
 
 - **Obchodná cesta:** začať cestou **A**, s medzikrokom **A+** (predaj telefónov s predinštalovaným LECH OS
   od partnerského výrobcu). Vlastný hardvér (**B**) až po overení záujmu trhu. Architektúra to umožní vďaka
   oddeleniu všetkého, čo je špecifické pre zariadenie, do *Device Support Package*.
-- **Prvý telefón:** Google Pixel (odomknuteľný a znovu zamknuteľný bootloader s vlastnými kľúčmi, hardvérový
-  bezpečnostný čip, 7 rokov aktualizácií od Pixel 8). Popri ňom virtuálne zariadenie Cuttlefish na rýchly vývoj.
+- **Vývojové zariadenia:** najprv virtuálne zariadenie **Cuttlefish**, potom Google Pixel (odomknuteľný a znovu
+  zamknuteľný bootloader s vlastnými kľúčmi, hardvérový bezpečnostný čip, 7 rokov aktualizácií od Pixel 8).
+- **Otvorený kód:** systém a aplikácie pod Apache 2.0, serverové služby pod AGPL v3, názov a logo chránené ochrannou známkou.
+- **Prvý trh:** pilot pre 1–3 firmy alebo organizácie (20–100 zariadení) a paralelne bezplatná komunitná verzia.
 - **Kompatibilita aplikácií:** reálne dosiahnuteľná pre veľkú väčšinu aplikácií. Najväčšie riziko sú bankové
   aplikácie a platby cez NFC, ktoré vyžadujú certifikáciu Google (Play Integrity). Toto riziko je pomenované
   a má vlastný plán – pozri [docs/03](docs/03-nezavislost-od-google.md#play-integrity--najväčšie-riziko-kompatibility).
@@ -82,3 +89,9 @@ Zásadné rozhodnutia zapisujeme ako *Architecture Decision Records* do [docs/ad
 - Každé zásadné rozhodnutie dostane nový ADR (šablóna v [docs/adr/README.md](docs/adr/README.md)).
 - Tvrdenia o externých faktoch (stav AOSP, legislatíva, podpora zariadení) majú v dokumentoch uvedený zdroj
   a dátum overenia, pretože sa rýchlo menia.
+- Podrobnosti pre prispievateľov sú v [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Licencia
+
+Obsah tohto repozitára je pod licenciou [Apache 2.0](LICENSE). Licencie ostatných častí projektu určuje
+[ADR-0006](docs/adr/0006-licencia-otvoreny-kod.md). Názov a logo LECH nie sú súčasťou licencie.

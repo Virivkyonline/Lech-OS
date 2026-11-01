@@ -14,23 +14,25 @@
 | AI modely | Rôzne, často vlastné licencie | Každý model posúdiť jednotlivo; preferujeme Apache 2.0 / MIT |
 | Kód z iných open-source projektov | Podľa projektu | Pred prebratím overiť licenciu konkrétneho repozitára; dodržať povinnosti uvádzania autorstva |
 
-### Otvorená otázka: licencia kódu LECH OS
+### Licencia kódu LECH OS – rozhodnuté
 
-Rozhodnutie čaká na vlastníka (pozri [docs/10](10-rizika-a-otvorene-otazky.md)). Možnosti:
+LECH OS je **otvorený projekt** ([ADR-0006](adr/0006-licencia-otvoreny-kod.md)):
 
-- **Otvorený kód** systému – zvyšuje dôveru (súkromie sa dá overiť), uľahčuje audit a spoluprácu; obchodný model
-  stojí na službách, podpore, zariadeniach a firemných zákazníkoch.
-- **Čiastočne otvorený** – systém otvorený, niektoré služby (napr. backend Store, firemná správa) uzavreté.
-- **Uzavretý** – ťažšie presvedčiť používateľov o súkromí; časti pod GPL musia byť aj tak otvorené.
+- systém, systémové služby, aplikácie, SDK a nástroje: **Apache 2.0**,
+- jadro Linux: **GPL v2**,
+- serverové komponenty LECH Cloud a LECH Store: **AGPL v3**,
+- názov a logo: chránené ochrannou známkou, nie sú súčasťou licencie kódu,
+- externé príspevky: **DCO** (`Signed-off-by`), pozri [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-Odporúčanie: **otvorený kód systému a klientskych aplikácií**, pri produkte postavenom na dôvere v súkromie je to
-výrazná výhoda.
+Obchodný model stojí na službách (LECH Cloud, AI servery), podpore, firemných zákazníkoch a neskôr na zariadeniach.
 
 ## Ochranné známky
 
 - **„Android“ je ochranná známka Google.** Nesmie byť súčasťou názvu produktu. Formulácie typu „spúšťa Android aplikácie“
   posúdiť podľa pravidiel Google pre používanie značky.
 - Názov **LECH OS** (alebo finálny názov) overiť v databázach EUIPO a ÚPV SR a zaregistrovať pred verejným prototypom.
+  Pri otvorenom kóde je ochranná známka hlavný nástroj, ako zabrániť, aby sa odnože vydávali za LECH OS.
+- Pripraviť pravidlá používania značky (trademark policy) – kedy smie komunita používať názov LECH.
 - Názvy iných projektov (napr. GrapheneOS) nepoužívať v produkte; pri prebratí kódu uviesť autorstvo podľa licencie.
 
 ## Ochrana osobných údajov (GDPR)

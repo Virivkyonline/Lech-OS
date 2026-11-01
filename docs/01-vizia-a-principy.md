@@ -14,8 +14,8 @@ systému, rozumie funkciám telefónu a pracuje primárne lokálne.
 | Firmy a organizácie | Kontrola nad firemnými údajmi, súlad s GDPR, nezávislosť od amerických cloudov | Vlastná alebo európska infraštruktúra, AI bez odosielania dát tretím stranám |
 | Verejná správa a citlivé profesie | Overiteľná bezpečnosť, audit, dlhodobá podpora | Zamknutý bootloader s vlastnými kľúčmi, nezávislý audit, transparentné aktualizácie |
 
-> Firemný a inštitucionálny trh (B2B) môže byť pre prvý komerčný produkt vhodnejší ako masový spotrebiteľský trh –
-> pozri otvorené otázky v [docs/10](10-rizika-a-otvorene-otazky.md).
+> **Rozhodnuté ([ADR-0007](adr/0007-prvy-trh-firmy.md)):** prvým komerčným produktom je pilot pre firmy a organizácie.
+> Jednotlivci dostanú paralelne bezplatnú komunitnú verziu s rovnakým kódom.
 
 ## Princípy ako overiteľné požiadavky
 

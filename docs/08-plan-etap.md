@@ -59,13 +59,17 @@ a prototyp AI vzniká už počas etapy 2.
 
 ### Etapa 1 – Architektúra a návrh systému
 
+**Stav: kľúčové rozhodnutia prijaté 1. 11. 2026** (ADR 0001–0007). Zostáva: zoznam cieľových aplikácií, ochranná známka, odhad tímu a rozpočtu.
+
 | | |
 |---|---|
 | **Cieľ** | Zhoda na architektúre, rozhodnutiach a pláne |
-| **Výstupy** | Tento repozitár: vízia, architektúra, ADR 0001–0005, katalóg AI akcií, model hrozieb; zoznam 200 cieľových aplikácií; overenie názvu a ochrannej známky; odhad tímu a rozpočtu |
-| **Hotové, keď** | ADR 0001–0005 sú prijaté; je rozhodnuté o licencii kódu a cieľovom trhu ([docs/10](10-rizika-a-otvorene-otazky.md)) |
+| **Výstupy** | Tento repozitár: vízia, architektúra, ADR 0001–0007, katalóg AI akcií, model hrozieb; zoznam 200 cieľových aplikácií; overenie názvu a ochrannej známky; odhad tímu a rozpočtu |
+| **Hotové, keď** | ADR 0001–0007 sú prijaté ✅; zoznam cieľových aplikácií a overenie ochrannej známky sú hotové |
 
 ### Etapa 2 – Vlastná zostava AOSP
+
+Postup a zoznam úloh: [docs/11 – štart na Cuttlefish](11-etapa-2-cuttlefish.md).
 
 | | |
 |---|---|
@@ -86,7 +90,7 @@ a prototyp AI vzniká už počas etapy 2.
 | | |
 |---|---|
 | **Cieľ** | Funkcie súkromia, ktoré bežný Android nemá |
-| **Výstupy** | Povolenia Sieť a Senzory; rozsahy kontaktov a úložiska; panel „Odchod údajov“; lokálny skener aplikácií; spevnenie systému; interná bezpečnostná revízia |
+| **Výstupy** | Povolenia Sieť a Senzory; rozsahy kontaktov a úložiska; panel „Odchod údajov“; lokálny skener aplikácií; spevnenie systému; **základ správy firemných zariadenií** (device owner, pracovný profil, zriadenie cez QR kód – [ADR-0007](adr/0007-prvy-trh-firmy.md)); interná bezpečnostná revízia |
 | **Hotové, keď** | Všetky funkcie z [docs/05](05-lech-security.md) majú automatické testy a prešli internou revíziou |
 
 ### Etapa 5 – Integrácia AI
@@ -102,7 +106,7 @@ a prototyp AI vzniká už počas etapy 2.
 | | |
 |---|---|
 | **Cieľ** | Používateľ si vie nainštalovať aplikácie bez Google |
-| **Výstupy** | Klient LECH Store; kurátorský katalóg; automatická kontrola aplikácií; štítky súkromia; beta portál pre vývojárov |
+| **Výstupy** | Klient LECH Store; kurátorský katalóg; automatická kontrola aplikácií; štítky súkromia; beta portál pre vývojárov; **správcovský server pre firmy** (zoznam schválených aplikácií, politiky zariadení) |
 | **Hotové, keď** | Katalóg pokrýva bežné potreby (komunikácia, mapy, prehliadač, kancelária, médiá) a aktualizácie fungujú automaticky |
 
 ### Etapa 7 – Testovanie Android aplikácií
@@ -118,15 +122,15 @@ a prototyp AI vzniká už počas etapy 2.
 | | |
 |---|---|
 | **Cieľ** | Spätná väzba od reálnych používateľov |
-| **Výstupy** | Beta program (napr. 100–500 testerov); webový inštalátor; dokumentácia; **nezávislý bezpečnostný audit**; bug bounty; pravidlá zverejňovania zraniteľností |
-| **Hotové, keď** | Audit neodhalil neopravené kritické zraniteľnosti; spokojnosť testerov a stabilita dosiahli dohodnuté hodnoty |
+| **Výstupy** | **Pilot pre 1–3 organizácie (20–100 zariadení)**; komunitný beta program (napr. 100–500 testerov); webový inštalátor; dokumentácia; **nezávislý bezpečnostný audit**; bug bounty; pravidlá zverejňovania zraniteľností |
+| **Hotové, keď** | Audit neodhalil neopravené kritické zraniteľnosti; pilotné organizácie a testeri potvrdili stabilitu a použiteľnosť v dohodnutých hodnotách |
 
 ### Etapa 9 – Príprava komerčného produktu
 
 | | |
 |---|---|
 | **Cieľ** | Produkt, ktorý sa dá predávať a podporovať |
-| **Výstupy** | Súlad s CRA a ďalšou reguláciou ([docs/09](09-pravo-a-licencie.md)); zákaznícka podpora; cenník a predplatné LECH Cloud; distribúcia (inštalátor, predinštalované telefóny – cesta A+); partnerstvá; druhý nezávislý audit |
+| **Výstupy** | Súlad s CRA a ďalšou reguláciou ([docs/09](09-pravo-a-licencie.md)); zmluvy a SLA pre firemných zákazníkov; zákaznícka podpora; cenník a predplatné LECH Cloud; distribúcia (inštalátor, predinštalované telefóny – cesta A+); partnerstvá; druhý nezávislý audit |
 | **Hotové, keď** | Prvý platiaci zákazník dostane telefón alebo inštaláciu so zmluvne garantovanou dobou podpory |
 
 ## Tím (orientačne)

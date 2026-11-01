@@ -1,6 +1,6 @@
 # ADR-0004: Nezávislosť od poskytovateľa AI
 
-- **Stav:** Navrhnuté
+- **Stav:** Prijaté (2026-11-01)
 - **Dátum:** 2026-10-31
 
 ## Kontext
