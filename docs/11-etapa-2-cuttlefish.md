@@ -4,6 +4,44 @@ Prvým „zariadením“ LECH OS je **Cuttlefish** – virtuálny telefón, ktor
 ([ADR-0005](adr/0005-vyvojove-zariadenie.md)). Beží na Linux serveri, ovláda sa cez prehliadač a hodí sa na
 automatické testy. Fyzický Pixel príde na rad, až keď zvládneme celý cyklus na Cuttlefish.
 
+## Rýchly štart na notebooku
+
+Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/etapa2](../tools/etapa2).
+
+1. **Ubuntu 24.04 LTS** nainštalované priamo na notebooku a v BIOS/UEFI zapnutá **virtualizácia**
+   (Intel VT-x alebo AMD-V / SVM).
+2. **Stiahnuť repozitár** (ak je súkromný, Git si vypýta prihlásenie do GitHubu – heslo nahrádza osobný token):
+
+   ```bash
+   sudo apt install -y git
+   git clone -b claude/lech-os-vision-tudkiw https://github.com/Virivkyonline/Lech-OS.git
+   cd Lech-OS
+   ```
+
+3. **Príprava notebooku** – balíky, Cuttlefish, DNS pre virtuálny telefón, skupiny, nástroj `repo`:
+
+   ```bash
+   tools/etapa2/01-priprava-notebooku.sh            # pri 32 GB RAM pridajte: --swap 32
+   sudo reboot
+   ```
+
+4. **Kontrola pripravenosti:** `tools/check_build_host.sh`
+5. **Vyskúšať čisté AOSP** (bez zostavovania, stiahne hotové obrazy):
+
+   ```bash
+   tools/etapa2/02-ciste-aosp.sh                    # obrazovka telefónu: https://localhost:1443
+   cvd remove                                       # po vyskúšaní odstrániť
+   ```
+
+6. **Sieťový audit prvého spustenia** (úloha E2-03, trvá približne 40 minút):
+
+   ```bash
+   tools/etapa2/03-sietovy-audit.sh
+   git add audit/ && git commit -m "Audit prvého spustenia čistého AOSP" && git push
+   ```
+
+7. Potom **zostavenie zo zdrojových kódov** (časť 3) – stiahne stovky GB a prvé zostavenie trvá hodiny.
+
 ## 1. Zostavovací počítač
 
 Na zostavenie stačí **server alebo dostatočne vybavený notebook či stolný počítač**. Rozhoduje RAM, rýchly disk
@@ -144,11 +182,21 @@ napr. `ssh -L 1443:localhost:1443 server`). Staršie príkazy `launch_cvd` a `st
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
 
-1. Spustiť čisté AOSP na Cuttlefish s vymazanými údajmi.
-2. Na hostiteľovi zachytávať prevádzku na sieťových rozhraniach, ktoré Cuttlefish vytvorí (zobrazí ich `ip link`
-   po spustení), napr. `sudo tcpdump -i <rozhranie> -w prve-spustenie.pcap`.
-3. Prejsť sprievodcom prvého spustenia, nechať telefón 30 minút v pokoji, pripojiť a odpojiť sieť.
-4. Z DNS dopytov a spojení vytvoriť zoznam cieľov a porovnať ho so zoznamom povolených cieľov.
+Celý postup robí skript `tools/etapa2/03-sietovy-audit.sh`:
+
+1. Odstráni existujúce virtuálne telefóny, aby audit začínal od čistého prvého spustenia.
+2. **Ešte pred štartom telefónu** spustí záznam prevádzky na sieťach virtuálneho telefónu
+   (192.168.93.x – 192.168.99.x, podľa konfigurácie `cuttlefish-base`). Prevádzka samotného notebooku sa nezaznamenáva.
+3. Vytvorí čerstvý telefón – z hotových obrazov AOSP, alebo s parametrom `--lokalna-zostava` z vlastnej zostavy.
+4. Zaznamenáva 30 minút (`--minuty N`), potom záznam ukončí a telefón odstráni (`--ponechat` ho nechá bežať).
+5. Analýza (`tools/etapa2/analyzuj_audit.py`, používa `tshark`) vytvorí správu `audit/<dátum>-prve-spustenie/sprava.md`
+   a `sprava.json`: domény z DNS, TLS a HTTP, cieľové IP adresy a porty, čas prvého spojenia. Porovná ich so
+   zoznamom povolených spojení [spec/povolene-spojenia.txt](../spec/povolene-spojenia.txt).
+
+> **Testovacie prostredie:** Cuttlefish predvolene prideľuje virtuálnemu telefónu DNS servery Google (8.8.8.8).
+> Prípravný skript ich mení na Quad9 (9.9.9.9) v súbore `/etc/default/cuttlefish-host-resources`, aby audit
+> nemiešal správanie Androidu s nastavením testovacieho prostredia. Ak telefón použije šifrované DNS (port 853),
+> názvy domén v správe pochádzajú z TLS, HTTP a reverzného DNS.
 
 Kandidáti, ktorých očakávame (z verejne známej konfigurácie AOSP – **potvrdí až audit**):
 

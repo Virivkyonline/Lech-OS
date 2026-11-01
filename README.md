@@ -61,7 +61,9 @@ aby sa dalo kedykoľvek zmerať, či ho systém naozaj spĺňa.
 | 14 | [Aktualizácie a dlhodobá podpora](docs/14-aktualizacie-a-podpora.md) | Záväzky, mesačný proces, tím a náklady, povinnosti EÚ, overenie v etape 2 |
 | –  | [Katalóg AI akcií](spec/ai-akcie.yaml) | Strojovo čitateľný zoznam akcií LECH AI s úrovňami rizika a súhlasu |
 | –  | [Validátor katalógu](tools/validate_ai_actions.py) | Kontrola, že žiadna akcia neobchádza pravidlá súhlasu: `python3 tools/validate_ai_actions.py` |
-| –  | [Kontrola zostavovacieho servera](tools/check_build_host.sh) | Overí RAM, disk, KVM a nástroje pred etapou 2: `tools/check_build_host.sh` |
+| –  | [Kontrola zostavovacieho počítača](tools/check_build_host.sh) | Overí RAM, disk, KVM a nástroje pred etapou 2: `tools/check_build_host.sh` |
+| –  | [Skripty etapy 2](tools/etapa2) | Príprava notebooku, čisté AOSP z hotových obrazov, sieťový audit prvého spustenia – [rýchly štart](docs/11-etapa-2-cuttlefish.md#rýchly-štart-na-notebooku) |
+| –  | [Povolené spojenia](spec/povolene-spojenia.txt) | Zoznam spojení, ktoré LECH OS smie nadviazať; audit všetko ostatné označí ako neznáme |
 
 ## Kľúčové rozhodnutia (ADR)
 

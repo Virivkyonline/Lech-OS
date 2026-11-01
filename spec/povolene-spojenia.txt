@@ -1,0 +1,15 @@
+# Povolené spojenia LECH OS pri prvom spustení a v pokoji (princíp P1, docs/01).
+# Používa ho tools/etapa2/analyzuj_audit.py: všetko, čo tu nie je, sa v správe označí ako NEZNÁME.
+#
+# Formát: jedna položka na riadok
+#   doména      – platí aj pre všetky jej subdomény (napr. lech-os.example povolí aj update.lech-os.example)
+#   IP/rozsah   – napr. 9.9.9.9 alebo 10.0.0.0/8
+# Text za znakom # je komentár.
+#
+# Pre čisté AOSP (východiskový audit E2-03) je zoznam zámerne takmer prázdny – správa ukáže všetko.
+# Spojenia LECH OS (aktualizácie, čas, kontrola pripojenia) sem pribudnú v úlohe E2-06.
+
+# Testovacie prostredie: DNS servery, ktoré Cuttlefish na notebooku prideľuje virtuálnemu telefónu
+# (nastavuje tools/etapa2/01-priprava-notebooku.sh). Nie sú súčasťou LECH OS.
+9.9.9.9
+149.112.112.112
