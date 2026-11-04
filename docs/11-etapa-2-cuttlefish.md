@@ -294,6 +294,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
    --product_path` s parametrami `--ril_dns` a vo WSL `--enable_sandbox=false` (spoločná časť je v
    `tools/etapa2/lib-cuttlefish.sh`); obrazy sa stiahnu raz do `~/lech-work/images`.
 
+6. Stiahnutie zdrojových kódov AOSP (`android-latest-release`, `--depth=1`) za približne 30 minút pri 626 Mbit/s:
+   **139 GB** v `~/aosp`. Servery Google počas sťahovania odmietli 3 projekty s `RESOURCE_EXHAUSTED` (kvóta pre
+   anonymné sťahovanie z jednej IP adresy); druhý pokus s menším počtom úloh ich hneď stiahol. Prihlásenie
+   do Google nebolo potrebné.
+
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
 pretože ide o prevádzku notebooku, nie telefónu.
