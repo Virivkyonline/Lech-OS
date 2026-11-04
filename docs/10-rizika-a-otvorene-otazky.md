@@ -31,7 +31,7 @@
 
 | # | Otázka | Možnosti | Odporúčanie | Prečo je dôležitá teraz |
 |---|--------|----------|-------------|-------------------------|
-| O4 | **Financovanie** | Vlastné zdroje / granty EÚ / investori | Kombinácia: granty EÚ na výskum (súkromie, AI, digitálna suverenita) + investor po verejnom prototype | Určuje veľkosť tímu a tempo |
+| O4 | **Financovanie** | Vlastné zdroje / granty EÚ / investori | Kombinácia: granty EÚ na výskum (súkromie, AI, digitálna suverenita) + investor po verejnom prototype; návrh fáz a nákladov v [docs/15](15-podnikatelsky-plan.md#10-náklady-a-financovanie-p) | Určuje veľkosť tímu a tempo |
 | O5 | **Finálny názov** | „LECH OS“ zostáva pracovným názvom | Ochrannú známku a dostupnosť názvu preveriť pred komerčným uvedením; predbežnú rešerš odporúčame pred verejným prototypom | Premenovanie po spustení je drahé |
 | O6 | **Jazyky pri spustení** | SK / SK + CZ / SK + CZ + EN | SK + CZ + EN | Ovplyvňuje výber a doladenie AI modelov |
 | O7 | **Režim Google pri prvom spustení** | Ponúknuť „Google Play v sandboxe“ priamo v sprievodcovi / len v nastaveniach | V sprievodcovi, s jasným vysvetlením ([ADR-0003](adr/0003-kompatibilita-google-sluzieb.md)) | Zásadne mení prvý dojem a kompatibilitu |

@@ -59,6 +59,7 @@ aby sa dalo kedykoľvek zmerať, či ho systém naozaj spĺňa.
 | 12 | [LECH Privacy Control](docs/12-lech-privacy-control.md) | Prehľad súkromia, technické sledovanie prevádzky po aplikáciách, nezávislé overenie |
 | 13 | [Bankové aplikácie](docs/13-bankove-aplikacie.md) | Cieľové banky SK, testovací protokol, hardvérová atestácia, postup rokovaní |
 | 14 | [Aktualizácie a dlhodobá podpora](docs/14-aktualizacie-a-podpora.md) | Záväzky, mesačný proces, tím a náklady, povinnosti EÚ, overenie v etape 2 |
+| 15 | [Podnikateľský plán](docs/15-podnikatelsky-plan.md) | Pracovná verzia: trh, obchodný model, konkurencia, uvedenie na trh, náklady a financovanie (predpoklady na overenie) |
 | –  | [Katalóg AI akcií](spec/ai-akcie.yaml) | Strojovo čitateľný zoznam akcií LECH AI s úrovňami rizika a súhlasu |
 | –  | [Validátor katalógu](tools/validate_ai_actions.py) | Kontrola, že žiadna akcia neobchádza pravidlá súhlasu: `python3 tools/validate_ai_actions.py` |
 | –  | [Kontrola zostavovacieho počítača](tools/check_build_host.sh) | Overí RAM, disk, KVM a nástroje pred etapou 2: `tools/check_build_host.sh` |
