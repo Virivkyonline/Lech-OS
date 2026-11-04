@@ -54,17 +54,29 @@ fi
 cd "$AOSP_DIR"
 LOG="$AOSP_DIR/../aosp-sync-$(date +%Y%m%d-%H%M%S).log"
 
+# Run a command, show its output on the terminal and append it to $LOG.
+# repo hides its progress meter when stdout is not a terminal (e.g. piped into tee), so `script`
+# gives it a pseudo-terminal; the exit code of the command is preserved (--return).
+logged() {
+  if command -v script >/dev/null 2>&1; then
+    script --quiet --return --append --command "$(printf '%q ' "$@")" "$LOG"
+  else
+    "$@" 2>&1 | tee -a "$LOG"
+    return "${PIPESTATUS[0]}"
+  fi
+}
+
 if [ ! -d .repo ]; then
   echo "Inicializujem zdrojové kódy AOSP ($BRANCH) v $AOSP_DIR…"
-  repo init -u "$MANIFEST_URL" -b "$BRANCH" "${DEPTH_ARGS[@]}" 2>&1 | tee -a "$LOG"
+  logged repo init -u "$MANIFEST_URL" -b "$BRANCH" "${DEPTH_ARGS[@]}" || die "repo init zlyhal – pozri $LOG"
 else
   echo "Pokračujem v sťahovaní do $AOSP_DIR (repo už je inicializované)."
 fi
 
 echo "Sťahujem zdrojové kódy (${JOBS} súbežných úloh). Môže to trvať niekoľko hodín; log: $LOG"
-if ! repo sync -c --no-tags -j"$JOBS" 2>&1 | tee -a "$LOG"; then
+if ! logged repo sync -c --no-tags -j"$JOBS"; then
   echo "Sťahovanie zlyhalo – skúšam znova s menším počtom úloh…" | tee -a "$LOG"
-  repo sync -c --no-tags -j4 2>&1 | tee -a "$LOG" || die "Sťahovanie zlyhalo. Spustite skript znova – pokračuje tam, kde skončil. Log: $LOG"
+  logged repo sync -c --no-tags -j4 || die "Sťahovanie zlyhalo. Spustite skript znova – pokračuje tam, kde skončil. Log: $LOG"
 fi
 
 echo
