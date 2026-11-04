@@ -14,12 +14,21 @@ die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
 command -v cvd >/dev/null 2>&1 || die "Chýba príkaz cvd – najprv spustite tools/etapa2/01-priprava-notebooku.sh a reštartujte počítač."
 [ -r /dev/kvm ] && [ -w /dev/kvm ] || die "Nie je prístup k /dev/kvm – zapnite virtualizáciu v BIOS/UEFI a po príprave reštartujte počítač."
 
+# crosvm's sandbox (minijail) cannot set up its mounts under WSL, so it is disabled there.
+# Override with LECH_CF_SANDBOX=1 (force on) or LECH_CF_SANDBOX=0 (force off).
+VM_JSON=""
+if [ "${LECH_CF_SANDBOX:-}" = "0" ] || { [ -z "${LECH_CF_SANDBOX:-}" ] && grep -qi microsoft /proc/version 2>/dev/null; }; then
+  VM_JSON='"vm": { "crosvm": { "enable_sandbox": false } },'
+  echo "Sandbox crosvm je vypnutý (WSL alebo LECH_CF_SANDBOX=0)."
+fi
+
 mkdir -p "$WORK"
 cat > "$WORK/spec.json" <<EOF
 {
   "instances": [
     {
       "name": "aosp-baseline",
+      $VM_JSON
       "disk": {
         "default_build": "$BUILD"
       }

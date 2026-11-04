@@ -80,11 +80,19 @@ kill -0 "$TCPDUMP_PID" 2>/dev/null || die "Záznam sa nespustil – pozri $WORK/
 echo "Vytváram čerstvý virtuálny telefón…"
 if [ "$LOCAL_BUILD" -eq 1 ]; then
   SOURCE="lokálna zostava ($(basename "$ANDROID_PRODUCT_OUT"))"
-  cvd create
+  if [ "${LECH_CF_SANDBOX:-}" = "0" ] || { [ -z "${LECH_CF_SANDBOX:-}" ] && grep -qi microsoft /proc/version 2>/dev/null; }; then
+    cvd create --enable_sandbox=false
+  else
+    cvd create
+  fi
 else
   SOURCE="hotové obrazy $BUILD"
+  VM_JSON=""
+  if [ "${LECH_CF_SANDBOX:-}" = "0" ] || { [ -z "${LECH_CF_SANDBOX:-}" ] && grep -qi microsoft /proc/version 2>/dev/null; }; then
+    VM_JSON='"vm": { "crosvm": { "enable_sandbox": false } },'   # minijail mounts fail under WSL
+  fi
   cat > "$WORK/spec.json" <<EOF
-{ "instances": [ { "name": "audit", "disk": { "default_build": "$BUILD" } } ] }
+{ "instances": [ { "name": "audit", $VM_JSON "disk": { "default_build": "$BUILD" } } ] }
 EOF
   (cd "$WORK" && cvd create --config_file=spec.json)
 fi
