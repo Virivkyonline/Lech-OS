@@ -58,7 +58,7 @@ a virtualizácia KVM.
 | Architektúra | x86_64 (Intel / AMD) | x86_64 |
 | Operačný systém | Linux (Ubuntu / Debian) nainštalovaný priamo | Ubuntu LTS |
 | RAM | 24 GB + 32 GB swap (pomalšie, menej súbežných úloh; napr. WSL na notebooku s 32 GB) | 64 GB a viac (oficiálne odporúčanie Google) |
-| Voľné miesto na disku | 400 GB SSD | 1 TB NVMe |
+| Voľné miesto na disku | 300 GB SSD (zdrojové kódy bez histórie + jedna zostava, tesne) | 400 GB a viac; 1 TB NVMe |
 | Procesor | 8 jadier | 16+ jadier |
 | Virtualizácia | KVM (`/dev/kvm`) zapnutá v BIOS/UEFI | – |
 
@@ -103,7 +103,9 @@ Na zostavovanie vlastného LECH OS odporúčame Ubuntu priamo na disku (napr. na
 
    Zmena platí po `wsl --shutdown` a novom otvorení Ubuntu.
 5. **Disk:** disk Ubuntu vo WSL je súbor na disku C: vo Windows, preto rozhoduje voľné miesto na C:
-   (na zostavenie aspoň 400 GB). `tools/check_build_host.sh` ho vo WSL kontroluje.
+   (na zostavenie aspoň 300 GB pri sťahovaní bez histórie). `tools/check_build_host.sh` ho vo WSL kontroluje.
+   Disk WSL sám od seba nezmenšuje, keď sa v Ubuntu niečo zmaže. Voliteľne ho to naučíte v PowerShell:
+   `wsl --manage Ubuntu-24.04 --set-sparse true` (pri vypnutom WSL).
 6. **Obmedzenie:** Cuttlefish potrebuje okrem `/dev/kvm` aj zariadenia `/dev/vhost-vsock` a `/dev/vhost-net`.
    Ak ich jadro WSL neposkytuje, `tools/check_build_host.sh` to označí – vtedy je potrebné Ubuntu priamo na disku.
 7. **Sandbox crosvm:** vo WSL zlyhá izolácia virtuálneho stroja (minijail: `cannot mount '/usr/lib' …

@@ -13,7 +13,8 @@ set -u
 BUILD_MIN_RAM_GB=24       # with >= 32 GB swap and fewer parallel jobs (e.g. WSL on a 32 GB notebook); Google recommends 64 GB
 BUILD_MIN_TOTAL_GB=56     # RAM + swap needed when RAM is below BUILD_GOOD_RAM_GB
 BUILD_GOOD_RAM_GB=64
-BUILD_MIN_DISK_GB=400
+BUILD_MIN_DISK_GB=300     # shallow checkout (04-stiahni-aosp.sh default) + one Cuttlefish build; tight
+BUILD_GOOD_DISK_GB=400    # official figure for full sources with history
 RUN_MIN_RAM_GB=16
 RUN_MIN_DISK_GB=50
 GOOD_CPUS=16
@@ -82,8 +83,10 @@ fi
 target_dir=${AOSP_DIR:-$PWD}
 disk_gb=$(df -Pk "$target_dir" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
 disk_gb=${disk_gb:-0}
-if [ "$disk_gb" -ge "$BUILD_MIN_DISK_GB" ]; then
+if [ "$disk_gb" -ge "$BUILD_GOOD_DISK_GB" ]; then
   pass "Voľné miesto v $target_dir: ${disk_gb} GB"
+elif [ "$disk_gb" -ge "$BUILD_MIN_DISK_GB" ]; then
+  warn "Voľné miesto v $target_dir: ${disk_gb} GB – stačí pri sťahovaní bez histórie (tools/etapa2/04-stiahni-aosp.sh), ale tesne"
 elif [ "$disk_gb" -ge "$RUN_MIN_DISK_GB" ]; then
   bad "Voľné miesto v $target_dir: ${disk_gb} GB – na zostavenie treba ${BUILD_MIN_DISK_GB} GB; na hotové obrazy stačí (cieľový priečinok nastavíte premennou AOSP_DIR)"
   build_ok=0
@@ -97,8 +100,10 @@ if [ "$in_wsl" -eq 1 ]; then
   # The WSL virtual disk is a file on the Windows drive (C: by default), so that drive's free space is the real limit.
   win_gb=$(df -Pk /mnt/c 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
   if [ -n "${win_gb:-}" ]; then
-    if [ "$win_gb" -ge "$BUILD_MIN_DISK_GB" ]; then
+    if [ "$win_gb" -ge "$BUILD_GOOD_DISK_GB" ]; then
       pass "Voľné miesto na disku C: vo Windows (tam leží disk WSL): ${win_gb} GB"
+    elif [ "$win_gb" -ge "$BUILD_MIN_DISK_GB" ]; then
+      warn "Voľné miesto na disku C: vo Windows: ${win_gb} GB – stačí pri sťahovaní bez histórie, ale tesne; nechajte Windows aspoň 30 GB voľných"
     elif [ "$win_gb" -ge "$RUN_MIN_DISK_GB" ]; then
       bad "Voľné miesto na disku C: vo Windows: ${win_gb} GB – disk WSL tam leží, na zostavenie treba ${BUILD_MIN_DISK_GB} GB"
       build_ok=0
