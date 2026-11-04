@@ -51,7 +51,7 @@ a virtualizácia KVM.
 |-----------|---------|------------|
 | Architektúra | x86_64 (Intel / AMD) | x86_64 |
 | Operačný systém | Linux (Ubuntu / Debian) nainštalovaný priamo | Ubuntu LTS |
-| RAM | 32 GB + 32 GB swap (pomalšie, menej súbežných úloh) | 64 GB a viac (oficiálne odporúčanie Google) |
+| RAM | 24 GB + 32 GB swap (pomalšie, menej súbežných úloh; napr. WSL na notebooku s 32 GB) | 64 GB a viac (oficiálne odporúčanie Google) |
 | Voľné miesto na disku | 400 GB SSD | 1 TB NVMe |
 | Procesor | 8 jadier | 16+ jadier |
 | Virtualizácia | KVM (`/dev/kvm`) zapnutá v BIOS/UEFI | – |
@@ -87,19 +87,20 @@ Na zostavovanie vlastného LECH OS odporúčame Ubuntu priamo na disku (napr. na
 2. V Ubuntu pracujte v domovskom priečinku (`cd ~`), nie v `/mnt/c/...` – priečinky Windows sú vo WSL pomalé.
 3. **Reštart Ubuntu** (napr. po pridaní do skupín) sa robí v PowerShell príkazom `wsl --shutdown`
    a opätovným otvorením Ubuntu, nie reštartom Windows.
-4. **RAM:** WSL predvolene dostane polovicu RAM počítača. Limit sa dá zvýšiť v súbore
-   `C:\Users\<meno>\.wslconfig`, napr. pri 32 GB RAM:
+4. **RAM:** WSL predvolene dostane polovicu RAM počítača. Na zostavovanie pri 32 GB RAM dajte WSL 24 GB
+   a 32 GB swap (Windows zostane 8 GB – počas zostavovania nespúšťajte náročné aplikácie). V PowerShell:
 
-   ```ini
-   [wsl2]
-   memory=24GB
-   swap=32GB
+   ```powershell
+   "[wsl2]`nmemory=24GB`nswap=32GB" | Set-Content -Encoding ASCII "$env:USERPROFILE\.wslconfig"
+   wsl --shutdown
    ```
 
-   Zmena platí po `wsl --shutdown`.
-5. **Obmedzenie:** Cuttlefish potrebuje okrem `/dev/kvm` aj zariadenia `/dev/vhost-vsock` a `/dev/vhost-net`.
+   Zmena platí po `wsl --shutdown` a novom otvorení Ubuntu.
+5. **Disk:** disk Ubuntu vo WSL je súbor na disku C: vo Windows, preto rozhoduje voľné miesto na C:
+   (na zostavenie aspoň 400 GB). `tools/check_build_host.sh` ho vo WSL kontroluje.
+6. **Obmedzenie:** Cuttlefish potrebuje okrem `/dev/kvm` aj zariadenia `/dev/vhost-vsock` a `/dev/vhost-net`.
    Ak ich jadro WSL neposkytuje, `tools/check_build_host.sh` to označí – vtedy je potrebné Ubuntu priamo na disku.
-6. **Sandbox crosvm:** vo WSL zlyhá izolácia virtuálneho stroja (minijail: `cannot mount '/usr/lib' …
+7. **Sandbox crosvm:** vo WSL zlyhá izolácia virtuálneho stroja (minijail: `cannot mount '/usr/lib' …
    Invalid argument`, potom `VIRTUAL_DEVICE_BOOT_FAILED`). Skripty `02-ciste-aosp.sh` a `03-sietovy-audit.sh`
    ju preto vo WSL vypínajú (`"vm": {"crosvm": {"enable_sandbox": false}}`). Pre testovací telefón je to prijateľné;
    na Ubuntu priamo na disku zostáva sandbox zapnutý. Prepísať sa to dá premennou `LECH_CF_SANDBOX=0` alebo `1`.

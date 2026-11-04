@@ -10,7 +10,8 @@
 
 set -u
 
-BUILD_MIN_RAM_GB=32       # works with swap and fewer parallel jobs; Google recommends 64 GB
+BUILD_MIN_RAM_GB=24       # with >= 32 GB swap and fewer parallel jobs (e.g. WSL on a 32 GB notebook); Google recommends 64 GB
+BUILD_MIN_TOTAL_GB=56     # RAM + swap needed when RAM is below BUILD_GOOD_RAM_GB
 BUILD_GOOD_RAM_GB=64
 BUILD_MIN_DISK_GB=400
 RUN_MIN_RAM_GB=16
@@ -60,10 +61,11 @@ has_ram() { [ "$ram_kb" -ge $(( $1 * 1024 * 1024 * 9 / 10 )) ]; }
 if has_ram "$BUILD_GOOD_RAM_GB"; then
   pass "RAM: ${ram_gb} GB"
 elif has_ram "$BUILD_MIN_RAM_GB"; then
-  if [ $(( ram_kb + swap_kb )) -ge $(( BUILD_GOOD_RAM_GB * 1024 * 1024 * 9 / 10 )) ]; then
+  if [ $(( ram_kb + swap_kb )) -ge $(( BUILD_MIN_TOTAL_GB * 1024 * 1024 * 9 / 10 )) ]; then
     warn "RAM: ${ram_gb} GB + swap ${swap_gb} GB – zostavenie pôjde, pomalšie; zostavujte s menším počtom úloh (napr. m -j8)"
   else
-    warn "RAM: ${ram_gb} GB, swap ${swap_gb} GB – pred zostavením zväčšite swap aspoň na $(( BUILD_GOOD_RAM_GB - ram_gb )) GB a zostavujte s menším počtom úloh"
+    bad "RAM: ${ram_gb} GB, swap ${swap_gb} GB – pred zostavením zväčšite swap aspoň na $(( BUILD_MIN_TOTAL_GB - ram_gb )) GB (vo WSL v súbore .wslconfig, docs/11)"
+    build_ok=0
   fi
 elif has_ram "$RUN_MIN_RAM_GB"; then
   bad "RAM: ${ram_gb} GB – na zostavenie AOSP nestačí (minimum ${BUILD_MIN_RAM_GB} GB); na spustenie hotových obrazov Cuttlefish stačí"
@@ -91,7 +93,20 @@ else
 fi
 rota=$(lsblk -dno ROTA "$(df -P "$target_dir" 2>/dev/null | awk 'NR==2 {print $1}')" 2>/dev/null | head -1 | tr -d ' ')
 if [ "$in_wsl" -eq 1 ]; then
-  warn "Vo WSL je disk virtuálny – typ disku (SSD/HDD) sa nedá zistiť, voľné miesto závisí od disku C: vo Windows"
+  warn "Vo WSL je disk virtuálny – typ disku (SSD/HDD) sa nedá zistiť"
+  # The WSL virtual disk is a file on the Windows drive (C: by default), so that drive's free space is the real limit.
+  win_gb=$(df -Pk /mnt/c 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
+  if [ -n "${win_gb:-}" ]; then
+    if [ "$win_gb" -ge "$BUILD_MIN_DISK_GB" ]; then
+      pass "Voľné miesto na disku C: vo Windows (tam leží disk WSL): ${win_gb} GB"
+    elif [ "$win_gb" -ge "$RUN_MIN_DISK_GB" ]; then
+      bad "Voľné miesto na disku C: vo Windows: ${win_gb} GB – disk WSL tam leží, na zostavenie treba ${BUILD_MIN_DISK_GB} GB"
+      build_ok=0
+    else
+      bad "Voľné miesto na disku C: vo Windows: ${win_gb} GB – nestačí ani na hotové obrazy"
+      build_ok=0; run_ok=0
+    fi
+  fi
 elif [ "${rota:-}" = "1" ]; then
   warn "Disk je rotačný (HDD) – zostavenie bude veľmi pomalé, odporúčaný je NVMe SSD"
 fi

@@ -59,7 +59,7 @@ Android začal komunikovať 20,5 s od začiatku záznamu; všetko pred tým patr
 | `www.gstatic.com` | TCP/443 | áno | áno | **Android** – zložku treba určiť | Najväčší prenos (64 paketov) |
 | `g.co` | TCP/443 | áno | áno | **Android** – zložku treba určiť | Doména Google na krátke odkazy |
 | `dns.google` (8.8.8.8) | TCP/853, UDP/443 | áno | **nie** | Testovacie prostredie | Šifrované DNS k Google – zmizlo po oprave DNS |
-| `dns.google` (8.8.8.8) | UDP/53 | áno | áno, 8 paketov v čase 0,0 s | Pravdepodobne router OpenWrt | Prichádza spolu s dopytmi routra na `openwrt.pool.ntp.org` (4 servery × IPv4 a IPv6 = 8); potvrdí stĺpec „Odkiaľ“ |
+| `dns.google` (8.8.8.8) | UDP/53 | áno | áno, 8 paketov v čase 0,0 s | Testovacie prostredie – **router OpenWrt (potvrdené)** | Dopyty routra na `openwrt.pool.ntp.org` (4 servery × IPv4 a IPv6 = 8); stĺpec „Odkiaľ“ ukazuje sieť Wi-Fi/router OpenWrt |
 | `9.9.9.9` | UDP/53, TCP/853 | – | áno | Testovacie prostredie | DNS Quad9, ktoré telefónu prideľujeme; Android ho sám prepol na šifrované |
 | `*.openwrt.pool.ntp.org` | UDP/123 | áno | áno | Testovacie prostredie | Čas virtuálneho routra |
 
@@ -74,7 +74,7 @@ službou zvolenou používateľom, alebo ho úplne vypneme.
 
 ### Ďalšie kroky
 
-1. Potvrdiť, že dopyty na `8.8.8.8` v čase 0,0 s pochádzajú z routra – analýza teraz pri každom cieli uvádza,
-   z ktorej siete paket odišiel (stĺpec „Odkiaľ“).
+1. ~~Potvrdiť, že dopyty na `8.8.8.8` v čase 0,0 s pochádzajú z routra~~ – **potvrdené 4. 11. 2026**: opätovná
+   analýza záznamu 2. auditu so stĺpcom „Odkiaľ“ ukázala sieť Wi-Fi/router OpenWrt. Android sám `8.8.8.8` nepoužil.
 2. Určiť, ktorá časť Androidu volá `www.gstatic.com` a `g.co` – zaznamenať prenosy podľa aplikácií (UID)
    priamo v telefóne počas auditu. To je zároveň prvý krok k [LECH Privacy Control](../docs/12-lech-privacy-control.md).
