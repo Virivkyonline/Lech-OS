@@ -40,7 +40,9 @@ if [ -r /etc/os-release ]; then
 else
   warn "Nepodarilo sa zistiť operačný systém"
 fi
+in_wsl=0
 if grep -qi microsoft /proc/version 2>/dev/null; then
+  in_wsl=1
   warn "Beží vo WSL (Windows) – zostavenie je možné, Cuttlefish vo WSL oficiálne podporovaný nie je"
 fi
 
@@ -65,6 +67,9 @@ elif has_ram "$BUILD_MIN_RAM_GB"; then
   fi
 elif has_ram "$RUN_MIN_RAM_GB"; then
   bad "RAM: ${ram_gb} GB – na zostavenie AOSP nestačí (minimum ${BUILD_MIN_RAM_GB} GB); na spustenie hotových obrazov Cuttlefish stačí"
+  if [ "$in_wsl" -eq 1 ]; then
+    warn "WSL predvolene dostane len polovicu RAM počítača – limit sa dá zvýšiť v súbore .wslconfig vo Windows (docs/11)"
+  fi
   build_ok=0
 else
   bad "RAM: ${ram_gb} GB – nestačí ani na spustenie Cuttlefish (minimum ${RUN_MIN_RAM_GB} GB)"
@@ -85,7 +90,11 @@ else
   build_ok=0; run_ok=0
 fi
 rota=$(lsblk -dno ROTA "$(df -P "$target_dir" 2>/dev/null | awk 'NR==2 {print $1}')" 2>/dev/null | head -1 | tr -d ' ')
-if [ "${rota:-}" = "1" ]; then warn "Disk je rotačný (HDD) – zostavenie bude veľmi pomalé, odporúčaný je NVMe SSD"; fi
+if [ "$in_wsl" -eq 1 ]; then
+  warn "Vo WSL je disk virtuálny – typ disku (SSD/HDD) sa nedá zistiť, voľné miesto závisí od disku C: vo Windows"
+elif [ "${rota:-}" = "1" ]; then
+  warn "Disk je rotačný (HDD) – zostavenie bude veľmi pomalé, odporúčaný je NVMe SSD"
+fi
 
 # Virtualization for Cuttlefish
 virt=$(grep -c -w -E 'vmx|svm' /proc/cpuinfo 2>/dev/null || true)
@@ -96,6 +105,17 @@ else
   bad "/dev/kvm neexistuje – Cuttlefish sa nespustí"
   run_ok=0
 fi
+# Cuttlefish (crosvm) needs vhost-vsock for adb and vhost-net for networking.
+for dev in vhost-vsock vhost-net; do
+  if [ -e "/dev/$dev" ]; then
+    pass "/dev/$dev je dostupné"
+  elif [ "$in_wsl" -eq 1 ]; then
+    bad "/dev/$dev chýba – skúste: sudo modprobe $(echo "$dev" | tr - _); ak to zlyhá, jadro WSL ho neposkytuje a treba Ubuntu priamo na disku"
+    run_ok=0
+  else
+    warn "/dev/$dev chýba – zvyčajne ho zapne inštalácia balíkov Cuttlefish (modul jadra $(echo "$dev" | tr - _))"
+  fi
+done
 
 # Cuttlefish user groups (after installing cuttlefish-base / cuttlefish-user)
 user_groups=" $(id -nG 2>/dev/null) "

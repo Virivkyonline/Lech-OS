@@ -77,6 +77,29 @@ Notebook môže byť zostavovací počítač, ak spĺňa minimum z tabuľky. Pra
 - Prvé úplné zostavenie potrvá na notebooku **niekoľko hodín**, ďalšie (inkrementálne) desiatky minút alebo menej.
   Notebook musí byť na sieti, dobre chladený a s vypnutým uspávaním.
 
+### Počítač s Windows: Ubuntu vo WSL
+
+Na vyskúšanie hotových obrazov a prvý sieťový audit sa dá použiť Ubuntu vo WSL, bez zásahu do Windows.
+Na zostavovanie vlastného LECH OS odporúčame Ubuntu priamo na disku (napr. na externom NVMe cez USB-C).
+
+1. V PowerShell (ako správca): `wsl --install -d Ubuntu-24.04`, potom reštart Windows a znova ten istý príkaz –
+   nainštaluje Ubuntu a vypýta si meno a heslo.
+2. V Ubuntu pracujte v domovskom priečinku (`cd ~`), nie v `/mnt/c/...` – priečinky Windows sú vo WSL pomalé.
+3. **Reštart Ubuntu** (napr. po pridaní do skupín) sa robí v PowerShell príkazom `wsl --shutdown`
+   a opätovným otvorením Ubuntu, nie reštartom Windows.
+4. **RAM:** WSL predvolene dostane polovicu RAM počítača. Limit sa dá zvýšiť v súbore
+   `C:\Users\<meno>\.wslconfig`, napr. pri 32 GB RAM:
+
+   ```ini
+   [wsl2]
+   memory=24GB
+   swap=32GB
+   ```
+
+   Zmena platí po `wsl --shutdown`.
+5. **Obmedzenie:** Cuttlefish potrebuje okrem `/dev/kvm` aj zariadenia `/dev/vhost-vsock` a `/dev/vhost-net`.
+   Ak ich jadro WSL neposkytuje, `tools/check_build_host.sh` to označí – vtedy je potrebné Ubuntu priamo na disku.
+
 ### Prečo nestačí bežný VPS
 
 Lacné virtuálne servery (VPS) majú spravidla málo RAM na zostavenie AOSP (16–24 GB) a hlavne **nesprístupňujú KVM**,

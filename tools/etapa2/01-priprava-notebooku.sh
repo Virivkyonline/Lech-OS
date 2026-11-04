@@ -71,7 +71,15 @@ fi
 info "dns_servers=${DNS_SERVERS} (súbor ${CF_DEFAULTS})"
 sudo systemctl restart cuttlefish-host-resources 2>/dev/null || info "Služba cuttlefish-host-resources sa reštartuje pri ďalšom štarte počítača"
 
-step "4/6 Skupiny používateľa pre Cuttlefish"
+step "4/6 Moduly jadra a skupiny používateľa pre Cuttlefish"
+for mod in vhost_vsock vhost_net; do
+  if sudo modprobe "$mod" 2>/dev/null; then
+    info "Modul $mod je načítaný"
+  else
+    info "Modul $mod sa nepodarilo načítať – vo WSL ho jadro nemusí poskytovať (tools/check_build_host.sh to overí)"
+  fi
+done
+printf 'vhost_vsock\nvhost_net\n' | sudo tee /etc/modules-load.d/lech-cuttlefish.conf >/dev/null
 sudo usermod -aG kvm,cvdnetwork,render "$USER"
 info "Používateľ $USER pridaný do skupín kvm, cvdnetwork, render (platí po reštarte)"
 
@@ -104,10 +112,16 @@ else
   info "Bez zmeny (pri 32 GB RAM spustite skript znova s --swap 32)"
 fi
 
-cat <<'EOF'
+if grep -qi microsoft /proc/version 2>/dev/null; then
+  RESTART="vo Windows PowerShell: wsl --shutdown, potom znova otvorte Ubuntu"
+else
+  RESTART="sudo reboot"
+fi
+
+cat <<EOF
 
 Hotovo. Ďalší postup:
-  1. Reštartujte počítač:              sudo reboot
+  1. Reštartujte (nové skupiny začnú platiť): ${RESTART}
   2. Overte pripravenosť:              tools/check_build_host.sh
   3. Spustite čisté AOSP na vyskúšanie: tools/etapa2/02-ciste-aosp.sh
   4. Sieťový audit prvého spustenia:   tools/etapa2/03-sietovy-audit.sh
