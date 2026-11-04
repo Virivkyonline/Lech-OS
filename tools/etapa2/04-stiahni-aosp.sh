@@ -74,9 +74,20 @@ else
 fi
 
 echo "Sťahujem zdrojové kódy (${JOBS} súbežných úloh). Môže to trvať niekoľko hodín; log: $LOG"
+quota_hit() { grep -aq "RESOURCE_EXHAUSTED" "$LOG" 2>/dev/null; }
+
 if ! logged repo sync -c --no-tags -j"$JOBS"; then
   echo "Sťahovanie zlyhalo – skúšam znova s menším počtom úloh…" | tee -a "$LOG"
-  logged repo sync -c --no-tags -j4 || die "Sťahovanie zlyhalo. Spustite skript znova – pokračuje tam, kde skončil. Log: $LOG"
+  if ! logged repo sync -c --no-tags -j2; then
+    if quota_hit; then
+      die "Servery Google dočasne obmedzili sťahovanie z vašej IP adresy (RESOURCE_EXHAUSTED – kvóta pre anonymné
+sťahovanie). Nič sa nestratilo; chýba len niekoľko projektov.
+  1. Počkajte 1–2 hodiny (kvóta sa obnoví).
+  2. Spustite znova pomalšie:  tools/etapa2/04-stiahni-aosp.sh --ulohy 2
+Skript stiahne len to, čo chýba. Log: $LOG"
+    fi
+    die "Sťahovanie zlyhalo. Spustite skript znova – pokračuje tam, kde skončil. Log: $LOG"
+  fi
 fi
 
 echo
