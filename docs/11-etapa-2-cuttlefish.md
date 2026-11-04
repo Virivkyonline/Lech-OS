@@ -299,6 +299,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
    anonymné sťahovanie z jednej IP adresy); druhý pokus s menším počtom úloh ich hneď stiahol. Prihlásenie
    do Google nebolo potrebné.
 
+7. Prvé zostavenie: analýza zostavy (Soong) trvala pri 23 GB RAM + 32 GB swap 12 minút (pamäť 97 %, disk 100 %),
+   potom začalo prekladanie (197 973 krokov). Po 229 krokoch zlyhalo s `future mtime` – hodiny WSL sa pri veľkom
+   zaťažení posunuli o 8 s späť a zostavovač (siso) odmietol práve zapísaný súbor. Nie je to chyba zostavenia;
+   `05-zostav-aosp.sh` po takejto chybe zostavenie automaticky spustí znova (najviac 5-krát, `LECH_CLOCK_RETRIES`).
+
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
 pretože ide o prevádzku notebooku, nie telefónu.

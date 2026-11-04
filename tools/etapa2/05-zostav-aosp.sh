@@ -8,7 +8,7 @@
 # Usage: tools/etapa2/05-zostav-aosp.sh [--ulohy N] [--spustit]
 #   --ulohy N   parallel build jobs (default 8; more needs more RAM)
 #   --spustit   start the built phone afterwards
-# Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work),
+# Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_CLOCK_RETRIES (default 5),
 #   LECH_PRODUCT (default aosp_cf_x86_64_only_phone), LECH_RELEASE (force a release config),
 #   LECH_VARIANT (default userdebug)
 
@@ -74,14 +74,30 @@ echo "Cieľ zostavenia: $TARGET"
 
 echo "Zostavujem (${JOBS} súbežných úloh). Prvé zostavenie trvá na notebooku niekoľko hodín; log: $LOG"
 SECONDS=0
-m -j"$JOBS" 2>&1 | tee -a "$LOG"
-status=${PIPESTATUS[0]}
+# Under heavy load the WSL clock can step backwards; the build then rejects freshly written files
+# ("future mtime"). Nothing is wrong with the build, so retry automatically a few times.
+MAX_CLOCK_RETRIES=${LECH_CLOCK_RETRIES:-5}
+attempt=0
+while :; do
+  start_bytes=$(stat -c %s "$LOG" 2>/dev/null || echo 0)
+  m -j"$JOBS" 2>&1 | tee -a "$LOG"
+  status=${PIPESTATUS[0]}
+  [ "$status" -eq 0 ] && break
+  if tail -c +$(( start_bytes + 1 )) "$LOG" | grep -aq "future mtime" && [ "$attempt" -lt "$MAX_CLOCK_RETRIES" ]; then
+    attempt=$(( attempt + 1 ))
+    echo
+    echo "Hodiny systému sa posunuli späť (future mtime) – to nie je chyba zostavenia. Pokračujem (pokus ${attempt}/${MAX_CLOCK_RETRIES})…" | tee -a "$LOG"
+    sleep 15
+    continue
+  fi
+  break
+done
 minutes=$(( SECONDS / 60 ))
 
 if [ "$status" -ne 0 ]; then
   echo
   echo "Zostavenie zlyhalo po ${minutes} min. Posledné chybové riadky:"
-  grep -aE "FAILED:|error:|Error " "$LOG" | tail -n 15
+  grep -aE "FAILED:|error:|Error |future mtime" "$LOG" | tail -n 15
   cat <<EOF
 
 Čo ďalej:
