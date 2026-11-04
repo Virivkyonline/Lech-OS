@@ -59,7 +59,7 @@ a spôsob overenia, ktorý pobeží automaticky v CI alebo pri každom vydaní.
 | P6 | Integrovaná AI | LECH AI je systémová služba, nie len aplikácia. Základné funkcie fungujú bez internetu. Citlivé akcie vyžadujú súhlas. | Testovacia sada príkazov v režime lietadlo; testy pravidiel súhlasu (pozri [spec/ai-akcie.yaml](../spec/ai-akcie.yaml)). |
 | P7 | Kompatibilita s Android aplikáciami | Aplikácie bežia na natívnom Android runtime (ART). Kompatibilitu meriame na zozname najpoužívanejších aplikácií v krajinách, kde LECH OS uvádzame ([ADR-0009](adr/0009-trh-eu.md)). | Automatizovaný kompatibilitný test (inštalácia, spustenie, základné scenáre) – výsledky verejne. |
 | P8 | Dlhodobá podpora | Mesačné bezpečnostné aktualizácie. Každé podporované zariadenie má **vopred zverejnený dátum konca podpory**. | Sledovanie oneskorenia záplat (počet dní od zverejnenia v AOSP po vydanie v LECH OS). |
-| P9 | Nezávislosť od Google, Apple a jedného AI poskytovateľa | Žiadna časť systému nesmie mať jediného nenahraditeľného dodávateľa. Každá externá závislosť má zdokumentovaný „plán odchodu“. | Register závislostí v repozitári; revízia pri každom ADR. |
+| P9 | Nezávislosť od Google, Apple a jedného AI poskytovateľa | Žiadna časť systému nesmie mať jediného nenahraditeľného dodávateľa. Každá externá závislosť má zdokumentovaný „plán odchodu“. | Register závislostí v repozitári ([docs/16](16-zavislosti-a-plan-odchodu.md)); revízia pri každom ADR. |
 
 ## Čo LECH OS nie je
 

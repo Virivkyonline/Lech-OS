@@ -60,6 +60,7 @@ aby sa dalo kedykoľvek zmerať, či ho systém naozaj spĺňa.
 | 13 | [Bankové aplikácie](docs/13-bankove-aplikacie.md) | Cieľové banky SK, testovací protokol, hardvérová atestácia, postup rokovaní |
 | 14 | [Aktualizácie a dlhodobá podpora](docs/14-aktualizacie-a-podpora.md) | Záväzky, mesačný proces, tím a náklady, povinnosti EÚ, overenie v etape 2 |
 | 15 | [Podnikateľský plán](docs/15-podnikatelsky-plan.md) | Pracovná verzia: trh, obchodný model, konkurencia, uvedenie na trh, náklady a financovanie (predpoklady na overenie) |
+| 16 | [Závislosti a plán odchodu](docs/16-zavislosti-a-plan-odchodu.md) | Register závislostí od Google a ďalších dodávateľov, čo sa vziať nedá, plán odchodu pre každú závislosť |
 | –  | [Katalóg AI akcií](spec/ai-akcie.yaml) | Strojovo čitateľný zoznam akcií LECH AI s úrovňami rizika a súhlasu |
 | –  | [Validátor katalógu](tools/validate_ai_actions.py) | Kontrola, že žiadna akcia neobchádza pravidlá súhlasu: `python3 tools/validate_ai_actions.py` |
 | –  | [Kontrola zostavovacieho počítača](tools/check_build_host.sh) | Overí RAM, disk, KVM a nástroje pred etapou 2: `tools/check_build_host.sh` |
