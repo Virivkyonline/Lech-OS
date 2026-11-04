@@ -6,7 +6,7 @@
 #
 # Usage: tools/etapa2/03-sietovy-audit.sh [--minuty N] [--lokalna-zostava] [--ponechat] [--ano]
 #   --minuty N          how long to record after the phone has booted (default 30)
-#   --lokalna-zostava   use the local build from the current terminal (after lunch + m) instead of prebuilt images
+#   --lokalna-zostava   use the local build (from 05-zostav-aosp.sh) instead of prebuilt images
 #   --ponechat          keep the phone running after the audit (default: remove it)
 #   --ano               do not ask before removing existing virtual phones
 
@@ -42,7 +42,7 @@ for c in cvd tcpdump tshark python3; do
 done
 [ -r /dev/kvm ] && [ -w /dev/kvm ] || die "Nie je prístup k /dev/kvm."
 if [ "$LOCAL_BUILD" -eq 1 ] && [ -z "${ANDROID_PRODUCT_OUT:-}" ]; then
-  die "--lokalna-zostava treba spustiť v termináli po 'source build/envsetup.sh', 'lunch' a 'm'."
+  lech_enter_build_env || die "Pre --lokalna-zostava treba najprv zostaviť systém (tools/etapa2/05-zostav-aosp.sh)."
 fi
 
 if [ "$YES" -ne 1 ]; then

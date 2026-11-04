@@ -46,7 +46,15 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
    tools/etapa2/04-stiahni-aosp.sh          # bez histórie (--depth=1), šetrí miesto; do ~/aosp
    ```
 
-8. Potom **zostavenie** (časť 3) – prvé zostavenie trvá na notebooku hodiny.
+8. **Prvé zostavenie** čistého AOSP z vlastných zdrojových kódov (na notebooku niekoľko hodín; po prerušení
+   pokračuje):
+
+   ```bash
+   tools/etapa2/05-zostav-aosp.sh --spustit   # zostaví a spustí telefón z vlastnej zostavy
+   ```
+
+   Skript sám nájde platný cieľ zostavenia (release konfigurácia sa medzi vetvami AOSP líši) a uloží ho
+   do `~/lech-work/lunch-target`. Audit vlastnej zostavy: `tools/etapa2/03-sietovy-audit.sh --lokalna-zostava`.
 
 ## 1. Zostavovací počítač
 

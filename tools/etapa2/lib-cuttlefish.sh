@@ -15,7 +15,34 @@
 LECH_BUILD="${LECH_BUILD:-aosp-android-latest-release/aosp_cf_x86_64_only_phone-userdebug}"
 LECH_IMAGES="${LECH_WORK:-$HOME/lech-work}/images/$(printf '%s' "$LECH_BUILD" | tr '/' '_')"
 
+LECH_TARGET_FILE="${LECH_WORK:-$HOME/lech-work}/lunch-target"   # written by 05-zostav-aosp.sh
+
 lech_in_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
+
+# Enter the environment of the local build saved by 05-zostav-aosp.sh
+# (sets ANDROID_HOST_OUT and ANDROID_PRODUCT_OUT, which `cvd create` uses).
+lech_enter_build_env() {
+  local aosp=${AOSP_DIR:-$HOME/aosp} target old_opts=$- rc=0
+  if [ ! -f "$LECH_TARGET_FILE" ]; then
+    echo "Chýba $LECH_TARGET_FILE – najprv zostavte systém: tools/etapa2/05-zostav-aosp.sh" >&2
+    return 1
+  fi
+  target=$(cat "$LECH_TARGET_FILE")
+  set +eu   # build/envsetup.sh and lunch are not written for errexit/nounset
+  pushd "$aosp" >/dev/null || rc=1
+  if [ "$rc" -eq 0 ]; then
+    # shellcheck disable=SC1091
+    source build/envsetup.sh >/dev/null 2>&1 && lunch "$target" >/dev/null 2>&1 || rc=1
+    popd >/dev/null || true
+  fi
+  case $old_opts in *e*) set -e ;; esac
+  case $old_opts in *u*) set -u ;; esac
+  if [ "$rc" -ne 0 ] || [ -z "${ANDROID_PRODUCT_OUT:-}" ]; then
+    echo "Nepodarilo sa pripraviť prostredie zostavy $target v $aosp." >&2
+    return 1
+  fi
+  echo "Prostredie zostavy: $target"
+}
 
 # Download the prebuilt images unless they are already present.
 lech_ensure_images() {
