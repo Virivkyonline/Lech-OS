@@ -23,6 +23,19 @@ Telefón pre vývoj bezpečného systému musí spĺňať viac než „dá sa na
 | Vhodnosť ako partner (A+ / B) | Nízka – Google nie je partner pre konkurenčný OS | **Vysoká** – už spolupracuje so súkromnými systémami | Neznáma |
 | Vhodnosť na vývoj | **Najvyššia** | Dobrá ako druhá platforma | Odložiť |
 
+### Ďalší výrobcovia (overené 4. 11. 2026)
+
+| Výrobca | Odomknutie bootloadera | Zamknutie s vlastnými kľúčmi | Záver |
+|---------|------------------------|------------------------------|-------|
+| Samsung (napr. Galaxy S20, S6) | Áno, ale natrvalo prepáli poistku Knox | Nie | Nevhodné; S20 bez aktualizácií od 4/2025, S6 nespustí súčasný Android. S20 bez úprav poslúži na test lokálnej AI a ako porovnávací telefón |
+| Xiaomi / Redmi / POCO | Len so súhlasom výrobcu, s čakaním a limitmi; odomknuté zariadenie prestane dostávať aktualizácie HyperOS | Nie | Nevhodné |
+| OnePlus | Áno | Na starších modeloch (6/6T) áno, od firmvéru Android 12 a pri nových modeloch nespoľahlivo; v 2026 hlásená hardvérová ochrana proti návratu verzie | Nevhodné ako cieľ; neisté |
+| Huawei, Honor, Vivo, OPPO, Realme | Väčšinou nie | Nie | Nevhodné |
+| Motorola | Pri niektorých modeloch | Plánované na telefóne pre GrapheneOS (očakávaný 2027) | Sledovať ako budúceho kandidáta |
+
+Pre firemných a verejných zákazníkov ([ADR-0007](adr/0007-prvy-trh-firmy.md)) treba počítať aj s tým, že niektoré
+organizácie obmedzujú zariadenia vybraných výrobcov – pôvod hardvéru bude súčasťou bezpečnostnej dokumentácie.
+
 > **Poznámka k trhu:** GrapheneOS na MWC 2026 oznámil partnerstvo s Motorolou (prvý telefón sa očakáva v roku 2027).
 > Ukazuje to, že veľkí výrobcovia sú otvorení spolupráci so súkromnými systémami – je to relevantné pre cestu A+ a B.
 
