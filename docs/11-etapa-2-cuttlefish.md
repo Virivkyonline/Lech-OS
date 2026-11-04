@@ -40,7 +40,13 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
    git add audit/ && git commit -m "Audit prvého spustenia čistého AOSP" && git push
    ```
 
-7. Potom **zostavenie zo zdrojových kódov** (časť 3) – stiahne stovky GB a prvé zostavenie trvá hodiny.
+7. **Stiahnutie zdrojových kódov AOSP** (niekoľko hodín, dá sa prerušiť a spustiť znova – pokračuje):
+
+   ```bash
+   tools/etapa2/04-stiahni-aosp.sh          # bez histórie (--depth=1), šetrí miesto; do ~/aosp
+   ```
+
+8. Potom **zostavenie** (časť 3) – prvé zostavenie trvá na notebooku hodiny.
 
 ## 1. Zostavovací počítač
 
@@ -175,9 +181,10 @@ chmod a+rx ~/bin/repo
 export PATH="$HOME/bin:$PATH"
 
 # Zdrojové kódy – vetva odporúčaná Google od roku 2026
-mkdir -p /srv/aosp && cd /srv/aosp
-repo init --partial-clone -b android-latest-release -u https://android.googlesource.com/platform/manifest
-repo sync -c -j8
+# (to isté robí tools/etapa2/04-stiahni-aosp.sh; --depth=1 = bez histórie, výrazne menej miesta)
+mkdir -p ~/aosp && cd ~/aosp
+repo init -u https://android.googlesource.com/platform/manifest -b android-latest-release --depth=1
+repo sync -c --no-tags -j8
 
 # Zostavenie pre Cuttlefish
 source build/envsetup.sh
