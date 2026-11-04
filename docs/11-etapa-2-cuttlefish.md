@@ -243,19 +243,34 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 
 ## 6. Úlohy etapy 2
 
-| ID | Úloha | Hotové, keď |
-|----|-------|-------------|
-| E2-01 | Zostavovací počítač (server alebo notebook) | `tools/check_build_host.sh` skončí výsledkom „zvládne zostavenie aj spustenie“ |
-| E2-02 | Čisté AOSP na Cuttlefish | Virtuálny telefón nabootuje a je ovládateľný cez prehliadač |
-| E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári |
-| E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` |
-| E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte |
-| E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google |
-| E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) |
-| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) |
-| E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky |
-| E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí |
-| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) |
-| E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom |
+| ID | Úloha | Hotové, keď | Stav |
+|----|-------|-------------|------|
+| E2-01 | Zostavovací počítač (server alebo notebook) | `tools/check_build_host.sh` skončí výsledkom „zvládne zostavenie aj spustenie“ | Čiastočne – notebook s Windows a WSL spustí hotové obrazy; na zostavenie treba viac RAM pre WSL alebo Ubuntu priamo na disku |
+| E2-02 | Čisté AOSP na Cuttlefish | Virtuálny telefón nabootuje a je ovládateľný cez prehliadač | **Hotové 4. 11. 2026** – WSL na notebooku, hotové obrazy `aosp-android-latest-release` (build 16644040), sandbox crosvm vypnutý, obrazovka cez prehliadač |
+| E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | – |
+| E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | – |
+| E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | – |
+| E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | – |
+| E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | – |
+| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – |
+| E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
+| E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | – |
+| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |
+| E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
+
+### Záznam z prvého spustenia (4. 11. 2026)
+
+Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo WSL, 20 vlákien, 15 GB RAM pre WSL):
+
+1. `01-priprava-notebooku.sh` – balíky aj Cuttlefish sa nainštalovali; moduly `vhost_vsock` a `vhost_net` sa vo WSL načítali.
+2. Prvý štart zlyhal: sandbox crosvm (minijail) vo WSL nevie pripojiť `/usr/lib` → `VIRTUAL_DEVICE_BOOT_FAILED`.
+   Riešenie: vo WSL vypnúť sandbox (skripty to robia automaticky).
+3. Druhý pokus zlyhal na zvyšku prvého pokusu (`New instance conflicts with existing instance`) → `cvd reset --yes`
+   (skript to už robí sám).
+4. Tretí pokus: `Virtual device booted successfully`, obrazovka telefónu na `https://localhost:8443`.
+
+Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
+v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
+pretože ide o prevádzku notebooku, nie telefónu.
 
 Etapa 2 je hotová, keď sú splnené kritériá z [docs/08](08-plan-etap.md#etapa-2--vlastná-zostava-aosp).
