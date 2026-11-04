@@ -89,7 +89,7 @@ EOF
   (cd "$WORK" && cvd create --config_file=spec.json)
 fi
 
-echo "Telefón beží. Zaznamenávam ${MINUTES} minút (obrazovka: https://localhost:1443; počas auditu na telefón nesiahajte)."
+echo "Telefón beží. Zaznamenávam ${MINUTES} minút (obrazovka: https://localhost:8443; počas auditu na telefón nesiahajte)."
 for ((i = MINUTES; i > 0; i--)); do
   printf '\r  zostáva %3d min ' "$i"
   sleep 60

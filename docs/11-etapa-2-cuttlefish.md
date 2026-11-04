@@ -29,7 +29,7 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
 5. **Vyskúšať čisté AOSP** (bez zostavovania, stiahne hotové obrazy):
 
    ```bash
-   tools/etapa2/02-ciste-aosp.sh                    # obrazovka telefónu: https://localhost:1443
+   tools/etapa2/02-ciste-aosp.sh                    # obrazovka telefónu: https://localhost:8443
    cvd remove                                       # po vyskúšaní odstrániť
    ```
 
@@ -198,8 +198,11 @@ cvd stop                   # vypnutie; po zmene a novom zostavení (m) znova cvd
 cvd remove                 # odstránenie zariadenia a jeho údajov
 ```
 
-Obrazovku telefónu zobrazí webové rozhranie na **https://localhost:1443** (pri vzdialenom počítači cez SSH tunel,
-napr. `ssh -L 1443:localhost:1443 server`). Staršie príkazy `launch_cvd` a `stop_cvd` používajú port 8443.
+Obrazovku telefónu zobrazí webové rozhranie na **https://localhost:8443** – presnú adresu vypíše `cvd create`
+(pri vzdialenom počítači cez SSH tunel, napr. `ssh -L 8443:localhost:8443 server`).
+
+Ak telefón nenaštartuje (`VIRTUAL_DEVICE_BOOT_FAILED`), spustite `tools/etapa2/diagnostika.sh` – vypíše stav služieb,
+sieťových rozhraní, zariadení a chybové riadky z logov na jednu obrazovku a úplnú správu uloží do `~/lech-work`.
 
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 

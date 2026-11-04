@@ -35,7 +35,7 @@ cvd create --config_file=spec.json
 cat <<'EOF'
 
 Virtuálny telefón beží.
-  Obrazovka telefónu:  https://localhost:1443  (otvorte v prehliadači, certifikát potvrďte)
+  Obrazovka telefónu:  https://localhost:8443  (otvorte v prehliadači, certifikát potvrďte)
   Stav:                cvd fleet
   Príkazový riadok:    adb shell
   Vypnutie:            cvd stop
