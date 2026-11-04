@@ -83,6 +83,15 @@ printf 'vhost_vsock\nvhost_net\n' | sudo tee /etc/modules-load.d/lech-cuttlefish
 sudo usermod -aG kvm,cvdnetwork,render "$USER"
 info "Používateľ $USER pridaný do skupín kvm, cvdnetwork, render (platí po reštarte)"
 
+if grep -qi microsoft /proc/version 2>/dev/null; then
+  # Ubuntu 24.04 on WSL runs systemd-timesyncd by default; it fights the Hyper-V time sync from Windows and the clock
+  # steps back and forth by seconds, which breaks builds ("future mtime"). Ubuntu's WSL documentation recommends disabling it.
+  if systemctl is-enabled systemd-timesyncd.service >/dev/null 2>&1; then
+    sudo systemctl disable --now systemd-timesyncd.service >/dev/null 2>&1 || true
+    info "Vypnutá synchronizácia času systemd-timesyncd (vo WSL čas drží Windows)"
+  fi
+fi
+
 step "5/6 Nástroj repo"
 mkdir -p "$HOME/bin"
 if [ ! -x "$HOME/bin/repo" ]; then

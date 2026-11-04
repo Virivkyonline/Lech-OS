@@ -116,7 +116,11 @@ Na zostavovanie vlastného LECH OS odporúčame Ubuntu priamo na disku (napr. na
    `wsl --manage Ubuntu-24.04 --set-sparse true` (pri vypnutom WSL).
 6. **Obmedzenie:** Cuttlefish potrebuje okrem `/dev/kvm` aj zariadenia `/dev/vhost-vsock` a `/dev/vhost-net`.
    Ak ich jadro WSL neposkytuje, `tools/check_build_host.sh` to označí – vtedy je potrebné Ubuntu priamo na disku.
-7. **Sandbox crosvm:** vo WSL zlyhá izolácia virtuálneho stroja (minijail: `cannot mount '/usr/lib' …
+7. **Hodiny:** Ubuntu 24.04 vo WSL predvolene synchronizuje čas službou `systemd-timesyncd`, ktorá sa „preťahuje“
+   so synchronizáciou času z Windows – hodiny sa posúvajú o sekundy sem a tam a zostavenie padá s `future mtime`.
+   Ubuntu pre WSL odporúča túto službu vypnúť (`sudo systemctl disable --now systemd-timesyncd.service`);
+   `01-priprava-notebooku.sh` to robí automaticky a `check_build_host.sh` na to upozorní.
+8. **Sandbox crosvm:** vo WSL zlyhá izolácia virtuálneho stroja (minijail: `cannot mount '/usr/lib' …
    Invalid argument`, potom `VIRTUAL_DEVICE_BOOT_FAILED`). Skripty `02-ciste-aosp.sh` a `03-sietovy-audit.sh`
    ju preto vo WSL vypínajú (`"vm": {"crosvm": {"enable_sandbox": false}}`). Pre testovací telefón je to prijateľné;
    na Ubuntu priamo na disku zostáva sandbox zapnutý. Prepísať sa to dá premennou `LECH_CF_SANDBOX=0` alebo `1`.
@@ -303,6 +307,8 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
    potom začalo prekladanie (197 973 krokov). Po 229 krokoch zlyhalo s `future mtime` – hodiny WSL sa pri veľkom
    zaťažení posunuli o 8 s späť a zostavovač (siso) odmietol práve zapísaný súbor. Nie je to chyba zostavenia;
    `05-zostav-aosp.sh` po takejto chybe zostavenie automaticky spustí znova (najviac 5-krát, `LECH_CLOCK_RETRIES`).
+   Chyba sa zopakovala po 2 minútach – príčinou je súbeh dvoch synchronizácií času (pozri „Hodiny“ v časti
+   o WSL); riešením je vypnúť `systemd-timesyncd` podľa dokumentácie Ubuntu pre WSL.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

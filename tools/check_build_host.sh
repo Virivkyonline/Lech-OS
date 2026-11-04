@@ -48,6 +48,11 @@ if grep -qi microsoft /proc/version 2>/dev/null; then
   warn "Beží vo WSL (Windows) – zostavenie je možné, Cuttlefish vo WSL oficiálne podporovaný nie je"
 fi
 
+# Time sync conflict under WSL (see docs/11): systemd-timesyncd + Hyper-V time sync step the clock back and forth.
+if [ "$in_wsl" -eq 1 ] && systemctl is-active systemd-timesyncd.service >/dev/null 2>&1; then
+  warn "Vo WSL beží systemd-timesyncd – hodiny sa môžu posúvať a zostavenie padať (future mtime); vypnite: sudo systemctl disable --now systemd-timesyncd"
+fi
+
 # CPU
 cpus=$(nproc 2>/dev/null || echo 0)
 if [ "$cpus" -ge "$GOOD_CPUS" ]; then pass "Procesor: $cpus vlákien"; else warn "Procesor: $cpus vlákien – prvé zostavenie potrvá niekoľko hodín (odporúčané ${GOOD_CPUS}+)"; fi
