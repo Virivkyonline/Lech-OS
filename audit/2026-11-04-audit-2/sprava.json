@@ -1,0 +1,231 @@
+{
+  "domeny": [
+    {
+      "domena": "0.openwrt.pool.ntp.org",
+      "zdroj": [
+        "DNS"
+      ],
+      "pocet": 2,
+      "prvykrat_s": 0.0
+    },
+    {
+      "domena": "1.openwrt.pool.ntp.org",
+      "zdroj": [
+        "DNS"
+      ],
+      "pocet": 2,
+      "prvykrat_s": 0.1
+    },
+    {
+      "domena": "2.openwrt.pool.ntp.org",
+      "zdroj": [
+        "DNS"
+      ],
+      "pocet": 2,
+      "prvykrat_s": 0.1
+    },
+    {
+      "domena": "3.openwrt.pool.ntp.org",
+      "zdroj": [
+        "DNS"
+      ],
+      "pocet": 2,
+      "prvykrat_s": 0.2
+    },
+    {
+      "domena": "www.google.com",
+      "zdroj": [
+        "DNS",
+        "TLS"
+      ],
+      "pocet": 2,
+      "prvykrat_s": 20.5
+    },
+    {
+      "domena": "connectivitycheck.gstatic.com",
+      "zdroj": [
+        "DNS",
+        "HTTP"
+      ],
+      "pocet": 2,
+      "prvykrat_s": 20.5
+    },
+    {
+      "domena": "time.android.com",
+      "zdroj": [
+        "DNS"
+      ],
+      "pocet": 1,
+      "prvykrat_s": 20.5
+    },
+    {
+      "domena": "xuwyah-dnsotls-ds.metric.gstatic.com",
+      "zdroj": [
+        "DNS"
+      ],
+      "pocet": 1,
+      "prvykrat_s": 20.6
+    },
+    {
+      "domena": "www.gstatic.com",
+      "zdroj": [
+        "TLS"
+      ],
+      "pocet": 5,
+      "prvykrat_s": 31.4
+    },
+    {
+      "domena": "preprod-remoteprovisioning.googleapis.com",
+      "zdroj": [
+        "TLS"
+      ],
+      "pocet": 1,
+      "prvykrat_s": 31.4
+    },
+    {
+      "domena": "g.co",
+      "zdroj": [
+        "TLS"
+      ],
+      "pocet": 1,
+      "prvykrat_s": 31.4
+    }
+  ],
+  "ciele": [
+    {
+      "ip": "8.8.8.8",
+      "protokol": "UDP",
+      "port": 53,
+      "nazvy": [
+        "dns.google (PTR)"
+      ],
+      "pakety": 8,
+      "prvykrat_s": 0.0
+    },
+    {
+      "ip": "188.68.34.173",
+      "protokol": "UDP",
+      "port": 123,
+      "nazvy": [
+        "3.openwrt.pool.ntp.org"
+      ],
+      "pakety": 24,
+      "prvykrat_s": 0.3
+    },
+    {
+      "ip": "193.87.160.18",
+      "protokol": "UDP",
+      "port": 123,
+      "nazvy": [
+        "2.openwrt.pool.ntp.org"
+      ],
+      "pakety": 25,
+      "prvykrat_s": 0.3
+    },
+    {
+      "ip": "185.242.56.3",
+      "protokol": "UDP",
+      "port": 123,
+      "nazvy": [
+        "1.openwrt.pool.ntp.org"
+      ],
+      "pakety": 25,
+      "prvykrat_s": 0.3
+    },
+    {
+      "ip": "91.237.170.89",
+      "protokol": "UDP",
+      "port": 123,
+      "nazvy": [
+        "0.openwrt.pool.ntp.org"
+      ],
+      "pakety": 23,
+      "prvykrat_s": 0.3
+    },
+    {
+      "ip": "9.9.9.9",
+      "protokol": "TCP",
+      "port": 853,
+      "nazvy": [
+        "dns9.quad9.net (PTR)"
+      ],
+      "pakety": 39,
+      "prvykrat_s": 20.5
+    },
+    {
+      "ip": "9.9.9.9",
+      "protokol": "UDP",
+      "port": 53,
+      "nazvy": [
+        "dns9.quad9.net (PTR)"
+      ],
+      "pakety": 4,
+      "prvykrat_s": 20.5
+    },
+    {
+      "ip": "142.251.38.131",
+      "protokol": "TCP",
+      "port": 80,
+      "nazvy": [
+        "connectivitycheck.gstatic.com"
+      ],
+      "pakety": 5,
+      "prvykrat_s": 20.5
+    },
+    {
+      "ip": "142.251.154.119",
+      "protokol": "TCP",
+      "port": 443,
+      "nazvy": [
+        "www.google.com"
+      ],
+      "pakety": 8,
+      "prvykrat_s": 20.5
+    },
+    {
+      "ip": "216.239.35.8",
+      "protokol": "UDP",
+      "port": 123,
+      "nazvy": [
+        "time.android.com"
+      ],
+      "pakety": 1,
+      "prvykrat_s": 20.6
+    },
+    {
+      "ip": "142.251.152.120",
+      "protokol": "TCP",
+      "port": 443,
+      "nazvy": [
+        "www.gstatic.com"
+      ],
+      "pakety": 64,
+      "prvykrat_s": 31.3
+    },
+    {
+      "ip": "172.217.116.4",
+      "protokol": "TCP",
+      "port": 443,
+      "nazvy": [
+        "preprod-remoteprovisioning.googleapis.com"
+      ],
+      "pakety": 13,
+      "prvykrat_s": 31.3
+    },
+    {
+      "ip": "142.251.141.174",
+      "protokol": "TCP",
+      "port": 443,
+      "nazvy": [
+        "g.co"
+      ],
+      "pakety": 11,
+      "prvykrat_s": 31.4
+    }
+  ],
+  "lokalne": {
+    "2/0": 2
+  },
+  "dlzka_s": 1641.0,
+  "nezname": 14
+}

@@ -29,6 +29,26 @@ from pathlib import Path
 # Guest networks created by cuttlefish-base (see /etc/init.d/cuttlefish-host-resources).
 GUEST_NETS = [ipaddress.ip_network(n) for n in ("192.168.93.0/24", "192.168.94.0/23", "192.168.96.0/22")]
 GUEST_FILTER = " || ".join(f"ip.src == {n}" for n in GUEST_NETS)
+# Which virtual network a guest address belongs to (cuttlefish-host-resources address plan).
+# The phone's Wi-Fi traffic leaves through the OpenWrt router VM, so "Wi-Fi/router" covers both.
+SOURCE_NETS = [
+    (ipaddress.ip_network("192.168.97.0/24"), "mobilná sieť telefónu"),
+    (ipaddress.ip_network("192.168.93.0/24"), "mobilná sieť telefónu"),
+    (ipaddress.ip_network("192.168.98.0/24"), "ethernet telefónu"),
+    (ipaddress.ip_network("192.168.94.0/23"), "Wi-Fi/router OpenWrt"),
+    (ipaddress.ip_network("192.168.96.0/24"), "Wi-Fi/router OpenWrt"),
+]
+
+
+def source_net(ip: str) -> str:
+    try:
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return "?"
+    for net, label in SOURCE_NETS:
+        if addr in net:
+            return label
+    return "iná"
 LOCAL_PORTS = {67, 68, 5353, 1900}  # DHCP, mDNS, SSDP
 
 
@@ -40,6 +60,7 @@ class Destination:
     packets: int = 0
     first_seen: float = float("inf")
     names: set[str] = field(default_factory=set)
+    sources: set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -115,7 +136,7 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
                 ip_names[ip].add(qname)
 
     # Pass 2: everything sent by the guest.
-    fields = ["frame.time_relative", "ip.dst", "ip.proto", "tcp.dstport", "udp.dstport",
+    fields = ["frame.time_relative", "ip.src", "ip.dst", "ip.proto", "tcp.dstport", "udp.dstport",
               "dns.flags.response", "dns.qry.name", "tls.handshake.extensions_server_name", "http.host"]
     destinations: dict[tuple, Destination] = {}
     domains: dict[str, Domain] = {}
@@ -133,7 +154,7 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
 
     for row in run_tshark(pcap, GUEST_FILTER, fields):
         row += [""] * (len(fields) - len(row))
-        t_rel, dst, proto, tport, uport, dns_resp, qname, sni, host = row
+        t_rel, src, dst, proto, tport, uport, dns_resp, qname, sni, host = row
         t = max(0.0, float(t_rel or 0))  # "any" captures can be slightly out of order
         duration = max(duration, t)
         if not dst:
@@ -146,6 +167,7 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
         key = (dst, proto_name, port)
         dest = destinations.setdefault(key, Destination(dst, proto_name, port))
         dest.packets += 1
+        dest.sources.add(source_net(src.split(",")[0]))
         dest.first_seen = min(dest.first_seen, t)
         if qname and dns_resp in ("0", "False", "false"):
             for q in qname.split(","):
@@ -199,22 +221,26 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
     if not domains:
         lines.append("| – | – | – | – |" + (" – |" if use_allow else ""))
 
-    lines += ["", "## Ciele (IP adresa, protokol, port)", ""]
-    header = "| IP adresa | Protokol/port | Názvy | Pakety | Prvýkrát |" + (" Stav |" if use_allow else "")
-    lines += [header, "|" + "---|" * (6 if use_allow else 5)]
+    lines += ["", "## Ciele (IP adresa, protokol, port)", "",
+              "Odkiaľ: sieť virtuálneho telefónu, z ktorej paket odišiel. Prevádzka telefónu cez Wi-Fi odchádza "
+              "cez virtuálny router OpenWrt, preto má rovnaké označenie ako prevádzka samotného routra.", ""]
+    header = "| IP adresa | Protokol/port | Názvy | Odkiaľ | Pakety | Prvýkrát |" + (" Stav |" if use_allow else "")
+    lines += [header, "|" + "---|" * (7 if use_allow else 6)]
     dest_rows = []
     for dest in sorted(destinations.values(), key=lambda d: d.first_seen):
         names = ", ".join(f"`{n}`" for n in sorted(dest.names)) or "–"
-        row = f"| {dest.ip} | {dest.proto}/{dest.port} | {names} | {dest.packets} | {fmt_time(dest.first_seen)} |"
+        origin = ", ".join(sorted(dest.sources)) or "–"
+        row = f"| {dest.ip} | {dest.proto}/{dest.port} | {names} | {origin} | {dest.packets} | {fmt_time(dest.first_seen)} |"
         if use_allow:
             ok = allowed({n.replace(" (ptr)", "") for n in dest.names}, dest.ip, allowlist)
             unknown += 0 if ok else 1
             row += " povolené |" if ok else " **NEZNÁME** |"
         lines.append(row)
         dest_rows.append({"ip": dest.ip, "protokol": dest.proto, "port": dest.port, "nazvy": sorted(dest.names),
+                          "odkial": sorted(dest.sources),
                           "pakety": dest.packets, "prvykrat_s": round(dest.first_seen, 1)})
     if not destinations:
-        lines.append("| – | – | – | – | – |" + (" – |" if use_allow else ""))
+        lines.append("| – | – | – | – | – | – |" + (" – |" if use_allow else ""))
 
     lines += ["", "## Lokálna prevádzka (neopúšťa notebook)", ""]
     if local:

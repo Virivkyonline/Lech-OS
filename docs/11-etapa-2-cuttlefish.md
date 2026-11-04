@@ -247,7 +247,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 |----|-------|-------------|------|
 | E2-01 | Zostavovací počítač (server alebo notebook) | `tools/check_build_host.sh` skončí výsledkom „zvládne zostavenie aj spustenie“ | Čiastočne – notebook s Windows a WSL spustí hotové obrazy; na zostavenie treba viac RAM pre WSL alebo Ubuntu priamo na disku |
 | E2-02 | Čisté AOSP na Cuttlefish | Virtuálny telefón nabootuje a je ovládateľný cez prehliadač | **Hotové 4. 11. 2026** – WSL na notebooku, hotové obrazy `aosp-android-latest-release` (build 16644040), sandbox crosvm vypnutý, obrazovka cez prehliadač |
-| E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | **1. meranie 4. 11. 2026** – 13 cieľov, 9 služieb Google ([audit/README.md](../audit/README.md)); opakovať s opraveným DNS mobilnej siete |
+| E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | **Hotové 4. 11. 2026** – dve merania; čisté AOSP sa pri prvom spustení spojí so 7 cieľmi Google ([audit/README.md](../audit/README.md)); zostáva určiť pôvod 2 spojení |
 | E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | – |
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | – |
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | – |
