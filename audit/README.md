@@ -54,7 +54,7 @@ Android začal komunikovať 20,5 s od začiatku záznamu; všetko pred tým patr
 | `connectivitycheck.gstatic.com` | TCP/80 | áno | áno | **Android** | Kontrola pripojenia (HTTP) |
 | `www.google.com` | TCP/443 | áno | áno | **Android** | Kontrola pripojenia (HTTPS) |
 | `time.android.com` | UDP/123 | áno | áno | **Android** | Synchronizácia času |
-| `…-dnsotls-ds.metric.gstatic.com` | DNS dopyt | – | áno | **Android** | Overenie šifrovaného DNS (náhodná predpona); v 1. audite bol dopyt skrytý v šifrovanom DNS k Google |
+| `…-dnsotls-ds.metric.gstatic.com` | DNS dopyt | – | áno | **Android** | Overenie šifrovaného DNS (náhodná predpona); v 1. audite bol dopyt pravdepodobne skrytý v šifrovanom DNS k Google |
 | `preprod-remoteprovisioning.googleapis.com` | TCP/443 | áno | áno | **Android** | Atestačné kľúče (RKP) |
 | `www.gstatic.com` | TCP/443 | áno | áno | **Android** – zložku treba určiť | Najväčší prenos (64 paketov) |
 | `g.co` | TCP/443 | áno | áno | **Android** – zložku treba určiť | Doména Google na krátke odkazy |
