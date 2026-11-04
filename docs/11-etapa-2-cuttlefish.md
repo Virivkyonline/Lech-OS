@@ -247,7 +247,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 |----|-------|-------------|------|
 | E2-01 | Zostavovací počítač (server alebo notebook) | `tools/check_build_host.sh` skončí výsledkom „zvládne zostavenie aj spustenie“ | Čiastočne – notebook s Windows a WSL spustí hotové obrazy; na zostavenie treba viac RAM pre WSL alebo Ubuntu priamo na disku |
 | E2-02 | Čisté AOSP na Cuttlefish | Virtuálny telefón nabootuje a je ovládateľný cez prehliadač | **Hotové 4. 11. 2026** – WSL na notebooku, hotové obrazy `aosp-android-latest-release` (build 16644040), sandbox crosvm vypnutý, obrazovka cez prehliadač |
-| E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | – |
+| E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | **1. meranie 4. 11. 2026** – 13 cieľov, 9 služieb Google ([audit/README.md](../audit/README.md)); opakovať s opraveným DNS mobilnej siete |
 | E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | – |
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | – |
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | – |
@@ -268,6 +268,13 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
 3. Druhý pokus zlyhal na zvyšku prvého pokusu (`New instance conflicts with existing instance`) → `cvd reset --yes`
    (skript to už robí sám).
 4. Tretí pokus: `Virtual device booted successfully`, obrazovka telefónu na `https://localhost:8443`.
+
+5. Prvý sieťový audit (30 minút) prebehol a zachytil 13 cieľov – výsledky v [audit/README.md](../audit/README.md).
+   Ukázal aj dve nastavenia testovacieho prostredia, ktoré skreslili výsledok: DNS Google pre mobilnú sieť
+   telefónu (`--ril_dns`, Cuttlefish ho predvolene nastavuje na 8.8.8.8 bez ohľadu na `dns_servers`) a NTP
+   virtuálneho Wi-Fi routra OpenWrt. Skripty preto spúšťajú telefón cez `cvd fetch` + `cvd create --host_path
+   --product_path` s parametrami `--ril_dns` a vo WSL `--enable_sandbox=false` (spoločná časť je v
+   `tools/etapa2/lib-cuttlefish.sh`); obrazy sa stiahnu raz do `~/lech-work/images`.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

@@ -16,10 +16,10 @@ MINUTES=30
 LOCAL_BUILD=0
 KEEP=0
 YES=0
-BUILD="@ab/aosp-android-latest-release/aosp_cf_x86_64_only_phone-userdebug"
 FILTER="net 192.168.93.0/24 or net 192.168.94.0/23 or net 192.168.96.0/22"
 
 REPO_DIR=$(cd "$(dirname "$0")/../.." && pwd)
+. "$REPO_DIR/tools/etapa2/lib-cuttlefish.sh"
 STAMP=$(date +%Y%m%d-%H%M%S)
 WORK="${LECH_WORK:-$HOME/lech-work}/audit-$STAMP"
 
@@ -51,12 +51,17 @@ if [ "$YES" -ne 1 ]; then
   case "$answer" in a|A|ano|áno) ;; *) echo "Zrušené."; exit 0 ;; esac
 fi
 
+# Download the images before the capture starts (the download is host traffic, not the phone's).
+if [ "$LOCAL_BUILD" -ne 1 ]; then
+  lech_ensure_images
+fi
+
 sudo -v
 mkdir -p "$WORK"
 PCAP="$WORK/prve-spustenie.pcap"   # .pcap suffix: Ubuntu's AppArmor profile lets tcpdump write such files
 
 echo "Odstraňujem existujúce virtuálne telefóny…"
-cvd reset --yes >/dev/null 2>&1 || true
+lech_reset_phones
 
 echo "Spúšťam záznam prevádzky virtuálneho telefónu…"
 sudo tcpdump -i any -n -U -Z "$USER" -w "$PCAP" "$FILTER" 2>"$WORK/tcpdump.log" &
@@ -78,23 +83,13 @@ sleep 3
 kill -0 "$TCPDUMP_PID" 2>/dev/null || die "Záznam sa nespustil – pozri $WORK/tcpdump.log"
 
 echo "Vytváram čerstvý virtuálny telefón…"
+lech_describe_start
 if [ "$LOCAL_BUILD" -eq 1 ]; then
   SOURCE="lokálna zostava ($(basename "$ANDROID_PRODUCT_OUT"))"
-  if [ "${LECH_CF_SANDBOX:-}" = "0" ] || { [ -z "${LECH_CF_SANDBOX:-}" ] && grep -qi microsoft /proc/version 2>/dev/null; }; then
-    cvd create --enable_sandbox=false
-  else
-    cvd create
-  fi
+  lech_create_phone --local
 else
-  SOURCE="hotové obrazy $BUILD"
-  VM_JSON=""
-  if [ "${LECH_CF_SANDBOX:-}" = "0" ] || { [ -z "${LECH_CF_SANDBOX:-}" ] && grep -qi microsoft /proc/version 2>/dev/null; }; then
-    VM_JSON='"vm": { "crosvm": { "enable_sandbox": false } },'   # minijail mounts fail under WSL
-  fi
-  cat > "$WORK/spec.json" <<EOF
-{ "instances": [ { "name": "audit", $VM_JSON "disk": { "default_build": "$BUILD" } } ] }
-EOF
-  (cd "$WORK" && cvd create --config_file=spec.json)
+  SOURCE="hotové obrazy $LECH_BUILD"
+  lech_create_phone
 fi
 
 echo "Telefón beží. Zaznamenávam ${MINUTES} minút (obrazovka: https://localhost:8443; počas auditu na telefón nesiahajte)."
@@ -108,7 +103,7 @@ cleanup
 trap - EXIT
 
 if [ "$KEEP" -ne 1 ]; then
-  cvd remove >/dev/null 2>&1 || cvd reset --yes >/dev/null 2>&1 || true
+  lech_reset_phones
 fi
 
 REPORT="$REPO_DIR/audit/$STAMP-prve-spustenie/sprava.md"

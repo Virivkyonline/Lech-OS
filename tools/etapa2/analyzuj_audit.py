@@ -134,7 +134,7 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
     for row in run_tshark(pcap, GUEST_FILTER, fields):
         row += [""] * (len(fields) - len(row))
         t_rel, dst, proto, tport, uport, dns_resp, qname, sni, host = row
-        t = float(t_rel or 0)
+        t = max(0.0, float(t_rel or 0))  # "any" captures can be slightly out of order
         duration = max(duration, t)
         if not dst:
             continue

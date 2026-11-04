@@ -13,3 +13,7 @@
 # (nastavuje tools/etapa2/01-priprava-notebooku.sh). Nie sú súčasťou LECH OS.
 9.9.9.9
 149.112.112.112
+
+# Testovacie prostredie: Cuttlefish spúšťa vedľa telefónu virtuálny Wi-Fi router OpenWrt,
+# ktorý si synchronizuje čas s verejným poolom NTP. Nie je to prevádzka Androidu ani LECH OS.
+openwrt.pool.ntp.org
