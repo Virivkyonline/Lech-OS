@@ -57,7 +57,7 @@ a spôsob overenia, ktorý pobeží automaticky v CI alebo pri každom vydaní.
 | P4 | Žiadne marketingové sledovanie | Telemetria je predvolene vypnutá. Ak ju používateľ zapne, je anonymná a jej schéma je verejne zdokumentovaná. | Revízia kódu + verejná dokumentácia schémy telemetrie. |
 | P5 | Používateľ rozhoduje o odchode údajov | Každá aplikácia má povolenie „Sieť“ (dá sa vypnúť). **LECH Privacy Control** ukazuje, kam a koľko údajov posiela každá aplikácia, systémové služby aj AI ([docs/12](12-lech-privacy-control.md)). | Laboratórne meranie mimo telefónu: každé zachytené spojenie musí byť v telefóne priradené aplikácii alebo službe. |
 | P6 | Integrovaná AI | LECH AI je systémová služba, nie len aplikácia. Základné funkcie fungujú bez internetu. Citlivé akcie vyžadujú súhlas. | Testovacia sada príkazov v režime lietadlo; testy pravidiel súhlasu (pozri [spec/ai-akcie.yaml](../spec/ai-akcie.yaml)). |
-| P7 | Kompatibilita s Android aplikáciami | Aplikácie bežia na natívnom Android runtime (ART). Kompatibilitu meriame na zozname najpoužívanejších aplikácií v SK/CZ. | Automatizovaný kompatibilitný test (inštalácia, spustenie, základné scenáre) – výsledky verejne. |
+| P7 | Kompatibilita s Android aplikáciami | Aplikácie bežia na natívnom Android runtime (ART). Kompatibilitu meriame na zozname najpoužívanejších aplikácií v krajinách, kde LECH OS uvádzame ([ADR-0009](adr/0009-trh-eu.md)). | Automatizovaný kompatibilitný test (inštalácia, spustenie, základné scenáre) – výsledky verejne. |
 | P8 | Dlhodobá podpora | Mesačné bezpečnostné aktualizácie. Každé podporované zariadenie má **vopred zverejnený dátum konca podpory**. | Sledovanie oneskorenia záplat (počet dní od zverejnenia v AOSP po vydanie v LECH OS). |
 | P9 | Nezávislosť od Google, Apple a jedného AI poskytovateľa | Žiadna časť systému nesmie mať jediného nenahraditeľného dodávateľa. Každá externá závislosť má zdokumentovaný „plán odchodu“. | Register závislostí v repozitári; revízia pri každom ADR. |
 
@@ -88,8 +88,8 @@ Súkromiu zameraných Android systémov už existuje niekoľko. To je dobrá spr
 
 1. **AI integrovaná do systému so súkromím ako architektonickou vlastnosťou** – nie chatbot, ale asistent,
    ktorý ovláda telefón, beží lokálne a nikdy neobíde súhlas používateľa.
-2. **Slovenčina a čeština ako prvotriedne jazyky** – vrátane hlasového ovládania a lokálnych modelov.
-3. **Európska infraštruktúra** – cloud, AI servery a aktualizácie prevádzkované v EÚ, so súladom s GDPR a CRA.
+2. **Menšie jazyky EÚ ako prvotriedne jazyky** – slovenčina a čeština od začiatku, potom ďalšie jazyky EÚ, vrátane hlasového ovládania a lokálnych modelov. Veľkí poskytovatelia AI ich obsluhujú slabšie.
+3. **Pre celú EÚ** ([ADR-0009](adr/0009-trh-eu.md)), **európska infraštruktúra** – cloud, AI servery a aktualizácie prevádzkované v EÚ, so súladom s GDPR a CRA.
 4. **Produkt, nie projekt** – podpora, záruka, jasné termíny podpory zariadení, cesta k vlastnému telefónu.
 
 ## Zdroje

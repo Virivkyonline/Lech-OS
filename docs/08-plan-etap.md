@@ -60,7 +60,7 @@ Postup a zoznam úloh: [docs/11 – štart na Cuttlefish](11-etapa-2-cuttlefish.
 | | |
 |---|---|
 | **Cieľ** | Rozpoznateľný a pohodlný LECH OS |
-| **Výstupy** | Vizuálna identita; launcher; úpravy SystemUI a nastavení; sprievodca prvým spustením s voľbami súkromia (bez konta, voľba vrstvy kompatibility); prístupnosť; lokalizácia SK, CZ, EN |
+| **Výstupy** | Vizuálna identita; launcher; úpravy SystemUI a nastavení; sprievodca prvým spustením s voľbami súkromia (bez konta, voľba vrstvy kompatibility); prístupnosť; lokalizácia EN, SK, CZ (vlna 1 podľa [ADR-0009](adr/0009-trh-eu.md)) |
 | **Hotové, keď** | Splnená **brána 2 – Použiteľný systém**: testovací používatelia bez technických znalostí nastavia a používajú telefón bez pomoci |
 
 ### Etapa 4 – Bezpečnostný systém a LECH Privacy Control
@@ -92,7 +92,7 @@ Postup a zoznam úloh: [docs/11 – štart na Cuttlefish](11-etapa-2-cuttlefish.
 | | |
 |---|---|
 | **Cieľ** | Zmeraná a zverejnená kompatibilita |
-| **Výstupy** | Výsledky top 200 aplikácií v troch režimoch; vrstva kompatibility „Google Play v sandboxe“; stav bankových aplikácií SK/CZ a rokovaní s bankami; verejná databáza kompatibility; druhá platforma (Fairphone) |
+| **Výstupy** | Výsledky top 200 aplikácií v troch režimoch; vrstva kompatibility „Google Play v sandboxe“; stav bankových aplikácií v krajinách vlny 1 (SK, CZ) a rokovaní s bankami; verejná databáza kompatibility; druhá platforma (Fairphone) |
 | **Hotové, keď** | Splnená **brána 5 – Pripravené na pilot**: cieľové metriky z [docs/03](03-nezavislost-od-google.md#meranie-kompatibility) a stav bánk z [docs/13](13-bankove-aplikacie.md) |
 
 ### Etapa 8 – Pilot a prvý verejný prototyp

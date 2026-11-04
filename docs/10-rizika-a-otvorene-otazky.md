@@ -4,11 +4,11 @@
 
 | # | Riziko | Pravdepodobnosť | Dopad | Zmiernenie |
 |---|--------|-----------------|-------|------------|
-| R1 | **Bankové aplikácie a platby nefungujú** kvôli Play Integrity | Vysoká | Vysoký | Hardvérová atestácia s našimi kľúčmi, rokovania s bankami SK/CZ od etapy 1, verejná databáza kompatibility, transparentná komunikácia pred kúpou – podrobný plán v [docs/13](13-bankove-aplikacie.md) |
+| R1 | **Bankové aplikácie a platby nefungujú** kvôli Play Integrity | Vysoká | Vysoký | Hardvérová atestácia s našimi kľúčmi, rokovania s bankami po krajinách (najprv SK/CZ) od etapy 1, verejná databáza kompatibility, transparentná komunikácia pred kúpou – podrobný plán v [docs/13](13-bankove-aplikacie.md) |
 | R2 | **Údržba je drahšia ako vývoj** – mesačné záplaty, nové verzie AOSP, WebView, firmvér | Vysoká | Vysoký | Minimalizovať rozsah úprav AOSP (malý „patch set“), automatizácia, malý zoznam podporovaných zariadení, rozpočet na údržbu od začiatku; celý cyklus overený už v bráne 1 ([docs/14](14-aktualizacie-a-podpora.md)) |
 | R3 | **Google ďalej obmedzí otvorenosť AOSP** (už v roku 2025 prestal zverejňovať device trees Pixel; od roku 2026 zverejňuje zdrojové kódy len dvakrát ročne) | Stredná | Vysoký | Device Support Package vo vlastnej réžii, druhá platforma (Fairphone), partnerstvo s výrobcom, sledovanie zmien |
-| R4 | **Lokálna AI je príliš pomalá alebo slabá v slovenčine** | Stredná | Stredný | Malé špecializované modely, doladenie na SK/CZ, voliteľná cloudová vrstva na vlastných serveroch, merania už v prototype |
-| R5 | **Konkurencia** (GrapheneOS, /e/OS a ďalší, plus partnerstvá s veľkými výrobcami) | Vysoká | Stredný | Jasné odlíšenie: integrovaná súkromná AI, slovenčina a čeština, európska infraštruktúra, produkt s podporou; prípadne zameranie na B2B |
+| R4 | **Lokálna AI je príliš pomalá alebo slabá v slovenčine** | Stredná | Stredný | Malé špecializované modely, doladenie na slovenčinu, češtinu a ďalšie jazyky EÚ, voliteľná cloudová vrstva na vlastných serveroch, merania už v prototype |
+| R5 | **Konkurencia** (GrapheneOS, /e/OS a ďalší, plus partnerstvá s veľkými výrobcami) | Vysoká | Stredný | Jasné odlíšenie: integrovaná súkromná AI, menšie jazyky EÚ, európska infraštruktúra, produkt s podporou; prípadne zameranie na B2B |
 | R6 | **Oneskorenie bezpečnostných záplat** oproti výrobcom s prístupom k embargovaným záplatám | Vysoká | Stredný | Merať a zverejňovať oneskorenie; partnerstvo s výrobcom (A+ / B) |
 | R7 | **Právne riziká** – ochranné známky, distribúcia binárnych súborov výrobcov, Google Play v sandboxe, licencie modelov | Stredná | Vysoký | Právne posúdenie pred etapou 8 ([docs/09](09-pravo-a-licencie.md)) |
 | R8 | **Financovanie a tím** – projekt vyžaduje špecialistov, ktorých je na trhu málo | Vysoká | Vysoký | Etapovanie s jasnými míľnikmi pre investorov, otvorený kód ako spôsob získania komunity a talentov |
@@ -33,7 +33,7 @@
 |---|--------|----------|-------------|-------------------------|
 | O4 | **Financovanie** | Vlastné zdroje / granty EÚ / investori | Kombinácia: granty EÚ na výskum (súkromie, AI, digitálna suverenita) + investor po verejnom prototype; návrh fáz a nákladov v [docs/15](15-podnikatelsky-plan.md#10-náklady-a-financovanie-p) | Určuje veľkosť tímu a tempo |
 | O5 | **Finálny názov** | „LECH OS“ zostáva pracovným názvom | Ochrannú známku a dostupnosť názvu preveriť pred komerčným uvedením; predbežnú rešerš odporúčame pred verejným prototypom | Premenovanie po spustení je drahé |
-| O6 | **Jazyky pri spustení** | SK / SK + CZ / SK + CZ + EN | SK + CZ + EN | Ovplyvňuje výber a doladenie AI modelov |
+| O6 | **Jazyky pri spustení** | Rozhodnuté v [ADR-0009](adr/0009-trh-eu.md): vlna 1 EN + SK + CZ, vlna 2 DE + FR + PL | – | Ovplyvňuje výber a doladenie AI modelov |
 | O7 | **Režim Google pri prvom spustení** | Ponúknuť „Google Play v sandboxe“ priamo v sprievodcovi / len v nastaveniach | V sprievodcovi, s jasným vysvetlením ([ADR-0003](adr/0003-kompatibilita-google-sluzieb.md)) | Zásadne mení prvý dojem a kompatibilitu |
 
 ## Čo ďalej (najbližšie kroky)
@@ -52,6 +52,6 @@ Postupne, podľa [ADR-0008](adr/0008-postupny-vyvoj-a-brany.md):
 Popri vývoji (bez kapacity vývojárov):
 
 - kontakty s bankami a príprava technického dokumentu pre banky ([docs/13](13-bankove-aplikacie.md)),
-- zoznam 200 cieľových aplikácií pre SK a CZ vrátane firemných,
+- zoznam cieľových aplikácií pre krajiny vlny 1 (SK, CZ) vrátane firemných a celoeurópskych,
 - hľadanie 1–3 pilotných organizácií,
 - financovanie (otázka O4).

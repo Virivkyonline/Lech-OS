@@ -19,7 +19,7 @@ jeho ceny, podmienky, výpadky, rozhodnutia o modeloch aj prístup k údajom pou
    sú deterministický kód v `lech.ai.policy` ([docs/04](../04-lech-ai.md)). Výmena modelu nemení bezpečnostné správanie.
 4. **Žiadne API špecifické pre poskytovateľa v jadre systému.** Prispôsobenie konkrétnemu poskytovateľovi je len
    v adaptéri za rozhraním `AiProvider`.
-5. **Vlastná hodnotiaca sada** (SK/CZ príkazy, plánovanie akcií, odolnosť voči prompt injection, latencia) rozhoduje
+5. **Vlastná hodnotiaca sada** (príkazy v jazykoch EÚ podľa [ADR-0009](0009-trh-eu.md), najprv SK/CZ, plánovanie akcií, odolnosť voči prompt injection, latencia) rozhoduje
    o tom, ktorý model použijeme. Každá výmena modelu musí sadou prejsť.
 6. **Preferujeme open-weight modely s permisívnou licenciou** (Apache 2.0, MIT), aby sme ich mohli prevádzkovať
    a dolaďovať sami.

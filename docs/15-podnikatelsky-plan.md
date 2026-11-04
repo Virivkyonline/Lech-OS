@@ -8,7 +8,8 @@
 
 **LECH OS je mobilný operačný systém, v ktorom telefón patrí používateľovi.** Stavia na otvorenom základe Androidu
 (AOSP), nepotrebuje konto Google, neposiela údaje na reklamu a jeho asistent LECH AI pracuje primárne priamo v telefóne
-a v slovenčine. Infraštruktúra (aktualizácie, cloud, AI servery) beží v EÚ alebo priamo u zákazníka.
+– aj v menších jazykoch EÚ, ktoré veľkí poskytovatelia obsluhujú slabšie. Infraštruktúra (aktualizácie, cloud, AI servery)
+beží v EÚ alebo priamo u zákazníka. **Cieľovým trhom je celá Európska únia** ([ADR-0009](adr/0009-trh-eu.md)).
 
 - **Problém:** bežný Android a iOS sú postavené na obchodnom modeli, ktorý potrebuje údaje používateľov. Firmy a
   inštitúcie nemajú kontrolu nad tým, kam ich údaje z telefónov odchádzajú, a AI asistenti posielajú obsah do cloudu
@@ -17,8 +18,9 @@ a v slovenčine. Infraštruktúra (aktualizácie, cloud, AI servery) beží v E�
   ([audit/README.md](../audit/README.md)). Telefóny s Google službami komunikujú ešte viac.
 - **Riešenie:** LECH OS s meraným súkromím (nula neznámych spojení, overené mimo telefónu), LECH Privacy Control,
   lokálnou AI a európskou infraštruktúrou.
-- **Prvý trh:** firmy a organizácie, ktoré potrebujú kontrolu nad údajmi – pilot s 1–3 organizáciami
-  ([ADR-0007](adr/0007-prvy-trh-firmy.md)); paralelne bezplatná komunitná verzia.
+- **Trh:** celá EÚ. Prvými zákazníkmi sú firmy a organizácie, ktoré potrebujú kontrolu nad údajmi – pilot s 1–3
+  organizáciami na Slovensku a v Česku ([ADR-0007](adr/0007-prvy-trh-firmy.md)), potom Nemecko, Rakúsko a Benelux
+  a ďalšie krajiny EÚ; paralelne bezplatná komunitná verzia.
 - **Obchodný model:** platí sa za služby, nie údajmi – firemné licencie a správa zariadení, predplatné LECH Cloud,
   firemná AI, neskôr predaj telefónov.
 
@@ -40,7 +42,7 @@ a v slovenčine. Infraštruktúra (aktualizácie, cloud, AI servery) beží v E�
 | Súkromie | Merané: nula neznámych spojení, nezávislý audit | Desiatky spojení na Google, reklamný identifikátor |
 | Konto | Nepovinné | Prakticky povinné |
 | Kontrola | Privacy Control: kam a koľko posiela každá aplikácia, internet vypnúť jedným dotykom | Prehľad oprávnení, bez kontroly sieťovej prevádzky |
-| AI | Lokálne, v slovenčine, pravidlá mimo modelu, zameniteľní poskytovatelia | Prevažne v cloude jedného poskytovateľa |
+| AI | Lokálne, v jazykoch EÚ vrátane menších, pravidlá mimo modelu, zameniteľní poskytovatelia | Prevažne v cloude jedného poskytovateľa |
 | Infraštruktúra | EÚ alebo u zákazníka, otvorené protokoly | Cloud Google |
 | Kód | Otvorený (Apache 2.0 / AGPL v3) | Prevažne uzavretý |
 
@@ -58,16 +60,30 @@ Google Camera, rýchlosť bezpečnostných záplat (bez embarga), menší ekosys
 | **Bezpečnostne citlivé profesie** | Overiteľná bezpečnosť | Novinári, manažéri, bezpečnostné firmy | Po pilote |
 | **Jednotlivci dbajúci na súkromie** | Súkromie bez expertných znalostí | Komunitná verzia, neskôr predaj telefónov | Komunitná verzia od etapy 8 |
 
+### Krajiny – uvádzanie po vlnách ([ADR-0009](adr/0009-trh-eu.md))
+
+| Vlna | Krajiny | Úloha |
+|------|---------|-------|
+| 1 | Slovensko, Česko | Pilot, prvé referencie, ladenie produktu |
+| 2 | Nemecko, Rakúsko, Benelux | Hlavné uvedenie v EÚ – veľký trh firiem a vysoké povedomie o súkromí |
+| 3 | Francúzsko, Poľsko, severské krajiny, ďalšie | Rozšírenie cez partnerov |
+
 ### Veľkosť trhu – postup výpočtu
 
-Odhad sa urobí zdola nahor z verejných štatistík (ŠÚ SR, ČSÚ, Eurostat):
+Odhad sa urobí zdola nahor z verejných štatistík (Eurostat, národné štatistické úrady):
 
-- **Celý trh (TAM):** počet firemných mobilných zariadení v SK + CZ (neskôr EÚ) × ročná cena za zariadenie.
-- **Dosiahnuteľný trh (SAM):** len segmenty z tabuľky vyššie (citlivé údaje, verejná správa).
-- **Reálny cieľ (SOM):** podiel, ktorý vieme získať za 3–5 rokov s naším tímom a kanálmi.
+- **Celý trh (TAM):** počet firemných mobilných zariadení v EÚ × ročná cena za zariadenie.
+- **Dosiahnuteľný trh (SAM):** segmenty z tabuľky vyššie v krajinách vĺn 1 a 2.
+- **Reálny cieľ (SOM):** podiel, ktorý vieme získať za 3–5 rokov s naším tímom a partnermi.
 
-**Príklad výpočtu (P):** 200 organizácií × 40 zariadení × 8 €/zariadenie/mesiac × 12 = **768 000 € ročne**.
-Čísla 200, 40 a 8 € sú len ilustrácia; skutočné hodnoty doplníme z dát a z pilotu.
+**Príklad výpočtu (P):**
+
+| Horizont | Organizácie | Zariadenia na organizáciu | Cena | Ročne |
+|----------|-------------|---------------------------|------|-------|
+| Vlna 1 (SK, CZ) | 200 | 40 | 8 € / mesiac | 768 000 € |
+| Vlna 2 (DE, AT, Benelux) | 1 500 | 50 | 8 € / mesiac | 7 200 000 € |
+
+Čísla sú len ilustrácia; skutočné hodnoty doplníme zo štatistík a z pilotu.
 
 ## 5. Obchodný model
 
@@ -85,18 +101,20 @@ Princíp: **platí sa za služby, nie údajmi**. Predaj údajov a reklama sú vy
 
 | Konkurent | Model | Silné stránky | Naše odlíšenie |
 |-----------|-------|---------------|----------------|
-| **GrapheneOS** | Nezisková organizácia, zadarmo | Špičková bezpečnosť, Pixel, od 2027 Motorola | Integrovaná AI, slovenčina, podpora a SLA pre firmy, infraštruktúra v EÚ |
-| **/e/OS (Murena)** | Predaj telefónov + cloud | Hotový obchodný model, široká podpora zariadení | Overená bezpečnosť (zamknutý bootloader), meraná transparentnosť, AI |
+| **GrapheneOS** (Kanada) | Nezisková organizácia, zadarmo | Špičková bezpečnosť, Pixel, od 2027 Motorola | Integrovaná AI, jazyky EÚ, podpora a SLA pre firmy, infraštruktúra v EÚ |
+| **/e/OS (Murena, Francúzsko)** | Predaj telefónov + cloud | Hotový obchodný model v EÚ, široká podpora zariadení | Overená bezpečnosť (zamknutý bootloader), meraná transparentnosť, AI |
+| **Volla (Nemecko), iodéOS (Francúzsko)** | Telefóny / systém bez Google | Európsky pôvod, existujúci zákazníci | AI, overená bezpečnosť, ponuka pre firmy – ich aktuálnu ponuku treba overiť |
 | **CalyxOS, iodéOS, LineageOS** | Komunitné / malé projekty | Komunita | Produkt so zmluvnou podporou a pilotmi pre firmy |
 | **Samsung Knox, Android Enterprise** | Firemná správa nad Google ekosystémom | Rozšírenosť, nástroje | Nezávislosť od Google, kontrola údajov, otvorený kód |
-| **Apple iOS** | Prémiový ekosystém | Bezpečnosť, jednoduchosť | Otvorenosť, suverenita, cena, lokálna AI v slovenčine |
+| **Apple iOS** | Prémiový ekosystém | Bezpečnosť, jednoduchosť | Otvorenosť, suverenita, cena, lokálna AI v jazykoch EÚ |
 
 ## 7. Uvedenie na trh
 
 1. **Dôveryhodnosť cez merania:** zverejňované audity sieťovej prevádzky (porovnanie bežného Androidu a LECH OS)
    – najsilnejší marketingový argument, ktorý konkurencia v takejto forme neponúka.
-2. **Pilot s 1–3 organizáciami** (etapa 8): 20–100 zariadení, zmluva o pilote, merané výsledky.
-3. **Partneri:** IT integrátori a správcovia firemných sietí ako predajný kanál; neskôr výrobca telefónov (A+).
+2. **Pilot s 1–3 organizáciami** (etapa 8) na Slovensku a v Česku: 20–100 zariadení, zmluva o pilote, merané výsledky.
+3. **Partneri v každej krajine:** IT integrátori a správcovia firemných sietí ako predajný kanál – pre vstup do krajín
+   vlny 2 a 3 kľúčoví; neskôr výrobca telefónov (A+).
 4. **Komunitná verzia:** bezplatná, otvorený kód – povedomie, spätná väzba, vývojári.
 5. **Granty a výzvy EÚ** na súkromie, AI a digitálnu suverenitu ako zdroj financovania aj referencií.
 
@@ -134,13 +152,16 @@ Vychádza z etáp a brán kvality ([docs/08](08-plan-etap.md), [ADR-0008](adr/00
 | Nezávislé bezpečnostné audity | 2 × 30 000–80 000 € |
 | Právne služby (ochranná známka, zmluvy, GDPR, CRA) | 20 000–50 000 € |
 | Testovacie zariadenia | 5 000–10 000 € |
+| Lokalizácia a jazyky AI pre vlnu 2 (DE, FR, PL) – preklady, testovacie sady, doladenie modelov | 30 000–80 000 € |
+| Právne služby pre vstup do krajín (ochrana spotrebiteľa, zmluvy, DPH) | 5 000–15 000 € na krajinu |
 
 ### Výpočet
 
 - Tím: 8 × 6 000 € × 21 mesiacov ≈ **1 000 000 €**
 - Infraštruktúra: 2 000 € × 21 ≈ **42 000 €**
 - Audity, právo, zariadenia ≈ **100 000–200 000 €**
-- **Spolu do pilotu: približne 1,1–1,3 mil. €** (P)
+- **Spolu do pilotu (vlna 1): približne 1,1–1,3 mil. €** (P)
+- **Vstup do vlny 2:** lokalizácia, partneri a predaj v 3–5 krajinách – ďalšie odhadom 0,5–1 mil. € (P)
 
 ### Fázy financovania
 
@@ -151,7 +172,9 @@ Vychádza z etáp a brán kvality ([docs/08](08-plan-etap.md), [ADR-0008](adr/00
 | **2 – pilot a uvedenie** | Investor (seed) po dosiahnutí brány 4 | Pilot, audity, predaj |
 
 Programy na preverenie: EIC Accelerator, Digital Europe Programme, Horizon Europe, výzvy na otvorený softvér
-a súkromie (napr. NGI / NLnet), národné výzvy na inovácie v SK. **Aktuálne výzvy a podmienky treba overiť.**
+a súkromie (napr. NGI / NLnet), národné výzvy na inovácie v krajinách vĺn 1 a 2. Pri projektoch EÚ pomáhajú
+partneri z viacerých krajín – zahraniční pilotní zákazníci alebo integrátori sú výhodou aj pre granty.
+**Aktuálne výzvy a podmienky treba overiť.**
 
 ## 11. Riziká
 
@@ -159,15 +182,18 @@ Hlavné riziká a ich zmiernenie sú v [docs/10](10-rizika-a-otvorene-otazky.md)
 
 1. **Bankové aplikácie** – riešené rokovaniami s bankami a prvým trhom vo firmách ([docs/13](13-bankove-aplikacie.md)).
 2. **Náklady na údržbu** – aktualizácie sú trvalý náklad; plánované od začiatku ([docs/14](14-aktualizacie-a-podpora.md)).
-3. **Konkurencia** – odlíšenie cez AI, slovenčinu, podporu pre firmy a merania.
+3. **Konkurencia** – odlíšenie cez AI v jazykoch EÚ, podporu pre firmy a merania.
 4. **Financovanie a tím** – postup po bránach, každá brána je samostatný dôkaz pre ďalšie kolo.
+5. **Rozsah EÚ** – každá krajina pridáva jazyk, banky a obľúbené aplikácie; preto uvádzanie po vlnách.
 
 ## Čo treba overiť
 
-- [ ] Veľkosť trhu: počet firemných mobilných zariadení v SK a CZ v cieľových segmentoch (ŠÚ SR, ČSÚ, Eurostat).
+- [ ] Veľkosť trhu: počet firemných mobilných zariadení v EÚ a v krajinách vĺn 1 a 2 v cieľových segmentoch (Eurostat,
+      národné štatistické úrady).
+- [ ] Výber krajín vlny 2: rozhovory s firmami a integrátormi v Nemecku, Rakúsku a Benelux.
 - [ ] Ochota platiť a cena: rozhovory s 10–20 potenciálnymi pilotnými organizáciami.
 - [ ] Náklady na tím: aktuálne mzdy špecialistov (AOSP, jadro, AI) v SK a v zahraničí na diaľku.
 - [ ] Ceny auditov: ponuky od 2–3 nezávislých bezpečnostných firiem.
 - [ ] Granty: aktuálne výzvy, termíny, podmienky spolufinancovania.
 - [ ] Ochranná známka a názov pred komerčným uvedením ([docs/09](09-pravo-a-licencie.md#ochranné-známky)).
-- [ ] Konkurencia: ceny a ponuka /e/OS (Murena), Samsung Knox a ďalších pre firmy.
+- [ ] Konkurencia: ceny a ponuka /e/OS (Murena), Volla, iodéOS, Samsung Knox a ďalších pre firmy v EÚ.

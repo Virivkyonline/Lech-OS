@@ -2,8 +2,9 @@
 
 ## Cieľ
 
-Na LECH OS musia fungovať aplikácie hlavných bánk na Slovensku – **Tatra banka, Slovenská sporiteľňa, VÚB, ČSOB**
-a ďalšie. Bez toho bude predaj bežným používateľom ťažký. Pre firemný pilot ([ADR-0007](adr/0007-prvy-trh-firmy.md))
+Na LECH OS musia fungovať aplikácie hlavných bánk v každej krajine, kde ho uvádzame ([ADR-0009](adr/0009-trh-eu.md)).
+Začíname na Slovensku – **Tatra banka, Slovenská sporiteľňa, VÚB, ČSOB** a ďalšie – a v Česku; potom nasledujú
+krajiny vlny 2 (Nemecko, Rakúsko, Benelux). Bez toho bude predaj bežným používateľom ťažký. Pre firemný pilot ([ADR-0007](adr/0007-prvy-trh-firmy.md))
 je to menej kritické, pre spotrebiteľský trh je to podmienka.
 
 ## Prečo je to ťažké
@@ -30,7 +31,7 @@ odtlačky kľúčov.
 
 ### Krok 1 – Zoznam a testovací protokol (teraz, bez vývoja)
 
-Cieľové banky pre SK (zoznam doplníme o CZ):
+Cieľové banky – vlna 1, Slovensko (zoznam doplníme o Česko a krajiny ďalších vĺn):
 
 | Banka | Stav na LECH OS |
 |-------|-----------------|
@@ -78,7 +79,8 @@ Výsledky zapisujeme do tabuľky vyššie a do verejnej databázy kompatibility.
 ### Krok 4 – Rokovania s bankami
 
 - Osloviť bezpečnostné a mobilné tímy bánk s technickým dokumentom a testovacím zariadením.
-- Zvážiť spoločný postup cez **Slovenskú bankovú asociáciu** – jedna technická špecifikácia pre všetky banky.
+- Zvážiť spoločný postup cez **národné bankové asociácie** (na Slovensku Slovenská banková asociácia) – jedna technická
+  špecifikácia pre všetky banky v krajine; tá istá špecifikácia poslúži v celej EÚ.
 - Firemný pilot je dobrý argument: banky môžu testovať v kontrolovanom prostredí.
 - Kontakty s bankami začneme budovať **hneď**, aj keď vývoj ešte nepokročil – rokovania trvajú mesiace.
 
@@ -94,4 +96,4 @@ Výsledky zapisujeme do tabuľky vyššie a do verejnej databázy kompatibility.
 | Míľnik | Cieľ |
 |--------|------|
 | Brána 4 ([ADR-0008](adr/0008-postupny-vyvoj-a-brany.md)) | Stav všetkých bánk zo zoznamu je otestovaný a zverejnený |
-| Pred spotrebiteľským predajom | Aplikácie bánk, ktoré používa väčšina klientov v SK, fungujú aspoň v režime Google Play v sandboxe |
+| Pred spotrebiteľským predajom v krajine | Aplikácie bánk, ktoré používa väčšina klientov v danej krajine, fungujú aspoň v režime Google Play v sandboxe |

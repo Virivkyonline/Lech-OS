@@ -86,7 +86,7 @@ nespoľahlivé a poškodilo by dôveryhodnosť bezpečnostného produktu).
 1. **Hardvérová atestácia s našimi kľúčmi.** Android má štandardné API hardvérovej atestácie (súčasť AOSP),
    ktoré nezávisí od Google. Zverejníme otlačky našich kľúčov overeného bootu, aby aplikácie mohli LECH OS
    bezpečne rozpoznať a povoliť.
-2. **Aktívna spolupráca s bankami v SK a CZ.** Zmapujeme bankové aplikácie (etapa 7) a oslovíme banky
+2. **Aktívna spolupráca s bankami** – najprv v SK a CZ, potom v krajinách ďalších vĺn ([ADR-0009](adr/0009-trh-eu.md)). Zmapujeme bankové aplikácie (etapa 7) a oslovíme banky
    s technickým podkladom, ako LECH OS overiť. Toto je obchodná, nie len technická úloha.
 3. **Sledovanie európskych iniciatív.** V roku 2026 vznikla európska iniciatíva *Unified Attestation* ako
    open-source alternatíva k Play Integrity. Je kontroverzná (GrapheneOS ju kritizuje ako nahradenie jedného
@@ -104,7 +104,8 @@ nespoľahlivé a poškodilo by dôveryhodnosť bezpečnostného produktu).
 
 Kompatibilitu nebudeme odhadovať, ale merať:
 
-1. **Zoznam cieľových aplikácií:** 200 najpoužívanejších aplikácií v SK a CZ, rozdelených do kategórií
+1. **Zoznam cieľových aplikácií:** spoločné celoeurópske aplikácie + 200 najpoužívanejších aplikácií v každej krajine
+   aktuálnej vlny uvádzania (najprv SK a CZ, [ADR-0009](adr/0009-trh-eu.md)), rozdelených do kategórií
    (banky, komunikácia, doprava, štátne služby, nákupy, médiá, práca, zdravie).
 2. **Automatizovaný test:** inštalácia, spustenie, základný scenár, push notifikácia, poloha – v troch režimoch
    (bez Google / microG / Google Play v sandboxe).
@@ -116,7 +117,7 @@ Kompatibilitu nebudeme odhadovať, ale merať:
 |-------|-------------------------|
 | Google Play v sandboxe | ≥ 95 % plne funkčných, zvyšok zdokumentovaný |
 | Bez Google | zmerať a zverejniť (bez cieľa – slúži na informovanie) |
-| Bankové aplikácie SK/CZ | zoznam funkčných a stav rokovaní s každou bankou |
+| Bankové aplikácie v krajinách aktuálnej vlny | zoznam funkčných a stav rokovaní s každou bankou |
 
 ## Zdroje
 

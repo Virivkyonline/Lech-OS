@@ -80,6 +80,7 @@ Zásadné rozhodnutia zapisujeme ako *Architecture Decision Records* do [docs/ad
 | [0006](docs/adr/0006-licencia-otvoreny-kod.md) | Otvorený kód: Apache 2.0 pre systém, AGPL v3 pre servery, značka chránená | Prijaté |
 | [0007](docs/adr/0007-prvy-trh-firmy.md) | Prvý trh: pilot pre firmy a organizácie + komunitná verzia pre jednotlivcov | Prijaté |
 | [0008](docs/adr/0008-postupny-vyvoj-a-brany.md) | Postupný vývoj, jedna vec naraz, brány kvality medzi etapami | Prijaté |
+| [0009](docs/adr/0009-trh-eu.md) | Cieľový trh je celá EÚ; uvádzanie po vlnách krajín, jazyky EN/SK/CZ, potom DE/FR/PL | Prijaté |
 
 ## Prijaté rozhodnutia v skratke
 
@@ -89,7 +90,8 @@ Zásadné rozhodnutia zapisujeme ako *Architecture Decision Records* do [docs/ad
 - **Vývojové zariadenia:** najprv virtuálne zariadenie **Cuttlefish**, potom Google Pixel (odomknuteľný a znovu
   zamknuteľný bootloader s vlastnými kľúčmi, hardvérový bezpečnostný čip, 7 rokov aktualizácií od Pixel 8).
 - **Otvorený kód:** systém a aplikácie pod Apache 2.0, serverové služby pod AGPL v3, názov a logo chránené ochrannou známkou.
-- **Prvý trh:** pilot pre 1–3 firmy alebo organizácie (20–100 zariadení) a paralelne bezplatná komunitná verzia.
+- **Trh:** celá EÚ ([ADR-0009](docs/adr/0009-trh-eu.md)) – začíname pilotom pre 1–3 firmy alebo organizácie (20–100 zariadení)
+  na Slovensku a v Česku, potom Nemecko, Rakúsko a Benelux; paralelne bezplatná komunitná verzia.
 - **Postup:** virtuálny telefón → Pixel → grafické prostredie → bezpečnosť → lokálna AI → obchod a testovanie aplikácií.
   Prvá brána overí základ, bezpečnosť sieťovej prevádzky a aktualizácie skôr, ako pridáme ďalšie funkcie.
 - **Kompatibilita aplikácií:** reálne dosiahnuteľná pre veľkú väčšinu aplikácií. Najväčšie riziko sú bankové

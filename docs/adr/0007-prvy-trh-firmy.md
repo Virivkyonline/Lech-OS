@@ -32,6 +32,9 @@ správa (B2B), alebo oboje naraz.
 | **Bezpečnosť a súlad** | Pre firmy pripravíme bezpečnostný whitepaper, podklady pre posúdenie vplyvu (DPIA) a výsledky nezávislého auditu. |
 | **Podpora** | SLA pre pilotných zákazníkov, proces výmeny zariadení, kanál na hlásenie problémov. |
 
+> **Doplnené 4. 11. 2026:** geografický rozsah určuje [ADR-0009](0009-trh-eu.md) – cieľovým trhom je celá EÚ,
+> pilot začína na Slovensku a v Česku.
+
 ## Kedy rozhodnutie prehodnotiť
 
 - Po pilote: ak firmy nebudú ochotné platiť, alebo ak komunitná verzia ukáže výrazne väčší záujem jednotlivcov.

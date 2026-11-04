@@ -22,6 +22,7 @@ zmení, vznikne nový ADR, ktorý pôvodný **nahrádza**, a pôvodný dostane s
 | [0006](0006-licencia-otvoreny-kod.md) | Licencia: otvorený kód | Prijaté |
 | [0007](0007-prvy-trh-firmy.md) | Prvý trh: pilot pre firmy + komunitná verzia | Prijaté |
 | [0008](0008-postupny-vyvoj-a-brany.md) | Postupný vývoj s bránami kvality | Prijaté |
+| [0009](0009-trh-eu.md) | Cieľový trh je celá EÚ | Prijaté |
 
 ## Šablóna
 
