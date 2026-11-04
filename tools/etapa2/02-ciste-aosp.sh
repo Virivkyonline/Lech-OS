@@ -37,6 +37,13 @@ cat > "$WORK/spec.json" <<EOF
 }
 EOF
 
+# A failed earlier attempt can leave the instance registered, and cvd then refuses to create it again
+# ("New instance conflicts with existing instance"). This is a test machine, so remove the leftovers.
+if cvd fleet 2>/dev/null | grep -q 'aosp-baseline'; then
+  echo "Odstraňujem zvyšky predchádzajúceho virtuálneho telefónu (cvd reset)…"
+  cvd reset --yes >/dev/null 2>&1 || true
+fi
+
 echo "Sťahujem hotové obrazy AOSP a spúšťam virtuálny telefón (prvýkrát to môže trvať dlhšie)…"
 cd "$WORK"
 cvd create --config_file=spec.json
