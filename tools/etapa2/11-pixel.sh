@@ -43,9 +43,22 @@ else
 fi
 
 need_tools() {
-  if [ -x "${FASTBOOT[0]}" ] && [ -x "${ADB[0]}" ]; then return 0; fi
-  [ "$WINDOWS" -eq 1 ] && die "Chýbajú nástroje Google pre Windows – spustite: tools/etapa2/11-pixel.sh nastroje"
-  die "Chýba adb alebo fastboot (${ADB[0]}, ${FASTBOOT[0]})."
+  if ! [ -x "${FASTBOOT[0]}" ] || ! [ -x "${ADB[0]}" ]; then
+    [ "$WINDOWS" -eq 1 ] && die "Chýbajú nástroje Google pre Windows – spustite: tools/etapa2/11-pixel.sh nastroje"
+    die "Chýba adb alebo fastboot (${ADB[0]}, ${FASTBOOT[0]})."
+  fi
+  adb_start
+}
+# A freshly started adb server lists no phone for the first seconds (USB is still being scanned), and this
+# script stops its server at the end - so start it first and give the phone time to show up.
+adb_start() {
+  local i
+  "${ADB[@]}" start-server >/dev/null 2>&1
+  for (( i = 0; i < 10; i++ )); do
+    adb_ devices | grep -qE $'\t(device|unauthorized|recovery|sideload)$' && return 0
+    fastboot_ready && return 0
+    sleep 1
+  done
 }
 # Windows programs print CRLF; fastboot prints its answers to stderr. Images are passed by name from PIXEL_DIR.
 # fastboot waits forever for a phone that is not connected: call fb_var only after fastboot_ready.
@@ -81,19 +94,44 @@ EOF
 }
 # Into the bootloader: from Android over adb, or the phone is already there.
 to_bootloader() {
-  if fastboot_ready; then return 0; fi
-  if adb_unauthorized; then
-    echo "Telefón čaká na povolenie ladenia cez USB – potvrďte na telefóne 'Povoliť' a spustite znova."
-  fi
-  if adb_ready; then
-    echo "Reštartujem telefón do bootloadera…"
-    adb_ reboot bootloader >/dev/null
+  local i said=0
+  for (( i = 0; i < 180; i += 2 )); do
+    fastboot_ready && return 0
+    if adb_ready; then
+      echo "Reštartujem telefón do bootloadera…"
+      adb_ reboot bootloader >/dev/null
+      wait_for 120 fastboot_ready && return 0
+      driver_hint; die "Telefón sa v bootloaderi neukázal."
+    fi
+    if [ "$said" -eq 0 ]; then
+      said=1
+      if adb_unauthorized; then
+        echo "Na telefóne potvrďte 'Povoliť ladenie cez USB' (Vždy povoliť z tohto počítača)…"
+      else
+        echo "Telefón nie je pripojený. Buď zapnite ladenie cez USB (Pre vývojárov → Ladenie cez USB) a povoľte"
+        echo "tento počítač, alebo telefón vypnite a zapnite so stlačeným tlačidlom Zníženie hlasitosti (bootloader)."
+        echo "Čakám 3 minúty…"
+      fi
+    fi
+    sleep 2
+  done
+  windows_usb
+  driver_hint; die "Telefón sa nepripojil."
+}
+# What Windows itself sees on USB (Device Manager), to tell a missing driver from a missing connection.
+windows_usb() {
+  [ "$WINDOWS" -eq 1 ] && command -v powershell.exe >/dev/null 2>&1 || return 0
+  local out
+  out=$(cd /mnt/c && powershell.exe -NoProfile -NonInteractive -Command \
+    "Get-PnpDevice -PresentOnly | Where-Object { \$_.FriendlyName -match 'Pixel|Android|ADB|Fastboot|Bootloader' -or \$_.InstanceId -match 'VID_18D1' } | ForEach-Object { '  ' + \$_.Status + '  ' + \$_.Class + '  ' + \$_.FriendlyName }" \
+    < /dev/null 2>&1 | tr -d '\r')
+  if [ -n "$out" ]; then
+    echo "Windows vidí tieto zariadenia Google (stav OK = ovládač v poriadku, Error/Unknown = chýba ovládač):"
+    printf '%s\n' "$out"
   else
-    echo "Telefón nie je pripojený. Buď zapnite ladenie cez USB (Pre vývojárov → Ladenie cez USB) a povoľte"
-    echo "tento počítač, alebo telefón vypnite a zapnite so stlačeným tlačidlom Zníženie hlasitosti (bootloader)."
-    echo "Čakám 3 minúty…"
+    echo "Windows nevidí žiadne zariadenie Google na USB: skúste iný kábel (dátový, nie len nabíjací) alebo iný port"
+    echo "a na telefóne v upozornení 'Nabíjanie cez USB' zvoľte 'Prenos súborov'."
   fi
-  wait_for 180 fastboot_ready || { driver_hint; die "Telefón sa v bootloaderi neukázal."; }
 }
 save_stock_info() {   # the original Google system, once, before it is replaced (for docs and the way back)
   adb_ready || return 0
@@ -138,9 +176,15 @@ cmd_stav() {
     for v in product unlocked current-slot version-bootloader version-baseband snapshot-update-status; do
       printf '  %-24s %s\n' "$v" "$(fb_var "$v")"
     done
+  elif adb_unauthorized; then
+    echo "Telefón je pripojený, ale čaká na povolenie: na telefóne potvrďte 'Povoliť ladenie cez USB'"
+    echo "(zaškrtnite Vždy povoliť z tohto počítača) a spustite znova: tools/etapa2/11-pixel.sh stav"
+    return 1
   else
     echo "Žiadny telefón. Zapnite ladenie cez USB (Nastavenia → Systém → Pre vývojárov) a na telefóne povoľte"
     echo "tento počítač, alebo telefón zapnite do bootloadera (Zníženie hlasitosti + Napájanie)."
+    echo "adb: $(adb_ devices | sed 1d | tr '\n' ' ')"
+    windows_usb
     driver_hint
     return 1
   fi
