@@ -11,6 +11,7 @@ v repozitári nie sú – zostávajú na počítači, na ktorom audit prebehol.
 |-------|--------|------------|----------|
 | 4. 11. 2026 (1.) | Čisté AOSP, `aosp-android-latest-release` (build 16644040) | Notebook, WSL, Cuttlefish z hotových obrazov | 13 cieľov mimo telefónu, z toho 9 služieb Google – pozri nižšie |
 | 4. 11. 2026 (2.) | To isté, DNS mobilnej siete opravené na Quad9 | To isté | Android: **7 cieľov Google**, rovnakých ako v 1. audite – [úplná správa](2026-11-04-audit-2/sprava.md) |
+| 5. 11. 2026 (3.) | **LECH OS 0.1.0-dev** (`lech_cf_x86_64_only_phone`, vlastná zostava s úpravami E2-06) | Notebook, WSL, Cuttlefish z vlastnej zostavy | **1 cieľ Google** (`g.co`) namiesto 7 – pozri nižšie |
 
 ## 1. audit – 4. 11. 2026, čisté AOSP
 
@@ -94,3 +95,31 @@ službou zvolenou používateľom, alebo ho úplne vypneme.
 | `g.co` | Neurčené | Zistí audit LECH OS |
 
 Podrobnosti a dôsledky: [docs/11, časť 4c](../docs/11-etapa-2-cuttlefish.md#4c-bez-predvolených-spojení-na-google-úloha-e2-06).
+
+## 3. audit – 5. 11. 2026, LECH OS 0.1.0-dev
+
+Prvý audit LECH OS: vlastná zostava s úpravami z [docs/11, časť 4c](../docs/11-etapa-2-cuttlefish.md#4c-bez-predvolených-spojení-na-google-úloha-e2-06)
+(záplaty v [patches/](../patches), čas `europe.pool.ntp.org`), telefón 30 minút po prvom spustení bez zásahu.
+Tabuľka je prepísaná zo správy na notebooku (`audit/20261105-075138-prve-spustenie/sprava.md`).
+Časť „Kto sa pýtal“ v tomto audite chýba: skript ešte nepoužil `adb root` (opravené).
+
+| Cieľ | Protokol/port | Odkiaľ | Pakety | Prvýkrát | Čo to je |
+|------|---------------|--------|-------:|---------:|----------|
+| `0.–3.openwrt.pool.ntp.org` | UDP/123 | Wi-Fi/router OpenWrt | 26–28 každý | 0,3 s | Čas virtuálneho routra – testovacie prostredie |
+| `dns.google` (8.8.8.8) | UDP/53 | Wi-Fi/router OpenWrt | 8 | 0,0 s | DNS virtuálneho routra – testovacie prostredie; router ho má v konfigurácii OpenWrt z AOSP (`external/openwrt-prebuilts`) |
+| `9.9.9.9` | TCP/853, UDP/53 | mobilná sieť telefónu | 38 + 2 | 6,7 s | DNS Quad9 (šifrované), ktoré telefónu prideľuje testovacie prostredie |
+| `europe.pool.ntp.org` | UDP/123 | mobilná sieť telefónu | 2 | 6,8 s | **LECH OS:** sieťový čas namiesto `time.android.com` |
+| `…-dnsotls-ds.probe.lech.invalid` | DNS dopyt | mobilná sieť telefónu | 1 | 6,8 s | **LECH OS:** overenie šifrovaného DNS – dopyt len na DNS server, názov nikam nevedie |
+| `g.co` | TCP/443 | mobilná sieť telefónu | 11 | 18,4 s | **Google – pôvod treba určiť** (`tools/etapa2/kto-sa-pyta.sh`) |
+
+### Zistenia
+
+1. **Zo 7 cieľov Google ostal jeden.** Kontrola pripojenia (`connectivitycheck.gstatic.com`, `www.google.com`),
+   `time.android.com`, overenie DNS cez `metric.gstatic.com`, atestačné kľúče (`preprod-remoteprovisioning.googleapis.com`)
+   a zoznam Certificate Transparency (`www.gstatic.com`) zmizli. Úpravy z E2-06 teda fungujú tak, ako majú.
+2. **Čas funguje** cez európsky pool NTP (požiadavka a odpoveď, 2 pakety).
+3. **`g.co`** je krátke spojenie (11 paketov, približne TLS handshake a jedna požiadavka) 12 sekúnd po pripojení
+   na sieť. Nesúvisí s kontrolou pripojenia ani so zoznamom CT – ostalo aj po ich vypnutí.
+4. **Testovacie prostredie:** DNS `8.8.8.8` používa len virtuálny router OpenWrt (v čase 0,0 s, pred štartom
+   Androidu), nie telefón.
+

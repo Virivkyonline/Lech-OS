@@ -367,7 +367,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | **Hotové 4. 11. 2026** – dve merania; čisté AOSP sa pri prvom spustení spojí so 7 cieľmi Google ([audit/README.md](../audit/README.md)); zostáva určiť pôvod 2 spojení |
 | E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | **Hotové 5. 11. 2026** – produkt `lech_cf_x86_64_only_phone` vo [vendor/lech](../vendor/lech) ([časť 4b](#4b-prvý-produkt-lech-os-úlohy-e2-04-a-e2-05)) sa zostavil za 18 min a nabootoval; `lech-manifest` zatiaľ ako snímka presných verzií AOSP (`~/lech-work/aosp-manifest.xml`) |
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
-| E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | Rozpracované 5. 11. 2026 – 6 zo 7 cieľov vypnutých alebo nahradených ([časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)), pôvod `g.co` zisťujeme; čaká na zostavenie a audit |
+| E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | Rozpracované – 3. audit (5. 11. 2026): zo 7 cieľov Google ostal 1 (`g.co`), ostatné úpravy overené ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)); pôvod `g.co` zisťujeme |
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | – |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
@@ -427,6 +427,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     `memory stall` – plná pamäť, bez vplyvu na výsledok), `out/` 151 GB. Telefón LECH-PHONE nabootoval a kontrola
     identity cez adb prešla: model, verzia, *Build number* aj animácia pri štarte. Pred zostavením treba vypnúť
     bežiaci telefón (`cvd reset --yes`), aby mala analýza viac pamäte.
+
+11. **LECH OS bez spojení na Google (5. 11. 2026, E2-06):** všetky 4 záplaty sa na strom AOSP použili čisto,
+    zostavenie trvalo 13 minút a kontrola po štarte prešla vrátane času a RKP. 3. sieťový audit: zo 7 cieľov
+    Google ostal jediný – `g.co` ([audit/README.md](../audit/README.md)). DNS dopyty podľa aplikácií audit
+    nenačítal, lebo záznam DNS resolvera vyžaduje `adb root` (opravené, `tools/etapa2/kto-sa-pyta.sh`).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

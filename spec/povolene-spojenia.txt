@@ -22,3 +22,8 @@ openwrt.pool.ntp.org
 # počas vývoja; pred vydaním vlastná zóna výrobcu (vendor zone). Nastavenie:
 # vendor/lech/overlay/frameworks-res/res/values/config.xml
 europe.pool.ntp.org
+
+# LECH OS: overenie šifrovaného DNS (DoT/DoH) sa pýta na <náhodný>-dnsotls-ds.probe.lech.invalid
+# namiesto názvu Google. Dopyt ide len na zvolený DNS server; doména .invalid nikam nevedie (RFC 6761).
+# Záplata: patches/packages/modules/DnsResolver
+probe.lech.invalid
