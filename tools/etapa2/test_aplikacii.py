@@ -114,7 +114,17 @@ def choose(cands: list[dict], metadata: dict, abis: list[str], sdk: int) -> tupl
     sdk_ok = [c for c in abi_ok if c["minSdk"] <= sdk]
     if not sdk_ok:
         return None, f"vyžaduje novší Android (minSdk {min(c['minSdk'] for c in abi_ok)})"
-    return max(sdk_ok, key=lambda c: c["versionCode"]), ""
+    # Prefer code for the primary ABI of the phone (Cuttlefish: x86_64) over the translated one (arm64-v8a),
+    # then the newest version. APKs without native code or with all ABIs count as primary.
+    def abi_rank(c: dict) -> int:
+        if not c["nativecode"]:
+            return 0
+        return min(abis.index(a) for a in c["nativecode"] if a in abis)
+    best = min(sdk_ok, key=lambda c: (abi_rank(c), -c["versionCode"]))
+    best["abi"] = "bez natívneho kódu" if not best["nativecode"] else next(a for a in abis if a in best["nativecode"])
+    if abi_rank(best) > 0:
+        best["abi"] += " (preklad kódu ARM)"
+    return best, ""
 
 
 # ---------------------------------------------------------------- phone
@@ -197,15 +207,16 @@ def write_report(report: Path, device: dict, rows: list[dict]) -> int:
         f"- Telefón: {device['model']}, LECH OS {device['version']} (`{device['display']}`), Android SDK {device['sdk']}, ABI {', '.join(device['abis'])}",
         f"- Zdroj: {REPO} (index-v2.json; SHA-256 každého APK overený podľa indexu)",
         f"- **Výsledok: {ok} z {len(rows)} aplikácií sa nainštalovalo a spustilo bez pádu**", "",
-        "| Aplikácia | Kategória | Verzia | Inštalácia | Spustenie | Poznámky |",
-        "|---|---|---|---|---|---|",
+        "| Aplikácia | Kategória | Verzia | Kód | Inštalácia | Spustenie | Poznámky |",
+        "|---|---|---|---|---|---|---|",
     ]
     cell = lambda text: str(text).replace("|", "\\|").replace("\n", " ")  # noqa: E731
     for r in rows:
         version = f"{r['versionName']} ({r['versionCode']})" if r.get("versionCode") else "–"
         notes = "; ".join(r.get("poznamky", [])) or "–"
         lines.append(f"| {cell(r['name'])} (`{r['package']}`) | {cell(r['category'])} | {cell(version)} | "
-                     f"{cell(r.get('instalacia') or '–')} | {cell(r.get('spustenie') or '–')} | {cell(notes)} |")
+                     f"{cell(r.get('abi') or '–')} | {cell(r.get('instalacia') or '–')} | "
+                     f"{cell(r.get('spustenie') or '–')} | {cell(notes)} |")
     lines += ["", "## Ako sa testovalo", "",
               "Inštalácia `adb install -r`, spustenie spúšťacej aktivity (`monkey -p <balík> -c android.intent.category.LAUNCHER 1`), "
               "po čakaní kontrola procesu (`pidof`), aktivity na popredí (`dumpsys activity`) a záznamu pádov (`logcat -b crash`). "
@@ -265,7 +276,7 @@ def main() -> int:
             print(row["instalacia"])
             rows.append(row)
             continue
-        row.update({k: chosen[k] for k in ("versionName", "versionCode", "targetSdk", "nativecode", "sha256")})
+        row.update({k: chosen[k] for k in ("versionName", "versionCode", "targetSdk", "nativecode", "sha256", "abi")})
         try:
             apk = download(f"{REPO}/{chosen['file']}", args.work / "apk" / chosen["file"], chosen["sha256"])
         except Exception as error:  # network, hash mismatch

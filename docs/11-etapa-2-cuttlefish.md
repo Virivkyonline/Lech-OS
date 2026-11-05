@@ -427,8 +427,9 @@ komunikácia, mapy, súbory, médiá.
 
 - **Čo test overuje:** že sa aplikácia nainštaluje a spustí bez pádu – nie všetky jej funkcie (prihlásenie,
   synchronizáciu, hovory). Tie overí podrobnejší test s pilotným zákazníkom.
-- **Obmedzenie Cuttlefish:** telefón má len 64-bitové `x86_64`, bez prekladu kódu pre ARM. Aplikácie, ktoré F-Droid
-  ponúka len pre ARM, sa označia ako nedostupné. Na Pixeli (ARM) tento problém nebude.
+- **ABI Cuttlefish:** telefón je 64-bitový `x86_64` a hlási aj `arm64-v8a` – kód pre ARM prekladá (native bridge).
+  Test preto uprednostní verziu pre `x86_64`; ak F-Droid ponúka len ARM, použije ju a v stĺpci „Kód“ uvedie
+  „preklad kódu ARM“. Pixel (ARM) beží natívne.
 - **Index F-Droid** sa sťahuje cez HTTPS a jeho podpis sa zatiaľ neoveruje; overenie podpisu repozitára bude súčasťou
   LECH Store ([docs/06](06-lech-store-a-cloud.md)).
 
