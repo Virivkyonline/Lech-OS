@@ -465,7 +465,8 @@ sa zostaví, naštartuje, nespojí sa s ničím nepovoleným a beží na ňom 10
   - úloha **„LECH OS - nocna kontrola“** v Plánovači úloh Windows: každý deň o 02:30 (`--cas HH:MM`), zobudí počítač
     zo spánku, nespustí sa na batériu, najviac 4 hodiny. Beží, keď ste prihlásený vo Windows (aj pri zamknutej
     obrazovke). Zrušenie: `--zrusit`.
-- **Trvanie** približne 50 až 70 minút (zostavenie, 30 min audit, aplikácie). Vtedy notebook naplno pracuje – preto noc.
+- **Trvanie** približne 45 minút pri malých zmenách (zostavenie a štart 7 min, audit 30 min, aplikácie 2 min), po
+  veľkej zmene alebo novej verzii AOSP dlhšie. Vtedy notebook naplno pracuje – preto noc.
 - **Ďalší krok (neskôr):** CI na serveri v EÚ, ktoré zostavuje z vlastného zrkadla AOSP a kontroluje každú zmenu
   v repozitári ešte pred zlúčením.
 
@@ -514,7 +515,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | **Hotové 5. 11. 2026** – 4. audit: žiadne spojenie na Google; telefón len DNS siete a `europe.pool.ntp.org` ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)); 5 záplat a 1 prekrytie RRO |
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | **Hotové 5. 11. 2026** – aplikácie (aj Bluetooth) a kľúč aktualizácií podpísané kľúčmi LECH, `dev-keys`, overené v telefóne ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)). Kľúče APEX a AVB spolu s E2-08 |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06) |
-| E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | Pripravené 5. 11. 2026 – `09-nocna-kontrola.sh`, Plánovač úloh Windows cez `09-nastav-nocnu-kontrolu.sh` ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); čaká na prvý beh |
+| E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | **Hotové 5. 11. 2026 (v0)** – `09-nocna-kontrola.sh` na notebooku, každú noc o 02:30 z Plánovača úloh Windows ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); prvý beh: všetkých 5 krokov OK. Ďalej: CI na serveri v EÚ, kontrola každej zmeny pred zlúčením |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
@@ -609,6 +610,12 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     `INSTALL_FAILED_VERSION_DOWNGRADE`, lebo 1. test nainštaloval verziu pre ARM (vyššie číslo verzie) – pády Fennec
     patrili ARM pod prekladom (JNA hľadá x86-64). 3. test s čistou inštaláciou: Fennec x86_64 aj Organic Maps OK.
     Spolu **10 z 10** aplikácií.
+
+18. **Prvá nočná kontrola (5. 11. 2026, E2-09):** `09-nastav-nocnu-kontrolu.sh` vytvoril pravidlo `sudo` len pre
+    `tcpdump` a úlohu v Plánovači úloh Windows (02:30). Skúšobný beh `09-nocna-kontrola.sh --minuty 5`:
+    aktualizácia repozitára OK, kontroly repozitára OK, zostavenie a štart OK (zostavenie 4 min, 9 kontrol telefónu),
+    sieťový audit OK (8 cieľov, žiadne nepovolené spojenie telefónu), aplikácie z F-Droid OK (10 z 10).
+    Výsledok **OK** – prvá automatická kontrola celej zostavy LECH OS.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
