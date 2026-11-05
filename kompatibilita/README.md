@@ -11,6 +11,7 @@ zostávajú na počítači, na ktorom test prebehol (`~/lech-work/kompatibilita`
 
 | Dátum | Systém | Aplikácie | Výsledok |
 |-------|--------|-----------|----------|
+| 5. 11. 2026 (3.) | To isté, opakovanie Fennec a Organic Maps (čistá inštalácia) | 2 + Fennec ARM | **Fennec x86_64 aj Organic Maps OK** → spolu **10 z 10** aplikácií funguje |
 | 5. 11. 2026 (2.) | To isté; 11 položiek (Fennec aj pre ARM, OpenVPN namiesto WireGuard) | 10 z F-Droid | **8 OK**; Fennec x86_64 sa netestoval (DOWNGRADE), Fennec ARM a Organic Maps nie – pozri nižšie |
 | 5. 11. 2026 (1.) | LECH OS 0.1.0-dev, Cuttlefish x86_64 (ABI `x86_64,arm64-v8a`), Android SDK 37 | 10 z F-Droid | **8 z 10 OK** – pozri nižšie |
 
@@ -47,4 +48,17 @@ OK: K-9 Mail, DAVx⁵, Aegis, **OpenVPN for Android**, KeePassDX, Element, Mater
   ARM na Cuttlefish – na telefóne s ARM (Pixel) sa to nestane. Verzia pre x86_64 sa overí v 3. teste.
 - **Organic Maps:** proces po 8 s nebežal (v 1. teste bežal na pozadí). Test odteraz pri páde alebo zastavení uloží log
   (`~/lech-work/kompatibilita/logy/`) a príčinu zapíše do správy.
+
+## 3. test – 5. 11. 2026 a výsledok E2-10
+
+`10-test-aplikacii.sh --balik org.mozilla.fennec_fdroid --balik app.organicmaps`, s odinštalovaním pred inštaláciou:
+
+- **Fennec F-Droid (x86_64, 1590010): OK.** Pády v 1. a 2. teste patrili verzii pre ARM.
+- **Fennec F-Droid (ARM, 1590020): pád** `android-x86-64/libjnidispatch.so not found` – obmedzenie prekladu kódu ARM
+  na Cuttlefish (Java beží ako x86_64, JNA hľadá kód pre x86-64). Odteraz nie je v štandardnom zozname.
+- **Organic Maps: OK** – pri spustení si pýta povolenie polohy.
+
+**Úloha E2-10 je splnená:** všetkých 10 aplikácií zo zoznamu (prehliadač, pošta, kalendár a kontakty, MFA, VPN,
+heslá, firemná komunikácia, mapy, súbory, médiá) sa na LECH OS nainštaluje a spustí bez pádu a bez služieb Google.
+Test overil spustenie, nie všetky funkcie – prihlásenie, synchronizáciu a hovory overí test s pilotným zákazníkom.
 

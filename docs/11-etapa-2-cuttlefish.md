@@ -429,7 +429,10 @@ komunikácia, mapy, súbory, médiá.
   synchronizáciu, hovory). Tie overí podrobnejší test s pilotným zákazníkom.
 - **ABI Cuttlefish:** telefón je 64-bitový `x86_64` a hlási aj `arm64-v8a` – kód pre ARM prekladá (native bridge).
   Test preto uprednostní verziu pre `x86_64`; ak F-Droid ponúka len ARM, použije ju a v stĺpci „Kód“ uvedie
-  „preklad kódu ARM“. Pixel (ARM) beží natívne.
+  „preklad kódu ARM“. Pixel (ARM) beží natívne. Aplikácie s knižnicou JNA vo verzii len pre ARM pod prekladom padajú
+  (Fennec, 2. test) – JNA hľadá kód pre x86-64.
+- **Čistá inštalácia:** pred každou inštaláciou test aplikáciu odinštaluje; pri páde uloží log do
+  `~/lech-work/kompatibilita/logy`.
 - **Index F-Droid** sa sťahuje cez HTTPS a jeho podpis sa zatiaľ neoveruje; overenie podpisu repozitára bude súčasťou
   LECH Store ([docs/06](06-lech-store-a-cloud.md)).
 
@@ -479,7 +482,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | **Hotové 5. 11. 2026** – aplikácie (aj Bluetooth) a kľúč aktualizácií podpísané kľúčmi LECH, `dev-keys`, overené v telefóne ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)). Kľúče APEX a AVB spolu s E2-08 |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
-| E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | Rozpracované – 1. test (5. 11. 2026): 8 z 10 OK; Fennec x86_64 padá na chybe balíka, WireGuard nie je v F-Droid ([kompatibilita/README.md](../kompatibilita/README.md)); 2. test s Fennec pre ARM a OpenVPN |
+| E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
 
@@ -568,6 +571,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     Fennec pre x86_64 padá (`libjnidispatch.so` pre `android-x86-64` chýba v balíku). WireGuard nie je v hlavnom
     repozitári F-Droid. Test teraz uprednostní kód pre `x86_64`, vie vynútiť verziu pre ARM (stĺpec ABI v zozname)
     a žiadosť o povolenie počíta ako úspešné spustenie.
+
+17. **E2-10 hotové (5. 11. 2026):** 2. test – 8 OK vrátane OpenVPN for Android; Fennec x86_64 zablokoval
+    `INSTALL_FAILED_VERSION_DOWNGRADE`, lebo 1. test nainštaloval verziu pre ARM (vyššie číslo verzie) – pády Fennec
+    patrili ARM pod prekladom (JNA hľadá x86-64). 3. test s čistou inštaláciou: Fennec x86_64 aj Organic Maps OK.
+    Spolu **10 z 10** aplikácií.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

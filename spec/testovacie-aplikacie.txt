@@ -5,7 +5,9 @@
 # Formát: balík | názov | kategória | prečo [| ABI]
 # ABI (nepovinné) vynúti verziu pre dané ABI, napr. arm64-v8a – na Cuttlefish beží cez preklad kódu ARM.
 org.mozilla.fennec_fdroid    | Fennec F-Droid  | prehliadač            | webové aplikácie a intranet; veľký natívny kód
-org.mozilla.fennec_fdroid    | Fennec F-Droid (ARM) | prehliadač       | verzia pre ARM cez preklad: verzia x86_64 padá (chýba JNA pre x86-64) | arm64-v8a
+# Verzia pre ARM padá na Cuttlefish pod prekladom kódu ARM (JNA hľadá x86-64), na telefóne s ARM nie –
+# preto nie je v štandardnom teste (kompatibilita/README.md, 2. a 3. test):
+# org.mozilla.fennec_fdroid  | Fennec F-Droid (ARM) | prehliadač | verzia pre ARM cez preklad | arm64-v8a
 com.fsck.k9                  | K-9 Mail        | e-mail                | firemná pošta cez IMAP
 at.bitfire.davdroid          | DAVx⁵           | kalendár a kontakty   | synchronizácia CalDAV/CardDAV bez účtu Google
 com.beemdevelopment.aegis    | Aegis           | dvojfaktorové overenie | kódy MFA (TOTP) pre firemné účty
