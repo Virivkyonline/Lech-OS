@@ -405,7 +405,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | **Hotové 5. 11. 2026** – produkt `lech_cf_x86_64_only_phone` vo [vendor/lech](../vendor/lech) ([časť 4b](#4b-prvý-produkt-lech-os-úlohy-e2-04-a-e2-05)) sa zostavil za 18 min a nabootoval; `lech-manifest` zatiaľ ako snímka presných verzií AOSP (`~/lech-work/aosp-manifest.xml`) |
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | **Hotové 5. 11. 2026** – 4. audit: žiadne spojenie na Google; telefón len DNS siete a `europe.pool.ntp.org` ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)); 5 záplat a 1 prekrytie RRO |
-| E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | Pripravené 5. 11. 2026 – kľúče aplikácií a aktualizácií ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)); čaká na zostavenie. APEX a AVB v ďalšom kroku |
+| E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | **Hotové 5. 11. 2026** – aplikácie (aj Bluetooth) a kľúč aktualizácií podpísané kľúčmi LECH, `dev-keys`, overené v telefóne ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)). Kľúče APEX a AVB spolu s E2-08 |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – (spolu so serverom: vlastná kontrola pripojenia, doména na overenie DNS v striktnom režime a kópia zoznamu CT – nadväzuje na E2-06) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | – |
@@ -481,6 +481,10 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     Druhý pokus (certifikáty SELinux pre moduly na kľúče LECH) tiež nenaštartoval. Diagnostika ukázala pád
     `com.android.bluetooth` v `selinux_android_setcontext` a v `mac_permissions.xml` už kľúč LECH. Príčina:
     aplikácie Bluetooth sa podpisujú vlastným certifikátom modulu (časť 4d). Oprava: `PRODUCT_CERTIFICATE_OVERRIDES`.
+
+14. **E2-07 hotové (5. 11. 2026):** s prepísaným certifikátom aplikácií Bluetooth zostavenie trvalo 10 minút a
+    telefón nabootoval. Kontrola po štarte: `dev-keys`, podpis systému kľúčom `platform` LECH OS aj podpis
+    `com.android.bluetooth` kľúčom `bluetooth` LECH OS – všetkých 9 kontrol OK.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
