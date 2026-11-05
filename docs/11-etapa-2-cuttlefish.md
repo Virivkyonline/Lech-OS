@@ -256,10 +256,10 @@ tools/etapa2/06-zostav-lech.sh --spustit      # skopíruje vendor/lech do ~/aosp
 tools/etapa2/06-zostav-lech.sh --ulohy 4      # pri nedostatku pamäte; po prerušení pokračuje
 ```
 
-- **Trvanie a miesto:** zariadenie (`vsoc_x86_64_only`) ostáva rovnaké, takže väčšina prekladu sa nezopakuje.
-  Pri prvom zostavení produktu LECH však znova prebehne analýza Soong (pamäť ako pri prvom zostavení) a znova sa
-  vytvoria obrazy – odhad 1 až 3 hodiny a približne 40 GB voľného miesta navyše. Ďalšia zmena identity je už
-  rýchlejšia.
+- **Trvanie a miesto:** zariadenie (`vsoc_x86_64_only`) ostáva rovnaké, takže sa takmer nič neprekladá znova.
+  Prebehne len analýza Soong (pamäť je takmer plná ako pri prvom zostavení) a vytvoria sa nové obrazy.
+  Na notebooku to trvalo **18 minút** a `out/` narástol o 12 GB (zo 139 na 151 GB). Skript pre istotu vyžaduje
+  40 GB voľného miesta; vo WSL počíta s voľným miestom na disku C:, nie s veľkosťou virtuálneho disku.
 - **Prečo kópia, nie odkaz:** zostavovací systém hľadá produkty v `vendor/*` a symbolické odkazy na iné
   adresáre nesleduje. Skript preto pri každom spustení prepíše `~/aosp/vendor/lech` obsahom z repozitára.
 - **Mení sa len partícia product.** Systémová partícia je na Cuttlefish spoločný obraz definovaný v Soong
@@ -322,8 +322,8 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-01 | Zostavovací počítač (server alebo notebook) | `tools/check_build_host.sh` skončí výsledkom „zvládne zostavenie aj spustenie“ | **Hotové 5. 11. 2026** – notebook s Windows a WSL (24 GB RAM + 32 GB swap); prvé zostavenie AOSP za 6 h 40 min |
 | E2-02 | Čisté AOSP na Cuttlefish | Virtuálny telefón nabootuje a je ovládateľný cez prehliadač | **Hotové 4. 11. 2026** – WSL na notebooku, hotové obrazy `aosp-android-latest-release` (build 16644040), sandbox crosvm vypnutý, obrazovka cez prehliadač |
 | E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | **Hotové 4. 11. 2026** – dve merania; čisté AOSP sa pri prvom spustení spojí so 7 cieľmi Google ([audit/README.md](../audit/README.md)); zostáva určiť pôvod 2 spojení |
-| E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | Pripravené 5. 11. 2026 – produkt `lech_cf_x86_64_only_phone` vo [vendor/lech](../vendor/lech) ([časť 4b](#4b-prvý-produkt-lech-os-úlohy-e2-04-a-e2-05)); čaká na zostavenie na notebooku; `lech-manifest` zatiaľ ako snímka presných verzií AOSP |
-| E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | Pripravené 5. 11. 2026 – model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, animácia LECH OS; čaká na overenie v telefóne |
+| E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | **Hotové 5. 11. 2026** – produkt `lech_cf_x86_64_only_phone` vo [vendor/lech](../vendor/lech) ([časť 4b](#4b-prvý-produkt-lech-os-úlohy-e2-04-a-e2-05)) sa zostavil za 18 min a nabootoval; `lech-manifest` zatiaľ ako snímka presných verzií AOSP (`~/lech-work/aosp-manifest.xml`) |
+| E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | – |
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | – |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – |
@@ -377,6 +377,13 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
    nezachytili žiadne súvisiace spojenie. Na skutočnom telefóne tá istá aplikácia ukáže menu SIM karty vlastného
    operátora. V LECH OS ostáva, lebo ju potrebujú služby SIM kariet. Bezpečnostné hľadisko je opísané v
    [docs/05](05-lech-security.md#4-sieť-a-súkromie).
+
+10. **Prvý LECH OS (5. 11. 2026):** `06-zostav-lech.sh --spustit` po zostavení čistého AOSP – Kati prijal produkt
+    `lech_cf_x86_64_only_phone`, zostavenie bežalo v rovnakom režime ako AOSP (`SOONG_ONLY=true`,
+    `SOONG_INCREMENTAL_ANALYSIS=true`), build `CP2A.260605.016`. Trvalo **18 min** (počas analýzy Soong hlásenia
+    `memory stall` – plná pamäť, bez vplyvu na výsledok), `out/` 151 GB. Telefón LECH-PHONE nabootoval a kontrola
+    identity cez adb prešla: model, verzia, *Build number* aj animácia pri štarte. Pred zostavením treba vypnúť
+    bežiaci telefón (`cvd reset --yes`), aby mala analýza viac pamäte.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

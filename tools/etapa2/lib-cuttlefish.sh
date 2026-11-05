@@ -19,6 +19,18 @@ LECH_TARGET_FILE="${LECH_WORK:-$HOME/lech-work}/lunch-target"   # written by 05-
 
 lech_in_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
 
+# Free space in GB where a directory lives. In WSL the Linux disk is a growing virtual disk file on C:,
+# so df inside WSL shows the virtual disk's maximum size; the real limit is the free space on C:.
+lech_free_gb() {
+  local gb win
+  gb=$(df -Pk "$1" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
+  if lech_in_wsl && [ -d /mnt/c ]; then
+    win=$(df -Pk /mnt/c 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
+    if [ -n "$win" ] && [ "$win" -lt "${gb:-0}" ]; then gb=$win; fi
+  fi
+  echo "${gb:-0}"
+}
+
 # Enter the environment of the local build saved by 05-zostav-aosp.sh
 # (sets ANDROID_HOST_OUT and ANDROID_PRODUCT_OUT, which `cvd create` uses).
 lech_enter_build_env() {

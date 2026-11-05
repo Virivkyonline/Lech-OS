@@ -15,6 +15,7 @@
 set -uo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+. "$SCRIPT_DIR/lib-cuttlefish.sh"
 REPO_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 AOSP_DIR=${AOSP_DIR:-$HOME/aosp}
 WORKDIR=${LECH_WORK:-$HOME/lech-work}
@@ -24,7 +25,7 @@ SRC="$REPO_DIR/vendor/lech"
 DEST="$AOSP_DIR/vendor/lech"
 PRODUCT_MK="$SRC/products/$PRODUCT.mk"
 BASE_MK="$AOSP_DIR/device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk"
-MIN_FREE_GB=40      # extra space for the second product next to the existing out/ (estimate)
+MIN_FREE_GB=40      # the first LECH build added 12 GB to out/ (5. 11. 2026); keep a safety margin
 
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
 
@@ -62,7 +63,7 @@ if [ -n "${missing// /}" ]; then
 fi
 
 if [ -d "$AOSP_DIR/out" ]; then
-  free_gb=$(df -Pk "$AOSP_DIR" | awk 'NR==2 {print int($4/1024/1024)}')
+  free_gb=$(lech_free_gb "$AOSP_DIR")
   [ "${free_gb:-0}" -ge "$MIN_FREE_GB" ] || \
     die "Na zostavenie produktu LECH treba aspoň ${MIN_FREE_GB} GB voľného miesta, voľných je ${free_gb:-0} GB."
 fi
@@ -88,8 +89,8 @@ fi
 [ "$COPY_ONLY" -eq 1 ] && { echo "Hotovo (len kopírovanie)."; exit 0; }
 
 echo
-echo "Zostavujem LECH OS ($PRODUCT). Prvé zostavenie produktu LECH trvá približne 1 až 3 hodiny,"
-echo "ďalšie zmeny v identite už len minúty až desiatky minút."
+echo "Zostavujem LECH OS ($PRODUCT). Na notebooku to po zostavení čistého AOSP trvalo 18 minút;"
+echo "pri novej verzii AOSP alebo po zmene v device/ to môže byť oveľa dlhšie."
 LECH_PRODUCT=$PRODUCT LECH_RERUN=tools/etapa2/06-zostav-lech.sh "$SCRIPT_DIR/05-zostav-aosp.sh" ${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}
 status=$?
 [ "$status" -eq 0 ] || exit "$status"

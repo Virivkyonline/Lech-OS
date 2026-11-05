@@ -40,7 +40,7 @@ case "$JOBS" in ''|*[!0-9]*) die "--ulohy očakáva celé číslo." ;; esac
 
 [ -f "$AOSP_DIR/build/envsetup.sh" ] || die "V $AOSP_DIR nie sú zdrojové kódy AOSP – najprv tools/etapa2/04-stiahni-aosp.sh."
 mkdir -p "$WORKDIR"
-free_gb=$(df -Pk "$AOSP_DIR" | awk 'NR==2 {print int($4/1024/1024)}')
+free_gb=$(lech_free_gb "$AOSP_DIR")
 if [ ! -d "$AOSP_DIR/out" ] && [ "${free_gb:-0}" -lt "$MIN_FREE_GB" ]; then
   die "Na zostavenie treba približne ${MIN_FREE_GB} GB voľného miesta, voľných je ${free_gb:-0} GB."
 fi
@@ -73,7 +73,7 @@ done
 echo "$TARGET" > "$LECH_TARGET_FILE"
 echo "Cieľ zostavenia: $TARGET"
 
-echo "Zostavujem (${JOBS} súbežných úloh). Prvé zostavenie trvá na notebooku niekoľko hodín; log: $LOG"
+echo "Zostavujem (${JOBS} súbežných úloh). Prvé zostavenie AOSP trvá na notebooku niekoľko hodín, ďalšie sú kratšie; log: $LOG"
 SECONDS=0
 # Under heavy load the WSL clock can step backwards; the build then rejects freshly written files
 # ("future mtime"). Nothing is wrong with the build, so retry automatically a few times.
@@ -111,7 +111,7 @@ fi
 
 echo
 echo "Zostavenie úspešné za ${minutes} min (cieľ $TARGET)."
-echo "Výstup: $ANDROID_PRODUCT_OUT ($(du -sh "$AOSP_DIR/out" 2>/dev/null | cut -f1) v out/), voľné miesto: $(df -Pk "$AOSP_DIR" | awk 'NR==2 {print int($4/1024/1024)}') GB"
+echo "Výstup: $ANDROID_PRODUCT_OUT ($(du -sh "$AOSP_DIR/out" 2>/dev/null | cut -f1) v out/), voľné miesto: $(lech_free_gb "$AOSP_DIR") GB"
 
 if [ "$START" -eq 1 ]; then
   echo "Spúšťam virtuálny telefón z vlastnej zostavy…"
