@@ -68,7 +68,7 @@ def sha256(path: Path) -> str:
 
 def publish(ota: Path, directory: Path, version: str) -> dict:
     directory.mkdir(parents=True, exist_ok=True)
-    target = directory / f"lech-os-{version}-ota.zip"
+    target = directory / f"lech-os-ota-{version}.zip"
     shutil.copyfile(ota, target)
     info = ota_info(target)
     entry = {"verzia": version, "subor": target.name, "velkost": target.stat().st_size,

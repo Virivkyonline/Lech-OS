@@ -109,8 +109,9 @@ cvd create --host_path="$ANDROID_HOST_OUT" --product_path="$IMAGES_A" ${start_ar
 ADB=$(lech_adb) || die "adb sa nenašiel."
 timeout 180 "$ADB" wait-for-device || die "Telefón sa cez adb neozval."
 prop() { "$ADB" shell getprop "$1" 2>/dev/null | tr -d '\r'; }
-before_version=$(prop ro.lech.version); before_slot=$(prop ro.boot.slot_suffix); before_build=$(prop ro.build.version.incremental)
-echo "Telefón beží: LECH OS $before_version, slot ${before_slot:-?}, zostava $before_build"
+# The build number is the same for local builds (eng.<user>); the build time tells the builds apart.
+before_version=$(prop ro.lech.version); before_slot=$(prop ro.boot.slot_suffix); before_build=$(prop ro.build.date.utc)
+echo "Telefón beží: LECH OS $before_version, slot ${before_slot:-?}, zostavené $(date -d "@${before_build:-0}" '+%d. %m. %Y %H:%M')"
 [ "$before_version" = "$(cat "$IMAGES_A/lech-version.txt" 2>/dev/null)" ] || echo "UPOZORNENIE: telefón nemá verziu A z uložených obrazov."
 
 python3 -B "$SCRIPT_DIR/ota_server.py" serve "$SERVER_DIR" --port "$PORT" > "$OTA_DIR/server.log" 2>&1 &
@@ -126,7 +127,7 @@ echo "update_engine sťahuje a inštaluje aktualizáciu do druhého slotu (nieko
   --offset=$OTA_OFFSET --size=$OTA_SIZE --headers=\"$HEADERS\"" 2>&1 | tr -d '\r' | tee "$OTA_DIR/update_engine.log" \
   | awk '/onStatusUpdate/ {
            match($0, /UPDATE_STATUS_[A-Z_]+/); s = substr($0, RSTART, RLENGTH)
-           match($0, /[0-9.]+\)$/); p = substr($0, RSTART, RLENGTH - 1) + 0; b = int(p * 10)
+           match($0, /[0-9.eE+-]+\)$/); p = substr($0, RSTART, RLENGTH - 1) + 0; b = int(p * 10)
            if (s != ls || b != lb) { printf "  %-34s %3d %%\n", s, p * 100; fflush(); ls = s; lb = b }
            next }
          /onPayloadApplicationComplete|rror/ { print "  " $0; fflush() }'
@@ -142,17 +143,18 @@ sleep 15
 timeout 600 "$ADB" wait-for-device || die "Telefón sa po reštarte neozval."
 for _ in $(seq 120); do [ "$(prop sys.boot_completed)" = 1 ] && break; sleep 5; done
 [ "$(prop sys.boot_completed)" = 1 ] || die "Telefón po aktualizácii nedokončil štart (tools/etapa2/diagnostika.sh)."
-after_version=$(prop ro.lech.version); after_slot=$(prop ro.boot.slot_suffix); after_build=$(prop ro.build.version.incremental)
+after_version=$(prop ro.lech.version); after_slot=$(prop ro.boot.slot_suffix); after_build=$(prop ro.build.date.utc)
 
 ok=1
-row() { printf '  %-7s %-16s %s\n' "$1" "$2" "$3"; [ "$1" = OK ] || ok=0; }
+row() { printf '  %-7s %s%*s %s\n' "$1" "$2" $(( 16 - ${#2} )) "" "$3"; [ "$1" = OK ] || ok=0; }
 echo
 [ "$after_version" = "$OTA_VERSION" ] && row OK "verzia" "$before_version → $after_version" \
   || row CHYBA "verzia" "$before_version → ${after_version:-?} (očakávané $OTA_VERSION)"
 [ -n "$after_slot" ] && [ "$after_slot" != "$before_slot" ] && row OK "slot A/B" "$before_slot → $after_slot" \
   || row CHYBA "slot A/B" "${before_slot:-?} → ${after_slot:-?} (slot sa mal zmeniť)"
-[ "$after_build" != "$before_build" ] && row OK "zostava" "$before_build → $after_build" \
-  || row CHYBA "zostava" "$before_build → $after_build"
+fmt() { date -d "@${1:-0}" '+%d. %m. %Y %H:%M'; }
+[ "${after_build:-0}" -gt "${before_build:-0}" ] 2>/dev/null && row OK "čas zostavenia" "$(fmt "$before_build") → $(fmt "$after_build")" \
+  || row CHYBA "čas zostavenia" "$(fmt "$before_build") → $(fmt "$after_build") (B má byť novšia)"
 echo
 if [ "$ok" -eq 1 ]; then
   echo "Aktualizácia z vlastného servera prebehla: LECH OS $after_version beží zo slotu $after_slot."
