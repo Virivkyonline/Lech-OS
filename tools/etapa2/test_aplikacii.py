@@ -155,6 +155,9 @@ def test_app(phone: Phone, app: dict, apk: Path, wait: int, shots: Path) -> dict
     package = app["package"]
     result = {"instalacia": "", "spustenie": "", "poznamky": []}
 
+    # A fresh install every time: an earlier test may have left another build (another ABI, higher
+    # versionCode) that would block this one with INSTALL_FAILED_VERSION_DOWNGRADE.
+    phone.run("uninstall", package, timeout=120)
     code, out = phone.run("install", "-r", str(apk), timeout=300)
     if code != 0 or "Success" not in out:
         reason = (re.findall(r"INSTALL_[A-Z_]+[^\n]*", out) or [out.strip()[-160:]])[0]
@@ -184,11 +187,25 @@ def test_app(phone: Phone, app: dict, apk: Path, wait: int, shots: Path) -> dict
         result["snimka"] = shot.name
 
     crashed = f"Process: {package}" in crash or f">>> {package} <<<" in crash
+    if crashed or not pid:
+        # Keep the evidence: crash buffer and every log line about the app (Java and native crashes,
+        # the system's reason for killing it).
+        about = [l for l in log.splitlines()
+                 if package in l or "Fatal signal" in l or " F DEBUG" in l or "F/DEBUG" in l or "libc " in l]
+        logs = shots.parent / "logy"
+        logs.mkdir(parents=True, exist_ok=True)
+        name = f"{package}-{app['abi']}.txt" if app.get("abi") else f"{package}.txt"
+        (logs / name).write_text(crash + "\n----- logcat -----\n" + "\n".join(about), encoding="utf-8")
+        result["log"] = name
     if crashed:
         line = next((l for l in crash.splitlines() if "Exception" in l or "Error" in l), "pád")
         result["spustenie"] = f"PÁD: {line.strip()[:150]}"
     elif not pid:
-        result["spustenie"] = "CHYBA: proces po spustení nebeží"
+        reason = next((l for l in log.splitlines() if package in l and re.search(
+            r"Fatal signal|has died|Force stopping|Killing|crash|ANR|exited|finish", l, re.I)), "")
+        if not reason:
+            reason = next((l for l in log.splitlines() if "Fatal signal" in l), "")
+        result["spustenie"] = "CHYBA: proces po spustení nebeží" + (f" – {reason.strip()[:150]}" if reason else "")
     elif "permissioncontroller" in focus:
         result["spustenie"] = "OK (pýta si povolenie)"
     elif package not in focus:
@@ -219,7 +236,7 @@ def write_report(report: Path, device: dict, rows: list[dict]) -> int:
     cell = lambda text: str(text).replace("|", "\\|").replace("\n", " ")  # noqa: E731
     for r in rows:
         version = f"{r['versionName']} ({r['versionCode']})" if r.get("versionCode") else "–"
-        notes = "; ".join(r.get("poznamky", [])) or "–"
+        notes = "; ".join(r.get("poznamky", []) + ([f"log: {r['log']}"] if r.get("log") else [])) or "–"
         lines.append(f"| {cell(r['name'])} (`{r['package']}`) | {cell(r['category'])} | {cell(version)} | "
                      f"{cell(r.get('abi') or '–')} | {cell(r.get('instalacia') or '–')} | "
                      f"{cell(r.get('spustenie') or '–')} | {cell(notes)} |")

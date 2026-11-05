@@ -11,6 +11,7 @@ zostávajú na počítači, na ktorom test prebehol (`~/lech-work/kompatibilita`
 
 | Dátum | Systém | Aplikácie | Výsledok |
 |-------|--------|-----------|----------|
+| 5. 11. 2026 (2.) | To isté; 11 položiek (Fennec aj pre ARM, OpenVPN namiesto WireGuard) | 10 z F-Droid | **8 OK**; Fennec x86_64 sa netestoval (DOWNGRADE), Fennec ARM a Organic Maps nie – pozri nižšie |
 | 5. 11. 2026 (1.) | LECH OS 0.1.0-dev, Cuttlefish x86_64 (ABI `x86_64,arm64-v8a`), Android SDK 37 | 10 z F-Droid | **8 z 10 OK** – pozri nižšie |
 
 ## 1. test – 5. 11. 2026
@@ -33,3 +34,17 @@ Prepísané z výpisu na notebooku (`kompatibilita/20261105-134938-fdroid/sprava
 **Zistenia:** žiadna z aplikácií, ktoré sa dali nainštalovať, nepotrebovala služby Google na spustenie. Jediný pád
 je chyba balíka pre x86_64. Ďalší test: Fennec aj vo verzii pre ARM (cez preklad kódu) a OpenVPN for Android
 namiesto WireGuard.
+
+## 2. test – 5. 11. 2026
+
+OK: K-9 Mail, DAVx⁵, Aegis, **OpenVPN for Android**, KeePassDX, Element, Material Files, VLC.
+
+- **Fennec (x86_64):** `INSTALL_FAILED_VERSION_DOWNGRADE` – v telefóne ostala verzia z 1. testu s vyšším číslom
+  (1590020). Z toho vyplýva, že **1. test vybral verziu pre ARM** (najvyššie číslo), verzia pre x86_64 je 1590010.
+  Test odteraz pred každou inštaláciou aplikáciu odinštaluje.
+- **Fennec (ARM) padá** s `android-x86-64/libjnidispatch.so not found` – rovnako ako v 1. teste. JNA zisťuje procesor
+  z Javy, ktorá na Cuttlefish beží ako x86_64, a hľadá kód pre x86-64; balík pre ARM ho nemá. Obmedzenie prekladu kódu
+  ARM na Cuttlefish – na telefóne s ARM (Pixel) sa to nestane. Verzia pre x86_64 sa overí v 3. teste.
+- **Organic Maps:** proces po 8 s nebežal (v 1. teste bežal na pozadí). Test odteraz pri páde alebo zastavení uloží log
+  (`~/lech-work/kompatibilita/logy/`) a príčinu zapíše do správy.
+
