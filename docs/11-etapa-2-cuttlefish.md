@@ -66,7 +66,7 @@ a virtualizácia KVM.
 | Architektúra | x86_64 (Intel / AMD) | x86_64 |
 | Operačný systém | Linux (Ubuntu / Debian) nainštalovaný priamo | Ubuntu LTS |
 | RAM | 24 GB + 32 GB swap (pomalšie, menej súbežných úloh; napr. WSL na notebooku s 32 GB) | 64 GB a viac (oficiálne odporúčanie Google) |
-| Voľné miesto na disku | 300 GB SSD (zdrojové kódy bez histórie + jedna zostava, tesne) | 400 GB a viac; 1 TB NVMe |
+| Voľné miesto na disku | 300 GB SSD (zdrojové kódy bez histórie ~140 GB + jedna zostava ~140 GB, tesne) | 400 GB a viac; 1 TB NVMe |
 | Procesor | 8 jadier | 16+ jadier |
 | Virtualizácia | KVM (`/dev/kvm`) zapnutá v BIOS/UEFI | – |
 
@@ -309,6 +309,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
    `05-zostav-aosp.sh` po takejto chybe zostavenie automaticky spustí znova (najviac 5-krát, `LECH_CLOCK_RETRIES`).
    Chyba sa zopakovala po 2 minútach – príčinou je súbeh dvoch synchronizácií času (pozri „Hodiny“ v časti
    o WSL); riešením je vypnúť `systemd-timesyncd` podľa dokumentácie Ubuntu pre WSL.
+
+8. **Prvé úspešné zostavenie (5. 11. 2026):** po vypnutí `systemd-timesyncd` prebehlo bez ďalšieho posunu hodín –
+   192 188 krokov za 6 h 40 min (i9-12900H, 8 súbežných úloh, WSL s 24 GB RAM + 32 GB swap). Cieľ
+   `aosp_cf_x86_64_only_phone-trunk_staging-userdebug`, výstup `out/` **139 GB** (spolu so zdrojovými kódmi
+   približne 280 GB). Telefón z vlastnej zostavy nabehol (`cvd create` s `--ril_dns` a `--enable_sandbox=false`).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

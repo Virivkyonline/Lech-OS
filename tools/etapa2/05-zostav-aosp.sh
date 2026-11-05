@@ -23,7 +23,7 @@ PRODUCT=${LECH_PRODUCT:-aosp_cf_x86_64_only_phone}
 VARIANT=${LECH_VARIANT:-userdebug}
 JOBS=8
 START=0
-MIN_FREE_GB=120     # roughly what one Cuttlefish build writes into out/
+MIN_FREE_GB=150     # one Cuttlefish build wrote 139 GB into out/ (first real build, 5. 11. 2026)
 
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
 
