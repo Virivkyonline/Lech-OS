@@ -17,14 +17,20 @@ ifeq ($(wildcard $(LECH_KEYS_DIR)/platform.x509.pem),)
 $(error LECH OS: chýbajú testovacie kľúče v $(LECH_KEYS_DIR) - spustite tools/etapa2/06-zostav-lech.sh)
 endif
 PRODUCT_DEFAULT_DEV_CERTIFICATE := $(LECH_KEYS_DIR)/testkey
-# SELinux recognises system apps of mainline modules by their certificate (keys.conf: @NETWORK_STACK,
-# @SDK_SANDBOX, @BLUETOOTH, @NFC). For Bluetooth the build falls back to the public AOSP keys when
-# Google's ART module is in the build, so the Bluetooth app signed with the LECH key got the wrong
-# SELinux domain, crashed and Cuttlefish reported VIRTUAL_DEVICE_BOOT_FAILED (5. 11. 2026).
-# Point all three explicitly at the LECH keys.
+# SELinux recognises the system apps of mainline modules by their certificate (keys.conf: @NETWORK_STACK,
+# @SDK_SANDBOX, @BLUETOOTH, @NFC, taken from the directories below). Keep them on the LECH keys.
 PRODUCT_MAINLINE_SEPOLICY_DEV_CERTIFICATES := $(LECH_KEYS_DIR)
 PRODUCT_MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES := $(LECH_KEYS_DIR)
 PRODUCT_MAINLINE_NFC_SEPOLICY_DEV_CERTIFICATES := $(LECH_KEYS_DIR)
+# The Bluetooth apps are signed with a certificate of their own module
+# (packages/modules/Bluetooth/android/app/certs/com.android.bluetooth, the same as the public AOSP
+# "bluetooth" key), while SELinux expects the product's "bluetooth" key. With the LECH keys zygote could
+# not set the SELinux context of com.android.bluetooth, Bluetooth crashed and Cuttlefish reported
+# VIRTUAL_DEVICE_BOOT_FAILED (5. 11. 2026). Sign both apps of the shared user android.uid.bluetooth with
+# the LECH key (module lech_bluetooth_certificate, written into the key directory by 06-zostav-lech.sh).
+PRODUCT_CERTIFICATE_OVERRIDES += \
+    Bluetooth:lech_bluetooth_certificate \
+    BluetoothLegacyMigration:lech_bluetooth_certificate \
 
 # Shown in Settings > About phone > Build number. Non-user builds carry the variant, so a debuggable
 # build cannot be mistaken for a release.

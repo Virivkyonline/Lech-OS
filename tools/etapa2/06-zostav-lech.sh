@@ -90,6 +90,19 @@ if [ ! -f "$KEYS/platform.x509.pem" ]; then
 fi
 mkdir -p "$KEYS_DEST" && chmod 700 "$AOSP_DIR/vendor/lech-keys" "$KEYS_DEST"
 cp -p "$KEYS"/*.pk8 "$KEYS"/*.x509.pem "$KEYS_DEST/" || die "Kľúče sa nepodarilo skopírovať do $KEYS_DEST."
+# Soong modules for keys that apps reference by module name (PRODUCT_CERTIFICATE_OVERRIDES in common.mk).
+cat > "$KEYS_DEST/Android.bp" <<'EOF'
+// Written by tools/etapa2/06-zostav-lech.sh: LECH OS test keys as Soong modules (task E2-07).
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+// The Bluetooth apps have a certificate of their own module; LECH OS signs them with its "bluetooth" key.
+android_app_certificate {
+    name: "lech_bluetooth_certificate",
+    certificate: "bluetooth",
+}
+EOF
 echo "Podpisové kľúče: $KEYS (testovacie kľúče LECH OS)"
 # SELinux certificates of the mainline system apps are set in common.mk; warn if AOSP no longer knows
 # the Bluetooth variable (the Bluetooth app would get the wrong SELinux domain and the boot would fail).
@@ -182,14 +195,19 @@ if [ "$tags" = dev-keys ]; then
 else
   report CHYBA "podpisové kľúče" "${tags:-<prázdne>} (očakávané dev-keys)"
 fi
-want=$(lech_cert_hash "$KEYS/platform.x509.pem")
-have=$("$ADB" shell dumpsys package android 2>/dev/null | tr -d '\r' \
-  | grep -m1 -o 'version:[0-9]*, signatures:\[[0-9a-f, ]*\]' | sed 's/^version:[0-9]*, //' || true)
-case "$have" in
-  *"$want"*) report OK "podpis systému" "kľúč platform LECH OS ($want)" ;;
-  "") report "?" "podpis systému" "nezistený (dumpsys package android)" ;;
-  *) report CHYBA "podpis systému" "$have, očakávaný kľúč LECH OS $want" ;;
-esac
+check_signature() {   # what, package, LECH certificate
+  local want have
+  want=$(lech_cert_hash "$KEYS/$3.x509.pem")
+  have=$("$ADB" shell dumpsys package "$2" 2>/dev/null | tr -d '\r' \
+    | grep -m1 -o 'version:[0-9]*, signatures:\[[0-9a-f, ]*\]' | sed 's/^version:[0-9]*, //' || true)
+  case "$have" in
+    *"$want"*) report OK "$1" "kľúč $3 LECH OS ($want)" ;;
+    "") report "?" "$1" "nezistený (dumpsys package $2)" ;;
+    *) report CHYBA "$1" "$have, očakávaný kľúč LECH OS $want" ;;
+  esac
+}
+check_signature "podpis systému" android platform
+check_signature "podpis Bluetooth" com.android.bluetooth bluetooth
 rkp=$(prop remote_provisioning.hostname)
 if [ -z "$rkp" ]; then
   report OK "atestačné kľúče (RKP)" "bez servera"

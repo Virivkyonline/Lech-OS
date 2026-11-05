@@ -345,12 +345,16 @@ vlastnou upravenou aplikáciou so systémovými právami. LECH OS preto použív
 - **Raz vytvorené kľúče sa nemenia.** Telefón podpísaný inými kľúčmi treba vymazať (na Cuttlefish to robí
   `cvd reset`, ktorý `06-zostav-lech.sh --spustit` volá sám). Priečinok `~/lech-keys` si zálohujte.
 - **Zostavenie** podpíše nanovo všetky aplikácie. Odhad je 20 až 60 minút.
-- **SELinux rozpoznáva systémové aplikácie podľa certifikátu** (`system/sepolicy/private/keys.conf`). Pre moduly
-  NetworkStack, SDK sandbox, Bluetooth a NFC sa certifikát berie z premenných `PRODUCT_MAINLINE_*SEPOLICY_DEV_CERTIFICATES`.
-  Pre Bluetooth AOSP pri predpripravenom module ART od Google použije verejné kľúče AOSP. Prvá zostava s kľúčmi LECH
-  preto nenaštartovala: Bluetooth dostal nesprávne práva, stále padal a Cuttlefish hlásil
-  `VIRTUAL_DEVICE_BOOT_FAILED: Dependencies not ready after 10 checks: Bluetooth`. Riešenie: všetky tri premenné
-  v [common.mk](../vendor/lech/config/common.mk) ukazujú na kľúče LECH.
+- **SELinux rozpoznáva systémové aplikácie podľa certifikátu** (`system/sepolicy/private/keys.conf`): pre moduly
+  NetworkStack, SDK sandbox, Bluetooth a NFC berie certifikát z priečinka kľúčov produktu
+  (`PRODUCT_MAINLINE_*SEPOLICY_DEV_CERTIFICATES`). **Aplikácie Bluetooth sú výnimka:** podpisujú sa vlastným
+  certifikátom modulu (`packages/modules/Bluetooth/android/app/certs`), ktorý je zhodou totožný s verejným kľúčom
+  AOSP `bluetooth`. S kľúčmi LECH preto zygote nevedel nastaviť aplikácii `com.android.bluetooth` kontext SELinux
+  (`JNI FatalError … selinux_android_setcontext`), Bluetooth stále padal a Cuttlefish hlásil
+  `VIRTUAL_DEVICE_BOOT_FAILED: Dependencies not ready after 10 checks: Bluetooth`. Riešenie v
+  [common.mk](../vendor/lech/config/common.mk): `PRODUCT_CERTIFICATE_OVERRIDES` podpíše `Bluetooth` aj
+  `BluetoothLegacyMigration` kľúčom LECH `bluetooth`. Modul `lech_bluetooth_certificate` zapíše `06-zostav-lech.sh`
+  do priečinka kľúčov. Zistiť sa to dalo z `tools/etapa2/diagnostika.sh` (pády procesov, certifikáty SELinux).
 - **Sú to testovacie kľúče**, nie produkčné. Produkčné kľúče vzniknú pred vydaním podľa
   [docs/05](05-lech-security.md#správa-kľúčov): offline, dve osoby, nikdy na vývojárskom počítači.
 - **Ostáva na ďalšie kroky:**
@@ -474,7 +478,9 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
 13. **Kľúče LECH, prvý pokus (5. 11. 2026, E2-07):** prvé zostavenie zlyhalo pri analýze Soong pre nedostatok pamäte
     (`Killed`, exit 137); po zatvorení aplikácií vo Windows prešlo za 18 minút. Telefón však nenaštartoval:
     `VIRTUAL_DEVICE_BOOT_FAILED: Dependencies not ready after 10 checks: Bluetooth` a opakované pády procesu v logcate.
-    Príčina: certifikát pre pravidlá SELinux aplikácie Bluetooth ostal kľúčom AOSP (časť 4d). Oprava v `common.mk`.
+    Druhý pokus (certifikáty SELinux pre moduly na kľúče LECH) tiež nenaštartoval. Diagnostika ukázala pád
+    `com.android.bluetooth` v `selinux_android_setcontext` a v `mac_permissions.xml` už kľúč LECH. Príčina:
+    aplikácie Bluetooth sa podpisujú vlastným certifikátom modulu (časť 4d). Oprava: `PRODUCT_CERTIFICATE_OVERRIDES`.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

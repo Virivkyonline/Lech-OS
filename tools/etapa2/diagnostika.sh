@@ -17,7 +17,7 @@ latest() { [ $# -gt 0 ] || return 0; ls -t "$@" 2>/dev/null | head -1; }
 lech_mac_certs() {
   local aosp=${AOSP_DIR:-$HOME/aosp} keys=${LECH_KEYS:-$HOME/lech-keys/test}
   [ -d "$aosp/out" ] || { echo "zostava v $aosp/out nie je"; return 0; }
-  find "$aosp/out/target/product" "$aosp/out/soong/.intermediates/system/sepolicy" -name '*mac_permissions.xml' \
+  find "$aosp/out/target/product" "$aosp/out/soong/.intermediates/system/sepolicy" -type f -name '*mac_permissions.xml' \
        -newer "$aosp/build/make/core/config.mk" 2>/dev/null | head -n 12 | python3 -c '
 import re, subprocess, sys
 from pathlib import Path
