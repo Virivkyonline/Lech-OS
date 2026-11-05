@@ -8,6 +8,7 @@
 #   --cakanie S    seconds to wait after starting each app (default 8)
 #   --zoznam FILE  list of apps (default spec/testovacie-aplikacie.txt)
 #   --balik PKG    test only this package from the list (can be repeated)
+#   --sprava DIR   write the report into DIR instead of kompatibilita/<time>-fdroid in the repository
 # The phone must be running: tools/etapa2/06-zostav-lech.sh --spustit
 
 set -uo pipefail
@@ -21,6 +22,7 @@ LIST="$REPO_DIR/spec/testovacie-aplikacie.txt"
 WORK="${LECH_WORK:-$HOME/lech-work}/kompatibilita"
 STAMP=$(date +%Y%m%d-%H%M%S)
 PACKAGES=()
+REPORT_DIR=""
 
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
 
@@ -29,7 +31,8 @@ while [ $# -gt 0 ]; do
     --cakanie) WAIT=${2:?chýba počet sekúnd}; shift 2 ;;
     --zoznam) LIST=${2:?chýba súbor}; shift 2 ;;
     --balik) PACKAGES+=(--package "${2:?chýba balík}"); shift 2 ;;
-    -h|--help) sed -n '2,11p' "$0"; exit 0 ;;
+    --sprava) REPORT_DIR=${2:?chýba priečinok}; shift 2 ;;
+    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
@@ -42,4 +45,4 @@ timeout 60 "$ADB" wait-for-device >/dev/null 2>&1 || die "Telefón nebeží – 
 
 mkdir -p "$WORK"
 python3 -B "$SCRIPT_DIR/test_aplikacii.py" --adb "$ADB" --list "$LIST" --wait "$WAIT" ${PACKAGES[@]+"${PACKAGES[@]}"} \
-  --report "$REPO_DIR/kompatibilita/$STAMP-fdroid" --work "$WORK"
+  --report "${REPORT_DIR:-$REPO_DIR/kompatibilita/$STAMP-fdroid}" --work "$WORK"

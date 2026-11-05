@@ -5,11 +5,12 @@
 # the repository (audit/). The large capture file stays in $LECH_WORK. Before the phone is removed,
 # the DNS queries of the phone's resolver are read with the UID of the asking app (via adb).
 #
-# Usage: tools/etapa2/03-sietovy-audit.sh [--minuty N] [--lokalna-zostava] [--ponechat] [--ano]
+# Usage: tools/etapa2/03-sietovy-audit.sh [--minuty N] [--lokalna-zostava] [--ponechat] [--ano] [--sprava DIR]
 #   --minuty N          how long to record after the phone has booted (default 30)
 #   --lokalna-zostava   use the local build (from 05-zostav-aosp.sh) instead of prebuilt images
 #   --ponechat          keep the phone running after the audit (default: remove it)
 #   --ano               do not ask before removing existing virtual phones
+#   --sprava DIR        write the report into DIR instead of audit/<time>-prve-spustenie in the repository
 
 set -euo pipefail
 
@@ -17,6 +18,7 @@ MINUTES=30
 LOCAL_BUILD=0
 KEEP=0
 YES=0
+REPORT_DIR=""
 FILTER="net 192.168.93.0/24 or net 192.168.94.0/23 or net 192.168.96.0/22"
 
 REPO_DIR=$(cd "$(dirname "$0")/../.." && pwd)
@@ -32,7 +34,8 @@ while [ $# -gt 0 ]; do
     --lokalna-zostava) LOCAL_BUILD=1; shift ;;
     --ponechat) KEEP=1; shift ;;
     --ano) YES=1; shift ;;
-    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
+    --sprava) REPORT_DIR=${2:?chýba priečinok}; shift 2 ;;
+    -h|--help) sed -n '2,13p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
@@ -57,7 +60,10 @@ if [ "$LOCAL_BUILD" -ne 1 ]; then
   lech_ensure_images
 fi
 
-sudo -v
+# A sudoers rule for tcpdump alone (09-nastav-nocnu-kontrolu.sh) lets the nightly check run without a password.
+if ! sudo -n /usr/bin/tcpdump --version >/dev/null 2>&1; then
+  sudo -v || die "Záznam prevádzky potrebuje sudo (tcpdump)."
+fi
 mkdir -p "$WORK"
 PCAP="$WORK/prve-spustenie.pcap"   # .pcap suffix: Ubuntu's AppArmor profile lets tcpdump write such files
 
@@ -114,7 +120,7 @@ if [ "$KEEP" -ne 1 ]; then
   lech_reset_phones
 fi
 
-REPORT="$REPO_DIR/audit/$STAMP-prve-spustenie/sprava.md"
+REPORT="${REPORT_DIR:-$REPO_DIR/audit/$STAMP-prve-spustenie}/sprava.md"
 python3 "$REPO_DIR/tools/etapa2/analyzuj_audit.py" "$PCAP" --out "$REPORT" --ptr \
   --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" ${DNS_ARGS[@]+"${DNS_ARGS[@]}"} \
   --title "Sieťový audit prvého spustenia – $SOURCE"

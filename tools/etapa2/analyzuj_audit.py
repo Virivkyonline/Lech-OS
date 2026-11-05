@@ -261,13 +261,14 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
     domain_rows = []
     for d in sorted(domains.values(), key=lambda d: d.first_seen):
         row = f"| `{d.name}` | {', '.join(sorted(d.sources))} | {d.count} | {fmt_time(d.first_seen)} |"
+        ok = None
         if use_allow:
             ok = allowed({d.name}, None, allowlist)
             unknown += 0 if ok else 1
             row += " povolené |" if ok else " **NEZNÁME** |"
         lines.append(row)
         domain_rows.append({"domena": d.name, "zdroj": sorted(d.sources), "pocet": d.count,
-                            "prvykrat_s": round(d.first_seen, 1)})
+                            "prvykrat_s": round(d.first_seen, 1), "povolene": ok})
     if not domains:
         lines.append("| – | – | – | – |" + (" – |" if use_allow else ""))
 
@@ -293,6 +294,7 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
         names = ", ".join(f"`{n}`" for n in sorted(dest.names)) or "–"
         origin = ", ".join(sorted(dest.sources)) or "–"
         row = f"| {dest.ip} | {dest.proto}/{dest.port} | {names} | {origin} | {dest.packets} | {fmt_time(dest.first_seen)} |"
+        ok = None
         if use_allow:
             ok = allowed({n.replace(" (ptr)", "") for n in dest.names}, dest.ip, allowlist)
             unknown += 0 if ok else 1
@@ -300,7 +302,7 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
         lines.append(row)
         dest_rows.append({"ip": dest.ip, "protokol": dest.proto, "port": dest.port, "nazvy": sorted(dest.names),
                           "odkial": sorted(dest.sources),
-                          "pakety": dest.packets, "prvykrat_s": round(dest.first_seen, 1)})
+                          "pakety": dest.packets, "prvykrat_s": round(dest.first_seen, 1), "povolene": ok})
     if not destinations:
         lines.append("| – | – | – | – | – | – |" + (" – |" if use_allow else ""))
 
