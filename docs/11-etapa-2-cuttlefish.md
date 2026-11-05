@@ -367,6 +367,17 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
    `aosp_cf_x86_64_only_phone-trunk_staging-userdebug`, výstup `out/` **139 GB** (spolu so zdrojovými kódmi
    približne 280 GB). Telefón z vlastnej zostavy nabehol (`cvd create` s `--ril_dns` a `--enable_sandbox=false`).
 
+9. **Aplikácia 中国移动 (China Mobile) v zozname aplikácií** nie je čínsky softvér v systéme. Je to štandardná
+   aplikácia AOSP **SIM Toolkit** (`com.android.stk`): v zozname aplikácií sa zobrazí, len keď SIM karta ponúka
+   vlastné menu, a jej názov je názov tohto menu. Virtuálna SIM karta Cuttlefish (simulátor modemu z
+   [android-cuttlefish](https://github.com/google/android-cuttlefish), súbor
+   `base/cvd/cuttlefish/host/commands/modem_simulator/etc/files/iccprofile_for_sim0.xml`) obsahuje testovacie menu
+   operátora China Mobile. Príkaz SET UP MENU s položkami „SIM快捷确认“ (rýchle potvrdenie SIM) a „USIM卡信息“
+   (informácie o USIM karte) sú statické testovacie údaje na hostiteľovi, nie v obraze telefónu. Audity E2-03
+   nezachytili žiadne súvisiace spojenie. Na skutočnom telefóne tá istá aplikácia ukáže menu SIM karty vlastného
+   operátora. V LECH OS ostáva, lebo ju potrebujú služby SIM kariet. Bezpečnostné hľadisko je opísané v
+   [docs/05](05-lech-security.md#4-sieť-a-súkromie).
+
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
 pretože ide o prevádzku notebooku, nie telefónu.

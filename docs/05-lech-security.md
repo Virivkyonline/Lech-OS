@@ -47,6 +47,10 @@
 - Šifrované DNS predvolene zapnuté, s možnosťou výberu poskytovateľa; voliteľné blokovanie známych trackerov.
 - Náhodná MAC adresa pre každú Wi-Fi sieť.
 - Žiadne predvolené spojenia na servery Google (pozri [docs/03](03-nezavislost-od-google.md#audit-volaní-na-servery-google-v-aosp)).
+- **SIM karta ako samostatný počítač.** Cez SIM Toolkit môže SIM karta sama posielať SMS, otvárať dátové
+  spojenia alebo spúšťať prehliadač (tzv. proaktívne príkazy). Chyba v aplikáciách na SIM karte umožnila v roku 2019
+  útok Simjacker. LECH Privacy Control má preto zobrazovať aj činnosť, ktorú vyvolala SIM karta (SMS, spojenia).
+  Riziko posúdime pri Pixeli so skutočnou SIM kartou (E2-11).
 
 ### 5. Ochrana pred škodlivými aplikáciami
 
