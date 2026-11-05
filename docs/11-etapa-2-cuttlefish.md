@@ -295,7 +295,8 @@ tools/etapa2/06-zostav-lech.sh --ulohy 4      # pri nedostatku pamäte; po preru
 ## 4c. Bez predvolených spojení na Google (úloha E2-06)
 
 Pôvod každého zo 7 spojení z auditu čistého AOSP ([audit/README.md](../audit/README.md)) sme dohľadali
-v zdrojovom kóde Android 17. Kým LECH OS nemá vlastný server, spojenie radšej vypneme, než by sme ho
+v zdrojovom kóde Android 17. **Overené 5. 11. 2026 (4. audit): LECH OS sa pri prvom spustení nespojí so žiadnym
+serverom Google.** Kým LECH OS nemá vlastný server, spojenie radšej vypneme, než by sme ho
 presmerovali na cudzí server ([ADR-0010](adr/0010-upravy-aosp-ako-zaplaty.md)).
 
 | Spojenie | Kto ho robí | Zmena v LECH OS | Dôsledok, kým nemáme vlastný server |
@@ -367,9 +368,9 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | **Hotové 4. 11. 2026** – dve merania; čisté AOSP sa pri prvom spustení spojí so 7 cieľmi Google ([audit/README.md](../audit/README.md)); zostáva určiť pôvod 2 spojení |
 | E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | **Hotové 5. 11. 2026** – produkt `lech_cf_x86_64_only_phone` vo [vendor/lech](../vendor/lech) ([časť 4b](#4b-prvý-produkt-lech-os-úlohy-e2-04-a-e2-05)) sa zostavil za 18 min a nabootoval; `lech-manifest` zatiaľ ako snímka presných verzií AOSP (`~/lech-work/aosp-manifest.xml`) |
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
-| E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | Rozpracované – 3. audit (5. 11. 2026): zo 7 cieľov Google ostal 1 (`g.co`, aplikácia na tapety); záplata pripravená, čaká na 4. audit ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)) |
+| E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | **Hotové 5. 11. 2026** – 4. audit: žiadne spojenie na Google; telefón len DNS siete a `europe.pool.ntp.org` ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)); 5 záplat a 1 prekrytie RRO |
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | – |
-| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – |
+| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – (spolu so serverom: vlastná kontrola pripojenia, doména na overenie DNS v striktnom režime a kópia zoznamu CT – nadväzuje na E2-06) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | – |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |
@@ -432,6 +433,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     zostavenie trvalo 13 minút a kontrola po štarte prešla vrátane času a RKP. 3. sieťový audit: zo 7 cieľov
     Google ostal jediný – `g.co` ([audit/README.md](../audit/README.md)). DNS dopyty podľa aplikácií audit
     nenačítal, lebo záznam DNS resolvera vyžaduje `adb root` (opravené, `tools/etapa2/kto-sa-pyta.sh`).
+
+12. **Pôvod `g.co` a 4. audit (5. 11. 2026):** `kto-sa-pyta.sh` ukázal, že sa na `g***` pýta
+    `com.android.statementservice` (overenie odkazov aplikácií), a `adb shell pm get-app-links` aplikáciu, ktorá
+    odkaz deklaruje: `com.android.wallpaper: g.co: legacy_failure`. Po 5. záplate (WallpaperPicker2 bez `autoVerify`)
+    zostavenie trvalo 1 minútu a 4. audit neukázal **žiadne spojenie na Google** – E2-06 je hotové.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

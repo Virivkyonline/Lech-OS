@@ -12,6 +12,7 @@ v repozitári nie sú – zostávajú na počítači, na ktorom audit prebehol.
 | 4. 11. 2026 (1.) | Čisté AOSP, `aosp-android-latest-release` (build 16644040) | Notebook, WSL, Cuttlefish z hotových obrazov | 13 cieľov mimo telefónu, z toho 9 služieb Google – pozri nižšie |
 | 4. 11. 2026 (2.) | To isté, DNS mobilnej siete opravené na Quad9 | To isté | Android: **7 cieľov Google**, rovnakých ako v 1. audite – [úplná správa](2026-11-04-audit-2/sprava.md) |
 | 5. 11. 2026 (3.) | **LECH OS 0.1.0-dev** (`lech_cf_x86_64_only_phone`, vlastná zostava s úpravami E2-06) | Notebook, WSL, Cuttlefish z vlastnej zostavy | **1 cieľ Google** (`g.co`) namiesto 7 – pozri nižšie |
+| 5. 11. 2026 (4.) | LECH OS 0.1.0-dev, aj s úpravou `g.co` | To isté | **Žiadne spojenie na Google.** Telefón: len DNS testovacieho prostredia a `europe.pool.ntp.org` – pozri nižšie |
 
 ## 1. audit – 4. 11. 2026, čisté AOSP
 
@@ -129,4 +130,29 @@ Tabuľka je prepísaná zo správy na notebooku (`audit/20261105-075138-prve-spu
    Druhý dopyt `e***` (systém Android, UID 1000) je čas `europe.pool.ntp.org`.
 4. **Testovacie prostredie:** DNS `8.8.8.8` používa len virtuálny router OpenWrt (v čase 0,0 s, pred štartom
    Androidu), nie telefón.
+
+## 4. audit – 5. 11. 2026, LECH OS 0.1.0-dev bez spojení na Google
+
+To isté ako 3. audit, navyše záplata aplikácie na tapety (odkaz `g.co/wallpaper` bez overovania).
+Správa na notebooku: `audit/20261105-103322-prve-spustenie/sprava.md` – 7 cieľov, 6 domén, 1 neznáma položka.
+
+| Cieľ | Protokol/port | Odkiaľ | Pakety | Prvýkrát | Čo to je |
+|------|---------------|--------|-------:|---------:|----------|
+| `dns.google` (8.8.8.8) | UDP/53 | Wi-Fi/router OpenWrt | 8 | 0,0 s | DNS virtuálneho routra – testovacie prostredie (jediná neznáma položka) |
+| `0.–3.openwrt.pool.ntp.org` | UDP/123 | Wi-Fi/router OpenWrt | 28–29 každý | 0,3 s | Čas virtuálneho routra – testovacie prostredie |
+| `9.9.9.9` | TCP/853, UDP/53 | mobilná sieť telefónu | 12 + 2 | 6,8 s | DNS Quad9 (šifrované), ktoré telefónu prideľuje testovacie prostredie |
+| `europe.pool.ntp.org` | UDP/123 | mobilná sieť telefónu | (spolu s routrom 29) | 6,8 s | **LECH OS:** sieťový čas (rovnaký server poolu ako router) |
+| `…-dnsotls-ds.probe.lech.invalid` | DNS dopyt | mobilná sieť telefónu | 1 | 6,9 s | **LECH OS:** overenie šifrovaného DNS, len na DNS server |
+
+**Kto sa pýtal** (záznam DNS resolvera v telefóne): jediný dopyt `e***` od systému Android (UID 1000) =
+`europe.pool.ntp.org`. Dopyt na overenie DNS posiela resolver sám, preto v zázname nie je.
+
+### Zistenie
+
+**Úloha E2-06 je splnená:** pri prvom spustení a 30 minútach v pokoji sa LECH OS nespojí so žiadnym serverom Google.
+Telefón komunikoval len s DNS serverom, ktorý mu pridelila sieť, a so serverom času. Porovnanie: čisté AOSP
+sa v rovnakom teste spojilo so 7 cieľmi Google (2. audit).
+
+Ostáva (nie je to spojenie telefónu): DNS `8.8.8.8` virtuálneho routra OpenWrt – dá sa zmeniť v konfigurácii
+routra v testovacom prostredí (`external/openwrt-prebuilts`), ak bude treba úplne čistú správu.
 
