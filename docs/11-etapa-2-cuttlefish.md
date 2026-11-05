@@ -305,7 +305,7 @@ presmerovali na cudzí server ([ADR-0010](adr/0010-upravy-aosp-ako-zaplaty.md)).
 | `…-dnsotls-ds.metric.gstatic.com` | Overenie šifrovaného DNS (DoT aj DoH): modul DnsResolver; dopyt ide cez nastavený DNS server, aj nešifrovane | Záplata: `…-dnsotls-ds.probe.lech.invalid`. Názov má rovnakú dĺžku a doména `.invalid` nikam nevedie (RFC 6761); overenie prijme akúkoľvek odpoveď | Žiadny |
 | `preprod-remoteprovisioning.googleapis.com` | Atestačné kľúče (RKP): `rkpd`; testovací server Google nastavuje Cuttlefish | Záplata v `device/google/cuttlefish`: bez servera | Atestácia kľúčov na LECH Cuttlefish nefunguje. Na vývoj ju netreba; pri Pixeli rozhodneme v E2-11 ([docs/13](13-bankove-aplikacie.md)) |
 | `www.gstatic.com` | Zoznam logov Certificate Transparency: modul Connectivity (`CertificateTransparencyService`) ho sťahuje po štarte | Záplata: sťahovanie je predvolene vypnuté | Aplikácie, ktoré si samy zapnú kontrolu CT, nemajú aktuálny zoznam. Cieľ: kópia zoznamu na serveri LECH |
-| `g.co` | **Neurčené.** V moduloch NetworkStack, Connectivity, DnsResolver ani RemoteKeyProvisioning nie je | – | Audit LECH OS teraz ukáže aj aplikáciu, ktorá sa na názov `g…` pýta |
+| `g.co` | Overenie odkazov aplikácií (Android App Links): `com.android.statementservice` sťahuje `https://g.co/.well-known/assetlinks.json`, lebo niektorá predinštalovaná aplikácia deklaruje odkazy na `g.co` (zistené 5. 11. 2026 cez `kto-sa-pyta.sh`) | Zisťujeme, ktorá aplikácia | – |
 
 - **Záplaty** sú v [patches/](../patches) a použije ich `tools/etapa2/aplikuj-zaplaty.sh`. Skript
   `06-zostav-lech.sh` ho spúšťa sám; `aplikuj-zaplaty.sh --kontrola` len vypíše stav. Každá záplata je commit

@@ -92,7 +92,7 @@ službou zvolenou používateľom, alebo ho úplne vypneme.
 | `…-dnsotls-ds.metric.gstatic.com` | Overenie šifrovaného DNS, modul DnsResolver | `…-dnsotls-ds.probe.lech.invalid` (záplata) |
 | `preprod-remoteprovisioning.googleapis.com` | Atestačné kľúče (RKP), server nastavuje Cuttlefish | Bez servera (záplata) |
 | `www.gstatic.com` | Zoznam logov Certificate Transparency, modul Connectivity | Sťahovanie predvolene vypnuté (záplata) |
-| `g.co` | Neurčené | Zistí audit LECH OS |
+| `g.co` | Overenie odkazov aplikácií (App Links), `com.android.statementservice` | Zisťujeme, ktorá aplikácia doménu deklaruje |
 
 Podrobnosti a dôsledky: [docs/11, časť 4c](../docs/11-etapa-2-cuttlefish.md#4c-bez-predvolených-spojení-na-google-úloha-e2-06).
 
@@ -120,6 +120,11 @@ Tabuľka je prepísaná zo správy na notebooku (`audit/20261105-075138-prve-spu
 2. **Čas funguje** cez európsky pool NTP (požiadavka a odpoveď, 2 pakety).
 3. **`g.co`** je krátke spojenie (11 paketov, približne TLS handshake a jedna požiadavka) 12 sekúnd po pripojení
    na sieť. Nesúvisí s kontrolou pripojenia ani so zoznamom CT – ostalo aj po ich vypnutí.
+   **Pôvod (5. 11. 2026, `tools/etapa2/kto-sa-pyta.sh`):** dopyt `g***` poslala aplikácia
+   `com.android.statementservice` (UID 10069) – služba AOSP, ktorá overuje odkazy aplikácií (Android App Links):
+   pre každú doménu, ktorú aplikácia v manifeste označí na overenie, stiahne `https://<doména>/.well-known/assetlinks.json`.
+   Niektorá predinštalovaná aplikácia teda deklaruje odkazy na `g.co`; ktorá, ukáže `adb shell pm get-app-links`.
+   Druhý dopyt `e***` (systém Android, UID 1000) je čas `europe.pool.ntp.org`.
 4. **Testovacie prostredie:** DNS `8.8.8.8` používa len virtuálny router OpenWrt (v čase 0,0 s, pred štartom
    Androidu), nie telefón.
 
