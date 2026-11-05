@@ -496,7 +496,7 @@ zariadenia z otvoreného kódu GrapheneOS je úloha E2-11b; až s ňou sa dá bo
 
 | Čo | Ako |
 |----|-----|
-| Produkt | `lech_gsi_arm64` ([vendor/lech/products/lech_gsi_arm64.mk](../vendor/lech/products/lech_gsi_arm64.mk)) dedí z GSI `aosp_arm64` a z `config/common.mk`: identita, kľúče LECH, prekrytie NTP, animácia, záplaty z `patches/` (moduly sa zostavujú zo zdrojov) |
+| Produkt | `lech_gsi_arm64` ([vendor/lech/products/lech_gsi_arm64.mk](../vendor/lech/products/lech_gsi_arm64.mk)) je zložený ako GSI `aosp_arm64`, ale **len 64-bitový** (`core_64_bit_only.mk`, doska [vendor/lech/board/lech_arm64](../vendor/lech/board/lech_arm64/BoardConfig.mk) bez 32-bitového ARM, ako Cuttlefish `vsoc_arm64_only`), plus `config/common.mk`: identita, kľúče LECH, prekrytie NTP, animácia, záplaty z `patches/` (moduly sa zostavujú zo zdrojov). Pixel 9 32-bitový kód nespúšťa a s dvoma architektúrami analýze zostavy došla pamäť |
 | Partícia product | je v systémovom obraze (`system/product`). Partície `/product` a `/system_ext` Pixelu (aplikácie Google) GSI nepripája (`gsi_skip_mount.cfg`) |
 | Zostavenie | `11-zostav-gsi.sh`: príprava ako pre Cuttlefish (`06-zostav-lech.sh --len-skopirovat`), potom `05-zostav-aosp.sh` s cieľom v `~/lech-work/lunch-target-gsi`. Prvé zostavenie pre ARM: niekoľko hodín a približne 100 GB. Po ňom sa ďalšie zostavenie pre Cuttlefish (aj nočná kontrola) začne novou analýzou Soong |
 | Súbeh | zostavenie pre ARM a nočná kontrola majú spoločný zámok – nočná kontrola sa počas zostavenia preskočí (`historia.txt`: PRESKOČENÉ) |
@@ -670,6 +670,10 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     inštalácia cez `pnputil`, Windows ho ukazuje ako „Google, Inc. SAMSUNG Android Phone“ od Google LLC); nový server
     adb prvé sekundy nevidí telefón; `fastboot devices` vypisuje rozhranie rôzne, preto skript ráta každé zariadenie
     v zozname. Odomknutie: `11-pixel.sh odomknut`, potvrdenie tlačidlami na telefóne.
+
+20. **Prvé zostavenie pre ARM (5. 11. 2026, E2-11a):** analýze zostavy (Soong) pre GSI s 64-bitovým aj 32-bitovým
+    ARM došla po 37 minútach pamäť (`Killed`, 24 GB RAM + swap vo WSL). Produkt je odteraz len 64-bitový – Pixel 9
+    32-bitový kód nespúšťa (Tensor G4 nemá AArch32) a analýza aj preklad majú menej variantov modulov.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

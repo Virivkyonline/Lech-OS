@@ -4,7 +4,8 @@
 # The AOSP tree is prepared like for Cuttlefish (06-zostav-lech.sh --len-skopirovat: vendor/lech, keys,
 # patches), then 05-zostav-aosp.sh builds lech_gsi_arm64-<release>-userdebug. The target is kept in
 # ~/lech-work/lunch-target-gsi, so the Cuttlefish build, the audit and the nightly check stay unchanged.
-# The first build compiles the whole system for ARM: several hours and about 100 GB of disk.
+# 64-bit only (board vendor/lech/board/lech_arm64). The first build compiles the whole system for ARM:
+# several hours and about 100 GB of disk.
 # After a GSI build the next Cuttlefish build runs the Soong analysis again (other product).
 #
 # Usage: tools/etapa2/11-zostav-gsi.sh [--ulohy N]
@@ -23,7 +24,7 @@ PRODUCT=lech_gsi_arm64
 BASE_PRODUCT=aosp_arm64
 BASE_MK="$AOSP_DIR/build/make/target/product/aosp_arm64.mk"
 PRODUCT_MK="$REPO_DIR/vendor/lech/products/$PRODUCT.mk"
-PRODUCT_OUT="$AOSP_DIR/out/target/product/generic_arm64"
+PRODUCT_OUT="$AOSP_DIR/out/target/product/lech_arm64"   # board vendor/lech/board/lech_arm64 (64-bit only)
 if lech_in_wsl && [ -d /mnt/c ]; then PIXEL_DIR=${LECH_PIXEL_DIR:-/mnt/c/lech/pixel}; else PIXEL_DIR=${LECH_PIXEL_DIR:-$WORKDIR/pixel}; fi
 MIN_FREE_FIRST_GB=100   # estimate for the first ARM build next to the Cuttlefish one (other architecture)
 MIN_FREE_GB=40
@@ -50,11 +51,15 @@ mkdir -p "$WORKDIR/ci"
 exec 9> "$WORKDIR/ci/.zamok"
 flock -n 9 || die "Práve beží nočná kontrola (alebo iné zostavenie). Počkajte, kým skončí: tail -f $WORKDIR/ci/beh.log"
 
-missing=$(comm -23 <(lech_block_vars "$BASE_MK" "$BASE_PRODUCT") <(lech_block_vars "$PRODUCT_MK" "$PRODUCT") \
-  | grep -vxF -f <(tr ' ' '\n' <<< "$NOT_MIRRORED") | tr '\n' ' ')
+# The LECH product is composed like aosp_arm64.mk (64-bit only: core_64_bit_only.mk instead of core_64_bit.mk);
+# warn when a new AOSP version adds an inherited makefile or a product block variable there.
+inherits() { grep -E '^ *\$\(call inherit-product' "$1" | tr -d ' \t' | sed 's/core_64_bit_only\.mk/core_64_bit.mk/' | sort -u; }
+missing=$( { comm -23 <(lech_block_vars "$BASE_MK" "$BASE_PRODUCT") <(lech_block_vars "$PRODUCT_MK" "$PRODUCT") \
+             | grep -vxF -f <(tr ' ' '\n' <<< "$NOT_MIRRORED"); comm -23 <(inherits "$BASE_MK") <(inherits "$PRODUCT_MK"); } \
+           | sort -u | tr '\n' ' ')
 if [ -n "${missing// /}" ]; then
-  echo "UPOZORNENIE: $BASE_MK nastavuje pre $BASE_PRODUCT aj: $missing"
-  echo "  Produkt LECH ich nenastavuje – doplňte ich do $PRODUCT_MK (blok ifeq na konci súboru)."
+  echo "UPOZORNENIE: $BASE_MK má aj: $missing"
+  echo "  Produkt LECH to nemá – doplňte to do $PRODUCT_MK, inak sa systém zostaví inak ako GSI v AOSP."
 fi
 
 if [ -d "$PRODUCT_OUT" ]; then need=$MIN_FREE_GB; else need=$MIN_FREE_FIRST_GB; fi
