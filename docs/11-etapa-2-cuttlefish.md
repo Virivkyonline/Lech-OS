@@ -618,7 +618,7 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
 
 18. **Prvá nočná kontrola (5. 11. 2026, E2-09):** `09-nastav-nocnu-kontrolu.sh` vytvoril pravidlo `sudo` len pre
     `tcpdump`. Úloha v Plánovači úloh Windows sa však nevytvorila a PowerShell nevypísal žiadnu chybu – skript
-    teraz posiela PowerShell príkaz cez `-EncodedCommand` (bez dočasného súboru) a úlohu po vytvorení overí. Skúšobný beh `09-nocna-kontrola.sh --minuty 5`:
+    teraz posiela PowerShell príkaz cez `-EncodedCommand` (bez dočasného súboru) a úlohu po vytvorení overí. Po oprave: úloha vytvorená a overená, najbližší beh 6. 11. 2026 o 02:30. Skúšobný beh `09-nocna-kontrola.sh --minuty 5`:
     aktualizácia repozitára OK, kontroly repozitára OK, zostavenie a štart OK (zostavenie 4 min, 9 kontrol telefónu),
     sieťový audit OK (8 cieľov, žiadne nepovolené spojenie telefónu), aplikácie z F-Droid OK (10 z 10).
     Výsledok **OK** – prvá automatická kontrola celej zostavy LECH OS.
