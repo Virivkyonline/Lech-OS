@@ -201,9 +201,9 @@ for pkg in ET.parse(sys.stdin).getroot().iter():
   (cd /mnt/c && powershell.exe -NoProfile -NonInteractive -Command \
     "Start-Process -FilePath pnputil.exe -ArgumentList '/add-driver','$(wslpath -w "$inf")','/install' -Verb RunAs -Wait" \
     < /dev/null 2>&1 | tr -d '\r')
-  sleep 3
+  # Windows binds the new driver to the phone a few seconds after the installation.
   adb_start
-  if fastboot_ready; then
+  if wait_for 30 fastboot_ready; then
     echo "Hotovo – Windows vidí telefón v bootloaderi. Ďalší krok: tools/etapa2/11-pixel.sh odomknut"
   else
     echo "Ovládač je nainštalovaný. Ak je telefón v bootloaderi a Windows ho stále nevidí, odpojte a znova pripojte"
