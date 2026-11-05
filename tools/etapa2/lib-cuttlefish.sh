@@ -90,6 +90,17 @@ lech_reset_phones() {
   cvd reset --yes >/dev/null 2>&1 || true
 }
 
+# What a makefile sets only for one product name: the variables assigned and the makefiles inherited inside
+# "ifeq ($(TARGET_PRODUCT),<product>)" or "ifeq (<product>,$(TARGET_PRODUCT))" blocks, one per line.
+# A LECH product that inherits from an AOSP product has to repeat these blocks for its own name.
+lech_block_vars() {   # makefile, product
+  awk -v p="$2" '
+    $0 ~ "^ifeq \\(\\$\\(TARGET_PRODUCT\\)," p "\\)" || $0 ~ "^ifeq \\(" p ",\\$\\(TARGET_PRODUCT\\)\\)" { inside = 1; next }
+    inside && /^endif/ { inside = 0 }
+    inside && /^[A-Z_]+ *[:+?]?=/ { sub(/ *[:+?]?=.*/, ""); print }
+    inside && /inherit-product/ { gsub(/[ \t]+/, ""); print }' "$1" | sort -u
+}
+
 # Hash of a certificate as Android prints it in `dumpsys package` (signatures:[...]):
 # Integer.toHexString(Arrays.hashCode(DER bytes)).
 lech_cert_hash() {

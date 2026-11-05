@@ -54,13 +54,7 @@ mkdir -p "$WORKDIR"
 
 # The Cuttlefish phone sets some build modes only for its own product name. The LECH product mirrors
 # them; warn when a new AOSP version adds a variable there that the LECH product does not set.
-block_vars() {   # variables assigned inside "ifeq ($(TARGET_PRODUCT),<product>)" blocks of a makefile
-  awk -v p="$2" '
-    $0 ~ "^ifeq \\(\\$\\(TARGET_PRODUCT\\)," p "\\)" { inside = 1; next }
-    inside && /^endif/ { inside = 0 }
-    inside && /^[A-Z_]+ *[:+?]?=/ { sub(/ *[:+?]?=.*/, ""); print }' "$1" | sort -u
-}
-missing=$(comm -23 <(block_vars "$BASE_MK" "$BASE_PRODUCT") <(block_vars "$PRODUCT_MK" "$PRODUCT") | tr '\n' ' ')
+missing=$(comm -23 <(lech_block_vars "$BASE_MK" "$BASE_PRODUCT") <(lech_block_vars "$PRODUCT_MK" "$PRODUCT") | tr '\n' ' ')
 if [ -n "${missing// /}" ]; then
   echo "UPOZORNENIE: $BASE_MK nastavuje pre $BASE_PRODUCT aj: $missing"
   echo "  Produkt LECH ich nenastavuje – zostavenie môže prebehnúť inak ako pri čistom AOSP."

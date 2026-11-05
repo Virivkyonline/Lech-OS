@@ -10,7 +10,8 @@
 #   --spustit   start the built phone afterwards
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_CLOCK_RETRIES (default 5),
 #   LECH_PRODUCT (default aosp_cf_x86_64_only_phone), LECH_RELEASE (force a release config),
-#   LECH_VARIANT (default userdebug), LECH_RERUN (command suggested after a failure; set by 06-zostav-lech.sh)
+#   LECH_VARIANT (default userdebug), LECH_RERUN (command suggested after a failure; set by 06-zostav-lech.sh),
+#   LECH_TARGET_SAVE (file for the chosen target; default the Cuttlefish one, ~/lech-work/lunch-target)
 
 set -uo pipefail   # no -e: build/envsetup.sh and lunch are not written for errexit
 
@@ -22,6 +23,9 @@ WORKDIR=${LECH_WORK:-$HOME/lech-work}
 PRODUCT=${LECH_PRODUCT:-aosp_cf_x86_64_only_phone}
 VARIANT=${LECH_VARIANT:-userdebug}
 RERUN=${LECH_RERUN:-tools/etapa2/05-zostav-aosp.sh}
+# Other products (the Pixel GSI) keep their target apart: the audit and the nightly check start the phone
+# from the target in LECH_TARGET_FILE, which must stay the Cuttlefish one.
+TARGET_FILE=${LECH_TARGET_SAVE:-$LECH_TARGET_FILE}
 JOBS=8
 START=0
 MIN_FREE_GB=150     # one Cuttlefish build wrote 139 GB into out/ (first real build, 5. 11. 2026)
@@ -32,7 +36,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --ulohy) JOBS=${2:?chýba počet úloh}; shift 2 ;;
     --spustit) START=1; shift ;;
-    -h|--help) sed -n '2,14p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
@@ -54,7 +58,7 @@ source build/envsetup.sh >>"$LOG" 2>&1 || die "build/envsetup.sh zlyhal – pozr
 
 release_candidates() {
   [ -n "${LECH_RELEASE:-}" ] && echo "$LECH_RELEASE"
-  [ -f "$LECH_TARGET_FILE" ] && sed -n "s/^${PRODUCT}-\(.*\)-${VARIANT}\$/\1/p" "$LECH_TARGET_FILE"
+  [ -f "$TARGET_FILE" ] && sed -n "s/^${PRODUCT}-\(.*\)-${VARIANT}\$/\1/p" "$TARGET_FILE"
   echo trunk_staging
   ls build/release/release_configs/*.textproto 2>/dev/null | xargs -r -n1 basename | sed 's/\.textproto$//' | sort -r
 }
@@ -70,7 +74,7 @@ for release in $(release_candidates | awk 'NF && !seen[$0]++'); do
   fi
 done
 [ -n "$TARGET" ] || die "Žiadny cieľ zostavenia nefungoval (skúšané:${tried}). Pozri $LOG; konkrétny cieľ sa dá zadať cez LECH_RELEASE."
-echo "$TARGET" > "$LECH_TARGET_FILE"
+echo "$TARGET" > "$TARGET_FILE"
 echo "Cieľ zostavenia: $TARGET"
 
 echo "Zostavujem (${JOBS} súbežných úloh). Prvé zostavenie AOSP trvá na notebooku niekoľko hodín, ďalšie sú kratšie; log: $LOG"

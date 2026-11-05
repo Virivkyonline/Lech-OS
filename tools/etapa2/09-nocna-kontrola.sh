@@ -52,8 +52,13 @@ if [ "$PULL" -eq 1 ]; then
   exec "$REPO_DIR/tools/etapa2/09-nocna-kontrola.sh" --po-aktualizacii ${ORIG_ARGS[@]+"${ORIG_ARGS[@]}"}
 fi
 
+# The same lock is taken by other builds in the AOSP tree (11-zostav-gsi.sh): they must not share out/.
 exec 9> "$CI_ROOT/.zamok"
-flock -n 9 || { echo "Nočná kontrola už beží." >&2; exit 2; }
+if ! flock -n 9; then
+  echo "Nočná kontrola už beží alebo prebieha iné zostavenie (11-zostav-gsi.sh) – dnes sa preskočí." >&2
+  echo "$(date +%Y%m%d-%H%M%S) PRESKOČENÉ (beží iné zostavenie)" >> "$CI_ROOT/historia.txt"
+  exit 2
+fi
 
 STAMP=$(date +%Y%m%d-%H%M%S)
 RUN="$CI_ROOT/$STAMP"

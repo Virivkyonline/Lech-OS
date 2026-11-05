@@ -97,6 +97,17 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
     tools/etapa2/09-nocna-kontrola.sh          # vyskúšať hneď
     ```
 
+15. **LECH OS na Pixeli 9** (úloha E2-11a, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)) – zostavenie pre ARM
+    trvá prvýkrát niekoľko hodín; medzitým sa dá odomknúť bootloader:
+
+    ```bash
+    tools/etapa2/11-zostav-gsi.sh              # LECH OS pre ARM64, obrazy do C:\lech\pixel
+    tools/etapa2/11-pixel.sh nastroje          # adb.exe a fastboot.exe od Google pre Windows
+    tools/etapa2/11-pixel.sh odomknut          # odomknutie bootloadera – vymaže telefón
+    tools/etapa2/11-pixel.sh nahrat            # nahratie LECH OS – vymaže telefón
+    tools/etapa2/11-pixel.sh kontrola          # kontrola po štarte
+    ```
+
 ## 1. Zostavovací počítač
 
 Na zostavenie stačí **server alebo dostatočne vybavený notebook či stolný počítač**. Rozhoduje RAM, rýchly disk
@@ -475,6 +486,36 @@ sa zostaví, naštartuje, nespojí sa s ničím nepovoleným a beží na ňom 10
 - **Ďalší krok (neskôr):** CI na serveri v EÚ, ktoré zostavuje z vlastného zrkadla AOSP a kontroluje každú zmenu
   v repozitári ešte pred zlúčením.
 
+## 4h. LECH OS na Pixeli 9 (úloha E2-11a)
+
+Od Androidu 16 (jún 2025) Google nezverejňuje stromy zariadení Pixel v AOSP a ako vzor odporúča Cuttlefish.
+Prvý krok na skutočnom telefóne je preto **LECH OS ako jednotný systém (GSI)**: nahradí sa len systémový obraz,
+vendor, jadro a ovládače zostávajú pôvodné z Pixelu (Android 17). Úplná zostava pre Pixel so stromami
+zariadenia z otvoreného kódu GrapheneOS je úloha E2-11b; až s ňou sa dá bootloader zamknúť s vlastným kľúčom AVB
+(E2-12).
+
+| Čo | Ako |
+|----|-----|
+| Produkt | `lech_gsi_arm64` ([vendor/lech/products/lech_gsi_arm64.mk](../vendor/lech/products/lech_gsi_arm64.mk)) dedí z GSI `aosp_arm64` a z `config/common.mk`: identita, kľúče LECH, prekrytie NTP, animácia, záplaty z `patches/` (moduly sa zostavujú zo zdrojov) |
+| Partícia product | je v systémovom obraze (`system/product`). Partície `/product` a `/system_ext` Pixelu (aplikácie Google) GSI nepripája (`gsi_skip_mount.cfg`) |
+| Zostavenie | `11-zostav-gsi.sh`: príprava ako pre Cuttlefish (`06-zostav-lech.sh --len-skopirovat`), potom `05-zostav-aosp.sh` s cieľom v `~/lech-work/lunch-target-gsi`. Prvé zostavenie pre ARM: niekoľko hodín a približne 100 GB. Po ňom sa ďalšie zostavenie pre Cuttlefish (aj nočná kontrola) začne novou analýzou Soong |
+| Súbeh | zostavenie pre ARM a nočná kontrola majú spoločný zámok – nočná kontrola sa počas zostavenia preskočí (`historia.txt`: PRESKOČENÉ) |
+| Nahratie | `11-pixel.sh` vo WSL používa `adb.exe` a `fastboot.exe` od Google pre Windows (`C:\lech\platform-tools`), lebo USB zariadenia vidí Windows, nie WSL. Server adb na porte 5038, oddelene od adb pre Cuttlefish |
+| Postup nahratia | bootloader → `vbmeta` s vypnutým overovaním → režim fastbootd → `system` (ak chýba miesto v `super`, odstráni sa nepoužívaná `product_<slot>`) → vymazanie dát → štart |
+| Návrat | `11-pixel.sh spat`: Android Flash Tool (`flash.android.com`) nahrá pôvodný systém Google. Pôvodná verzia sa zapíše do `~/lech-work/pixel/povodny-system.txt` |
+
+Pred prvým nahratím v telefóne s pôvodným systémom: najnovšia aktualizácia, *Nastavenia → Informácie o telefóne*
+(7× *Číslo zostavy*), *Systém → Pre vývojárov*: zapnúť **Odomknutie OEM** a **Ladenie cez USB**, pripojiť kábel
+USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LECH OS vymažú všetky dáta v telefóne.
+
+- **Bootloader nikdy nezamykať s LECH OS GSI** (`fastboot flashing lock`) – overenie by zlyhalo a telefón by sa
+  nespustil. Zamknúť až s pôvodným systémom alebo s úplnou zostavou podpísanou kľúčom LECH (E2-12).
+- **Očakávané obmedzenia GSI:** varovanie o odomknutom bootloaderi pri štarte; funkcie, ktoré Pixel má v
+  partíciách `/product` a `/system_ext` (napríklad volania cez LTE – VoLTE – a časť funkcií fotoaparátu), nemusia
+  fungovať. Čo funguje a čo nie, zapíšeme do záznamu v časti 6 a použijeme pri E2-11b.
+- **Sieťový audit na Pixeli** (aj mobilná sieť) príde po prvom štarte – zachytávanie priamo v telefóne, lebo
+  premávka mobilnej siete nejde cez notebook.
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
@@ -519,10 +560,10 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | **Hotové 5. 11. 2026** – 4. audit: žiadne spojenie na Google; telefón len DNS siete a `europe.pool.ntp.org` ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)); 5 záplat a 1 prekrytie RRO |
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | **Hotové 5. 11. 2026** – aplikácie (aj Bluetooth) a kľúč aktualizácií podpísané kľúčmi LECH, `dev-keys`, overené v telefóne ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)). Kľúče APEX a AVB spolu s E2-08 |
-| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06) |
+| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06). Rozhodnuté 5. 11. 2026: doména `lech-web.sk` (Websupport, podadresy), server IONOS (Ubuntu 24.04, nginx) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | **Hotové 5. 11. 2026 (v0)** – `09-nocna-kontrola.sh` na notebooku, každú noc o 02:30 z Plánovača úloh Windows ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); prvý beh (ručne): všetkých 5 krokov OK. Ďalej: CI na serveri v EÚ, kontrola každej zmeny pred zlúčením |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
-| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |
+| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **Prebieha** – Pixel 9 kúpený 5. 11. 2026 (Android 17, odomknutie OEM povolené). E2-11a: LECH OS ako GSI (`11-zostav-gsi.sh`, `11-pixel.sh`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)); E2-11b: úplná zostava so stromami zariadenia z GrapheneOS |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
 
 ### Záznam z prvého spustenia (4. 11. 2026)
