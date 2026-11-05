@@ -563,7 +563,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06). Rozhodnuté 5. 11. 2026: doména `lech-web.sk` (Websupport, podadresy), server IONOS (Ubuntu 24.04, nginx) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | **Hotové 5. 11. 2026 (v0)** – `09-nocna-kontrola.sh` na notebooku, každú noc o 02:30 z Plánovača úloh Windows ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); prvý beh (ručne): všetkých 5 krokov OK. Ďalej: CI na serveri v EÚ, kontrola každej zmeny pred zlúčením |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
-| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **Prebieha** – Pixel 9 kúpený 5. 11. 2026 (Android 17, odomknutie OEM povolené). E2-11a: LECH OS ako GSI (`11-zostav-gsi.sh`, `11-pixel.sh`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)); E2-11b: úplná zostava so stromami zariadenia z GrapheneOS |
+| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **Prebieha** – Pixel 9 kúpený 5. 11. 2026 (Android 17, `CP3A.261005.005`), bootloader odomknutý 5. 11. 2026. E2-11a: LECH OS ako GSI (`11-zostav-gsi.sh`, `11-pixel.sh`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)); E2-11b: úplná zostava so stromami zariadenia z GrapheneOS |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
 
 ### Záznam z prvého spustenia (4. 11. 2026)
@@ -663,6 +663,13 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     aktualizácia repozitára OK, kontroly repozitára OK, zostavenie a štart OK (zostavenie 4 min, 9 kontrol telefónu),
     sieťový audit OK (8 cieľov, žiadne nepovolené spojenie telefónu), aplikácie z F-Droid OK (10 z 10).
     Výsledok **OK** – prvá automatická kontrola celej zostavy LECH OS.
+
+19. **Pixel 9 pripojený, bootloader odomknutý (5. 11. 2026, E2-11a):** pôvodný systém Android 17 `CP3A.261005.005`
+    (október 2026; zdrojové kódy AOSP na notebooku sú `CP2A`, jún 2026 – LECH OS GSI bude o niečo starší ako vendor
+    Pixelu). Poučenia: Windows potrebuje pre režim bootloader ovládač Google USB Driver (`11-pixel.sh ovladac`,
+    inštalácia cez `pnputil`, Windows ho ukazuje ako „Google, Inc. SAMSUNG Android Phone“ od Google LLC); nový server
+    adb prvé sekundy nevidí telefón; `fastboot devices` vypisuje rozhranie rôzne, preto skript ráta každé zariadenie
+    v zozname. Odomknutie: `11-pixel.sh odomknut`, potvrdenie tlačidlami na telefóne.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
