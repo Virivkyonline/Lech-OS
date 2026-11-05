@@ -8,13 +8,14 @@
 #
 # Usage: tools/etapa2/11-pixel.sh <command>
 #   nastroje   download platform-tools for Windows (adb.exe, fastboot.exe) to C:\lech\platform-tools
+#   ovladac    download and install the Google USB Driver (Windows needs it for the bootloader; asks for admin)
 #   stav       what is connected: Android (adb) or bootloader (fastboot), model, version, bootloader state
 #   odomknut   unlock the bootloader – ERASES ALL DATA in the phone (confirm on the phone)
 #   nahrat     flash the LECH OS GSI from 11-zostav-gsi.sh – erases all data
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   spat       how to go back to the original Google system
 # Environment: LECH_WORK (default ~/lech-work), LECH_KEYS (default ~/lech-keys/test), LECH_PIXEL_DIR (images;
-#   default /mnt/c/lech/pixel in WSL), LECH_PIXEL_TOOLS (default /mnt/c/lech/platform-tools in WSL)
+#   default /mnt/c/lech/pixel in WSL). In WSL the tools and the driver live in C:\lech (fixed paths).
 
 set -uo pipefail
 
@@ -24,7 +25,8 @@ REPO_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 WORKDIR=${LECH_WORK:-$HOME/lech-work}
 KEYS=${LECH_KEYS:-$HOME/lech-keys/test}
 EXPECTED_DEVICE=tokay   # Pixel 9
-TOOLS_URL=https://dl.google.com/android/repository/platform-tools-latest-windows.zip
+REPO_URL=https://dl.google.com/android/repository
+TOOLS_URL=$REPO_URL/platform-tools-latest-windows.zip
 DRIVER_URL=https://developer.android.com/studio/run/win-usb
 
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
@@ -32,7 +34,7 @@ die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
 if lech_in_wsl && [ -d /mnt/c ]; then
   WINDOWS=1
   PIXEL_DIR=${LECH_PIXEL_DIR:-/mnt/c/lech/pixel}
-  TOOLS=${LECH_PIXEL_TOOLS:-/mnt/c/lech/platform-tools}
+  TOOLS=/mnt/c/lech/platform-tools
   ADB=("$TOOLS/adb.exe" -P 5038)
   FASTBOOT=("$TOOLS/fastboot.exe")
 else
@@ -87,8 +89,8 @@ confirm() {   # question
 driver_hint() {
   [ "$WINDOWS" -eq 1 ] || return 0
   cat <<EOF
-  Ak telefón ukazuje režim bootloader (Fastboot Mode) a Windows ho nevidí, chýba ovládač: Správca zariadení →
-  zariadenie s výkričníkom (Android, Pixel 9) → Aktualizovať ovládač → Google USB Driver ($DRIVER_URL).
+  Ak telefón ukazuje režim bootloader (Fastboot Mode) a Windows ho nevidí, chýba ovládač Google USB Driver.
+  Nainštalujte ho (telefón nechajte v bootloaderi): tools/etapa2/11-pixel.sh ovladac
   Kábel USB-C priamo do notebooku, nie cez rozbočovač.
 EOF
 }
@@ -101,7 +103,7 @@ to_bootloader() {
       echo "Reštartujem telefón do bootloadera…"
       adb_ reboot bootloader >/dev/null
       wait_for 120 fastboot_ready && return 0
-      driver_hint; die "Telefón sa v bootloaderi neukázal."
+      windows_usb; driver_hint; die "Telefón sa v bootloaderi neukázal."
     fi
     if [ "$said" -eq 0 ]; then
       said=1
@@ -150,17 +152,64 @@ save_stock_info() {   # the original Google system, once, before it is replaced 
 
 cmd_nastroje() {
   [ "$WINDOWS" -eq 1 ] || { echo "Mimo WSL použite adb a fastboot zo zostavy AOSP alebo z balíka distribúcie."; return 0; }
-  mkdir -p "$(dirname "$TOOLS")"
-  local zip="$(dirname "$TOOLS")/platform-tools-windows.zip"
+  mkdir -p /mnt/c/lech || die "Priečinok C:\\lech sa nedá vytvoriť."
   echo "Sťahujem platform-tools pre Windows od Google ($TOOLS_URL)…"
-  curl -fL --progress-bar -o "$zip" "$TOOLS_URL" || die "Sťahovanie zlyhalo."
-  rm -rf -- "${TOOLS:?}"
-  python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])' "$zip" "$(dirname "$TOOLS")" \
-    || die "Rozbalenie zlyhalo."
-  rm -f -- "$zip"
+  curl -fL --progress-bar -o /mnt/c/lech/platform-tools-windows.zip "$TOOLS_URL" || die "Sťahovanie zlyhalo."
+  # The archive has the folder platform-tools/; extracting over an older copy replaces its files.
+  python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])' \
+    /mnt/c/lech/platform-tools-windows.zip /mnt/c/lech || die "Rozbalenie zlyhalo."
+  rm -f -- /mnt/c/lech/platform-tools-windows.zip
   [ -f "$TOOLS/fastboot.exe" ] || die "V balíku chýba fastboot.exe."
   chmod +x "$TOOLS"/*.exe 2>/dev/null
   echo "Hotovo: $TOOLS ($("${FASTBOOT[@]}" --version 2>&1 | tr -d '\r' | head -n 1))"
+}
+
+cmd_ovladac() {
+  [ "$WINDOWS" -eq 1 ] || { echo "Ovládač je len pre Windows; v Linuxe stačia pravidlá udev pre adb a fastboot."; return 0; }
+  local found url sha inf
+  mkdir -p /mnt/c/lech || die "Priečinok C:\\lech sa nedá vytvoriť."
+  echo "Hľadám aktuálny Google USB Driver v zozname balíkov Android SDK…"
+  # Package "extras;google;usb_driver": archive name and SHA-1 checksum.
+  found=$(curl -fsSL "$REPO_URL/addon2-1.xml" | python3 -I -c '
+import sys, xml.etree.ElementTree as ET
+local = lambda e: e.tag.rsplit("}", 1)[-1]
+for pkg in ET.parse(sys.stdin).getroot().iter():
+    if local(pkg) == "remotePackage" and pkg.get("path") == "extras;google;usb_driver":
+        url = sha = ""
+        for e in pkg.iter():
+            if local(e) == "url" and not url: url = (e.text or "").strip()
+            if local(e) == "checksum" and not sha: sha = (e.text or "").strip()
+        print(url, sha)
+        break')
+  read -r url sha <<< "$found"
+  case "${url:-}" in
+    usb_driver_*.zip) ;;
+    *) die "Balík Google USB Driver sa v zozname Android SDK nenašiel – stiahnite ho ručne: $DRIVER_URL" ;;
+  esac
+  echo "Sťahujem $url…"
+  curl -fL --progress-bar -o /mnt/c/lech/usb_driver.zip "$REPO_URL/$url" || die "Sťahovanie zlyhalo."
+  if [ -n "${sha:-}" ] && [ "$(sha1sum /mnt/c/lech/usb_driver.zip | cut -d' ' -f1)" != "$sha" ]; then
+    rm -f -- /mnt/c/lech/usb_driver.zip
+    die "Kontrolný súčet ovládača nesedí – súbor sa pri sťahovaní poškodil, skúste znova."
+  fi
+  python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])' \
+    /mnt/c/lech/usb_driver.zip /mnt/c/lech || die "Rozbalenie zlyhalo."
+  rm -f -- /mnt/c/lech/usb_driver.zip
+  inf=/mnt/c/lech/usb_driver/android_winusb.inf
+  [ -f "$inf" ] || die "V balíku chýba android_winusb.inf."
+  echo "Inštalujem ovládač – Windows sa opýta, či povoliť zmeny (Áno)…"
+  (cd /mnt/c && powershell.exe -NoProfile -NonInteractive -Command \
+    "Start-Process -FilePath pnputil.exe -ArgumentList '/add-driver','$(wslpath -w "$inf")','/install' -Verb RunAs -Wait" \
+    < /dev/null 2>&1 | tr -d '\r')
+  sleep 3
+  adb_start
+  if fastboot_ready; then
+    echo "Hotovo – Windows vidí telefón v bootloaderi. Ďalší krok: tools/etapa2/11-pixel.sh odomknut"
+  else
+    echo "Ovládač je nainštalovaný. Ak je telefón v bootloaderi a Windows ho stále nevidí, odpojte a znova pripojte"
+    echo "kábel a skontrolujte: tools/etapa2/11-pixel.sh stav"
+    windows_usb
+  fi
 }
 
 cmd_stav() {
@@ -193,7 +242,9 @@ cmd_stav() {
 cmd_odomknut() {
   need_tools
   if adb_ready; then
-    [ "$(prop ro.oem_unlock_supported)" = 1 ] || echo "UPOZORNENIE: telefón nehlási podporu odomknutia (ro.oem_unlock_supported)."
+    if [ "$(prop sys.oem_unlock_allowed)" = 0 ]; then
+      echo "UPOZORNENIE: Odomknutie OEM je vypnuté (Pre vývojárov) – bootloader sa nedá odomknúť, kým ho nezapnete."
+    fi
     save_stock_info
   fi
   to_bootloader
@@ -362,11 +413,12 @@ EOF
 
 case "${1:-}" in
   nastroje) cmd_nastroje ;;
+  ovladac) need_tools; cmd_ovladac ;;
   stav) cmd_stav ;;
   odomknut) cmd_odomknut ;;
   nahrat) cmd_nahrat ;;
   kontrola) cmd_kontrola ;;
   spat) cmd_spat ;;
-  -h|--help|"") sed -n '2,19p' "$0" ;;
+  -h|--help|"") sed -n '2,20p' "$0" ;;
   *) die "Neznámy príkaz: $1 (pomoc: --help)" ;;
 esac
