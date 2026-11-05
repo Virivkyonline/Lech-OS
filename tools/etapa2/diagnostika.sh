@@ -20,6 +20,11 @@ CVD_LOG=$(latest "$CVD_DIR"/logs/*.log)
 LAUNCHER=$(latest $(find "$CVD_DIR" "$HOME" -maxdepth 6 -name launcher.log 2>/dev/null))
 # shellcheck disable=SC2046
 KERNEL=$(latest $(find "$CVD_DIR" "$HOME" -maxdepth 6 -name kernel.log 2>/dev/null))
+# shellcheck disable=SC2046
+LOGCAT=$(latest $(find "$CVD_DIR" "$HOME" -maxdepth 8 -name logcat -type f 2>/dev/null))
+# What usually explains a failed Android boot: crashes of system services, signature problems,
+# APEX activation errors and the reason init gave for a reboot.
+ANDROID_ERRORS='FATAL EXCEPTION|AndroidRuntime|SecurityException|[Ss]ignature|mismatch|apexd.*(rror|ail)|sys\.powerctl|reboot,|Boot failed|cannot be loaded|Watchdog'
 
 {
   echo "## Systém"
@@ -54,7 +59,11 @@ KERNEL=$(latest $(find "$CVD_DIR" "$HOME" -maxdepth 6 -name kernel.log 2>/dev/nu
   [ -n "$LAUNCHER" ] && errors "$LAUNCHER" 12
 
   echo; echo "## kernel.log (virtuálny telefón): ${KERNEL:-nenájdený}"
+  [ -n "$KERNEL" ] && grep -aE "init: .*(ail|rror|reboot)|Kernel panic|apexd" "$KERNEL" | tail -n 8
   [ -n "$KERNEL" ] && tail -n 4 "$KERNEL"
+
+  echo; echo "## logcat (Android v telefóne): ${LOGCAT:-nenájdený}"
+  [ -n "$LOGCAT" ] && grep -aE "$ANDROID_ERRORS" "$LOGCAT" | cut -c1-220 | tail -n 25
 } 2>&1 | tee "$REPORT.short"
 
 # Fuller report for upload if the summary is not enough.
@@ -63,6 +72,10 @@ KERNEL=$(latest $(find "$CVD_DIR" "$HOME" -maxdepth 6 -name kernel.log 2>/dev/nu
   for f in "$CVD_LOG" "$LAUNCHER" "$KERNEL"; do
     [ -n "$f" ] && [ -f "$f" ] && { echo; echo "===== $f (posledných 200 riadkov)"; tail -n 200 "$f"; }
   done
+  if [ -n "$LOGCAT" ] && [ -f "$LOGCAT" ]; then
+    echo; echo "===== $LOGCAT (chyby, najviac 300 riadkov)"; grep -aE "$ANDROID_ERRORS| E |F " "$LOGCAT" | tail -n 300
+    echo; echo "===== $LOGCAT (posledných 300 riadkov)"; tail -n 300 "$LOGCAT"
+  fi
 } > "$REPORT" 2>&1
 rm -f "$REPORT.short"
 
