@@ -76,6 +76,13 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
 11. **Vlastné podpisové kľúče** (úloha E2-07, [časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)) –
     rovnaký príkaz `tools/etapa2/06-zostav-lech.sh --spustit`; pri prvom spustení vytvorí testovacie kľúče LECH OS.
 
+12. **Aktualizácia z vlastného servera** (úloha E2-08, [časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)):
+
+    ```bash
+    cvd reset --yes
+    tools/etapa2/08-aktualizacia.sh   # zostaví verziu A a B, telefón A sa aktualizuje na B
+    ```
+
 ## 1. Zostavovací počítač
 
 Na zostavenie stačí **server alebo dostatočne vybavený notebook či stolný počítač**. Rozhoduje RAM, rýchly disk
@@ -362,6 +369,37 @@ vlastnou upravenou aplikáciou so systémovými právami. LECH OS preto použív
   - podpis hotovej zostavy nástrojom `sign_target_files_apks` – patrí k serveru aktualizácií (E2-08) a
     k zamknutému bootloaderu na Pixeli (E2-12).
 
+## 4e. Aktualizácia z vlastného servera (úloha E2-08)
+
+Prvá verzia (v0) celého postupu aktualizácie. Server beží na zostavovacom počítači; server v EÚ, aplikácia na
+aktualizácie v telefóne a podpis celej zostavy prídu v ďalších krokoch.
+
+```bash
+tools/etapa2/08-aktualizacia.sh                   # verzia B = <verzia A>-ota
+tools/etapa2/08-aktualizacia.sh --verzia 0.1.1-dev
+tools/etapa2/08-aktualizacia.sh --len-instalovat  # znova len inštalácia (uložené obrazy A a balík)
+```
+
+| Krok | Čo sa deje |
+|------|------------|
+| 1. Verzia A | `06-zostav-lech.sh` zostaví LECH OS s verziou z [version.mk](../vendor/lech/config/version.mk). Skript skopíruje jeho obrazy do `~/lech-work/ota/obrazy-A`, lebo zostavenie B prepíše súbory v `out/` |
+| 2. Verzia B | To isté s `LECH_VERSION=<verzia B>` (premenná prostredia prepíše `version.mk`), potom `m otapackage`. Balík `ota.zip` podpíše `ota_from_target_files` kľúčom `testkey` LECH OS – tým istým kľúčom, ktorému telefón A verí (`otacerts`, E2-07) |
+| 3. Server v0 | [ota_server.py](../tools/etapa2/ota_server.py) `publish` uloží balík do `~/lech-work/ota/server` a zapíše zoznam `aktualizacie.json` (verzia, veľkosť, SHA-256, umiestnenie `payload.bin` v balíku, hlavičky). `serve` ho poskytuje cez HTTP s čiastočným sťahovaním (Range), ktoré `update_engine` potrebuje |
+| 4. Inštalácia | Telefón naštartuje z obrazov A. `update_engine_client` stiahne cez tunel `adb reverse` z `http://127.0.0.1:8008/` len `payload.bin`, overí podpis a zapíše B do druhého slotu (A/B), kým telefón beží |
+| 5. Kontrola | Reštart; skript overí novú verziu (`ro.lech.version`), zmenený slot (`ro.boot.slot_suffix`) a inú zostavu |
+
+- **Trvanie:** dve zostavenia (pri každom znova analýza Soong, pozor na pamäť), `m otapackage` a inštalácia –
+  odhad 40 až 70 minút. Miesto: kópia obrazov A (vypíše sa, približne 10 až 30 GB) a balík (niekoľko GB).
+- **Prečo `adb reverse` v0:** telefón nepotrebuje sieť k počítaču a postup je rovnaký ako v nástroji AOSP
+  `system/update_engine/scripts/update_device.py`. Server v EÚ s HTTPS nahradí tunel (E2-08b).
+- **Ďalšie kroky (E2-08b):**
+  - aplikácia na aktualizácie v telefóne, ktorá číta `aktualizacie.json` a pýta sa používateľa,
+  - server v EÚ s HTTPS,
+  - podpis celej zostavy (`sign_target_files_apks`) vrátane kľúčov APEX a AVB,
+  - rozdielové (inkrementálne) balíky,
+  - test chybnej aktualizácie, po ktorej sa telefón sám vráti na funkčnú verziu
+    ([docs/14](14-aktualizacie-a-podpora.md#overenie-v-etape-2)).
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
@@ -406,7 +444,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | **Hotové 5. 11. 2026** – 4. audit: žiadne spojenie na Google; telefón len DNS siete a `europe.pool.ntp.org` ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)); 5 záplat a 1 prekrytie RRO |
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | **Hotové 5. 11. 2026** – aplikácie (aj Bluetooth) a kľúč aktualizácií podpísané kľúčmi LECH, `dev-keys`, overené v telefóne ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)). Kľúče APEX a AVB spolu s E2-08 |
-| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – (spolu so serverom: vlastná kontrola pripojenia, doména na overenie DNS v striktnom režime a kópia zoznamu CT – nadväzuje na E2-06) |
+| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | Pripravené 5. 11. 2026 – `08-aktualizacia.sh`, server `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)); čaká na skúšku. Neskôr so serverom v EÚ: kontrola pripojenia, doména na overenie DNS, kópia zoznamu CT (z E2-06) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | – |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |

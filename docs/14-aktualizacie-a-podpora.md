@@ -84,6 +84,8 @@ Používatelia nesmú zostať s telefónom, o ktorom nevedia, či je bezpečný:
 Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro (podmienky brány „Overený základ“):
 
 1. Tri po sebe idúce aktualizácie na Pixeli, z toho jedna zámerne chybná – telefón sa musí sám vrátiť na funkčnú verziu.
+   Prvý krok na Cuttlefish (E2-08): aktualizácia A/B z vlastného servera v0, podpísaná kľúčom LECH OS
+   ([docs/11, časť 4e](11-etapa-2-cuttlefish.md#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)).
 2. **Generálka mesačnej aktualizácie:** prevziať jeden skutočný bezpečnostný bulletin a zmerať, koľko dní trvá od
    zverejnenia po nainštalovanú aktualizáciu.
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.

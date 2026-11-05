@@ -110,7 +110,7 @@ if ! grep -q PRODUCT_MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES "$AOSP_DIR/bui
   echo "UPOZORNENIE: AOSP nepozná PRODUCT_MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES – skontrolujte keys.conf (docs/11, časť 4d)."
 fi
 
-version=$(sed -n 's/^LECH_VERSION *:= *//p' "$SRC/config/version.mk")
+version=${LECH_VERSION:-$(sed -n 's/^LECH_VERSION *[:?]= *//p' "$SRC/config/version.mk")}
 echo "LECH OS ${version:-?} (commit $(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo '?'))"
 
 # Record the exact AOSP revisions this build is based on (the seed of lech-manifest, task E2-04).
