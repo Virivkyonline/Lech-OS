@@ -69,7 +69,9 @@ fb() { (cd "$PIXEL_DIR" 2>/dev/null || cd "${TOOLS:-/}" 2>/dev/null || cd /; "${
 fb_var() { timeout 30 "${FASTBOOT[@]}" getvar "$1" 2>&1 | tr -d '\r' | sed -n "s/^$1: *//p" | head -n 1; }
 adb_ready() { adb_ devices | grep -q $'\tdevice$'; }
 adb_unauthorized() { adb_ devices | grep -q $'\tunauthorized$'; }
-fastboot_ready() { fb devices | grep -q $'\tfastboot$'; }
+# "fastboot devices" prints "<serial><TAB><interface>"; the interface name differs between bootloaders
+# ("fastboot" in fastbootd), so any listed device counts.
+fastboot_ready() { fb devices | grep -qE $'^[^ \t<]+[ \t]+[^ \t]'; }
 in_fastbootd() { fastboot_ready && [ "$(fb_var is-userspace)" = yes ]; }
 prop() { adb_ shell getprop "$1" | head -n 1; }
 cleanup() { [ "$WINDOWS" -eq 1 ] && [ -x "${ADB[0]}" ] && "${ADB[@]}" kill-server >/dev/null 2>&1; true; }
@@ -103,6 +105,7 @@ to_bootloader() {
       echo "Reštartujem telefón do bootloadera…"
       adb_ reboot bootloader >/dev/null
       wait_for 120 fastboot_ready && return 0
+      echo "fastboot devices -l: $(fb devices -l | head -n 3 | tr '\n' ' ')"
       windows_usb; driver_hint; die "Telefón sa v bootloaderi neukázal."
     fi
     if [ "$said" -eq 0 ]; then
@@ -117,6 +120,7 @@ to_bootloader() {
     fi
     sleep 2
   done
+  echo "fastboot devices -l: $(fb devices -l | head -n 3 | tr '\n' ' ')"
   windows_usb
   driver_hint; die "Telefón sa nepripojil."
 }
