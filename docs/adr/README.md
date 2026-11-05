@@ -23,7 +23,7 @@ zmení, vznikne nový ADR, ktorý pôvodný **nahrádza**, a pôvodný dostane s
 | [0007](0007-prvy-trh-firmy.md) | Prvý trh: pilot pre firmy + komunitná verzia | Prijaté |
 | [0008](0008-postupny-vyvoj-a-brany.md) | Postupný vývoj s bránami kvality | Prijaté |
 | [0009](0009-trh-eu.md) | Cieľový trh je celá EÚ | Prijaté |
-| [0010](0010-upravy-aosp-ako-zaplaty.md) | Úpravy kódu AOSP ako sada záplat v repozitári | Navrhnuté |
+| [0010](0010-upravy-aosp-ako-zaplaty.md) | Úpravy kódu AOSP ako sada záplat v repozitári | Prijaté |
 
 ## Šablóna
 

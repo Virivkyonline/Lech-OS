@@ -9,6 +9,15 @@
 
 include vendor/lech/config/version.mk
 
+# Signing keys (task E2-07): LECH OS test keys instead of the public AOSP test keys. They are created
+# outside the repository by tools/etapa2/07-vytvor-kluce.sh and copied here by 06-zostav-lech.sh.
+# Every app and the OTA key (otacerts) use them; the build tag becomes "dev-keys".
+LECH_KEYS_DIR := vendor/lech-keys/test
+ifeq ($(wildcard $(LECH_KEYS_DIR)/platform.x509.pem),)
+$(error LECH OS: chýbajú testovacie kľúče v $(LECH_KEYS_DIR) - spustite tools/etapa2/06-zostav-lech.sh)
+endif
+PRODUCT_DEFAULT_DEV_CERTIFICATE := $(LECH_KEYS_DIR)/testkey
+
 # Shown in Settings > About phone > Build number. Non-user builds carry the variant, so a debuggable
 # build cannot be mistaken for a release.
 LECH_DISPLAY_ID := LECH-OS-$(LECH_VERSION)$(if $(filter user,$(TARGET_BUILD_VARIANT)),,-$(TARGET_BUILD_VARIANT))

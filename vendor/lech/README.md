@@ -8,7 +8,7 @@ Postup a rozhodnutia sú opísané v [docs/11, časť 4b](../../docs/11-etapa-2-
 |-------|------|
 | `AndroidProducts.mk` | Zoznam produktov LECH OS a ponuka pre `lunch` |
 | `products/lech_cf_x86_64_only_phone.mk` | Virtuálny telefón LECH-PHONE pre Cuttlefish. Dedí z `aosp_cf_x86_64_only_phone` a mení názov, značku a model |
-| `config/common.mk` | Identita spoločná pre všetky produkty: verzia v *Build number*, `ro.lech.version`, animácia pri štarte |
+| `config/common.mk` | Spoločné pre všetky produkty: verzia v *Build number*, `ro.lech.version`, animácia pri štarte, podpisové kľúče (`vendor/lech-keys/test`, mimo repozitára) |
 | `config/version.mk` | Verzia LECH OS – jediné miesto, kde sa mení |
 | `bootanimation/bootanimation.zip` | Animácia pri štarte, vytvorená skriptom `tools/make_bootanimation.py` |
 | `overlay/frameworks-res/` | Prekrytie (RRO) nastavení frameworku Android v partícii product: sieťový čas `europe.pool.ntp.org` namiesto `time.android.com` |

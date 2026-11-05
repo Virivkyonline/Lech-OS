@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Builds LECH OS for Cuttlefish (tasks E2-04 to E2-06): the phone LECH-PHONE with LECH OS version,
-# boot animation and without default connections to Google. The product definition lives in
+# Builds LECH OS for Cuttlefish (tasks E2-04 to E2-07): the phone LECH-PHONE with LECH OS version,
+# boot animation, without default connections to Google and signed with the LECH OS test keys
+# (created by 07-vytvor-kluce.sh on the first run, kept outside the repository). The product definition lives in
 # vendor/lech of this repository and changes to AOSP code in patches/; the script copies vendor/lech
 # into the AOSP tree ($AOSP_DIR/vendor/lech), applies the patches (aplikuj-zaplaty.sh) and builds
 # the lunch target lech_cf_x86_64_only_phone-<release>-userdebug with 05-zostav-aosp.sh.
@@ -10,8 +11,9 @@
 # Usage: tools/etapa2/06-zostav-lech.sh [--ulohy N] [--spustit] [--len-skopirovat]
 #   --ulohy N          parallel build jobs (default 8; more needs more RAM)
 #   --spustit          start the LECH OS phone after the build and check its identity
-#   --len-skopirovat   only prepare the AOSP tree (copy vendor/lech, apply patches), do not build
-# Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_RELEASE, LECH_VARIANT
+#   --len-skopirovat   only prepare the AOSP tree (vendor/lech, keys, patches), do not build
+# Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_KEYS (default
+#   ~/lech-keys/test), LECH_RELEASE, LECH_VARIANT
 
 set -uo pipefail
 
@@ -24,6 +26,8 @@ PRODUCT=lech_cf_x86_64_only_phone
 BASE_PRODUCT=aosp_cf_x86_64_only_phone
 SRC="$REPO_DIR/vendor/lech"
 DEST="$AOSP_DIR/vendor/lech"
+KEYS=${LECH_KEYS:-$HOME/lech-keys/test}
+KEYS_DEST="$AOSP_DIR/vendor/lech-keys/test"
 PRODUCT_MK="$SRC/products/$PRODUCT.mk"
 BASE_MK="$AOSP_DIR/device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk"
 MIN_FREE_GB=40      # the first LECH build added 12 GB to out/ (5. 11. 2026); keep a safety margin
@@ -38,7 +42,7 @@ while [ $# -gt 0 ]; do
     --ulohy) BUILD_ARGS+=(--ulohy "${2:?chýba počet úloh}"); shift 2 ;;
     --spustit) START=1; BUILD_ARGS+=(--spustit); shift ;;
     --len-skopirovat) COPY_ONLY=1; shift ;;
-    -h|--help) sed -n '2,14p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,16p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
@@ -78,6 +82,16 @@ if command -v rsync >/dev/null 2>&1; then
 else
   rm -rf -- "$DEST" && cp -a "$SRC" "$DEST" || die "Kopírovanie do $DEST zlyhalo."
 fi
+
+# LECH OS test signing keys (E2-07): created once outside the repository, copied into the AOSP tree.
+if [ ! -f "$KEYS/platform.x509.pem" ]; then
+  echo "Testovacie kľúče LECH OS ešte nie sú – vytváram ich (raz, približne pol minúty)…"
+  LECH_KEYS=$KEYS AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/07-vytvor-kluce.sh" >/dev/null || die "Kľúče sa nepodarilo vytvoriť."
+fi
+mkdir -p "$KEYS_DEST" && chmod 700 "$AOSP_DIR/vendor/lech-keys" "$KEYS_DEST"
+cp -p "$KEYS"/*.pk8 "$KEYS"/*.x509.pem "$KEYS_DEST/" || die "Kľúče sa nepodarilo skopírovať do $KEYS_DEST."
+echo "Podpisové kľúče: $KEYS (testovacie kľúče LECH OS)"
+
 version=$(sed -n 's/^LECH_VERSION *:= *//p' "$SRC/config/version.mk")
 echo "LECH OS ${version:-?} (commit $(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo '?'))"
 
@@ -114,9 +128,9 @@ echo "Overujem LECH OS v bežiacom telefóne…"
 timeout 180 "$ADB" wait-for-device || { echo "Telefón sa cez adb neozval – identitu overte v Nastaveniach."; exit 0; }
 prop() { "$ADB" shell getprop "$1" 2>/dev/null | tr -d '\r'; }
 ok=1
-report() {   # OK|CHYBA, what, detail
+report() {   # OK|CHYBA|?, what, detail ("?" = could not be checked, not an error)
   printf '  %-7s %s%*s %s\n' "$1" "$2" $(( 22 - ${#2} )) "" "$3"   # ${#2} counts characters, not bytes
-  [ "$1" = OK ] || ok=0
+  [ "$1" != CHYBA ] || ok=0
 }
 expect_prefix() {   # property, expected value or prefix ending with *
   local value
@@ -141,6 +155,21 @@ if "$ADB" shell cmd overlay list android 2>/dev/null | tr -d '\r' | grep -q '\[x
 else
   report CHYBA "čas (NTP)" "prekrytie lech.os.overlay.framework nie je zapnuté"
 fi
+# E2-07: signed with the LECH OS test keys.
+tags=$(prop ro.build.tags)
+if [ "$tags" = dev-keys ]; then
+  report OK "podpisové kľúče" "dev-keys (nie verejné test-keys AOSP)"
+else
+  report CHYBA "podpisové kľúče" "${tags:-<prázdne>} (očakávané dev-keys)"
+fi
+want=$(lech_cert_hash "$KEYS/platform.x509.pem")
+have=$("$ADB" shell dumpsys package android 2>/dev/null | tr -d '\r' \
+  | grep -m1 -o 'version:[0-9]*, signatures:\[[0-9a-f, ]*\]' | sed 's/^version:[0-9]*, //' || true)
+case "$have" in
+  *"$want"*) report OK "podpis systému" "kľúč platform LECH OS ($want)" ;;
+  "") report "?" "podpis systému" "nezistený (dumpsys package android)" ;;
+  *) report CHYBA "podpis systému" "$have, očakávaný kľúč LECH OS $want" ;;
+esac
 rkp=$(prop remote_provisioning.hostname)
 if [ -z "$rkp" ]; then
   report OK "atestačné kľúče (RKP)" "bez servera"

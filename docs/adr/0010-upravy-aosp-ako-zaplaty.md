@@ -1,6 +1,6 @@
 # ADR-0010: Úpravy kódu AOSP ako sada záplat v repozitári
 
-- **Stav:** Navrhnuté
+- **Stav:** Prijaté (2026-11-05)
 - **Dátum:** 2026-11-05
 
 ## Kontext

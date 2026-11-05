@@ -92,6 +92,9 @@ Bez Google Play Protect potrebujeme vlastnú ochranu – **bez odosielania aplik
 Pravidlá:
 
 - Kľúče **nikdy** nie sú v repozitári ani na vývojárskych počítačoch. Vývojové zostavy používajú samostatné testovacie kľúče.
+- **Testovacie kľúče LECH OS (od 5. 11. 2026, úloha E2-07):** vytvára ich `tools/etapa2/07-vytvor-kluce.sh` do
+  `~/lech-keys/test` na zostavovacom počítači, mimo repozitára. Nahrádzajú verejné testovacie kľúče AOSP
+  pri podpise aplikácií a aktualizácií ([docs/11, časť 4d](11-etapa-2-cuttlefish.md#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)).
 - Generovanie a použitie produkčných kľúčov prebieha podľa zdokumentovaného postupu za prítomnosti dvoch osôb.
 - Pre každý kľúč existuje plán obnovy a plán výmeny pri kompromitácii.
 

@@ -73,6 +73,9 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
     tools/etapa2/03-sietovy-audit.sh --lokalna-zostava --ano   # 30 minút, správa do audit/
     ```
 
+11. **Vlastné podpisové kľúče** (úloha E2-07, [časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)) –
+    rovnaký príkaz `tools/etapa2/06-zostav-lech.sh --spustit`; pri prvom spustení vytvorí testovacie kľúče LECH OS.
+
 ## 1. Zostavovací počítač
 
 Na zostavenie stačí **server alebo dostatočne vybavený notebook či stolný počítač**. Rozhoduje RAM, rýchly disk
@@ -326,6 +329,29 @@ presmerovali na cudzí server ([ADR-0010](adr/0010-upravy-aosp-ako-zaplaty.md)).
   - kópia zoznamu CT,
   - diagnostika siete v module Connectivity (`NetworkDiagnostics`), ktorá sa spúšťa len pri poruche siete.
 
+## 4d. Vlastné testovacie podpisové kľúče (úloha E2-07)
+
+Každá aplikácia a každý balík aktualizácií je podpísaný. AOSP sa predvolene podpisuje **verejnými testovacími
+kľúčmi** (`build/make/target/product/security`), ktoré pozná každý. Takú zostavu by vedel ktokoľvek „aktualizovať“
+vlastnou upravenou aplikáciou so systémovými právami. LECH OS preto používa vlastné kľúče.
+
+| Čo | Ako |
+|----|-----|
+| Vytvorenie | `tools/etapa2/07-vytvor-kluce.sh` – pre každý testovací kľúč AOSP (testkey, platform, shared, media, networkstack, sdk_sandbox, bluetooth, nfc, cts_uicc_2021) jeden kľúč RSA 4096 s certifikátom na 10 000 dní. `06-zostav-lech.sh` ho pri prvom spustení zavolá sám |
+| Uloženie | `~/lech-keys/test` – **mimo repozitára**, prístup len pre používateľa (`chmod 700`). Pred zostavením sa skopírujú do `~/aosp/vendor/lech-keys/test` |
+| Použitie | `PRODUCT_DEFAULT_DEV_CERTIFICATE` v [common.mk](../vendor/lech/config/common.mk): podpisuje všetky aplikácie a kľúč na overenie aktualizácií (`otacerts`). Značka zostavy sa zmení z `test-keys` na `dev-keys` |
+| Kontrola | `06-zostav-lech.sh --spustit` overí v telefóne `ro.build.tags = dev-keys` a porovná podpis systému (`dumpsys package android`) s certifikátom `platform` LECH OS |
+
+- **Raz vytvorené kľúče sa nemenia.** Telefón podpísaný inými kľúčmi treba vymazať (na Cuttlefish to robí
+  `cvd reset`, ktorý `06-zostav-lech.sh --spustit` volá sám). Priečinok `~/lech-keys` si zálohujte.
+- **Zostavenie** podpíše nanovo všetky aplikácie. Odhad je 20 až 60 minút.
+- **Sú to testovacie kľúče**, nie produkčné. Produkčné kľúče vzniknú pred vydaním podľa
+  [docs/05](05-lech-security.md#správa-kľúčov): offline, dve osoby, nikdy na vývojárskom počítači.
+- **Ostáva na ďalšie kroky:**
+  - kľúče systémových modulov APEX a kľúč overeného bootu (AVB) – zatiaľ testovacie kľúče AOSP,
+  - podpis hotovej zostavy nástrojom `sign_target_files_apks` – patrí k serveru aktualizácií (E2-08) a
+    k zamknutému bootloaderu na Pixeli (E2-12).
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
@@ -369,7 +395,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | **Hotové 5. 11. 2026** – produkt `lech_cf_x86_64_only_phone` vo [vendor/lech](../vendor/lech) ([časť 4b](#4b-prvý-produkt-lech-os-úlohy-e2-04-a-e2-05)) sa zostavil za 18 min a nabootoval; `lech-manifest` zatiaľ ako snímka presných verzií AOSP (`~/lech-work/aosp-manifest.xml`) |
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | **Hotové 5. 11. 2026** – 4. audit: žiadne spojenie na Google; telefón len DNS siete a `europe.pool.ntp.org` ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)); 5 záplat a 1 prekrytie RRO |
-| E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | – |
+| E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | Pripravené 5. 11. 2026 – kľúče aplikácií a aktualizácií ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)); čaká na zostavenie. APEX a AVB v ďalšom kroku |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – (spolu so serverom: vlastná kontrola pripojenia, doména na overenie DNS v striktnom režime a kópia zoznamu CT – nadväzuje na E2-06) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | – |

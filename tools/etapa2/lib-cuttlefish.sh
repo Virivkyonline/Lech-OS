@@ -90,6 +90,17 @@ lech_reset_phones() {
   cvd reset --yes >/dev/null 2>&1 || true
 }
 
+# Hash of a certificate as Android prints it in `dumpsys package` (signatures:[...]):
+# Integer.toHexString(Arrays.hashCode(DER bytes)).
+lech_cert_hash() {
+  openssl x509 -in "$1" -outform DER 2>/dev/null | python3 -c '
+import sys
+h = 1
+for b in sys.stdin.buffer.read():
+    h = (31 * h + (b - 256 if b > 127 else b)) & 0xffffffff
+print(format(h, "x"))'
+}
+
 # Path to adb for the running phone: from the local build, from the prebuilt host package, or installed.
 lech_adb() {
   local c

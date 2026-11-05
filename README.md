@@ -64,7 +64,7 @@ aby sa dalo kedykoľvek zmerať, či ho systém naozaj spĺňa.
 | –  | [Katalóg AI akcií](spec/ai-akcie.yaml) | Strojovo čitateľný zoznam akcií LECH AI s úrovňami rizika a súhlasu |
 | –  | [Validátor katalógu](tools/validate_ai_actions.py) | Kontrola, že žiadna akcia neobchádza pravidlá súhlasu: `python3 tools/validate_ai_actions.py` |
 | –  | [Kontrola zostavovacieho počítača](tools/check_build_host.sh) | Overí RAM, disk, KVM a nástroje pred etapou 2: `tools/check_build_host.sh` |
-| –  | [Skripty etapy 2](tools/etapa2) | Príprava notebooku, čisté AOSP z hotových obrazov, sieťový audit prvého spustenia, stiahnutie a zostavenie AOSP, zostavenie produktu LECH OS – [rýchly štart](docs/11-etapa-2-cuttlefish.md#rýchly-štart-na-notebooku) |
+| –  | [Skripty etapy 2](tools/etapa2) | Príprava notebooku, čisté AOSP z hotových obrazov, sieťový audit prvého spustenia, stiahnutie a zostavenie AOSP, zostavenie produktu LECH OS, testovacie podpisové kľúče – [rýchly štart](docs/11-etapa-2-cuttlefish.md#rýchly-štart-na-notebooku) |
 | –  | [Produkt LECH OS](vendor/lech) | Definícia produktu pre zostavovací systém AOSP: telefón LECH-PHONE pre Cuttlefish, verzia, animácia pri štarte, sieťový čas |
 | –  | [Záplaty AOSP](patches) | Všetky zmeny kódu AOSP v LECH OS, jedna záplata na jednu vec ([ADR-0010](docs/adr/0010-upravy-aosp-ako-zaplaty.md)) |
 | –  | [Povolené spojenia](spec/povolene-spojenia.txt) | Zoznam spojení, ktoré LECH OS smie nadviazať; audit všetko ostatné označí ako neznáme |
@@ -84,7 +84,7 @@ Zásadné rozhodnutia zapisujeme ako *Architecture Decision Records* do [docs/ad
 | [0007](docs/adr/0007-prvy-trh-firmy.md) | Prvý trh: pilot pre firmy a organizácie + komunitná verzia pre jednotlivcov | Prijaté |
 | [0008](docs/adr/0008-postupny-vyvoj-a-brany.md) | Postupný vývoj, jedna vec naraz, brány kvality medzi etapami | Prijaté |
 | [0009](docs/adr/0009-trh-eu.md) | Cieľový trh je celá EÚ; uvádzanie po vlnách krajín, jazyky EN/SK/CZ, potom DE/FR/PL | Prijaté |
-| [0010](docs/adr/0010-upravy-aosp-ako-zaplaty.md) | Úpravy kódu AOSP ako sada záplat v repozitári, nie forky | Navrhnuté |
+| [0010](docs/adr/0010-upravy-aosp-ako-zaplaty.md) | Úpravy kódu AOSP ako sada záplat v repozitári, nie forky | Prijaté |
 
 ## Prijaté rozhodnutia v skratke
 

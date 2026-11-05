@@ -1,1 +1,5 @@
 __pycache__/
+# Private signing keys never belong in the repository (docs/05, Správa kľúčov).
+*.pk8
+*.key.pem
+lech-keys/
