@@ -99,10 +99,22 @@ if [ "$status" -ne 0 ]; then
   echo
   echo "Zostavenie zlyhalo po ${minutes} min. Posledné chybové riadky:"
   grep -aE "FAILED:|error:|Error |future mtime" "$LOG" | tail -n 15
+  if tail -c +$(( start_bytes + 1 )) "$LOG" | grep -aq "soong bootstrap failed" && \
+     tail -c +$(( start_bytes + 1 )) "$LOG" | grep -aqE "^Killed|signal:killed"; then
+    cat <<EOF
+
+Analýze zostavy (Soong) došla pamäť – potrebuje približne 25 GB RAM vrátane swapu.
+Menej úloh (--ulohy) tu nepomôže: analýza je jeden proces.
+  - Vypnite virtuálny telefón: cvd reset --yes
+  - Vo Windows zatvorte veľké aplikácie (prehliadače, hry); voľná pamäť: free -h
+  - Skontrolujte swap: swapon --show (WSL: swap v .wslconfig, docs/11)
+  - Potom spustite znova: ${RERUN}
+EOF
+  fi
   cat <<EOF
 
 Čo ďalej:
-  - Ak došla pamäť (killed, out of memory): spustite znova s menej úlohami: ${RERUN} --ulohy 4
+  - Ak došla pamäť pri preklade (killed, out of memory): spustite znova s menej úlohami: ${RERUN} --ulohy 4
   - Inak spustite znova ${RERUN} – zostavenie pokračuje tam, kde skončilo.
   - Úplný log: $LOG
 EOF

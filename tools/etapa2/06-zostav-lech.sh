@@ -111,6 +111,21 @@ AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/aplikuj-zaplaty.sh" || exit 1
 
 [ "$COPY_ONLY" -eq 1 ] && { echo "Hotovo (len príprava, bez zostavenia)."; exit 0; }
 
+# The Soong analysis needs about 25 GB of RAM incl. swap; a running phone takes several GB of it.
+if lech_phone_running; then
+  if [ "$START" -eq 1 ]; then
+    echo "Vypínam bežiaci virtuálny telefón, aby mala analýza zostavy viac pamäte (po zostavení sa spustí nový)."
+    lech_reset_phones
+  else
+    echo "UPOZORNENIE: beží virtuálny telefón a berie pamäť, ktorú zostavenie potrebuje (vypnutie: cvd reset --yes)."
+  fi
+fi
+mem_gb=$(lech_free_mem_gb)
+if [ "${mem_gb:-0}" -lt 25 ]; then
+  echo "UPOZORNENIE: voľnej pamäte je len ${mem_gb} GB (RAM + swap). Ak sa mení nastavenie produktu, analýza"
+  echo "  zostavy potrebuje približne 25 GB – zatvorte veľké aplikácie vo Windows."
+fi
+
 echo
 echo "Zostavujem LECH OS ($PRODUCT). Na notebooku to po zostavení čistého AOSP trvalo 18 minút;"
 echo "pri novej verzii AOSP alebo po zmene v device/ to môže byť oveľa dlhšie."

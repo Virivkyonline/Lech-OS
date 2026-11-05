@@ -101,6 +101,16 @@ for b in sys.stdin.buffer.read():
 print(format(h, "x"))'
 }
 
+# Free memory in GB for a build: available RAM plus free swap (/proc/meminfo).
+lech_free_mem_gb() {
+  awk '/^MemAvailable:/ {m = $2} /^SwapFree:/ {s = $2} END {print int((m + s) / 1024 / 1024)}' /proc/meminfo
+}
+
+# Whether a Cuttlefish phone is running (its launcher process).
+lech_phone_running() {
+  pgrep -u "$(id -u)" -f 'run_cvd|crosvm' >/dev/null 2>&1
+}
+
 # Path to adb for the running phone: from the local build, from the prebuilt host package, or installed.
 lech_adb() {
   local c
