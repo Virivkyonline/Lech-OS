@@ -102,11 +102,15 @@ def candidates(index: dict, package: str) -> tuple[list[dict], dict]:
     return result, entry.get("metadata", {})
 
 
-def choose(cands: list[dict], metadata: dict, abis: list[str], sdk: int) -> tuple[dict | None, str]:
+def choose(cands: list[dict], metadata: dict, abis: list[str], sdk: int, forced_abi: str = "") -> tuple[dict | None, str]:
     if not cands:
-        return None, "nie je v F-Droid"
+        return None, "nie je v hlavnom repozitári F-Droid"
     suggested = metadata.get("suggestedVersionCode")
     pool = [c for c in cands if not suggested or c["versionCode"] <= int(suggested)] or cands
+    if forced_abi:
+        # A version with code for this ABI only (e.g. to test the ARM build through translation).
+        abis = [forced_abi]
+        pool = [c for c in pool if forced_abi in c["nativecode"]] or pool
     abi_ok = [c for c in pool if not c["nativecode"] or set(c["nativecode"]) & set(abis)]
     if not abi_ok:
         native = sorted({a for c in pool for a in c["nativecode"]})
@@ -175,7 +179,7 @@ def test_app(phone: Phone, app: dict, apk: Path, wait: int, shots: Path) -> dict
     log = phone.shell("logcat -d -v brief")
     code, png = phone.run("exec-out", "screencap", "-p", binary=True)
     if code == 0 and png.startswith(b"\x89PNG"):
-        shot = shots / f"{package}.png"
+        shot = shots / (f"{package}-{app['abi']}.png" if app.get("abi") else f"{package}.png")
         shot.write_bytes(png)
         result["snimka"] = shot.name
 
@@ -185,6 +189,8 @@ def test_app(phone: Phone, app: dict, apk: Path, wait: int, shots: Path) -> dict
         result["spustenie"] = f"PÁD: {line.strip()[:150]}"
     elif not pid:
         result["spustenie"] = "CHYBA: proces po spustení nebeží"
+    elif "permissioncontroller" in focus:
+        result["spustenie"] = "OK (pýta si povolenie)"
     elif package not in focus:
         result["spustenie"] = "OK (beží, ale nie je na popredí)"
     else:
@@ -236,7 +242,8 @@ def read_list(path: Path) -> list[dict]:
             continue
         parts = [p.strip() for p in line.split("|")]
         apps.append({"package": parts[0], "name": parts[1] if len(parts) > 1 else parts[0],
-                     "category": parts[2] if len(parts) > 2 else "", "why": parts[3] if len(parts) > 3 else ""})
+                     "category": parts[2] if len(parts) > 2 else "", "why": parts[3] if len(parts) > 3 else "",
+                     "abi": parts[4] if len(parts) > 4 else ""})
     return apps
 
 
@@ -247,6 +254,7 @@ def main() -> int:
     ap.add_argument("--report", type=Path, required=True, help="priečinok správy (v repozitári)")
     ap.add_argument("--work", type=Path, required=True, help="pracovný priečinok (APK, index, snímky)")
     ap.add_argument("--wait", type=int, default=8, help="sekundy po spustení aplikácie")
+    ap.add_argument("--package", action="append", default=[], help="len tieto balíky zo zoznamu")
     args = ap.parse_args()
 
     phone = Phone(args.adb)
@@ -266,9 +274,13 @@ def main() -> int:
     shots.mkdir(parents=True, exist_ok=True)
     rows = []
     apps = read_list(args.list)
+    if args.package:
+        apps = [a for a in apps if a["package"] in args.package]
+        if not apps:
+            sys.exit("CHYBA: žiadny z balíkov --balik nie je v zozname aplikácií.")
     for number, app in enumerate(apps, 1):
         cands, metadata = candidates(index, app["package"])
-        chosen, why_not = choose(cands, metadata, device["abis"], device["sdk"])
+        chosen, why_not = choose(cands, metadata, device["abis"], device["sdk"], app.get("abi", ""))
         row = {**app, "name": app["name"] or localized(metadata.get("name"), app["package"])}
         print(f"[{number}/{len(apps)}] {row['name']}: ", end="", flush=True)
         if not chosen:

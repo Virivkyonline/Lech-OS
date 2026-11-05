@@ -2,12 +2,14 @@
 # Výber podľa potrieb pilotu pre firmy (ADR-0007): pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy.
 # Používa ho tools/etapa2/10-test-aplikacii.sh; zoznam sa dá meniť a rozširovať.
 #
-# Formát: balík | názov | kategória | prečo
+# Formát: balík | názov | kategória | prečo [| ABI]
+# ABI (nepovinné) vynúti verziu pre dané ABI, napr. arm64-v8a – na Cuttlefish beží cez preklad kódu ARM.
 org.mozilla.fennec_fdroid    | Fennec F-Droid  | prehliadač            | webové aplikácie a intranet; veľký natívny kód
+org.mozilla.fennec_fdroid    | Fennec F-Droid (ARM) | prehliadač       | verzia pre ARM cez preklad: verzia x86_64 padá (chýba JNA pre x86-64) | arm64-v8a
 com.fsck.k9                  | K-9 Mail        | e-mail                | firemná pošta cez IMAP
 at.bitfire.davdroid          | DAVx⁵           | kalendár a kontakty   | synchronizácia CalDAV/CardDAV bez účtu Google
 com.beemdevelopment.aegis    | Aegis           | dvojfaktorové overenie | kódy MFA (TOTP) pre firemné účty
-com.wireguard.android        | WireGuard       | VPN                   | prístup do firemnej siete
+de.blinkt.openvpn            | OpenVPN for Android | VPN               | prístup do firemnej siete (WireGuard nie je v hlavnom repozitári F-Droid)
 com.kunzisoft.keepass.libre  | KeePassDX       | heslá                 | správca hesiel
 im.vector.app                | Element         | komunikácia           | firemný chat a hovory (Matrix)
 app.organicmaps              | Organic Maps    | mapy                  | mapy bez Google, offline

@@ -479,7 +479,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | **Hotové 5. 11. 2026** – aplikácie (aj Bluetooth) a kľúč aktualizácií podpísané kľúčmi LECH, `dev-keys`, overené v telefóne ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)). Kľúče APEX a AVB spolu s E2-08 |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
-| E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | Pripravené 5. 11. 2026 – `10-test-aplikacii.sh`, zoznam v `spec/testovacie-aplikacie.txt` ([časť 4f](#4f-test-aplikácií-z-f-droid-úloha-e2-10)); čaká na test |
+| E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | Rozpracované – 1. test (5. 11. 2026): 8 z 10 OK; Fennec x86_64 padá na chybe balíka, WireGuard nie je v F-Droid ([kompatibilita/README.md](../kompatibilita/README.md)); 2. test s Fennec pre ARM a OpenVPN |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
 
@@ -562,6 +562,12 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     s Range), overil podpis kľúčom LECH a zapísal B do druhého slotu (`kSuccess`, `UPDATED_NEED_REBOOT`). Po reštarte:
     `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`. Kontrola „zostava“ ukázala falošnú chybu – číslo zostavy je pri
     lokálnych zostavách vždy `eng.<používateľ>`; skript odteraz porovnáva čas zostavenia.
+
+16. **Prvý test aplikácií z F-Droid (5. 11. 2026, E2-10):** telefón hlási ABI `x86_64,arm64-v8a` (Cuttlefish prekladá
+    kód ARM). 8 z 10 aplikácií sa nainštalovalo a spustilo bez pádu; žiadna nepotrebovala služby Google.
+    Fennec pre x86_64 padá (`libjnidispatch.so` pre `android-x86-64` chýba v balíku). WireGuard nie je v hlavnom
+    repozitári F-Droid. Test teraz uprednostní kód pre `x86_64`, vie vynútiť verziu pre ARM (stĺpec ABI v zozname)
+    a žiadosť o povolenie počíta ako úspešné spustenie.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
