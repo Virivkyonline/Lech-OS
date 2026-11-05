@@ -92,7 +92,7 @@ službou zvolenou používateľom, alebo ho úplne vypneme.
 | `…-dnsotls-ds.metric.gstatic.com` | Overenie šifrovaného DNS, modul DnsResolver | `…-dnsotls-ds.probe.lech.invalid` (záplata) |
 | `preprod-remoteprovisioning.googleapis.com` | Atestačné kľúče (RKP), server nastavuje Cuttlefish | Bez servera (záplata) |
 | `www.gstatic.com` | Zoznam logov Certificate Transparency, modul Connectivity | Sťahovanie predvolene vypnuté (záplata) |
-| `g.co` | Overenie odkazov aplikácií (App Links), `com.android.statementservice` | Zisťujeme, ktorá aplikácia doménu deklaruje |
+| `g.co` | Overenie odkazov aplikácií (App Links), `com.android.statementservice`; odkaz `g.co/wallpaper` deklaruje aplikácia na tapety `com.android.wallpaper` | Odkaz bez overovania (záplata) |
 
 Podrobnosti a dôsledky: [docs/11, časť 4c](../docs/11-etapa-2-cuttlefish.md#4c-bez-predvolených-spojení-na-google-úloha-e2-06).
 
@@ -123,7 +123,9 @@ Tabuľka je prepísaná zo správy na notebooku (`audit/20261105-075138-prve-spu
    **Pôvod (5. 11. 2026, `tools/etapa2/kto-sa-pyta.sh`):** dopyt `g***` poslala aplikácia
    `com.android.statementservice` (UID 10069) – služba AOSP, ktorá overuje odkazy aplikácií (Android App Links):
    pre každú doménu, ktorú aplikácia v manifeste označí na overenie, stiahne `https://<doména>/.well-known/assetlinks.json`.
-   Niektorá predinštalovaná aplikácia teda deklaruje odkazy na `g.co`; ktorá, ukáže `adb shell pm get-app-links`.
+   `adb shell pm get-app-links` ukázal aplikáciu: `com.android.wallpaper: g.co: legacy_failure` – aplikácia na tapety
+   (WallpaperPicker2) deklaruje odkaz `https://g.co/wallpaper` s `autoVerify` a overenie zlyháva, lebo `g.co`
+   uvádza len aplikáciu Google. Záplata: odkaz bez overovania.
    Druhý dopyt `e***` (systém Android, UID 1000) je čas `europe.pool.ntp.org`.
 4. **Testovacie prostredie:** DNS `8.8.8.8` používa len virtuálny router OpenWrt (v čase 0,0 s, pred štartom
    Androidu), nie telefón.

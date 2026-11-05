@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Thu, 5 Nov 2026 12:00:00 +0100
+Subject: [PATCH] Do not verify the g.co wallpaper link at first boot
+
+DeepLinkActivity declares https://g.co/wallpaper with android:autoVerify, so the domain
+verification agent (com.android.statementservice) fetches https://g.co/.well-known/assetlinks.json
+from Google at first boot. The check fails (pm get-app-links: legacy_failure) because g.co only lists
+Google's own wallpaper app. Without autoVerify nothing is fetched; the link still works when the
+user picks the app.
+
+LECH OS task E2-06: no connections to Google without consent.
+---
+ AndroidManifest.xml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index c4ae266..9ff4c89 100755
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -100,7 +100,10 @@
+     <activity android:name="com.android.wallpaper.picker.DeepLinkActivity"
+         android:theme="@style/WallpaperTheme.NoBackground"
+         android:exported="true">
+-        <intent-filter android:autoVerify="true">
++        <!-- LECH OS: no autoVerify. Verifying this link makes the phone fetch
++             https://g.co/.well-known/assetlinks.json from Google at first boot, and the check fails
++             anyway because g.co does not list this app. The link can still be opened with the app. -->
++        <intent-filter>
+             <action android:name="android.intent.action.VIEW" />
+             <category android:name="android.intent.category.DEFAULT" />
+             <category android:name="android.intent.category.BROWSABLE" />

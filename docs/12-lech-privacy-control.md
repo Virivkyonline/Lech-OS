@@ -21,6 +21,7 @@ Panel „Odchod údajov“ z predchádzajúcich dokumentov je súčasťou LECH P
 | **Internet** | Či má aplikácia prístup na internet | **Jedným dotykom zakázať prístup na internet** (povolenie Sieť) |
 | **Systém a AI** | Každý prenos systémových služieb LECH a LECH AI: kedy, kam, prečo, koľko | Vypnúť príslušnú službu |
 | **Týždenný prehľad** | Zhrnutie: nové domény, nezvyčajne veľké prenosy, aplikácie, ktoré sa ozývajú na pozadí | Odkaz na nastavenia danej aplikácie |
+| **Overenie odkazov (App Links)** | Pri inštalácii aplikácie, ktorá chce otvárať odkazy svojej domény, sa systém spojí s touto doménou (`/.well-known/assetlinks.json`), takže prevádzkovateľ domény sa dozvie, že je aplikácia nainštalovaná. Zistené pri E2-06 ([docs/11](11-etapa-2-cuttlefish.md#4c-bez-predvolených-spojení-na-google-úloha-e2-06)) | Vypnúť overenie pre aplikáciu; odkazy sa potom otvárajú až po výbere |
 
 Celý záznam zostáva **len v telefóne**, šifrovaný, s nastaviteľnou dobou uchovania (predvolene 30 dní).
 Neodosiela sa nikam – ani nám.
