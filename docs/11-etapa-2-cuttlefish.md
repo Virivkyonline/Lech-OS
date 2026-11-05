@@ -372,7 +372,8 @@ vlastnou upravenou aplikáciou so systémovými právami. LECH OS preto použív
 ## 4e. Aktualizácia z vlastného servera (úloha E2-08)
 
 Prvá verzia (v0) celého postupu aktualizácie. Server beží na zostavovacom počítači; server v EÚ, aplikácia na
-aktualizácie v telefóne a podpis celej zostavy prídu v ďalších krokoch.
+aktualizácie v telefóne a podpis celej zostavy prídu v ďalších krokoch. **Overené 5. 11. 2026:** telefón s
+LECH OS 0.1.0-dev sa z nášho servera aktualizoval na 0.1.0-dev-ota a nabehol zo slotu `_b` (záznam č. 15).
 
 ```bash
 tools/etapa2/08-aktualizacia.sh                   # verzia B = <verzia A>-ota
@@ -388,8 +389,9 @@ tools/etapa2/08-aktualizacia.sh --len-instalovat  # znova len inštalácia (ulo�
 | 4. Inštalácia | Telefón naštartuje z obrazov A. `update_engine_client` stiahne cez tunel `adb reverse` z `http://127.0.0.1:8008/` len `payload.bin`, overí podpis a zapíše B do druhého slotu (A/B), kým telefón beží |
 | 5. Kontrola | Reštart; skript overí novú verziu (`ro.lech.version`), zmenený slot (`ro.boot.slot_suffix`) a inú zostavu |
 
-- **Trvanie:** dve zostavenia (pri každom znova analýza Soong, pozor na pamäť), `m otapackage` a inštalácia –
-  odhad 40 až 70 minút. Miesto: kópia obrazov A (vypíše sa, približne 10 až 30 GB) a balík (niekoľko GB).
+- **Trvanie:** na notebooku približne 25 minút. Obe zostavenia trvali po 2 minúty, lebo zmena verzie mení len
+  `build.prop` a analýza Soong je prírastková. Ďalej `m otapackage`, sťahovanie a overenie balíka (1 008 MB,
+  približne 3 minúty) a reštart. Miesto: kópia obrazov A (skript vypíše veľkosť) a balík.
 - **Prečo `adb reverse` v0:** telefón nepotrebuje sieť k počítaču a postup je rovnaký ako v nástroji AOSP
   `system/update_engine/scripts/update_device.py`. Server v EÚ s HTTPS nahradí tunel (E2-08b).
 - **Ďalšie kroky (E2-08b):**
@@ -444,7 +446,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
 | E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | **Hotové 5. 11. 2026** – 4. audit: žiadne spojenie na Google; telefón len DNS siete a `europe.pool.ntp.org` ([audit/README.md](../audit/README.md), [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)); 5 záplat a 1 prekrytie RRO |
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | **Hotové 5. 11. 2026** – aplikácie (aj Bluetooth) a kľúč aktualizácií podpísané kľúčmi LECH, `dev-keys`, overené v telefóne ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)). Kľúče APEX a AVB spolu s E2-08 |
-| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | Pripravené 5. 11. 2026 – `08-aktualizacia.sh`, server `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)); čaká na skúšku. Neskôr so serverom v EÚ: kontrola pripojenia, doména na overenie DNS, kópia zoznamu CT (z E2-06) |
+| E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | – |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |
@@ -523,6 +525,12 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
 14. **E2-07 hotové (5. 11. 2026):** s prepísaným certifikátom aplikácií Bluetooth zostavenie trvalo 10 minút a
     telefón nabootoval. Kontrola po štarte: `dev-keys`, podpis systému kľúčom `platform` LECH OS aj podpis
     `com.android.bluetooth` kľúčom `bluetooth` LECH OS – všetkých 9 kontrol OK.
+
+15. **Prvá aktualizácia z vlastného servera (5. 11. 2026, E2-08):** `08-aktualizacia.sh` – verzia A aj B sa zostavili
+    za 2 minúty, balík `ota.zip` mal 1 008 MB. `update_engine` stiahol `payload.bin` zo servera v0 (jedna požiadavka
+    s Range), overil podpis kľúčom LECH a zapísal B do druhého slotu (`kSuccess`, `UPDATED_NEED_REBOOT`). Po reštarte:
+    `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`. Kontrola „zostava“ ukázala falošnú chybu – číslo zostavy je pri
+    lokálnych zostavách vždy `eng.<používateľ>`; skript odteraz porovnáva čas zostavenia.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
