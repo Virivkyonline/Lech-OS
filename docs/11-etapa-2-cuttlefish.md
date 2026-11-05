@@ -316,7 +316,8 @@ presmerovali na cudzí server ([ADR-0010](adr/0010-upravy-aosp-ako-zaplaty.md)).
 - **Kontrola po štarte:** `06-zostav-lech.sh --spustit` overí aj zapnuté prekrytie času a prázdny server RKP.
   Úplné overenie urobí sieťový audit (`03-sietovy-audit.sh --lokalna-zostava`). Ten teraz obsahuje aj časť
   „Kto sa pýtal“, teda DNS dopyty podľa aplikácií zo záznamu DNS resolvera v telefóne. Je to prvý krok
-  k [LECH Privacy Control](12-lech-privacy-control.md).
+  k [LECH Privacy Control](12-lech-privacy-control.md). Na bežiacom telefóne ich vypíše aj
+  `tools/etapa2/kto-sa-pyta.sh`. Záznam si vyžaduje `adb root`, ktorý vývojová zostava (userdebug) dovolí.
 - **Ostáva na neskôr (E2-06b, spolu so serverom aktualizácií E2-08):**
   - vlastná kontrola pripojenia namiesto vypnutej,
   - vlastná doména na overenie DNS v *striktnom* režime súkromného DNS – keď používateľ zadá názov

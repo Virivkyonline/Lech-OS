@@ -104,10 +104,10 @@ cleanup
 trap - EXIT
 
 DNS_ARGS=()
-if lech_save_dns_by_app "$WORK"; then
+if reason=$(lech_save_dns_by_app "$WORK" 2>&1); then
   DNS_ARGS=(--dns-log "$WORK/dns-dopyty.txt" --packages "$WORK/balicky.txt")
 else
-  echo "Upozornenie: DNS dopyty podľa aplikácií sa z telefónu nepodarilo načítať (adb) – správa bude bez nich."
+  echo "Upozornenie: DNS dopyty podľa aplikácií sa z telefónu nepodarilo načítať ($reason) – správa bude bez nich."
 fi
 
 if [ "$KEEP" -ne 1 ]; then

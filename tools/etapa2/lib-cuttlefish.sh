@@ -102,13 +102,24 @@ lech_adb() {
 # Save which app asked the phone's DNS resolver for which name (task E2-06, docs/12):
 # the resolver keeps the last 200 queries with the app's UID; Android masks each name to its first
 # letter. Writes <dir>/dns-dopyty.txt and <dir>/balicky.txt (package name -> UID).
+# On failure prints the reason to stderr and returns 1.
 lech_save_dns_by_app() {
-  local dir=$1 adb
-  adb=$(lech_adb) || return 1
-  timeout 60 "$adb" wait-for-device >/dev/null 2>&1 || return 1
-  "$adb" shell dumpsys dnsresolver querylog 2>/dev/null | tr -d '\r' > "$dir/dns-dopyty.txt" || return 1
-  "$adb" shell pm list packages -U 2>/dev/null | tr -d '\r' > "$dir/balicky.txt" || return 1
-  grep -q 'uid=' "$dir/dns-dopyty.txt"
+  local dir=$1 adb out
+  adb=$(lech_adb) || { echo "adb sa nenašiel" >&2; return 1; }
+  timeout 60 "$adb" wait-for-device >/dev/null 2>&1 || { echo "telefón sa cez adb neozval" >&2; return 1; }
+  # The query log needs more rights than the adb shell user has; development builds allow adb root.
+  if [ "$(timeout 20 "$adb" shell id -u 2>/dev/null | tr -d '\r')" != 0 ]; then
+    timeout 30 "$adb" root >/dev/null 2>&1 || true
+    sleep 3
+    timeout 60 "$adb" wait-for-device >/dev/null 2>&1 || { echo "telefón sa po adb root neozval" >&2; return 1; }
+  fi
+  out=$(timeout 60 "$adb" shell dumpsys dnsresolver querylog 2>&1 | tr -d '\r')
+  printf '%s\n' "$out" > "$dir/dns-dopyty.txt"
+  timeout 60 "$adb" shell pm list packages -U 2>/dev/null | tr -d '\r' > "$dir/balicky.txt"
+  if ! grep -q 'uid=' "$dir/dns-dopyty.txt"; then
+    echo "záznam DNS je prázdny alebo nedostupný: $(printf '%s' "$out" | grep -v '^ *$' | head -n 2 | tr '\n' ' ')" >&2
+    return 1
+  fi
 }
 
 # Create and start a phone from the fetched images, or from the local build with --local.
