@@ -83,6 +83,13 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
     tools/etapa2/08-aktualizacia.sh   # zostaví verziu A a B, telefón A sa aktualizuje na B
     ```
 
+13. **Test aplikácií z F-Droid** (úloha E2-10, [časť 4f](#4f-test-aplikácií-z-f-droid-úloha-e2-10)):
+
+    ```bash
+    tools/etapa2/06-zostav-lech.sh --spustit
+    tools/etapa2/10-test-aplikacii.sh          # 10 aplikácií, správa do kompatibilita/
+    ```
+
 ## 1. Zostavovací počítač
 
 Na zostavenie stačí **server alebo dostatočne vybavený notebook či stolný počítač**. Rozhoduje RAM, rýchly disk
@@ -402,6 +409,29 @@ tools/etapa2/08-aktualizacia.sh --len-instalovat  # znova len inštalácia (ulo�
   - test chybnej aktualizácie, po ktorej sa telefón sám vráti na funkčnú verziu
     ([docs/14](14-aktualizacie-a-podpora.md#overenie-v-etape-2)).
 
+## 4f. Test aplikácií z F-Droid (úloha E2-10)
+
+Prvý test kompatibility: nainštalujú sa a spustia sa bežné aplikácie z [F-Droid](https://f-droid.org) – katalógu
+aplikácií s otvoreným kódom, ktorý funguje bez Google. Výber v
+[spec/testovacie-aplikacie.txt](../spec/testovacie-aplikacie.txt) zodpovedá potrebám pilotu pre firmy
+([ADR-0007](adr/0007-prvy-trh-firmy.md)): prehliadač, pošta, kalendár a kontakty, MFA, VPN, heslá, firemná
+komunikácia, mapy, súbory, médiá.
+
+| Krok | Ako |
+|------|-----|
+| Výber verzie | Z indexu F-Droid (`index-v2.json`) najnovšia odporúčaná verzia, ktorá má natívny kód pre ABI telefónu (Cuttlefish: len `x86_64`) a `minSdk` nie vyšší ako Android v telefóne |
+| Stiahnutie | APK z `f-droid.org/repo`; **SHA-256 sa porovná s indexom**, nezhodné APK sa nenainštaluje |
+| Inštalácia | `adb install -r`; ak Android odmietne starý `targetSdk`, zapíše sa to a inštalácia sa zopakuje s `--bypass-low-target-sdk-block` |
+| Spustenie | Spúšťacia aktivita; po 8 s kontrola, že proces beží, aktivita je na popredí a v zázname pádov (`logcat -b crash`) nič nie je. Poznamená sa, ak aplikácia hľadá služby Google. Snímka obrazovky |
+| Správa | `kompatibilita/<čas>-fdroid/sprava.md` a `sprava.json` v repozitári; APK a snímky v `~/lech-work/kompatibilita` |
+
+- **Čo test overuje:** že sa aplikácia nainštaluje a spustí bez pádu – nie všetky jej funkcie (prihlásenie,
+  synchronizáciu, hovory). Tie overí podrobnejší test s pilotným zákazníkom.
+- **Obmedzenie Cuttlefish:** telefón má len 64-bitové `x86_64`, bez prekladu kódu pre ARM. Aplikácie, ktoré F-Droid
+  ponúka len pre ARM, sa označia ako nedostupné. Na Pixeli (ARM) tento problém nebude.
+- **Index F-Droid** sa sťahuje cez HTTPS a jeho podpis sa zatiaľ neoveruje; overenie podpisu repozitára bude súčasťou
+  LECH Store ([docs/06](06-lech-store-a-cloud.md)).
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
@@ -448,7 +478,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | **Hotové 5. 11. 2026** – aplikácie (aj Bluetooth) a kľúč aktualizácií podpísané kľúčmi LECH, `dev-keys`, overené v telefóne ([časť 4d](#4d-vlastné-testovacie-podpisové-kľúče-úloha-e2-07)). Kľúče APEX a AVB spolu s E2-08 |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |
-| E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | – |
+| E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | Pripravené 5. 11. 2026 – `10-test-aplikacii.sh`, zoznam v `spec/testovacie-aplikacie.txt` ([časť 4f](#4f-test-aplikácií-z-f-droid-úloha-e2-10)); čaká na test |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | – |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
 

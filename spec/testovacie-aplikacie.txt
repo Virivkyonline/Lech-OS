@@ -1,0 +1,15 @@
+# Aplikácie z F-Droid na prvý test kompatibility LECH OS (úloha E2-10, docs/11 časť 4f).
+# Výber podľa potrieb pilotu pre firmy (ADR-0007): pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy.
+# Používa ho tools/etapa2/10-test-aplikacii.sh; zoznam sa dá meniť a rozširovať.
+#
+# Formát: balík | názov | kategória | prečo
+org.mozilla.fennec_fdroid    | Fennec F-Droid  | prehliadač            | webové aplikácie a intranet; veľký natívny kód
+com.fsck.k9                  | K-9 Mail        | e-mail                | firemná pošta cez IMAP
+at.bitfire.davdroid          | DAVx⁵           | kalendár a kontakty   | synchronizácia CalDAV/CardDAV bez účtu Google
+com.beemdevelopment.aegis    | Aegis           | dvojfaktorové overenie | kódy MFA (TOTP) pre firemné účty
+com.wireguard.android        | WireGuard       | VPN                   | prístup do firemnej siete
+com.kunzisoft.keepass.libre  | KeePassDX       | heslá                 | správca hesiel
+im.vector.app                | Element         | komunikácia           | firemný chat a hovory (Matrix)
+app.organicmaps              | Organic Maps    | mapy                  | mapy bez Google, offline
+me.zhanghai.android.files    | Material Files  | súbory                | práca so súbormi a dokumentmi
+org.videolan.vlc             | VLC             | médiá                 | prehrávanie videa; natívny kód pre x86_64
