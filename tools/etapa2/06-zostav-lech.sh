@@ -91,6 +91,11 @@ fi
 mkdir -p "$KEYS_DEST" && chmod 700 "$AOSP_DIR/vendor/lech-keys" "$KEYS_DEST"
 cp -p "$KEYS"/*.pk8 "$KEYS"/*.x509.pem "$KEYS_DEST/" || die "Kľúče sa nepodarilo skopírovať do $KEYS_DEST."
 echo "Podpisové kľúče: $KEYS (testovacie kľúče LECH OS)"
+# SELinux certificates of the mainline system apps are set in common.mk; warn if AOSP no longer knows
+# the Bluetooth variable (the Bluetooth app would get the wrong SELinux domain and the boot would fail).
+if ! grep -q PRODUCT_MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES "$AOSP_DIR/build/make/core/config.mk" 2>/dev/null; then
+  echo "UPOZORNENIE: AOSP nepozná PRODUCT_MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES – skontrolujte keys.conf (docs/11, časť 4d)."
+fi
 
 version=$(sed -n 's/^LECH_VERSION *:= *//p' "$SRC/config/version.mk")
 echo "LECH OS ${version:-?} (commit $(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo '?'))"

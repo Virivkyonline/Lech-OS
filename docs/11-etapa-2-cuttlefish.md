@@ -345,6 +345,12 @@ vlastnou upravenou aplikáciou so systémovými právami. LECH OS preto použív
 - **Raz vytvorené kľúče sa nemenia.** Telefón podpísaný inými kľúčmi treba vymazať (na Cuttlefish to robí
   `cvd reset`, ktorý `06-zostav-lech.sh --spustit` volá sám). Priečinok `~/lech-keys` si zálohujte.
 - **Zostavenie** podpíše nanovo všetky aplikácie. Odhad je 20 až 60 minút.
+- **SELinux rozpoznáva systémové aplikácie podľa certifikátu** (`system/sepolicy/private/keys.conf`). Pre moduly
+  NetworkStack, SDK sandbox, Bluetooth a NFC sa certifikát berie z premenných `PRODUCT_MAINLINE_*SEPOLICY_DEV_CERTIFICATES`.
+  Pre Bluetooth AOSP pri predpripravenom module ART od Google použije verejné kľúče AOSP. Prvá zostava s kľúčmi LECH
+  preto nenaštartovala: Bluetooth dostal nesprávne práva, stále padal a Cuttlefish hlásil
+  `VIRTUAL_DEVICE_BOOT_FAILED: Dependencies not ready after 10 checks: Bluetooth`. Riešenie: všetky tri premenné
+  v [common.mk](../vendor/lech/config/common.mk) ukazujú na kľúče LECH.
 - **Sú to testovacie kľúče**, nie produkčné. Produkčné kľúče vzniknú pred vydaním podľa
   [docs/05](05-lech-security.md#správa-kľúčov): offline, dve osoby, nikdy na vývojárskom počítači.
 - **Ostáva na ďalšie kroky:**
@@ -464,6 +470,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     `com.android.statementservice` (overenie odkazov aplikácií), a `adb shell pm get-app-links` aplikáciu, ktorá
     odkaz deklaruje: `com.android.wallpaper: g.co: legacy_failure`. Po 5. záplate (WallpaperPicker2 bez `autoVerify`)
     zostavenie trvalo 1 minútu a 4. audit neukázal **žiadne spojenie na Google** – E2-06 je hotové.
+
+13. **Kľúče LECH, prvý pokus (5. 11. 2026, E2-07):** prvé zostavenie zlyhalo pri analýze Soong pre nedostatok pamäte
+    (`Killed`, exit 137); po zatvorení aplikácií vo Windows prešlo za 18 minút. Telefón však nenaštartoval:
+    `VIRTUAL_DEVICE_BOOT_FAILED: Dependencies not ready after 10 checks: Bluetooth` a opakované pády procesu v logcate.
+    Príčina: certifikát pre pravidlá SELinux aplikácie Bluetooth ostal kľúčom AOSP (časť 4d). Oprava v `common.mk`.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
