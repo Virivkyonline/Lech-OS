@@ -10,7 +10,7 @@
 #   --spustit   start the built phone afterwards
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_CLOCK_RETRIES (default 5),
 #   LECH_PRODUCT (default aosp_cf_x86_64_only_phone), LECH_RELEASE (force a release config),
-#   LECH_VARIANT (default userdebug)
+#   LECH_VARIANT (default userdebug), LECH_RERUN (command suggested after a failure; set by 06-zostav-lech.sh)
 
 set -uo pipefail   # no -e: build/envsetup.sh and lunch are not written for errexit
 
@@ -21,6 +21,7 @@ AOSP_DIR=${AOSP_DIR:-$HOME/aosp}
 WORKDIR=${LECH_WORK:-$HOME/lech-work}
 PRODUCT=${LECH_PRODUCT:-aosp_cf_x86_64_only_phone}
 VARIANT=${LECH_VARIANT:-userdebug}
+RERUN=${LECH_RERUN:-tools/etapa2/05-zostav-aosp.sh}
 JOBS=8
 START=0
 MIN_FREE_GB=150     # one Cuttlefish build wrote 139 GB into out/ (first real build, 5. 11. 2026)
@@ -101,8 +102,8 @@ if [ "$status" -ne 0 ]; then
   cat <<EOF
 
 Čo ďalej:
-  - Ak došla pamäť (killed, out of memory): spustite znova s menej úlohami: tools/etapa2/05-zostav-aosp.sh --ulohy 4
-  - Inak spustite skript znova – zostavenie pokračuje tam, kde skončilo.
+  - Ak došla pamäť (killed, out of memory): spustite znova s menej úlohami: ${RERUN} --ulohy 4
+  - Inak spustite znova ${RERUN} – zostavenie pokračuje tam, kde skončilo.
   - Úplný log: $LOG
 EOF
   exit "$status"

@@ -64,7 +64,8 @@ aby sa dalo kedykoľvek zmerať, či ho systém naozaj spĺňa.
 | –  | [Katalóg AI akcií](spec/ai-akcie.yaml) | Strojovo čitateľný zoznam akcií LECH AI s úrovňami rizika a súhlasu |
 | –  | [Validátor katalógu](tools/validate_ai_actions.py) | Kontrola, že žiadna akcia neobchádza pravidlá súhlasu: `python3 tools/validate_ai_actions.py` |
 | –  | [Kontrola zostavovacieho počítača](tools/check_build_host.sh) | Overí RAM, disk, KVM a nástroje pred etapou 2: `tools/check_build_host.sh` |
-| –  | [Skripty etapy 2](tools/etapa2) | Príprava notebooku, čisté AOSP z hotových obrazov, sieťový audit prvého spustenia, stiahnutie a zostavenie AOSP – [rýchly štart](docs/11-etapa-2-cuttlefish.md#rýchly-štart-na-notebooku) |
+| –  | [Skripty etapy 2](tools/etapa2) | Príprava notebooku, čisté AOSP z hotových obrazov, sieťový audit prvého spustenia, stiahnutie a zostavenie AOSP, zostavenie produktu LECH OS – [rýchly štart](docs/11-etapa-2-cuttlefish.md#rýchly-štart-na-notebooku) |
+| –  | [Produkt LECH OS](vendor/lech) | Definícia produktu pre zostavovací systém AOSP: telefón LECH-PHONE pre Cuttlefish, verzia, animácia pri štarte |
 | –  | [Povolené spojenia](spec/povolene-spojenia.txt) | Zoznam spojení, ktoré LECH OS smie nadviazať; audit všetko ostatné označí ako neznáme |
 
 ## Kľúčové rozhodnutia (ADR)
