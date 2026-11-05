@@ -1,0 +1,15 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// Resource overlay for the Android framework (framework-res), installed in the product partition.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+runtime_resource_overlay {
+    name: "LechFrameworksResOverlay",
+    product_specific: true,
+    sdk_version: "current",
+}

@@ -11,9 +11,11 @@ Postup a rozhodnutia sú opísané v [docs/11, časť 4b](../../docs/11-etapa-2-
 | `config/common.mk` | Identita spoločná pre všetky produkty: verzia v *Build number*, `ro.lech.version`, animácia pri štarte |
 | `config/version.mk` | Verzia LECH OS – jediné miesto, kde sa mení |
 | `bootanimation/bootanimation.zip` | Animácia pri štarte, vytvorená skriptom `tools/make_bootanimation.py` |
+| `overlay/frameworks-res/` | Prekrytie (RRO) nastavení frameworku Android v partícii product: sieťový čas `europe.pool.ntp.org` namiesto `time.android.com` |
 
 Pravidlá:
 
+- **Čo sa dá nastaviť tu, nerobiť záplatou.** Zmeny kódu AOSP sú v [patches/](../../patches) ([ADR-0010](../../docs/adr/0010-upravy-aosp-ako-zaplaty.md)).
 - **Meniť len partície product (a neskôr system_ext a vendor), nie systémový obraz.** Malý patch set
   ([ADR-0002](../../docs/adr/0002-zaklad-systemu-aosp.md)) uľahčuje prechod na nové verzie AOSP.
 - **Názov produktu bez pomlčky.** `lunch` delí cieľ `produkt-release-variant` práve podľa pomlčiek.

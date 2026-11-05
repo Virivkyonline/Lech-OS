@@ -78,3 +78,19 @@ službou zvolenou používateľom, alebo ho úplne vypneme.
    analýza záznamu 2. auditu so stĺpcom „Odkiaľ“ ukázala sieť Wi-Fi/router OpenWrt. Android sám `8.8.8.8` nepoužil.
 2. Určiť, ktorá časť Androidu volá `www.gstatic.com` a `g.co` – zaznamenať prenosy podľa aplikácií (UID)
    priamo v telefóne počas auditu. To je zároveň prvý krok k [LECH Privacy Control](../docs/12-lech-privacy-control.md).
+   **5. 11. 2026:** `www.gstatic.com` je sťahovanie zoznamu logov Certificate Transparency (modul Connectivity),
+   zistené v zdrojovom kóde. Audit od tohto dňa ukladá aj DNS dopyty podľa aplikácií (časť „Kto sa pýtal“),
+   ktoré ukážu pôvod `g.co`.
+
+## Pôvod spojení a zmeny v LECH OS (5. 11. 2026)
+
+| Cieľ | Kto ho robí (Android 17) | LECH OS |
+|------|--------------------------|---------|
+| `connectivitycheck.gstatic.com`, `www.google.com` | Kontrola pripojenia, modul NetworkStack | Predvolene vypnutá (záplata) |
+| `time.android.com` | Sieťový čas, framework | `europe.pool.ntp.org` (prekrytie RRO) |
+| `…-dnsotls-ds.metric.gstatic.com` | Overenie šifrovaného DNS, modul DnsResolver | `…-dnsotls-ds.probe.lech.invalid` (záplata) |
+| `preprod-remoteprovisioning.googleapis.com` | Atestačné kľúče (RKP), server nastavuje Cuttlefish | Bez servera (záplata) |
+| `www.gstatic.com` | Zoznam logov Certificate Transparency, modul Connectivity | Sťahovanie predvolene vypnuté (záplata) |
+| `g.co` | Neurčené | Zistí audit LECH OS |
+
+Podrobnosti a dôsledky: [docs/11, časť 4c](../docs/11-etapa-2-cuttlefish.md#4c-bez-predvolených-spojení-na-google-úloha-e2-06).

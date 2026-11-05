@@ -25,7 +25,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --swap) SWAP_GB=${2:?chýba počet GB}; shift 2 ;;
     --dns)  DNS_SERVERS=${2:?chýba zoznam DNS serverov}; shift 2 ;;
-    -h|--help) sed -n '2,13p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,11p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done

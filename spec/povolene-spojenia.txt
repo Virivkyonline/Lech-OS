@@ -7,7 +7,7 @@
 # Text za znakom # je komentár.
 #
 # Pre čisté AOSP (východiskový audit E2-03) je zoznam zámerne takmer prázdny – správa ukáže všetko.
-# Spojenia LECH OS (aktualizácie, čas, kontrola pripojenia) sem pribudnú v úlohe E2-06.
+# Spojenia LECH OS pribúdajú v úlohe E2-06 – každé s dôvodom.
 
 # Testovacie prostredie: DNS servery, ktoré Cuttlefish na notebooku prideľuje virtuálnemu telefónu
 # (nastavuje tools/etapa2/01-priprava-notebooku.sh). Nie sú súčasťou LECH OS.
@@ -17,3 +17,8 @@
 # Testovacie prostredie: Cuttlefish spúšťa vedľa telefónu virtuálny Wi-Fi router OpenWrt,
 # ktorý si synchronizuje čas s verejným poolom NTP. Nie je to prevádzka Androidu ani LECH OS.
 openwrt.pool.ntp.org
+
+# LECH OS: sieťový čas (NTP) namiesto time.android.com (Google). Európska zóna projektu NTP Pool
+# počas vývoja; pred vydaním vlastná zóna výrobcu (vendor zone). Nastavenie:
+# vendor/lech/overlay/frameworks-res/res/values/config.xml
+europe.pool.ntp.org

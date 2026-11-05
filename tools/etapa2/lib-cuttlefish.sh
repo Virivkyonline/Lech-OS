@@ -90,6 +90,27 @@ lech_reset_phones() {
   cvd reset --yes >/dev/null 2>&1 || true
 }
 
+# Path to adb for the running phone: from the local build, from the prebuilt host package, or installed.
+lech_adb() {
+  local c
+  for c in "${ANDROID_HOST_OUT:-}/bin/adb" "${AOSP_DIR:-$HOME/aosp}/out/host/linux-x86/bin/adb" "$LECH_IMAGES/bin/adb"; do
+    if [ -x "$c" ]; then echo "$c"; return 0; fi
+  done
+  command -v adb
+}
+
+# Save which app asked the phone's DNS resolver for which name (task E2-06, docs/12):
+# the resolver keeps the last 200 queries with the app's UID; Android masks each name to its first
+# letter. Writes <dir>/dns-dopyty.txt and <dir>/balicky.txt (package name -> UID).
+lech_save_dns_by_app() {
+  local dir=$1 adb
+  adb=$(lech_adb) || return 1
+  timeout 60 "$adb" wait-for-device >/dev/null 2>&1 || return 1
+  "$adb" shell dumpsys dnsresolver querylog 2>/dev/null | tr -d '\r' > "$dir/dns-dopyty.txt" || return 1
+  "$adb" shell pm list packages -U 2>/dev/null | tr -d '\r' > "$dir/balicky.txt" || return 1
+  grep -q 'uid=' "$dir/dns-dopyty.txt"
+}
+
 # Create and start a phone from the fetched images, or from the local build with --local.
 lech_create_phone() {
   local args=()

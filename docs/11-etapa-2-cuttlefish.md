@@ -64,6 +64,15 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
    tools/etapa2/06-zostav-lech.sh --spustit   # zostaví produkt LECH, spustí telefón a overí jeho identitu
    ```
 
+10. **Bez spojení na Google** (úloha E2-06, [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)) –
+    rovnaký príkaz ako v kroku 9 použije aj úpravy AOSP z `patches/`; potom sieťový audit LECH OS:
+
+    ```bash
+    git pull
+    tools/etapa2/06-zostav-lech.sh --spustit
+    tools/etapa2/03-sietovy-audit.sh --lokalna-zostava --ano   # 30 minút, správa do audit/
+    ```
+
 ## 1. Zostavovací počítač
 
 Na zostavenie stačí **server alebo dostatočne vybavený notebook či stolný počítač**. Rozhoduje RAM, rýchly disk
@@ -262,7 +271,8 @@ tools/etapa2/06-zostav-lech.sh --ulohy 4      # pri nedostatku pamäte; po preru
   40 GB voľného miesta; vo WSL počíta s voľným miestom na disku C:, nie s veľkosťou virtuálneho disku.
 - **Prečo kópia, nie odkaz:** zostavovací systém hľadá produkty v `vendor/*` a symbolické odkazy na iné
   adresáre nesleduje. Skript preto pri každom spustení prepíše `~/aosp/vendor/lech` obsahom z repozitára.
-- **Mení sa len partícia product.** Systémová partícia je na Cuttlefish spoločný obraz definovaný v Soong
+- **Mení sa len partícia product** (od úlohy E2-06 aj záplaty kódu AOSP, [časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)).
+  Systémová partícia je na Cuttlefish spoločný obraz definovaný v Soong
   (`aosp_shared_system_image`). Init načíta `build.prop` partície product ako poslednú, takže jej hodnoty majú
   prednosť – aj pre *Build number* (`ro.build.display.id`).
 - **Rovnaký spôsob zostavenia ako AOSP:** `aosp_cf.mk` zapína niektoré režimy (napr. `PRODUCT_SOONG_ONLY`) len pre
@@ -281,6 +291,38 @@ tools/etapa2/06-zostav-lech.sh --ulohy 4      # pri nedostatku pamäte; po preru
   nedal od ostatných odlíšiť.
 - **Návrat k čistému AOSP:** `tools/etapa2/05-zostav-aosp.sh --spustit`. Oba produkty zdieľajú adresár zariadenia
   v `out/`, preto sa pri každom prepnutí obrazy vytvoria znova.
+
+## 4c. Bez predvolených spojení na Google (úloha E2-06)
+
+Pôvod každého zo 7 spojení z auditu čistého AOSP ([audit/README.md](../audit/README.md)) sme dohľadali
+v zdrojovom kóde Android 17. Kým LECH OS nemá vlastný server, spojenie radšej vypneme, než by sme ho
+presmerovali na cudzí server ([ADR-0010](adr/0010-upravy-aosp-ako-zaplaty.md)).
+
+| Spojenie | Kto ho robí | Zmena v LECH OS | Dôsledok, kým nemáme vlastný server |
+|----------|-------------|-----------------|-------------------------------------|
+| `connectivitycheck.gstatic.com`, `www.google.com` | Kontrola pripojenia: modul NetworkStack (`NetworkMonitor`) | Záplata: kontrola je predvolene vypnutá (`captive_portal_mode`) | Prihlasovacia stránka verejnej Wi-Fi (hotel, letisko) sa neotvorí sama; telefón nerozozná sieť bez internetu. Zapnutie (spojenie na Google): `adb shell settings put global captive_portal_mode 1` |
+| `time.android.com` | Sieťový čas: framework (`config_ntpServers`) | Prekrytie RRO vo `vendor/lech`: `europe.pool.ntp.org` | Žiadny. Pred vydaním požiadame NTP Pool o vlastnú zónu výrobcu |
+| `…-dnsotls-ds.metric.gstatic.com` | Overenie šifrovaného DNS (DoT aj DoH): modul DnsResolver; dopyt ide cez nastavený DNS server, aj nešifrovane | Záplata: `…-dnsotls-ds.probe.lech.invalid`. Názov má rovnakú dĺžku a doména `.invalid` nikam nevedie (RFC 6761); overenie prijme akúkoľvek odpoveď | Žiadny |
+| `preprod-remoteprovisioning.googleapis.com` | Atestačné kľúče (RKP): `rkpd`; testovací server Google nastavuje Cuttlefish | Záplata v `device/google/cuttlefish`: bez servera | Atestácia kľúčov na LECH Cuttlefish nefunguje. Na vývoj ju netreba; pri Pixeli rozhodneme v E2-11 ([docs/13](13-bankove-aplikacie.md)) |
+| `www.gstatic.com` | Zoznam logov Certificate Transparency: modul Connectivity (`CertificateTransparencyService`) ho sťahuje po štarte | Záplata: sťahovanie je predvolene vypnuté | Aplikácie, ktoré si samy zapnú kontrolu CT, nemajú aktuálny zoznam. Cieľ: kópia zoznamu na serveri LECH |
+| `g.co` | **Neurčené.** V moduloch NetworkStack, Connectivity, DnsResolver ani RemoteKeyProvisioning nie je | – | Audit LECH OS teraz ukáže aj aplikáciu, ktorá sa na názov `g…` pýta |
+
+- **Záplaty** sú v [patches/](../patches) a použije ich `tools/etapa2/aplikuj-zaplaty.sh`. Skript
+  `06-zostav-lech.sh` ho spúšťa sám; `aplikuj-zaplaty.sh --kontrola` len vypíše stav. Každá záplata je commit
+  v príslušnom projekte (`git -C ~/aosp/packages/modules/NetworkStack log -1`). Po `repo sync` treba záplaty
+  použiť znova.
+- **Zostavenie** tentoraz prekladá zmenené moduly NetworkStack, Connectivity a DnsResolver a zmena v
+  `device/google/cuttlefish` znova spustí analýzu Soong. Odhad je 30 až 90 minút.
+- **Kontrola po štarte:** `06-zostav-lech.sh --spustit` overí aj zapnuté prekrytie času a prázdny server RKP.
+  Úplné overenie urobí sieťový audit (`03-sietovy-audit.sh --lokalna-zostava`). Ten teraz obsahuje aj časť
+  „Kto sa pýtal“, teda DNS dopyty podľa aplikácií zo záznamu DNS resolvera v telefóne. Je to prvý krok
+  k [LECH Privacy Control](12-lech-privacy-control.md).
+- **Ostáva na neskôr (E2-06b, spolu so serverom aktualizácií E2-08):**
+  - vlastná kontrola pripojenia namiesto vypnutej,
+  - vlastná doména na overenie DNS v *striktnom* režime súkromného DNS – keď používateľ zadá názov
+    poskytovateľa, NetworkStack sa naň pýta s doménou `metric.gstatic.com` a potrebuje skutočnú odpoveď,
+  - kópia zoznamu CT,
+  - diagnostika siete v module Connectivity (`NetworkDiagnostics`), ktorá sa spúšťa len pri poruche siete.
 
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
@@ -324,7 +366,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-03 | Sieťový audit čistého AOSP | Zoznam všetkých spojení pri prvom spustení je zapísaný v repozitári | **Hotové 4. 11. 2026** – dve merania; čisté AOSP sa pri prvom spustení spojí so 7 cieľmi Google ([audit/README.md](../audit/README.md)); zostáva určiť pôvod 2 spojení |
 | E2-04 | Repozitár `lech-manifest` a produkt LECH pre Cuttlefish | Zostaví sa vlastný produkt odvodený od `aosp_cf_x86_64_only_phone` | **Hotové 5. 11. 2026** – produkt `lech_cf_x86_64_only_phone` vo [vendor/lech](../vendor/lech) ([časť 4b](#4b-prvý-produkt-lech-os-úlohy-e2-04-a-e2-05)) sa zostavil za 18 min a nabootoval; `lech-manifest` zatiaľ ako snímka presných verzií AOSP (`~/lech-work/aosp-manifest.xml`) |
 | E2-05 | Základná identita | Názov LECH OS a verzia v nastaveniach, vlastná animácia pri štarte | **Hotové 5. 11. 2026** – v bežiacom telefóne overené cez adb: model `LECH-PHONE`, *Build number* `LECH-OS-0.1.0-dev-userdebug`, `ro.lech.version` 0.1.0-dev, animácia v `/product/media`; zostáva premenovať texty „Android“ v Nastaveniach (Z7) |
-| E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | – |
+| E2-06 | Nahradenie spojení na Google | Audit z E2-03 na produkte LECH neukáže žiadne spojenie na Google | Rozpracované 5. 11. 2026 – 6 zo 7 cieľov vypnutých alebo nahradených ([časť 4c](#4c-bez-predvolených-spojení-na-google-úloha-e2-06)), pôvod `g.co` zisťujeme; čaká na zostavenie a audit |
 | E2-07 | Vlastné testovacie podpisové kľúče | Zostava je podpísaná kľúčmi LECH (testovacími, nie produkčnými) | – |
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | – |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | – |

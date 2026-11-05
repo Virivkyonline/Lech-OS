@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2026 The LECH OS Project
+    SPDX-License-Identifier: Apache-2.0
+
+    LECH OS values for framework settings (frameworks/base/core/res/res/values/config.xml).
+-->
+<resources>
+    <!-- Network time (NTP). AOSP uses ntp://time.android.com (Google). The European zone of the
+         NTP Pool Project is used during development; before release LECH OS applies for its own
+         vendor zone, as the pool asks of operating system vendors (task E2-06, docs/11). -->
+    <string-array name="config_ntpServers" translatable="false">
+        <item>ntp://europe.pool.ntp.org</item>
+    </string-array>
+</resources>

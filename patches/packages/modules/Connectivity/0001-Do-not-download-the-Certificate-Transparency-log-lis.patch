@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Thu, 5 Nov 2026 12:00:00 +0100
+Subject: [PATCH] Do not download the Certificate Transparency log list by
+ default
+
+The log list is downloaded from www.gstatic.com. The download stays off until LECH OS
+serves a copy of the list; it can be enabled with
+device_config put network_security CertificateTransparencyLogList__service_enabled true.
+
+LECH OS task E2-06: no connections to Google without consent.
+---
+ .../android/server/net/ct/CertificateTransparencyService.java | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyService.java b/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyService.java
+index d0dd564..84c9814 100644
+--- a/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyService.java
++++ b/networksecurity/service/src/com/android/server/net/ct/CertificateTransparencyService.java
+@@ -92,10 +92,12 @@ public class CertificateTransparencyService implements DeviceConfig.OnProperties
+             return;
+         }
+ 
++        // LECH OS: the log list is downloaded from Google (www.gstatic.com), so the download is off
++        // by default until LECH OS serves a copy of the list itself.
+         if (DeviceConfig.getBoolean(
+                 Config.NAMESPACE_NETWORK_SECURITY,
+                 Config.FLAG_SERVICE_ENABLED,
+-                /* defaultValue= */ true)) {
++                /* defaultValue= */ false)) {
+             startService();
+         } else {
+             stopService();

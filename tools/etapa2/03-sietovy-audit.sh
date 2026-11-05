@@ -2,7 +2,8 @@
 # Network audit of the first boot of a virtual phone (task E2-03).
 # Starts a packet capture of the Cuttlefish guest networks BEFORE the phone boots, creates a fresh phone
 # from prebuilt AOSP images (or from a local build), waits, stops the capture and writes a report into
-# the repository (audit/). The large capture file stays in $LECH_WORK.
+# the repository (audit/). The large capture file stays in $LECH_WORK. Before the phone is removed,
+# the DNS queries of the phone's resolver are read with the UID of the asking app (via adb).
 #
 # Usage: tools/etapa2/03-sietovy-audit.sh [--minuty N] [--lokalna-zostava] [--ponechat] [--ano]
 #   --minuty N          how long to record after the phone has booted (default 30)
@@ -31,7 +32,7 @@ while [ $# -gt 0 ]; do
     --lokalna-zostava) LOCAL_BUILD=1; shift ;;
     --ponechat) KEEP=1; shift ;;
     --ano) YES=1; shift ;;
-    -h|--help) sed -n '2,13p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
@@ -102,13 +103,20 @@ echo
 cleanup
 trap - EXIT
 
+DNS_ARGS=()
+if lech_save_dns_by_app "$WORK"; then
+  DNS_ARGS=(--dns-log "$WORK/dns-dopyty.txt" --packages "$WORK/balicky.txt")
+else
+  echo "Upozornenie: DNS dopyty podľa aplikácií sa z telefónu nepodarilo načítať (adb) – správa bude bez nich."
+fi
+
 if [ "$KEEP" -ne 1 ]; then
   lech_reset_phones
 fi
 
 REPORT="$REPO_DIR/audit/$STAMP-prve-spustenie/sprava.md"
 python3 "$REPO_DIR/tools/etapa2/analyzuj_audit.py" "$PCAP" --out "$REPORT" --ptr \
-  --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" \
+  --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" ${DNS_ARGS[@]+"${DNS_ARGS[@]}"} \
   --title "Sieťový audit prvého spustenia – $SOURCE"
 
 cat <<EOF

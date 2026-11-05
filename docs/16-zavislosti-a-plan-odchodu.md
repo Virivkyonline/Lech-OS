@@ -4,7 +4,7 @@ Princíp P9 ([docs/01](01-vizia-a-principy.md)): **žiadna časť systému nesmi
 Tento dokument je register závislostí – pre každú uvádza, čo by sa stalo, keby dodávateľ prestal spolupracovať
 (alebo by sa správal nepriateľsky ako konkurent), a aký je plán odchodu. Aktualizuje sa pri každom ADR.
 
-> Stav k 4. 11. 2026. Nejde o právne poradenstvo – právne otázky posúdi advokát ([docs/09](09-pravo-a-licencie.md)).
+> Stav k 5. 11. 2026. Nejde o právne poradenstvo – právne otázky posúdi advokát ([docs/09](09-pravo-a-licencie.md)).
 
 ## Čo sa vziať nedá
 
@@ -31,6 +31,8 @@ Tento dokument je register závislostí – pre každú uvádza, čo by sa stalo
 | Z9 | AI modely | Poskytovatelia open-weight modelov | Zmena licencie novších verzií | Viac modelov v hodnotiacej sade, uložené verzie s povolenou licenciou ([ADR-0004](adr/0004-nezavislost-od-ai-poskytovatela.md)) | Návrh |
 | Z10 | Cloudová infraštruktúra | Poskytovateľ v EÚ | Zmena podmienok, výpadok | Infraštruktúra ako kód, prenositeľná medzi poskytovateľmi ([docs/06](06-lech-store-a-cloud.md)) | Návrh |
 | Z11 | GitHub (repozitár projektu) | Microsoft | Zablokovanie účtu | Pravidelná záloha repozitára mimo GitHubu; projekt je čistý git | Na zavedenie |
+| Z12 | Sieťový čas (NTP) | Dobrovoľníci projektu NTP Pool | Pravidlá poolu pre výrobcov, nedostupnosť servera | Vlastná zóna výrobcu v NTP Pool pred vydaním; náhradné servery (národné laboratóriá času, vlastný server) | Európska zóna počas vývoja (E2-06) |
+| Z13 | Zoznam logov Certificate Transparency | Google | Zoznam sa sťahuje zo servera Google | Kópia podpísaného zoznamu na serveri LECH; dovtedy sa nesťahuje | Sťahovanie vypnuté (E2-06) |
 
 ## Najbližšie kroky
 

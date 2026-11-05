@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Thu, 5 Nov 2026 12:00:00 +0100
+Subject: [PATCH] Do not use Google's remote key provisioning server
+
+Cuttlefish points rkpd at preprod-remoteprovisioning.googleapis.com. Without
+remote_provisioning.hostname rkpd does not provision keys and does not connect anywhere;
+key attestation is unavailable on LECH OS Cuttlefish until LECH OS has its own provisioning.
+
+LECH OS task E2-06: no connections to Google without consent.
+---
+ shared/device.mk | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/shared/device.mk b/shared/device.mk
+index ae03410..436baba 100644
+--- a/shared/device.mk
++++ b/shared/device.mk
+@@ -70,7 +70,6 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
+ # partition, instead of the vendor partition, and do not need vendor
+ # sepolicy
+ PRODUCT_PRODUCT_PROPERTIES += \
+-    remote_provisioning.hostname=preprod-remoteprovisioning.googleapis.com \
+     persist.adb.tcp.port=5555 \
+     ro.com.google.locationfeatures=1 \
+     persist.sys.fuse.passthrough.enable=true \

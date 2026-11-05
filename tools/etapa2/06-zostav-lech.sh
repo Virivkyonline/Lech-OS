@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# Builds the first LECH OS product for Cuttlefish (tasks E2-04 and E2-05): the phone LECH-PHONE with
-# LECH OS version and boot animation. The product definition lives in vendor/lech of this repository;
-# the script copies it into the AOSP tree ($AOSP_DIR/vendor/lech) and builds the lunch target
-# lech_cf_x86_64_only_phone-<release>-userdebug with 05-zostav-aosp.sh.
+# Builds LECH OS for Cuttlefish (tasks E2-04 to E2-06): the phone LECH-PHONE with LECH OS version,
+# boot animation and without default connections to Google. The product definition lives in
+# vendor/lech of this repository and changes to AOSP code in patches/; the script copies vendor/lech
+# into the AOSP tree ($AOSP_DIR/vendor/lech), applies the patches (aplikuj-zaplaty.sh) and builds
+# the lunch target lech_cf_x86_64_only_phone-<release>-userdebug with 05-zostav-aosp.sh.
 # The build continues from the AOSP build (same device), but the first LECH build runs the Soong
 # analysis again and rebuilds the images. With --spustit it starts the phone and checks its identity.
 #
 # Usage: tools/etapa2/06-zostav-lech.sh [--ulohy N] [--spustit] [--len-skopirovat]
 #   --ulohy N          parallel build jobs (default 8; more needs more RAM)
 #   --spustit          start the LECH OS phone after the build and check its identity
-#   --len-skopirovat   only copy vendor/lech into the AOSP tree, do not build
+#   --len-skopirovat   only prepare the AOSP tree (copy vendor/lech, apply patches), do not build
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_RELEASE, LECH_VARIANT
 
 set -uo pipefail
@@ -81,12 +82,20 @@ version=$(sed -n 's/^LECH_VERSION *:= *//p' "$SRC/config/version.mk")
 echo "LECH OS ${version:-?} (commit $(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo '?'))"
 
 # Record the exact AOSP revisions this build is based on (the seed of lech-manifest, task E2-04).
+# Only while no LECH patch is committed in the tree, so the file lists plain AOSP revisions.
+patched=0
+for project in $(cd "$REPO_DIR/patches" 2>/dev/null && find . -name '*.patch' -printf '%h\n' | sed 's|^\./||' | sort -u); do
+  [ "$(git -C "$AOSP_DIR/$project" log -1 --format=%ae 2>/dev/null)" = dev@lech-os.invalid ] && patched=1
+done
 REPO_BIN=$(command -v repo || echo "$HOME/bin/repo")
-if [ -x "$REPO_BIN" ] && (cd "$AOSP_DIR" && "$REPO_BIN" manifest -r -o "$WORKDIR/aosp-manifest.xml") >/dev/null 2>&1; then
+if [ "$patched" -eq 0 ] && [ -x "$REPO_BIN" ] && \
+   (cd "$AOSP_DIR" && "$REPO_BIN" manifest -r -o "$WORKDIR/aosp-manifest.xml") >/dev/null 2>&1; then
   echo "Presné verzie zdrojových kódov AOSP: $WORKDIR/aosp-manifest.xml"
 fi
 
-[ "$COPY_ONLY" -eq 1 ] && { echo "Hotovo (len kopírovanie)."; exit 0; }
+AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/aplikuj-zaplaty.sh" || exit 1
+
+[ "$COPY_ONLY" -eq 1 ] && { echo "Hotovo (len príprava, bez zostavenia)."; exit 0; }
 
 echo
 echo "Zostavujem LECH OS ($PRODUCT). Na notebooku to po zostavení čistého AOSP trvalo 18 minút;"
@@ -101,7 +110,7 @@ ADB="$AOSP_DIR/out/host/linux-x86/bin/adb"
 [ -x "$ADB" ] || ADB=$(command -v adb || true)
 [ -n "$ADB" ] || { echo "adb nie je k dispozícii – identitu overte v Nastaveniach telefónu."; exit 0; }
 echo
-echo "Overujem identitu LECH OS v bežiacom telefóne…"
+echo "Overujem LECH OS v bežiacom telefóne…"
 timeout 180 "$ADB" wait-for-device || { echo "Telefón sa cez adb neozval – identitu overte v Nastaveniach."; exit 0; }
 prop() { "$ADB" shell getprop "$1" 2>/dev/null | tr -d '\r'; }
 ok=1
@@ -126,10 +135,23 @@ if "$ADB" shell test -f /product/media/bootanimation.zip 2>/dev/null; then
 else
   report CHYBA "animácia pri štarte" "/product/media/bootanimation.zip chýba"
 fi
+# E2-06: network time from the LECH overlay, no remote key provisioning server.
+if "$ADB" shell cmd overlay list android 2>/dev/null | tr -d '\r' | grep -q '\[x\] lech.os.overlay.framework'; then
+  report OK "čas (NTP)" "europe.pool.ntp.org (lech.os.overlay.framework zapnutý)"
+else
+  report CHYBA "čas (NTP)" "prekrytie lech.os.overlay.framework nie je zapnuté"
+fi
+rkp=$(prop remote_provisioning.hostname)
+if [ -z "$rkp" ]; then
+  report OK "atestačné kľúče (RKP)" "bez servera"
+else
+  report CHYBA "atestačné kľúče (RKP)" "server $rkp"
+fi
 echo
 if [ "$ok" -eq 1 ]; then
-  echo "Identita LECH OS je v poriadku. V telefóne: Settings → About phone."
+  echo "LECH OS je v poriadku. V telefóne: Settings → About phone."
+  echo "Spojenia telefónu overí sieťový audit: tools/etapa2/03-sietovy-audit.sh --lokalna-zostava"
 else
-  echo "Identita LECH OS nie je úplná – pošlite tento výstup."
+  echo "LECH OS nie je v poriadku – pošlite tento výstup."
   exit 1
 fi

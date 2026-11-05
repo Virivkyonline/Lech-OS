@@ -1,0 +1,72 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Thu, 5 Nov 2026 12:00:00 +0100
+Subject: [PATCH] Use a non-Google name for private DNS validation probes
+
+DoT and DoH validation queried <random>-dnsotls-ds.metric.gstatic.com and
+<random>-dnsohttps-ds.metric.gstatic.com through the configured DNS server (also over plain UDP).
+Use <random>-dnsotls-ds.probe.lech.invalid and <random>-dnsohttps-ds.probe.lech.invalid
+instead: same length, answered by resolvers without upstream lookups (RFC 6761), and any answer
+including NXDOMAIN passes validation.
+
+LECH OS task E2-06: no connections to Google without consent.
+---
+ DnsTlsTransport.cpp      | 11 +++++++----
+ rust/src/doh/encoding.rs |  8 +++++---
+ 2 files changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/DnsTlsTransport.cpp b/DnsTlsTransport.cpp
+index f526396..1ca0ae8 100644
+--- a/DnsTlsTransport.cpp
++++ b/DnsTlsTransport.cpp
+@@ -43,7 +43,10 @@ namespace net {
+ 
+ namespace {
+ 
+-// Make a DNS query for the hostname "<random>-dnsotls-ds.metric.gstatic.com".
++// Make a DNS query for the hostname "<random>-dnsotls-ds.probe.lech.invalid".
++// LECH OS: originally "<random>-dnsotls-ds.metric.gstatic.com" (Google). Names under .invalid are
++// answered by the resolver without asking anyone else (RFC 6761), and any answer, including
++// NXDOMAIN, passes the check below. The name keeps the original length.
+ std::vector<uint8_t> makeDnsQuery() {
+     static constexpr char kDnsSafeChars[] =
+             "0123456789"
+@@ -65,9 +68,9 @@ std::vector<uint8_t> makeDnsQuery() {
+             0,      0,       // [8-9]   NSCOUNT (number of name server records)
+             0,      0,       // [10-11] ARCOUNT (number of additional records)
+             17,     c(rnd[2]), c(rnd[3]), c(rnd[4]), c(rnd[5]), c(rnd[6]), c(rnd[7]), '-', 'd', 'n',
+-            's',    'o',       't',       'l',       's',       '-',       'd',       's', 6,   'm',
+-            'e',    't',       'r',       'i',       'c',       7,         'g',       's', 't', 'a',
+-            't',    'i',       'c',       3,         'c',       'o',       'm',
++            's',    'o',       't',       'l',       's',       '-',       'd',       's', 5,   'p',
++            'r',    'o',       'b',       'e',       4,         'l',       'e',       'c', 'h', 7,
++            'i',    'n',       'v',       'a',       'l',       'i',       'd',
+             0,                  // null terminator of FQDN (root TLD)
+             0,      ns_t_aaaa,  // QTYPE
+             0,      ns_c_in     // QCLASS
+diff --git a/rust/src/doh/encoding.rs b/rust/src/doh/encoding.rs
+index c535c82..1639e61 100644
+--- a/rust/src/doh/encoding.rs
++++ b/rust/src/doh/encoding.rs
+@@ -33,7 +33,9 @@ const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+ 
+ /// Produces a DNS query with randomized query ID and random 6-byte charset-legal prefix to produce
+ /// a request for a domain of the form:
+-/// ??????-dnsohttps-ds.metric.gstatic.com
++/// ??????-dnsohttps-ds.probe.lech.invalid
++/// (LECH OS: originally ??????-dnsohttps-ds.metric.gstatic.com, a Google name; the new name has
++/// the same length and is answered by the resolver itself, RFC 6761.)
+ #[rustfmt::skip]
+ pub fn probe_query() -> Result<String> {
+     let mut rnd = [0; 8];
+@@ -48,8 +50,8 @@ pub fn probe_query() -> Result<String> {
+         0,      0,       // [10-11] ARCOUNT (number of additional records)
+         19,     c(rnd[0]), c(rnd[1]), c(rnd[2]), c(rnd[3]), c(rnd[4]), c(rnd[5]), b'-', b'd', b'n',
+         b's',   b'o',      b'h',      b't',      b't',      b'p',      b's',      b'-', b'd', b's',
+-        6,      b'm',      b'e',      b't',      b'r',      b'i',      b'c',      7,    b'g', b's',
+-        b't',   b'a',      b't',      b'i',      b'c',      3,         b'c',      b'o', b'm',
++        5,      b'p',      b'r',      b'o',      b'b',      b'e',      4,         b'l', b'e', b'c',
++        b'h',   7,         b'i',      b'n',      b'v',      b'a',      b'l',      b'i', b'd',
+         0,                  // null terminator of FQDN (root TLD)
+         0,      NS_T_AAAA,  // QTYPE
+         0,      NS_C_IN     // QCLASS

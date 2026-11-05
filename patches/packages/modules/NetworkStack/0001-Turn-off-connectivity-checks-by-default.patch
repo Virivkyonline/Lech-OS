@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Thu, 5 Nov 2026 12:00:00 +0100
+Subject: [PATCH] Turn off connectivity checks by default
+
+The default check URLs are Google's (connectivitycheck.gstatic.com, www.google.com and
+fallbacks). With captive_portal_mode defaulting to ignore, NetworkMonitor treats networks as
+validated without probing. Captive portals are not detected automatically until LECH OS runs
+its own endpoint; checks can be enabled with: settings put global captive_portal_mode 1.
+
+LECH OS task E2-06: no connections to Google without consent.
+---
+ src/com/android/server/connectivity/NetworkMonitor.java | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/com/android/server/connectivity/NetworkMonitor.java b/src/com/android/server/connectivity/NetworkMonitor.java
+index 39981a7..c1f3151 100644
+--- a/src/com/android/server/connectivity/NetworkMonitor.java
++++ b/src/com/android/server/connectivity/NetworkMonitor.java
+@@ -2438,7 +2438,10 @@ public class NetworkMonitor extends StateMachine {
+     private static boolean getIsCaptivePortalCheckEnabled(@NonNull Context context,
+             @NonNull Dependencies dependencies) {
+         String symbol = CAPTIVE_PORTAL_MODE;
+-        int defaultValue = CAPTIVE_PORTAL_MODE_PROMPT;
++        // LECH OS: the default check URLs belong to Google (connectivitycheck.gstatic.com,
++        // www.google.com), so checks are off by default until LECH OS runs its own endpoint.
++        // They can be turned on with: settings put global captive_portal_mode 1
++        int defaultValue = CAPTIVE_PORTAL_MODE_IGNORE;
+         int mode = dependencies.getSetting(context, symbol, defaultValue);
+         return mode != CAPTIVE_PORTAL_MODE_IGNORE;
+     }

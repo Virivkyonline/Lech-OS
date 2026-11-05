@@ -38,7 +38,7 @@ AOSP už obsahuje evidenciu používania oprávnení (AppOps), indikátory kamer
 | Údaj | Odkiaľ ho systém vezme | Poznámka |
 |------|------------------------|----------|
 | Objem dát pre každú aplikáciu | Štatistiky sieťovej prevádzky podľa UID (AOSP ich už zbiera pomocou eBPF v `netd`) | Spoľahlivé, existujúci mechanizmus |
-| Domény, na ktoré sa aplikácia pýta | Systémový DNS resolver (modul `DnsResolver`) – pozná UID aplikácie, ktorá sa pýta | Úprava systémového modulu |
+| Domény, na ktoré sa aplikácia pýta | Systémový DNS resolver (modul `DnsResolver`) – pozná UID aplikácie, ktorá sa pýta | Úprava systémového modulu. Prvý krok od 5. 11. 2026: sieťový audit číta záznam resolvera (`dumpsys dnsresolver querylog`); Android v ňom z názvu ukáže len prvé písmeno |
 | Cieľové IP adresy a porty | Záznam nadviazaných spojení podľa UID (eBPF) | Zachytí aj aplikácie, ktoré obchádzajú systémové DNS |
 | Krajina a vlastník cieľa | Lokálna databáza IP rozsahov, aktualizovaná so systémom | Bez dopytov na internet |
 | Známe trackery | Lokálny zoznam domén a knižníc trackerov | Rovnaký zoznam ako pri štítkoch v LECH Store |

@@ -5,9 +5,12 @@ Only traffic that originates from the Cuttlefish guest networks is evaluated, so
 host notebook itself is ignored. Hostnames are taken from DNS queries, TLS/QUIC SNI and HTTP Host
 headers; IP addresses without a name can optionally be labelled with a reverse DNS (PTR) lookup.
 
+Optionally, the DNS query log of the phone (adb shell dumpsys dnsresolver querylog) and its package
+list (adb shell pm list packages -U) add a section that shows which app asked for which name.
+
 Usage:
     python3 tools/etapa2/analyzuj_audit.py CAPTURE.pcap --out REPORT.md [--allowlist FILE] [--ptr]
-        [--title TEXT] [--strict]
+        [--title TEXT] [--strict] [--dns-log FILE --packages FILE]
 
 Requires tshark (Wireshark command line). Exit code 0 = report written; with --strict, exit code 1
 when a connection is not covered by the allowlist.
@@ -18,6 +21,7 @@ from __future__ import annotations
 import argparse
 import ipaddress
 import json
+import re
 import socket
 import subprocess
 import sys
@@ -189,12 +193,58 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
     return destinations, domains, local, duration
 
 
+# Android system UIDs without a package of their own (system/core/libcutils/include/private/android_filesystem_config.h).
+AID_NAMES = {0: "root", 1000: "systém Android", 1001: "telefónia (radio)", 1002: "bluetooth", 1010: "wifi",
+             1013: "médiá", 1021: "gps", 1051: "dns", 1052: "dns_tether", 1073: "network_stack",
+             9999: "nobody"}
+QUERY_RE = re.compile(r"time=(?P<time>[\d:.]+) netId=(?P<net>\d+) uid=(?P<uid>\d+) pid=(?P<pid>-?\d+) "
+                      r"hostname=(?P<host>\S*) answer=\[(?P<ans>[^\]]*)\]")
+
+
+def load_packages(path: Path) -> dict[int, list[str]]:
+    """Package list from `pm list packages -U` (lines like "package:com.android.phone uid:1001")."""
+    packages: dict[int, list[str]] = defaultdict(list)
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        m = re.match(r"package:(\S+) uid:(\d+)", line.strip())
+        if m:
+            packages[int(m.group(2))].append(m.group(1))
+    return packages
+
+
+def app_label(uid: int, packages: dict[int, list[str]]) -> str:
+    app_id = uid % 100000          # UIDs of other users are user * 100000 + app ID
+    names = sorted(packages.get(app_id, []))
+    label = AID_NAMES.get(app_id, "")
+    if names:
+        shown = ", ".join(f"`{n}`" for n in names[:3]) + (f" a {len(names) - 3} ďalších" if len(names) > 3 else "")
+        label = f"{label}: {shown}" if label else shown
+    return f"{label or 'neznáma aplikácia'} (UID {uid})"
+
+
+def dns_by_app(dns_log: Path, packages: dict[int, list[str]], domains: dict) -> list[dict]:
+    """Groups the phone's DNS query log by app and masked name ("g***"), with candidate domains from
+    the capture that start with the same letter."""
+    groups: dict[tuple[int, str], dict] = {}
+    for line in dns_log.read_text(encoding="utf-8", errors="replace").splitlines():
+        m = QUERY_RE.search(line)
+        if not m:
+            continue
+        uid, host = int(m.group("uid")), m.group("host")
+        g = groups.setdefault((uid, host), {"uid": uid, "aplikacia": app_label(uid, packages), "dopyt": host,
+                                            "pocet": 0, "prvykrat": m.group("time")})
+        g["pocet"] += 1
+    for g in groups.values():
+        letter = g["dopyt"][:1].lower()
+        g["mozne_domeny"] = sorted(n for n in domains if letter and n.lower().startswith(letter))[:5]
+    return sorted(groups.values(), key=lambda g: (g["prvykrat"], g["uid"]))
+
+
 def fmt_time(t: float) -> str:
     return f"{t:,.1f} s".replace(",", " ") if t != float("inf") else "–"
 
 
 def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains: dict, local: dict,
-                 duration: float, allowlist: list[str]) -> tuple[int, dict]:
+                 duration: float, allowlist: list[str], by_app: list[dict] | None = None) -> tuple[int, dict]:
     use_allow = bool(allowlist)
     unknown = 0
     lines = [f"# {title}", "",
@@ -220,6 +270,18 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
                             "prvykrat_s": round(d.first_seen, 1)})
     if not domains:
         lines.append("| – | – | – | – |" + (" – |" if use_allow else ""))
+
+    if by_app is not None:
+        lines += ["", "## Kto sa pýtal – DNS dopyty podľa aplikácií (z telefónu)", "",
+                  "Zo záznamu DNS resolvera v telefóne (`dumpsys dnsresolver querylog`, posledných 200 dopytov). "
+                  "Android z názvu ukáže len prvé písmeno; možné domény sú domény zo záznamu prevádzky, ktoré "
+                  "začínajú rovnakým písmenom.", "",
+                  "| Aplikácia | Dopyt | Možné domény | Počet | Prvýkrát (čas telefónu) |", "|---|---|---|---|---|"]
+        for g in by_app:
+            cands = ", ".join(f"`{d}`" for d in g["mozne_domeny"]) or "–"
+            lines.append(f"| {g['aplikacia']} | `{g['dopyt']}` | {cands} | {g['pocet']} | {g['prvykrat']} |")
+        if not by_app:
+            lines.append("| – | – | – | – | – |")
 
     lines += ["", "## Ciele (IP adresa, protokol, port)", "",
               "Odkiaľ: sieť virtuálneho telefónu, z ktorej paket odišiel. Prevádzka telefónu cez Wi-Fi odchádza "
@@ -253,12 +315,18 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
               "- Obsah šifrovaných spojení nie je viditeľný – správa ukazuje, kam a koľko, nie čo.",
               "- Ak telefón používa šifrované DNS (DNS over TLS, port 853), názvy domén pochádzajú len z TLS/HTTP "
               "a z PTR záznamov; spojenie na port 853 je spojenie na DNS server testovacieho prostredia.",
-              "- Názvy označené (PTR) sú odhad z reverzného DNS, nie názov, ktorý telefón skutočne použil.", ""]
+              "- Názvy označené (PTR) sú odhad z reverzného DNS, nie názov, ktorý telefón skutočne použil."]
+    if by_app is not None:
+        lines.append("- DNS dopyty podľa aplikácií: Android z názvu ukáže len prvé písmeno, priradenie k doméne je preto "
+                     "odhad. Spojenia bez DNS dopytu (priamo na IP adresu) v tejto časti nie sú.")
+    lines.append("")
     if use_allow:
         lines.insert(7, f"- Neznáme položky: **{unknown}**")
     out.write_text("\n".join(lines), encoding="utf-8")
     summary = {"domeny": domain_rows, "ciele": dest_rows, "lokalne": dict(local), "dlzka_s": round(duration, 1),
                "nezname": unknown if use_allow else None}
+    if by_app is not None:
+        summary["dns_podla_aplikacii"] = by_app
     return unknown, summary
 
 
@@ -270,6 +338,8 @@ def main() -> int:
     ap.add_argument("--title", default="Sieťový audit virtuálneho telefónu")
     ap.add_argument("--ptr", action="store_true", help="doplniť názvy IP adries cez reverzné DNS")
     ap.add_argument("--strict", action="store_true", help="návratový kód 1, ak existuje neznáme spojenie")
+    ap.add_argument("--dns-log", type=Path, help="výstup `adb shell dumpsys dnsresolver querylog`")
+    ap.add_argument("--packages", type=Path, help="výstup `adb shell pm list packages -U`")
     args = ap.parse_args()
 
     if not args.pcap.exists():
@@ -277,7 +347,12 @@ def main() -> int:
     destinations, domains, local, duration = analyze(args.pcap, args.ptr)
     allowlist = load_allowlist(args.allowlist)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    unknown, summary = write_report(args.out, args.title, args.pcap, destinations, domains, local, duration, allowlist)
+    by_app = None
+    if args.dns_log and args.dns_log.exists():
+        packages = load_packages(args.packages) if args.packages and args.packages.exists() else {}
+        by_app = dns_by_app(args.dns_log, packages, domains)
+    unknown, summary = write_report(args.out, args.title, args.pcap, destinations, domains, local, duration,
+                                    allowlist, by_app)
     args.out.with_suffix(".json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Správa: {args.out} (cieľov: {len(destinations)}, domén: {len(domains)}"
           + (f", neznámych: {unknown})" if allowlist else ")"))
