@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Wed, 30 Sep 2026 12:05:07 +0000
+Subject: [PATCH] fixup! add print-certs apksigner command for adevtool
+
+
+(cherry picked from GrapheneOS platform_tools_apksig, branch 17, commit 54c5f4fa6131f728abf5d19e898db2c4eb5a6975; LECH OS task E2-11b:
+adevtool of GrapheneOS needs this tool feature)
+---
+ .../android/apksig/internal/apk/v2/V2SchemeVerifier.java    | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/com/android/apksig/internal/apk/v2/V2SchemeVerifier.java b/src/main/java/com/android/apksig/internal/apk/v2/V2SchemeVerifier.java
+index b472d23..df5fd97 100644
+--- a/src/main/java/com/android/apksig/internal/apk/v2/V2SchemeVerifier.java
++++ b/src/main/java/com/android/apksig/internal/apk/v2/V2SchemeVerifier.java
+@@ -157,8 +157,10 @@ public abstract class V2SchemeVerifier {
+         if (result.containsErrors()) {
+             return;
+         }
+-        ApkSigningBlockUtils.verifyIntegrity(
+-                executor, beforeApkSigningBlock, centralDir, eocd, contentDigestsToVerify, result);
++        if (!com.android.apksig.internal.apk.Flags.isPrintCertsMode) {
++            ApkSigningBlockUtils.verifyIntegrity(
++                    executor, beforeApkSigningBlock, centralDir, eocd, contentDigestsToVerify, result);
++        }
+         if (!result.containsErrors()) {
+             result.verified = true;
+         }
+-- 
+2.43.0
+

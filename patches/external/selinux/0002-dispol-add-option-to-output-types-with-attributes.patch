@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Wed, 12 Nov 2025 22:31:19 +0200
+Subject: [PATCH] dispol: add option to output types with attributes
+
+
+(cherry picked from GrapheneOS platform_external_selinux, branch 17, commit fb8beece0ca6759941ec2c4889fa6fdc60a948d6; LECH OS task E2-11b:
+adevtool of GrapheneOS needs this tool feature)
+---
+ checkpolicy/test/dispol.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/checkpolicy/test/dispol.c b/checkpolicy/test/dispol.c
+index 7e3d4cf..f130f9f 100644
+--- a/checkpolicy/test/dispol.c
++++ b/checkpolicy/test/dispol.c
+@@ -57,6 +57,7 @@ static const struct command {
+ 	{CMD,       'C',  "display classes"},
+ 	{CMD,       'u',  "display users"},
+ 	{CMD,       'r',  "display roles"},
++	{CMD,       'A',  "display types with attributes"},
+ 	{CMD,       't',  "display types"},
+ 	{CMD,       'a',  "display type attributes"},
+ 	{CMD,       'p',  "display the list of permissive types"},
+@@ -427,6 +428,37 @@ static int display_types(policydb_t * p, FILE *fp)
+ 	return 0;
+ }
+ 
++static int display_types_with_attributes(policydb_t * p, FILE *fp)
++{
++	uint32_t i;
++
++	for (i = 0; i < p->p_types.nprim; i++) {
++		if (!p->p_type_val_to_name[i])
++			continue;
++
++		if (p->type_val_to_struct[i]->flavor == TYPE_ATTRIB) {
++			fprintf(fp, "attribute %s;\n", p->p_type_val_to_name[i]);
++			continue;
++		}
++
++		fprintf(fp, "type %s;\n", p->p_type_val_to_name[i]);
++
++		struct ebitmap_node *ebm_node;
++		uint32_t bit;
++		ebitmap_for_each_positive_bit(&p->type_attr_map[i], ebm_node, bit) {
++			if (bit == i) {
++				continue;
++			}
++			if (p->type_val_to_struct[bit]->flavor != TYPE_ATTRIB) {
++				fprintf(fp, "\tunexpected flavor %i\n", p->type_val_to_struct[bit]->flavor);
++				abort();
++			}
++			fprintf(fp, "typeattribute %s %s;\n", p->p_type_val_to_name[i], p->p_type_val_to_name[bit]);
++		}
++	}
++	return 0;
++}
++
+ static int display_attributes(policydb_t * p, FILE *fp)
+ {
+ 	uint32_t i;
+@@ -682,6 +714,9 @@ int main(int argc, char **argv)
+ 		case 't':
+ 			display_types(&policydb, out_fp);
+ 			break;
++		case 'A':
++			display_types_with_attributes(&policydb, out_fp);
++			break;
+ 		case 'u':
+ 			display_users(&policydb, out_fp);
+ 			break;
+-- 
+2.43.0
+
