@@ -161,7 +161,7 @@ routra v testovacom prostredí (`external/openwrt-prebuilts`), ak bude treba úp
 ## 5. a 6. audit – 6. 11. 2026, LECH OS na Pixeli 9 (E2-11a)
 
 Prvé audity na skutočnom telefóne: LECH OS 0.1.0-dev ako GSI (`lech_gsi_arm64`) na Pixeli 9 s pôvodným vendorom
-(Android 17), bez vypnutého servera RKP Google v systéme (`init.lech.rc`), SIM 4ka a domáca Wi-Fi. Prevádzku
+(Android 17), so serverom RKP Google vypnutým v systéme (`init.lech.rc`), SIM 4ka a domáca Wi-Fi. Prevádzku
 zaznamenal `tcpdump` priamo v telefóne (aj mobilná sieť, ktorá nejde cez notebook), vyhodnotenie
 `analyzuj_audit.py --zariadenie`: prevádzka telefónu = jeho odchádzajúce pakety, cudzie zariadenia vo Wi-Fi sa
 nerátajú. Správy a záznamy sú na notebooku v `~/lech-work/pixel/audit-20261106-073318` a `…-075533`.
