@@ -359,14 +359,26 @@ wipe_data() {
     printf '%s\n' "$out" | grep FAILED | tail -n 1
     echo "    V režime fastbootd sa dáta vymazať nedajú – mažem ich v bootloaderi…"
     fb reboot bootloader >/dev/null
-    sleep 8
-    wait_for 120 fastboot_ready || return 1
-    in_fastbootd && return 1
+    in_bootloader_wait || return 1
   fi
-  out=$(fb -w) && { printf '%s\n' "$out" | grep -E "^(Erasing|Formatting|Finished)" | sed 's/^/    /'; return 0; }
-  printf '%s\n' "$out" | tail -n 3
+  out=$(fb -w)
+  printf '%s\n' "$out" | grep -vE '^ *$' | tail -n 4 | sed 's/^/    /'
+  # Success only when the bootloader really erased userdata (6. 11. 2026 a run printed only "Finished").
+  printf '%s' "$out" | grep -qE "Erasing 'userdata'.*OKAY" && return 0
   return 1
 }
+# Wait until the phone answers from the bootloader (not fastbootd): a reboot takes some seconds, and in the
+# meantime the old fastbootd can still be listed.
+in_bootloader_wait() {
+  local i
+  sleep 3
+  for (( i = 0; i < 120; i += 3 )); do
+    if fastboot_ready && [ -n "$(fb_var product)" ] && [ "$(fb_var is-userspace)" != yes ]; then return 0; fi
+    sleep 3
+  done
+  return 1
+}
+fastboot_gone() { ! fastboot_ready; }
 recovery_wipe_hint() {
   cat <<EOF
 
@@ -387,9 +399,8 @@ finish_flash() {   # slot
     die "Dáta sa cez fastboot vymazať nepodarilo. LECH OS je nahratý – chýba len vymazanie dát (postup vyššie)."
   fi
   fb reboot >/dev/null
-  sleep 10
-  if fastboot_ready; then
-    die "Telefón sa nereštartoval. Na telefóne vyberte tlačidlami hlasitosti 'Reboot system now' a potvrďte tlačidlom Napájanie."
+  if ! wait_for 40 fastboot_gone; then
+    die "Telefón sa nereštartoval. Na telefóne vyberte tlačidlami hlasitosti 'Start' (bootloader) alebo 'Reboot system now' (fastbootd) a potvrďte tlačidlom Napájanie."
   fi
   mkdir -p "$WORKDIR/pixel"
   echo "$(date '+%d. %m. %Y %H:%M') LECH OS nahratý do slotu ${1:-?}" >> "$WORKDIR/pixel/nahratia.txt"
