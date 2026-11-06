@@ -532,7 +532,7 @@ USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LEC
 | Otáčanie obrazovky (senzory) | OK | 6. 11. 2026 |
 | Slovenčina v systéme | OK | 6. 11. 2026 |
 | SIM, mobilné dáta | čiastočne | 6. 11. 2026, SIM **4ka**: SIM načítaná, 15 služieb rádia vendora, telefón je v sieti **Orange SK (231 01) cez národný roaming, len EDGE (2G)**; dáta idú, ikona signálu s výkričníkom. 4ka má vlastnú sieť len LTE/5G s hovormi cez VoLTE – bez IMS sa telefón ako „hlasový“ prepne do 2G/3G partnera (3GPP) |
-| SMS | nie | 6. 11. 2026: SMS neprišla. Pravdepodobne chýba IMS (SMS a volania cez LTE) – IMS Pixelu je v `/product`, ktorú GSI nepoužíva |
+| SMS | nie | 6. 11. 2026: prijatie SMS nefunguje ani v 2G (národný roaming), ani po novom štarte v LTE siete 4ka. 4ka doručuje SMS cez IMS; IMS Pixelu je v `/product`, ktorú GSI nepoužíva → riešenie v E2-11b |
 | Volanie | OK (2G) | 6. 11. 2026: odchádzajúci hovor ide – cez 2G národného roamingu, nie VoLTE |
 | Bluetooth, GPS, odtlačok prsta, NFC | ? | |
 
