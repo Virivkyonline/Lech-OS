@@ -8,25 +8,27 @@ Content-Transfer-Encoding: 8bit
 
 tools/arsclib of GrapheneOS groups and names the resources of the Pixel
 overlays by the configuration string as aapt2 writes it ("land-v31"…).
-GrapheneOS keeps it in a new field of the proto Configuration that aapt2
-fills when it serializes resources; do the same. adevtool uses arsclib
-when it generates the vendor module of the Pixel 9 for LECH OS
-(task E2-11b, manifests/lech-pixel.xml).
+GrapheneOS keeps it in field 28 of the proto Configuration (reserved in
+AOSP for the next field) and aapt2 fills it when it serializes resources;
+do the same. adevtool uses arsclib when it generates the vendor module of
+the Pixel 9 for LECH OS (task E2-11b, manifests/lech-pixel.xml).
 ---
- tools/aapt2/Configuration.proto             | 4 ++++
+ tools/aapt2/Configuration.proto             | 6 +++++-
  tools/aapt2/format/proto/ProtoSerialize.cpp | 2 ++
- 2 files changed, 6 insertions(+)
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/tools/aapt2/Configuration.proto b/tools/aapt2/Configuration.proto
-index c27c824..56d3c69 100644
+index f27dd1d..ab9226a 100644
 --- a/tools/aapt2/Configuration.proto
 +++ b/tools/aapt2/Configuration.proto
-@@ -218,2 +218,6 @@ message Configuration {
-   string product = 25;
-+
+@@ -219,3 +219,7 @@ message Configuration {
+ 
+-  reserved 28 to max;  // Next IDs
 +  // LECH OS: the configuration as aapt2 writes it ("land-v31"…), as in GrapheneOS: tools/arsclib groups the
 +  // resources of the Pixel overlays by it (task E2-11b).
 +  string stringified = 28;
++
++  reserved 29 to max;  // Next IDs
  }
 diff --git a/tools/aapt2/format/proto/ProtoSerialize.cpp b/tools/aapt2/format/proto/ProtoSerialize.cpp
 index 6e0cf6f..b1abfa4 100644
