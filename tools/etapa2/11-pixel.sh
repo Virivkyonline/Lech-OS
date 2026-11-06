@@ -67,7 +67,15 @@ adb_start() {
 # fastboot waits forever for a phone that is not connected: call fb_var only after fastboot_ready.
 adb_() { "${ADB[@]}" "$@" 2>&1 | tr -d '\r'; }
 fb() { (cd "$PIXEL_DIR" 2>/dev/null || cd "${TOOLS:-/}" 2>/dev/null || cd /; "${FASTBOOT[@]}" "$@") 2>&1 | tr -d '\r'; }
-fb_var() { timeout 30 "${FASTBOOT[@]}" getvar "$1" 2>&1 | tr -d '\r' | sed -n "s/^$1: *//p" | head -n 1; }
+fb_var() {   # a phone that is busy (just after a failed command) may not answer the first time
+  local value i
+  for i in 1 2 3; do
+    value=$(timeout 30 "${FASTBOOT[@]}" getvar "$1" 2>&1 | tr -d '\r' | sed -n "s/^$1: *//p" | head -n 1)
+    [ -n "$value" ] && break
+    sleep 2
+  done
+  printf '%s\n' "$value"
+}
 adb_ready() { adb_ devices | grep -q $'\tdevice$'; }
 adb_unauthorized() { adb_ devices | grep -q $'\tunauthorized$'; }
 # "fastboot devices" prints "<serial><TAB><interface>"; the interface name differs between bootloaders
@@ -331,7 +339,7 @@ cez Android Flash Tool (tools/etapa2/11-pixel.sh spat)."
 wipe_data() {
   local out
   if in_fastbootd; then
-    out=$(fb -w) && return 0
+    out=$(fb -w) && { printf '%s\n' "$out" | grep -E "^(Erasing|Formatting|Finished)" | sed 's/^/    /'; return 0; }
     printf '%s\n' "$out" | grep FAILED | tail -n 1
     echo "    V režime fastbootd sa dáta vymazať nedajú – mažem ich v bootloaderi…"
     fb reboot bootloader >/dev/null
@@ -339,7 +347,7 @@ wipe_data() {
     wait_for 120 fastboot_ready || return 1
     in_fastbootd && return 1
   fi
-  out=$(fb -w) && return 0
+  out=$(fb -w) && { printf '%s\n' "$out" | grep -E "^(Erasing|Formatting|Finished)" | sed 's/^/    /'; return 0; }
   printf '%s\n' "$out" | tail -n 3
   return 1
 }
@@ -361,10 +369,10 @@ finish_flash() {   # slot
   fi
   fb reboot >/dev/null
   mkdir -p "$WORKDIR/pixel"
-  echo "$(date '+%d. %m. %Y %H:%M') LECH OS nahratý do slotu $1" >> "$WORKDIR/pixel/nahratia.txt"
+  echo "$(date '+%d. %m. %Y %H:%M') LECH OS nahratý do slotu ${1:-?}" >> "$WORKDIR/pixel/nahratia.txt"
   cat <<EOF
 
-Hotovo (slot $1). Telefón štartuje LECH OS:
+Hotovo (slot ${1:-nezistený}). Telefón štartuje LECH OS:
   - Najprv ukáže varovanie o odomknutom bootloaderi (oranžové) – je to v poriadku, po chvíli pokračuje.
   - Prvý štart trvá niekoľko minút. Ak sa telefón do 10 minút nedostane na úvodnú obrazovku, pošlite fotku
     obrazovky. Nahratie sa dá zopakovať: tools/etapa2/11-pixel.sh nahrat
@@ -387,7 +395,7 @@ cmd_dokoncit() {
   fi
   local slot
   slot=$(fb_var current-slot)
-  confirm "Vymažú sa dáta v telefóne (slot $slot) a spustí sa LECH OS."
+  confirm "Vymažú sa dáta v telefóne (slot ${slot:-nezistený}) a spustí sa LECH OS."
   finish_flash "$slot"
 }
 
