@@ -501,7 +501,7 @@ zariadenia z otvoreného kódu GrapheneOS je úloha E2-11b; až s ňou sa dá bo
 | Zostavenie | `11-zostav-gsi.sh`: príprava ako pre Cuttlefish (`06-zostav-lech.sh --len-skopirovat`), potom `05-zostav-aosp.sh` s cieľom v `~/lech-work/lunch-target-gsi`. Prvé zostavenie pre ARM: niekoľko hodín a približne 100 GB. Po ňom sa ďalšie zostavenie pre Cuttlefish (aj nočná kontrola) začne novou analýzou Soong |
 | Súbeh | zostavenie pre ARM a nočná kontrola majú spoločný zámok – nočná kontrola sa počas zostavenia preskočí (`historia.txt`: PRESKOČENÉ) |
 | Nahratie | `11-pixel.sh` vo WSL používa `adb.exe` a `fastboot.exe` od Google pre Windows (`C:\lech\platform-tools`), lebo USB zariadenia vidí Windows, nie WSL. Server adb na porte 5038, oddelene od adb pre Cuttlefish |
-| Postup nahratia | bootloader → `vbmeta` s vypnutým overovaním → režim fastbootd → `system` (ak chýba miesto v `super`, odstráni sa nepoužívaná `product_<slot>`) → vymazanie dát → štart |
+| Postup nahratia | bootloader → `vbmeta` s vypnutým overovaním → režim fastbootd → `system` (ak chýba miesto v `super`, odstráni sa nepoužívaná `product_<slot>`) → vymazanie dát (fastbootd Pixelu 9 ho odmieta – `DCK wipe failed` –, preto v bootloaderi) → štart. Keď nahratie skončí pred vymazaním dát: `11-pixel.sh dokoncit` |
 | Návrat | `11-pixel.sh spat`: Android Flash Tool (`flash.android.com`) nahrá pôvodný systém Google. Pôvodná verzia sa zapíše do `~/lech-work/pixel/povodny-system.txt` |
 
 Pred prvým nahratím v telefóne s pôvodným systémom: najnovšia aktualizácia, *Nastavenia → Informácie o telefóne*
@@ -677,6 +677,13 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     Druhý pokus (64-bitový GSI) **prešiel za 297 minút** (115 428 krokov): `system.img` 1,6 GB, `vbmeta.img` 64 KB.
     `out/` má po zostavení pre Cuttlefish aj pre ARM 217 GB, voľných zostalo 109 GB. Nočná kontrola 6. 11. sa počas
     zostavenia preskočila (spoločný zámok); ďalšia začne novou analýzou Soong pre Cuttlefish.
+
+21. **LECH OS nabootoval na Pixeli 9 (6. 11. 2026, E2-11a):** `11-pixel.sh nahrat` – `vbmeta` bez overovania,
+    `system_b` (1,6 GB, 59 s) po odstránení nepoužívanej `product_b` (v `super` nebolo miesto). Vymazanie dát
+    v režime fastbootd Pixel odmietol (`Status(-8, EX_SERVICE_SPECIFIC): '1: Error DCK wipe failed'`) a fastbootd
+    potom na príkazy neodpovedal; vymazanie prešlo v bootloaderi (`11-pixel.sh dokoncit`). Po reštarte logo Google
+    (bootloader Pixelu) a animácia LECH OS. Skript odteraz maže dáta v bootloaderi, rozpozná zaseknutý fastbootd
+    a overí reštart.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
