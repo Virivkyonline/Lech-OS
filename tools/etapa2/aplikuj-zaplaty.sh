@@ -40,7 +40,14 @@ for rel in "${patches[@]}"; do
   patch="$PATCH_DIR/$rel"
   dir="$AOSP_DIR/$project"
   label="$project: $(basename "$rel" .patch)"
-  git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 || die "Projekt $project v $AOSP_DIR nie je – úprava $rel sa nedá použiť."
+  if ! git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
+    # Projects of the Pixel device support (manifests/lech-pixel.xml) exist only after 12-priprav-pixel.sh.
+    if grep -q "path=\"$project\"" "$(dirname "$PATCH_DIR")/manifests/lech-pixel.xml" 2>/dev/null; then
+      printf '  bez Pixelu %s (projekt nie je stiahnutý)\n' "$label"
+      continue
+    fi
+    die "Projekt $project v $AOSP_DIR nie je – úprava $rel sa nedá použiť."
+  fi
 
   if git -C "$dir" apply --reverse --check "$patch" >/dev/null 2>&1; then
     printf '  už je    %s\n' "$label"

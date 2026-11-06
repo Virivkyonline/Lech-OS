@@ -33,6 +33,8 @@ Tento dokument je register závislostí – pre každú uvádza, čo by sa stalo
 | Z11 | GitHub (repozitár projektu) | Microsoft | Zablokovanie účtu | Pravidelná záloha repozitára mimo GitHubu; projekt je čistý git | Na zavedenie |
 | Z12 | Sieťový čas (NTP) | Dobrovoľníci projektu NTP Pool | Pravidlá poolu pre výrobcov, nedostupnosť servera | Vlastná zóna výrobcu v NTP Pool pred vydaním; náhradné servery (národné laboratóriá času, vlastný server) | Európska zóna počas vývoja (E2-06) |
 | Z13 | Zoznam logov Certificate Transparency | Google | Zoznam sa sťahuje zo servera Google | Kópia podpísaného zoznamu na serveri LECH; dovtedy sa nesťahuje | Sťahovanie vypnuté (E2-06) |
+| Z14 | Podpora zariadenia Pixel (adevtool, konfigurácia zariadenia, jadro, CarrierConfig2) | GrapheneOS (MIT, jadro GPL) | Zmena alebo koniec podpory Pixelu, nové verzie mimo nášho tempa | Pevné verzie v `manifests/lech-pixel.xml`, vlastné záplaty v `patches/vendor/adevtool`; licencia MIT dovoľuje vlastnú vetvu; druhá platforma (Fairphone, ADR-0005) | Na zavedenie (E2-11b) |
+| Z15 | Súbory vendora Pixelu (ovládače, firmvér, IMS) | Google | Súbory len z pôvodného obrazu Google (proprietárne), aktualizácie podľa Google | Prevzaté nástrojom adevtool z verejného obrazu `CP3A.261005.005`; pre predaj zariadení potrebná zmluva s výrobcom (cesta A+) | Vývoj (E2-11b) |
 
 ## Najbližšie kroky
 

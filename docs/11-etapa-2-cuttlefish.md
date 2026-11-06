@@ -109,6 +109,15 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
     tools/etapa2/11-pixel.sh audit             # sieťový audit priamo v telefóne (Wi-Fi aj mobilná sieť)
     ```
 
+16. **Úplná zostava pre Pixel 9** (úloha E2-11b, [časť 4i](#4i-úplná-zostava-lech-os-pre-pixel-9-úloha-e2-11b)) – podpora
+    zariadenia z GrapheneOS, aj IMS pre SMS a VoLTE:
+
+    ```bash
+    tools/etapa2/12-priprav-pixel.sh           # Node.js, projekty GrapheneOS, adevtool → vendor/google_devices/tokay
+    tools/etapa2/12-zostav-pixel.sh            # LECH OS pre Pixel 9, balík do C:\lech\pixel-uplne
+    tools/etapa2/11-pixel.sh nahrat-uplne      # nahratie všetkých partícií – vymaže telefón
+    ```
+
 ## 1. Zostavovací počítač
 
 Na zostavenie stačí **server alebo dostatočne vybavený notebook či stolný počítač**. Rozhoduje RAM, rýchly disk
@@ -539,6 +548,36 @@ USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LEC
 | Volanie | OK (2G) | 6. 11. 2026: odchádzajúci hovor ide – cez 2G národného roamingu, nie VoLTE |
 | Bluetooth, GPS, odtlačok prsta, NFC | ? | |
 
+## 4i. Úplná zostava LECH OS pre Pixel 9 (úloha E2-11b)
+
+GSI (časť 4h) beží s vendorom Google, ale bez IMS Pixelu (SMS a VoLTE pri 4ka nefungujú) a bootloader sa s ním
+nedá zamknúť. Úplná zostava vytvorí všetky partície telefónu: systém LECH OS, vendor, boot a vbmeta.
+
+Google od Androidu 16 nezverejňuje stromy zariadení Pixel. Podporu zariadenia preberáme z **GrapheneOS**
+(ADR-0002 – výberové preberanie overených súčastí; závislosť Z14 v [docs/16](16-zavislosti-a-plan-odchodu.md)):
+
+| Súčasť | Odkiaľ | Čo robí |
+|--------|--------|---------|
+| `vendor/adevtool` (MIT) | GrapheneOS | z pôvodného obrazu Google (`CP3A.261005.005`) vytvorí `vendor/google_devices/tokay`: súbory vendora, firmvér, prekrytia, oprávnenia, **IMS Pixelu (`ShannonIms`)**; konfigurácia zariadenia (BoardConfig, device.mk) je v `vendor/adevtool/config/mk` |
+| `vendor/state` (MIT) | GrapheneOS | stav systémovej zostavy, s ktorým adevtool porovnáva pôvodné obrazy |
+| `device/google/caimito-kernels/6.1` (GPL) | GrapheneOS | predzostavené jadro rodiny Pixel 9 |
+| `packages/apps/CarrierConfig2` (MIT) | GrapheneOS | nastavenia operátorov z dát Google (VoLTE, SMS cez IMS) |
+| `tools/arsclib` (MIT) | GrapheneOS | nástroj na zdroje, ktorý adevtool používa pri prekrytiach |
+
+Verzie sú pevné v [manifests/lech-pixel.xml](../manifests/lech-pixel.xml). Úpravy LECH OS v
+[patches/vendor/adevtool](../patches/vendor/adevtool): (1) iné číslo zostavy systému ako pôvodného vendora je len
+varovanie (LECH OS má vlastné `BUILD_ID`); (2) vývojárska zostava môže použiť cieľ GSI – ARMv8-A bez pamäťových
+značiek (MTE) – a využiť tak systém už zostavený pre GSI (miesto a čas notebooku). Vydania: ARMv9 s MTE.
+
+| Krok | Skript | Trvanie (odhad) |
+|------|--------|-----------------|
+| Príprava | `12-priprav-pixel.sh`: Node.js 24 a yarn do `~/lech-work/node` (oficiálna zostava, overený súčet), projekty GrapheneOS (`repo sync` len ich), záplaty, `yarn install`, nástroje pre adevtool v bežnom `out/`, `adevtool generate-all -d tokay` (stiahne obraz Google ~3 GB) | 1–2 h (nová analýza Soong) |
+| Zostavenie | `12-zostav-pixel.sh`: produkt `lech_tokay` ([vendor/lech/products/lech_tokay.mk](../vendor/lech/products/lech_tokay.mk)), balík `C:\lech\pixel-uplne\lech-tokay-img.zip` | prvýkrát niekoľko hodín |
+| Nahratie | `11-pixel.sh nahrat-uplne`: `fastboot update` (partície bootloadera, potom dynamické vo fastbootd), vymazanie dát v bootloaderi, štart | 10–15 min |
+
+Potom `11-pixel.sh kontrola`, `siet`, `audit` ako pri GSI a test SMS a volania cez LTE. Úloha E2-12 (zamknutý
+bootloader s vlastným kľúčom AVB) stavia na tejto zostave.
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
@@ -586,7 +625,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06). Rozhodnuté 5. 11. 2026: doména `lech-web.sk` (Websupport, podadresy), server IONOS (Ubuntu 24.04, nginx) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | **Hotové 5. 11. 2026 (v0)** – `09-nocna-kontrola.sh` na notebooku, každú noc o 02:30 z Plánovača úloh Windows ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); prvý beh (ručne): všetkých 5 krokov OK. Ďalej: CI na serveri v EÚ, kontrola každej zmeny pred zlúčením |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
-| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **E2-11a hotové 6. 11. 2026** – LECH OS ako GSI beží na Pixeli 9 (vendor Android 17 `CP3A.261005.005`): identita, kľúče LECH, NTP aj animácia overené (`11-pixel.sh kontrola`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)). Bez RKP servera Google (`init.lech.rc`); sieťový audit na telefóne: žiadne spojenie na Google (5. a 6. audit). Zostáva: SMS a VoLTE (IMS), verzia „Baklava“ namiesto 17; E2-11b: úplná zostava so stromami zariadenia z GrapheneOS |
+| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **E2-11a hotové 6. 11. 2026** – LECH OS ako GSI beží na Pixeli 9 (vendor Android 17 `CP3A.261005.005`): identita, kľúče LECH, NTP aj animácia overené (`11-pixel.sh kontrola`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)). Bez RKP servera Google (`init.lech.rc`); sieťový audit na telefóne: žiadne spojenie na Google (5. a 6. audit). Zostáva: SMS a VoLTE (IMS), verzia „Baklava“ namiesto 17; E2-11b (začaté 6. 11. 2026): úplná zostava s podporou zariadenia z GrapheneOS (adevtool, [časť 4i](#4i-úplná-zostava-lech-os-pre-pixel-9-úloha-e2-11b)) |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
 
 ### Záznam z prvého spustenia (4. 11. 2026)

@@ -9,6 +9,7 @@ Postup a rozhodnutia sú opísané v [docs/11, časť 4b](../../docs/11-etapa-2-
 | `AndroidProducts.mk` | Zoznam produktov LECH OS a ponuka pre `lunch` |
 | `products/lech_cf_x86_64_only_phone.mk` | Virtuálny telefón LECH-PHONE pre Cuttlefish. Dedí z `aosp_cf_x86_64_only_phone` a mení názov, značku a model |
 | `products/lech_gsi_arm64.mk` | LECH OS ako jednotný systém (GSI) pre telefóny ARM64, prvý cieľ Pixel 9 (E2-11a). Zložený ako `aosp_arm64`, ale len 64-bitový; vendor, jadro a ovládače zostávajú z telefónu ([docs/11, časť 4h](../../docs/11-etapa-2-cuttlefish.md#4h-lech-os-na-pixeli-9-úloha-e2-11a)) |
+| `products/lech_tokay.mk` | LECH OS pre Pixel 9 – úplná zostava (E2-11b) s podporou zariadenia z GrapheneOS: dedí z `vendor/google_devices/tokay/tokay.mk`, ktorý vytvorí adevtool ([docs/11, časť 4i](../../docs/11-etapa-2-cuttlefish.md#4i-úplná-zostava-lech-os-pre-pixel-9-úloha-e2-11b)) |
 | `board/lech_arm64/BoardConfig.mk` | Doska pre `lech_gsi_arm64`: GSI `generic_arm64` bez 32-bitovej architektúry |
 | `config/common.mk` | Spoločné pre všetky produkty: verzia v *Build number*, `ro.lech.version`, animácia pri štarte, podpisové kľúče (`vendor/lech-keys/test`, mimo repozitára) |
 | `config/version.mk` | Verzia LECH OS – jediné miesto, kde sa mení |

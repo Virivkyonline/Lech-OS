@@ -11,8 +11,10 @@
 PRODUCT_MAKEFILES := \
     lech_cf_x86_64_only_phone:$(LOCAL_DIR)/products/lech_cf_x86_64_only_phone.mk \
     lech_gsi_arm64:$(LOCAL_DIR)/products/lech_gsi_arm64.mk \
+    lech_tokay:$(LOCAL_DIR)/products/lech_tokay.mk \
 
 COMMON_LUNCH_CHOICES := \
     lech_cf_x86_64_only_phone-trunk_staging-userdebug \
     lech_gsi_arm64-trunk_staging-userdebug \
+    lech_tokay-trunk_staging-userdebug \
 

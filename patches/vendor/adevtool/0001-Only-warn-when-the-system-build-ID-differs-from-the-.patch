@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Fri, 6 Nov 2026 12:00:00 +0100
+Subject: [PATCH 1/2] Only warn when the system build ID differs from the stock
+ vendor build
+
+LECH OS builds its own system from AOSP sources and keeps its own build
+ID, while the vendor files of the Pixel come from the stock build that
+adevtool extracts. The mismatch is expected there, so the generated
+check warns instead of stopping the build.
+---
+ src/build/make.ts | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/build/make.ts b/src/build/make.ts
+index 0e213263..7a7b1c43 100644
+--- a/src/build/make.ts
++++ b/src/build/make.ts
+@@ -164,8 +164,10 @@ export async function genProductMakefile(
+   blocks.push(`include ${getVersionCheckFilePath(dirs)}`)
+ 
+   let buildId = config.device.build_id
++  // LECH OS builds its own system from AOSP sources with its own build ID; the vendor files stay from the
++  // stock build. A different build ID is expected there, so only warn.
+   blocks.push(`ifneq ($(BUILD_ID),${buildId})
+-  $(error BUILD_ID: expected ${buildId}, got $(BUILD_ID))
++  $(warning BUILD_ID: vendor files are from ${buildId}, system build is $(BUILD_ID))
+ endif`)
+ 
+   let splOverride = config.device.platform_security_patch_level_override
+-- 
+2.43.0
+
