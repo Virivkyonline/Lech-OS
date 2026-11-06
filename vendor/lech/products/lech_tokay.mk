@@ -17,9 +17,12 @@ $(error LECH OS: chýba vendor/google_devices/tokay - spustite tools/etapa2/12-p
 endif
 
 # Kernel of the Pixel 9 family. GrapheneOS names the directory with its release flag RELEASE_KERNEL_TOKAY_DIR,
-# which AOSP does not have; the adevtool device makefile only sets these when they are still empty (?=).
+# which AOSP does not have; the adevtool device makefile only sets these when they are still undefined (?=).
 TARGET_KERNEL_DIR := device/google/caimito-kernels/6.1/grapheneos
-TARGET_BOARD_KERNEL_HEADERS := $(TARGET_KERNEL_DIR)/kernel-headers
+# The kernel package has no kernel-headers directory (adevtool would point there) and Soong reports a missing
+# source path as an error. All vendor modules are prebuilt from the stock image, so no kernel headers are needed:
+# empty, as on Cuttlefish.
+TARGET_BOARD_KERNEL_HEADERS :=
 
 # Development build: the generic ARMv8-A target of the LECH OS GSI instead of ARMv9 with memory tagging (MTE),
 # so the system already compiled for the GSI is reused (patches/vendor/adevtool/0002). Release builds: false.

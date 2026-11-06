@@ -568,6 +568,9 @@ Verzie sú pevné v [manifests/lech-pixel.xml](../manifests/lech-pixel.xml). Úp
 [patches/vendor/adevtool](../patches/vendor/adevtool): (1) iné číslo zostavy systému ako pôvodného vendora je len
 varovanie (LECH OS má vlastné `BUILD_ID`); (2) vývojárska zostava môže použiť cieľ GSI – ARMv8-A bez pamäťových
 značiek (MTE) – a využiť tak systém už zostavený pre GSI (miesto a čas notebooku). Vydania: ARMv9 s MTE.
+adevtool potrebuje rozšírenia nástrojov AOSP od GrapheneOS (`aapt2`, `apksigner print-certs`, `dispol -a`); sú
+prevzaté ako záplaty s pôvodnými autormi ([patches/README.md](../patches/README.md)). CarrierConfig2 sa zostavuje
+bez testovacej obrazovky GrapheneOS, ktorá potrebuje rozhrania GmsCompat.
 
 | Krok | Skript | Trvanie (odhad) |
 |------|--------|-----------------|
@@ -785,6 +788,12 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     aj 2. audit (5 min, Wi-Fi aj mobilné dáta): **žiadny dopyt DNS, žiadne spojenie na Google**; jediné ciele mimo
     lokálnej siete sú DNS servery 4ka `84.245.112.80/.81` na TCP/853 (Android skúša šifrované DNS). Zhrnutie v
     [audit/README.md](../audit/README.md) (5. a 6. audit). Audit odteraz povolí DNS servery, ktoré dala sieť.
+28. **Príprava úplnej zostavy pre Pixel 9 (E2-11b, 6. 11. 2026):** `12-priprav-pixel.sh` prešiel celý – projekty
+    GrapheneOS, nástroje pre adevtool (11 min, nová analýza Soong) a `adevtool generate-all -d tokay` vytvoril
+    `vendor/google_devices/tokay` z obrazu Google `CP3A.261005.005` (4,3 GB). Cestou bolo treba prevziať z GrapheneOS
+    rozšírenia `aapt2` (5 commitov), `apksigner print-certs` a `dispol -a`. Pred prvým zostavením: CarrierConfig2
+    bez testovacej obrazovky GmsCompat (inak by sa na AOSP nezostavil) a prázdne `TARGET_BOARD_KERNEL_HEADERS`
+    (balík jadra GrapheneOS nemá `kernel-headers`).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
