@@ -467,8 +467,18 @@ cmd_kontrola() {
   report INFO "SIM a mobilná sieť" "SIM $(prop gsm.sim.state), operátor $(prop gsm.operator.alpha), sieť $(prop gsm.network.type)"
   report INFO "Wi-Fi" "$(adb_ shell cmd wifi status | head -n 1)"
   local rkp
+  # E2-11a: vendor of the Pixel names the Google RKP server; init.lech.rc clears it (vendor/lech/config/init).
   rkp=$(prop remote_provisioning.hostname)
-  report INFO "atestačné kľúče (RKP)" "${rkp:-bez servera}"
+  if [ -z "$rkp" ]; then
+    report OK "atestačné kľúče (RKP)" "bez servera Google"
+  else
+    report CHYBA "atestačné kľúče (RKP)" "server $rkp (zostava bez init.lech.rc? 11-zostav-gsi.sh a nahrat)"
+  fi
+  if adb_ shell 'test -x /system/bin/tcpdump && echo ano' | grep -qx ano; then
+    report INFO "sieťový audit" "tcpdump v telefóne je (11-pixel.sh audit)"
+  else
+    report INFO "sieťový audit" "tcpdump v telefóne nie je – staršia zostava"
+  fi
   echo
   if [ "$ok" -eq 1 ]; then
     echo "LECH OS na Pixeli je v poriadku. Vyskúšajte volanie, SMS, mobilné dáta, Wi-Fi, fotoaparát a Bluetooth"

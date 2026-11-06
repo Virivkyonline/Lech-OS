@@ -54,6 +54,11 @@ PRODUCT_ARTIFACT_PATH_REQUIREMENT_ALLOWED_LIST += \
 
 PRODUCT_NO_BIONIC_PAGE_SIZE_MACRO := true
 
+# Packet capture in the phone itself for the network audit on the Pixel (also mobile data, which does not
+# pass the build notebook): only in userdebug/eng builds, not in user builds.
+PRODUCT_PACKAGES_DEBUG += \
+    tcpdump \
+
 $(call inherit-product, vendor/lech/config/common.mk)
 
 PRODUCT_NAME := lech_gsi_arm64

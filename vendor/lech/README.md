@@ -13,6 +13,7 @@ Postup a rozhodnutia sú opísané v [docs/11, časť 4b](../../docs/11-etapa-2-
 | `config/common.mk` | Spoločné pre všetky produkty: verzia v *Build number*, `ro.lech.version`, animácia pri štarte, podpisové kľúče (`vendor/lech-keys/test`, mimo repozitára) |
 | `config/version.mk` | Verzia LECH OS – jediné miesto, kde sa mení |
 | `bootanimation/bootanimation.zip` | Animácia pri štarte, vytvorená skriptom `tools/make_bootanimation.py` |
+| `config/init/init.lech.rc` | Nastavenia pri štarte (do `/product/etc/init`): vypnuté sťahovanie atestačných kľúčov (RKP) zo servera Google, aj keď ho uvádza vendor telefónu (Pixel) |
 | `overlay/frameworks-res/` | Prekrytie (RRO) nastavení frameworku Android v partícii product: sieťový čas `europe.pool.ntp.org` namiesto `time.android.com` |
 
 Pravidlá:

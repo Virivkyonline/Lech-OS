@@ -48,3 +48,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     LechFrameworksResOverlay \
 
+# Init settings of LECH OS: no remote key provisioning by Google, also when the phone's vendor partition
+# names the Google server (Pixel). On Cuttlefish the server is removed by a patch (patches/device/google/cuttlefish).
+PRODUCT_COPY_FILES += \
+    vendor/lech/config/init/init.lech.rc:$(TARGET_COPY_OUT_PRODUCT)/etc/init/init.lech.rc \
+

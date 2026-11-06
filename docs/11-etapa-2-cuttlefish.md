@@ -521,11 +521,14 @@ USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LEC
 | Funkcia | Stav | Poznámka |
 |---------|------|----------|
 | Štart, displej, dotyk, USB (adb) | OK | 6. 11. 2026 |
-| Wi-Fi | ? | |
-| SIM, mobilné dáta, volanie, SMS | ? | VoLTE pravdepodobne nie (IMS je v `/product` Pixelu) |
-| Fotoaparát | ? | |
-| Bluetooth | ? | |
-| GPS, odtlačok prsta, NFC, nabíjanie | ? | |
+| Wi-Fi | OK | 6. 11. 2026 |
+| Fotoaparát | OK | 6. 11. 2026 |
+| Mikrofón, nahrávanie obrazovky | OK | 6. 11. 2026 |
+| Nabíjanie | OK | 6. 11. 2026 |
+| Otáčanie obrazovky (senzory) | OK | 6. 11. 2026 |
+| Slovenčina v systéme | OK | 6. 11. 2026 |
+| SIM, mobilné dáta, volanie, SMS | ? | zatiaľ bez SIM; VoLTE pravdepodobne nie (IMS je v `/product` Pixelu) |
+| Bluetooth, GPS, odtlačok prsta, NFC | ? | |
 
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
@@ -703,6 +706,12 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     servera Google. Pri GSI sa vendor meniť nedá; LECH OS to musí riešiť v systéme (rkpd) – rozhodnutie a
     sieťový audit na Pixeli sú ďalší krok. Na audit priamo v telefóne treba do zostavy pridať `tcpdump`
     (v ladiacej zostave AOSP nie je).
+
+23. **Test funkcií a príprava auditu na Pixeli (6. 11. 2026):** Wi-Fi, fotoaparát, mikrofón, nahrávanie obrazovky,
+    nabíjanie, otáčanie obrazovky a slovenčina fungujú (tabuľka v časti 4h); SIM zatiaľ nie je. Do zostavy pribudli
+    `init.lech.rc` (pre všetky produkty: `remote_provisioning.hostname` sa pred štartom zygote vyprázdni, rkpd
+    potom nič nesťahuje – rovnaké rozhodnutie ako v E2-06 na Cuttlefish; následok: atestačné certifikáty kľúčov
+    od Google nie sú) a pre Pixel `tcpdump` v ladiacej zostave na sieťový audit priamo v telefóne.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

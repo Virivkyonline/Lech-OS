@@ -1,0 +1,11 @@
+# Copyright (C) 2026 The LECH OS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+# LECH OS init settings, installed to /product/etc/init (vendor/lech/config/common.mk).
+
+# No remote key provisioning by Google: the vendor partition of a phone can name the Google server
+# (Pixel 9: remote_provisioning.hostname=remoteprovisioning.googleapis.com, 6. 11. 2026). rkpd does not
+# provision when the hostname is empty. Set before zygote starts, after all build.prop files are loaded.
+# Consequence: hardware key attestation certificates from Google are not available (docs/11, part 4h).
+on post-fs-data
+    setprop remote_provisioning.hostname ""
