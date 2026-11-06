@@ -496,7 +496,8 @@ cmd_kontrola() {
   else
     report CHYBA "atestačné kľúče (RKP)" "server $rkp (zostava bez init.lech.rc? 11-zostav-gsi.sh a nahrat)"
   fi
-  if adb_ shell 'test -x /system/bin/tcpdump && echo ano' | grep -qx ano; then
+  # SELinux hides tcpdump from the adb shell user ("Permission denied"), so only "No such file" means missing.
+  if ! adb_ shell 'ls /system/bin/tcpdump' | grep -qi 'no such file'; then
     report INFO "sieťový audit" "tcpdump v telefóne je (11-pixel.sh audit)"
   else
     report INFO "sieťový audit" "tcpdump v telefóne nie je – staršia zostava"
