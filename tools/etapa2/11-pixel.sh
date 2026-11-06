@@ -338,6 +338,12 @@ cez Android Flash Tool (tools/etapa2/11-pixel.sh spat)."
 # 6. 11. 2026); the bootloader erases userdata and metadata itself.
 wipe_data() {
   local out
+  # A fastbootd that hangs after a failed command lists the phone but answers nothing (6. 11. 2026).
+  if [ -z "$(fb_var product)" ]; then
+    echo "    Telefón v režime fastboot neodpovedá. Na telefóne tlačidlami hlasitosti vyberte 'Reboot to bootloader'"
+    echo "    a potvrďte tlačidlom Napájanie; potom spustite znova: tools/etapa2/11-pixel.sh dokoncit"
+    return 2
+  fi
   if in_fastbootd; then
     out=$(fb -w) && { printf '%s\n' "$out" | grep -E "^(Erasing|Formatting|Finished)" | sed 's/^/    /'; return 0; }
     printf '%s\n' "$out" | grep FAILED | tail -n 1
@@ -363,11 +369,18 @@ EOF
 }
 finish_flash() {   # slot
   echo "4/4 Mažem dáta starého systému a reštartujem…"
-  if ! wipe_data; then
+  local status=0
+  wipe_data || status=$?
+  [ "$status" -eq 2 ] && die "Dáta sa nevymazali, telefón neodpovedá (postup vyššie). LECH OS je nahratý."
+  if [ "$status" -ne 0 ]; then
     recovery_wipe_hint
     die "Dáta sa cez fastboot vymazať nepodarilo. LECH OS je nahratý – chýba len vymazanie dát (postup vyššie)."
   fi
   fb reboot >/dev/null
+  sleep 10
+  if fastboot_ready; then
+    die "Telefón sa nereštartoval. Na telefóne vyberte tlačidlami hlasitosti 'Reboot system now' a potvrďte tlačidlom Napájanie."
+  fi
   mkdir -p "$WORKDIR/pixel"
   echo "$(date '+%d. %m. %Y %H:%M') LECH OS nahratý do slotu ${1:-?}" >> "$WORKDIR/pixel/nahratia.txt"
   cat <<EOF
