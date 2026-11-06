@@ -15,7 +15,8 @@
 #   dokoncit   only the last step of nahrat: erase the data and start (when the erase failed)
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   siet       mobile network diagnostics (SIM, radio HAL, registration, errors) to ~/lech-work/pixel
-#   audit [--minuty N]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default 15 min)
+#   audit [--minuty N] [--dokoncit]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default
+#              15 min); --dokoncit finishes a started audit after the USB connection dropped
 #   slot a|b   make a slot active and start it (when the phone fell back to the Google system in the other slot)
 #   spat       how to go back to the original Google system
 # Environment: LECH_WORK (default ~/lech-work), LECH_KEYS (default ~/lech-keys/test), LECH_PIXEL_DIR (images;
@@ -553,24 +554,27 @@ cmd_siet() {
 # Network audit in the phone itself: tcpdump on all interfaces (Wi-Fi and mobile network, which does not pass
 # the notebook), DNS queries by app, evaluated by analyzuj_audit.py --siete against spec/povolene-spojenia.txt.
 cmd_audit() {
-  local minutes=15 dir remote=/data/local/tmp/lech-audit.pcap m running
+  local minutes=15 dir remote=/data/local/tmp/lech-audit.pcap m finish_only=0
   while [ $# -gt 0 ]; do
     case "$1" in
       --minuty) minutes=${2:?chýba počet minút}; shift 2 ;;
-      *) die "Neznámy parameter auditu: $1 (použitie: 11-pixel.sh audit [--minuty N])" ;;
+      --dokoncit) finish_only=1; shift ;;
+      *) die "Neznámy parameter auditu: $1 (použitie: 11-pixel.sh audit [--minuty N] [--dokoncit])" ;;
     esac
   done
   case "$minutes" in ''|*[!0-9]*) die "--minuty očakáva celé číslo." ;; esac
   need_tools
   command -v tshark >/dev/null 2>&1 || die "Chýba tshark – nainštalujte ho: tools/etapa2/01-priprava-notebooku.sh"
+  if [ "$finish_only" -eq 1 ]; then
+    dir=$(ls -td "$WORKDIR"/pixel/audit-* 2>/dev/null | head -n 1)
+    [ -n "$dir" ] || die "Žiadny začatý audit v $WORKDIR/pixel – spustite: tools/etapa2/11-pixel.sh audit"
+    echo "Dokončujem audit $dir"
+    audit_finish "$dir"
+    return
+  fi
   wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
   [ -n "$(prop ro.lech.version)" ] || die "V telefóne nebeží LECH OS – audit je pre LECH OS (11-pixel.sh nahrat)."
-  if [ "$(adb_ shell id -u | head -n 1)" != 0 ]; then
-    adb_ root >/dev/null
-    sleep 4
-    wait_for 60 adb_ready || die "Telefón sa po adb root neozval."
-  fi
-  [ "$(adb_ shell id -u | head -n 1)" = 0 ] || die "adb root nefunguje – audit potrebuje ladiacu zostavu (userdebug)."
+  audit_root
   adb_ shell 'command -v tcpdump' | grep -q tcpdump || \
     die "V telefóne nie je tcpdump – nahrajte novšiu zostavu: tools/etapa2/11-zostav-gsi.sh a 11-pixel.sh nahrat"
 
@@ -597,6 +601,31 @@ EOF
     if [ -t 0 ]; then read -r -t 60 && break; else sleep 60; fi
   done
   printf '\r  záznam končí…    \n'
+  audit_finish "$dir"
+}
+
+# adb as root (the query log and tcpdump need it); after a reconnect adbd normally stays root.
+audit_root() {
+  if [ "$(adb_ shell id -u | head -n 1)" != 0 ]; then
+    adb_ root >/dev/null
+    sleep 4
+    wait_for 60 adb_ready || die "Telefón sa po adb root neozval."
+  fi
+  [ "$(adb_ shell id -u | head -n 1)" = 0 ] || die "adb root nefunguje – audit potrebuje ladiacu zostavu (userdebug)."
+}
+
+# Stop the capture in the phone, fetch it with the DNS log and evaluate. Also on its own (audit --dokoncit):
+# tcpdump keeps running in the phone when the USB connection drops during the audit (6. 11. 2026).
+audit_finish() {   # audit directory
+  local dir=$1 remote=/data/local/tmp/lech-audit.pcap running
+  if ! adb_ready; then
+    echo "Telefón sa cez adb neozval – spojenie USB sa asi prerušilo. Odpojte a znova pripojte kábel"
+    echo "(záznam v telefóne beží ďalej). Čakám 3 minúty…"
+    wait_for 180 adb_ready || die "Telefón sa neozval. Po pripojení kábla audit dokončite: tools/etapa2/11-pixel.sh audit --dokoncit"
+  fi
+  audit_root
+  adb_ shell "ls $remote" | grep -q 'lech-audit.pcap$' || \
+    die "Záznam v telefóne nie je (telefón sa medzitým reštartoval?). Spustite audit znova: tools/etapa2/11-pixel.sh audit"
   adb_ shell "pkill -INT -f lech-audit.pcap" >/dev/null
   sleep 3
   running=$(adb_ shell "pgrep -f lech-audit.pcap" | grep -c '[0-9]')
@@ -676,6 +705,6 @@ case "${1:-}" in
   audit) shift; cmd_audit "$@" ;;
   slot) shift; cmd_slot "$@" ;;
   spat) cmd_spat ;;
-  -h|--help|"") sed -n '2,24p' "$0" ;;
+  -h|--help|"") sed -n '2,25p' "$0" ;;
   *) die "Neznámy príkaz: $1 (pomoc: --help)" ;;
 esac
