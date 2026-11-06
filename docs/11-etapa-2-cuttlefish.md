@@ -475,7 +475,7 @@ sa zostaví, naštartuje, nespojí sa s ničím nepovoleným a beží na ňom 10
 - **Nastavenie** (`09-nastav-nocnu-kontrolu.sh`, raz):
   - pravidlo `sudo` `/etc/sudoers.d/lech-nocna-kontrola` – bez hesla len `/usr/bin/tcpdump`, nič iné,
   - úloha **„LECH OS - nocna kontrola“** v Plánovači úloh Windows: každý deň o 02:30 (`--cas HH:MM`), zobudí počítač
-    zo spánku, nespustí sa na batériu, najviac 4 hodiny. Beží, keď ste prihlásený vo Windows (aj pri zamknutej
+    zo spánku, na batérii sa nespustí (začatá kontrola však pri prechode na batériu dobehne), najviac 4 hodiny. Beží, keď ste prihlásený vo Windows (aj pri zamknutej
     obrazovke). Zrušenie: `--zrusit`. Skript úlohu po vytvorení overí a vypíše najbližší beh; ak sa to nepodarí,
     vypíše celý výstup PowerShell.
   - kontrola neskôr (vo WSL): `cd /mnt/c && powershell.exe -NoProfile -Command "Get-ScheduledTask -TaskName 'LECH OS - nocna kontrola' | Get-ScheduledTaskInfo"`
@@ -725,6 +725,14 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     a SMS cez VoLTE; IMS Pixelu (Google) je v `/product`, ktorú GSI nepoužíva, takže telefón bez VoLTE prejde
     k partnerovi s 2G. SMS 6. 11. neprišla. Riešenie: IMS v úplnej zostave pre Pixel (E2-11b) – zistiť, ako
     to robí GrapheneOS (súčasti IMS z pôvodného systému Pixelu).
+
+25. **Nočná kontrola 6. 11. 2026 02:30 prerušená:** zostavenie a štart OK (91 min – po zostavení pre Pixel nová
+    analýza Soong pre Cuttlefish), sieťový audit 30 min OK (8 cieľov, žiadne nepovolené spojenie telefónu); počas
+    testu aplikácií (~04:31) sa kontrola skončila bez súhrnu a Cuttlefish ostal zapnutý – pravdepodobne ju ukončil
+    Plánovač úloh pri prechode notebooku na batériu (predvolené nastavenie). Zvyšný Cuttlefish držal zdedený zámok
+    zostavenia, preto sa ráno nespustil `11-zostav-gsi.sh`. Opravy: úloha sa pri prechode na batériu už nezastaví
+    (`-DontStopIfGoingOnBatteries`, treba znova spustiť `09-nastav-nocnu-kontrolu.sh`), prerušená kontrola vypne
+    Cuttlefish a zapíše súhrn PRERUŠENÉ, zámok drží len `flock -o` (procesy na pozadí ho nezdedia).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

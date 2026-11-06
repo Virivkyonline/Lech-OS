@@ -90,13 +90,13 @@ EOF
   exit 0
 fi
 
-echo "2/2 Úloha v Plánovači úloh Windows: '$TASK_NAME', každý deň o $TIME (zobudí počítač, nie na batériu)."
+echo "2/2 Úloha v Plánovači úloh Windows: '$TASK_NAME', každý deň o $TIME (zobudí počítač; na batérii sa nespustí, ale začatá kontrola dobehne)."
 mkdir -p "$CI_ROOT"
 command="$REPO_DIR/tools/etapa2/09-nocna-kontrola.sh >> $CI_ROOT/beh.log 2>&1"
 run_powershell <<EOF
 \$action = New-ScheduledTaskAction -Execute 'wsl.exe' -Argument '-d ${WSL_DISTRO_NAME:-Ubuntu-24.04} -u $USER -- bash -lc "$command"'
 \$trigger = New-ScheduledTaskTrigger -Daily -At '$TIME'
-\$settings = New-ScheduledTaskSettingsSet -WakeToRun -ExecutionTimeLimit (New-TimeSpan -Hours 4) -MultipleInstances IgnoreNew
+\$settings = New-ScheduledTaskSettingsSet -WakeToRun -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Hours 4) -MultipleInstances IgnoreNew
 Register-ScheduledTask -TaskName '$TASK_NAME' -Action \$action -Trigger \$trigger -Settings \$settings -Description 'LECH OS: build, start, network audit and app test (tools/etapa2/09-nocna-kontrola.sh)' -Force | Out-Null
 \$next = (Get-ScheduledTask -TaskName '$TASK_NAME' | Get-ScheduledTaskInfo).NextRunTime
 if (\$next) { Write-Output ('LECH-OK ' + \$next.ToString('yyyy-MM-dd HH:mm')) } else { Write-Output 'LECH-OK (Windows ho zatial neuviedol)' }

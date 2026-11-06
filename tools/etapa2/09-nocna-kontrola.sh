@@ -84,6 +84,40 @@ line() {   # columns padded by characters, not bytes (Slovak letters take two by
   printf '%s%*s %s%*s %7s  %s\n' "$1" $(( 12 - ${#1} )) "" "$2" $(( 26 - ${#2} )) "" "$3" "$4"
 }
 
+# Summary: $RUN/suhrn.md, $CI_ROOT/posledna.md and one line in historia.txt.
+write_summary() {
+  {
+    echo "# Nočná kontrola LECH OS – $(date '+%d. %m. %Y %H:%M')"
+    echo
+    echo "- Výsledok: **$overall**"
+    echo "- Commit: \`$COMMIT\`"
+    echo "- Výsledky a logy: \`$RUN\`"
+    echo
+    echo "| Krok | Výsledok | Trvanie | Podrobnosti |"
+    echo "|---|---|---|---|"
+    for s in ${STEPS[@]+"${STEPS[@]}"}; do
+      IFS='|' read -r st name mins detail <<< "$s"
+      echo "| $name | $st | $mins min | ${detail//|/\\|} |"
+    done
+  } > "$RUN/suhrn.md"
+  cp "$RUN/suhrn.md" "$CI_ROOT/posledna.md"
+  echo "$STAMP $overall ${COMMIT%% *}" >> "$CI_ROOT/historia.txt"
+}
+
+# Stopped from outside (the Windows Task Scheduler, Ctrl+C): stop the virtual phone, which would otherwise keep
+# running and take memory, and still write the summary. On 6. 11. 2026 the check ended during the app test
+# without a summary and left Cuttlefish running.
+on_abort() {
+  trap - TERM HUP INT
+  STEPS+=("PRERUŠENÉ|Nočná kontrola prerušená|0|zvonka (Plánovač úloh, batéria alebo Ctrl+C) počas kroku: ${CURRENT_STEP:-?}")
+  overall=PRERUŠENÉ
+  lech_reset_phones
+  write_summary
+  echo "Nočná kontrola bola prerušená ($CURRENT_STEP) – $RUN/suhrn.md" >&2
+  exit 1
+}
+trap on_abort TERM HUP INT
+
 echo "Nočná kontrola LECH OS – $(date '+%d. %m. %Y %H:%M'), commit $COMMIT"
 echo "Výsledky: $RUN"
 
@@ -99,6 +133,7 @@ if [ "$AFTER_PULL" -eq 1 ]; then
 fi
 
 # 2. Checks of the repository.
+CURRENT_STEP="Kontroly repozitára"
 t=$(date +%s)
 errors=0
 {
@@ -120,6 +155,7 @@ else
 fi
 
 # 3. Build, start and identity of the phone.
+CURRENT_STEP="Zostavenie a štart"
 t=$(date +%s)
 built=0
 if "$SCRIPT_DIR/06-zostav-lech.sh" --spustit > "$RUN/zostavenie.log" 2>&1; then
@@ -132,6 +168,7 @@ else
 fi
 
 # 4. Network audit of a fresh phone.
+CURRENT_STEP="Sieťový audit"
 if [ "$AUDIT" -eq 0 ]; then
   skip "Sieťový audit" "--bez-auditu"
 elif [ "$built" -eq 0 ]; then
@@ -165,6 +202,7 @@ PYEOF
 fi
 
 # 5. Apps from F-Droid (on the phone from the audit, or from step 3).
+CURRENT_STEP="Aplikácie z F-Droid"
 if [ "$APPS" -eq 0 ]; then
   skip "Aplikácie z F-Droid" "--bez-aplikacii"
 elif [ "$built" -eq 0 ]; then
@@ -188,24 +226,8 @@ PYEOF
 fi
 
 lech_reset_phones
-
-# Summary.
-{
-  echo "# Nočná kontrola LECH OS – $(date '+%d. %m. %Y %H:%M')"
-  echo
-  echo "- Výsledok: **$overall**"
-  echo "- Commit: \`$COMMIT\`"
-  echo "- Výsledky a logy: \`$RUN\`"
-  echo
-  echo "| Krok | Výsledok | Trvanie | Podrobnosti |"
-  echo "|---|---|---|---|"
-  for s in "${STEPS[@]}"; do
-    IFS='|' read -r st name mins detail <<< "$s"
-    echo "| $name | $st | $mins min | ${detail//|/\\|} |"
-  done
-} > "$RUN/suhrn.md"
-cp "$RUN/suhrn.md" "$CI_ROOT/posledna.md"
-echo "$STAMP $overall ${COMMIT%% *}" >> "$CI_ROOT/historia.txt"
+trap - TERM HUP INT
+write_summary
 
 echo
 echo "Výsledok nočnej kontroly: $overall – $RUN/suhrn.md"
