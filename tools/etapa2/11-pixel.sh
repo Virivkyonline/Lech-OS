@@ -14,6 +14,7 @@
 #   nahrat     flash the LECH OS GSI from 11-zostav-gsi.sh – erases all data
 #   dokoncit   only the last step of nahrat: erase the data and start (when the erase failed)
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
+#   siet       mobile network diagnostics (SIM, radio HAL, registration, errors) to ~/lech-work/pixel
 #   spat       how to go back to the original Google system
 # Environment: LECH_WORK (default ~/lech-work), LECH_KEYS (default ~/lech-keys/test), LECH_PIXEL_DIR (images;
 #   default /mnt/c/lech/pixel in WSL). In WSL the tools and the driver live in C:\lech (fixed paths).
@@ -489,6 +490,44 @@ cmd_kontrola() {
   fi
 }
 
+# Mobile network diagnostics: SIM, radio HAL of the vendor, registration, telephony errors in the log.
+# The full output goes to ~/lech-work/pixel/siet-<time>.txt, a summary to the screen.
+cmd_siet() {
+  need_tools
+  wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
+  mkdir -p "$WORKDIR/pixel"
+  local out="$WORKDIR/pixel/siet-$(date +%Y%m%d-%H%M%S).txt" p hal sim reg
+  {
+    echo "== Vlastnosti"
+    for p in gsm.sim.state gsm.operator.alpha gsm.operator.numeric gsm.network.type gsm.version.ril-impl \
+             gsm.version.baseband persist.radio.multisim.config ro.telephony.default_network \
+             ro.vendor.build.fingerprint; do
+      echo "$p=$(prop "$p")"
+    done
+    echo "== Funkcie telefónu"; adb_ shell pm list features | grep -iE 'telephony|radio'
+    echo "== Služby rádia (HAL vendora)"; adb_ shell service list | grep -iE 'radio|ims|telephony'
+    echo "== Registrácia v sieti"
+    adb_ shell dumpsys telephony.registry | grep -E 'mServiceState=|mDataConnectionState|mSignalStrength=|mCallState' | head -n 12
+    echo "== SIM (isub)"; adb_ shell dumpsys isub | head -n 60
+    echo "== Chyby v logu rádia"; adb_ logcat -b radio -d | grep -E ' [EF] ' | tail -n 60
+    echo "== Chyby telefónnej služby"; adb_ logcat -d | grep -iE 'com\.android\.phone|RILJ|IRadio|AndroidRuntime' | grep -E ' [EF] ' | tail -n 40
+  } > "$out" 2>&1
+  hal=$(grep -cE 'android\.hardware\.radio\.' "$out")
+  sim=$(prop gsm.sim.state)
+  reg=$(grep -m1 -oE 'mVoiceRegState=[0-9]+\([A-Z_]+\)|mDataRegState=[0-9]+\([A-Z_]+\)' "$out" | head -n 1)
+  echo
+  echo "Mobilná sieť na Pixeli:"
+  printf '  %-26s %s\n' "SIM" "${sim:-?} (READY = karta rozpoznaná, ABSENT = bez karty)"
+  printf '  %-26s %s\n' "rádio vendora (HAL)" "$hal služieb android.hardware.radio.*"
+  printf '  %-26s %s\n' "operátor" "$(prop gsm.operator.alpha) $(prop gsm.operator.numeric)"
+  printf '  %-26s %s\n' "typ siete" "$(prop gsm.network.type)"
+  printf '  %-26s %s\n' "registrácia" "${reg:-?}"
+  printf '  %-26s %s\n' "chyby rádia v logu" "$(sed -n '/^== Chyby v logu rádia/,/^== Chyby telefónnej/p' "$out" | grep -cE ' [EF] ')"
+  echo
+  echo "Úplný výpis: $out"
+  echo "Pošlite snímku tohto súhrnu; ak treba, aj: tail -n 60 $out"
+}
+
 cmd_spat() {
   cat <<EOF
 Návrat k pôvodnému systému Google:
@@ -508,7 +547,8 @@ case "${1:-}" in
   nahrat) cmd_nahrat ;;
   dokoncit) cmd_dokoncit ;;
   kontrola) cmd_kontrola ;;
+  siet) cmd_siet ;;
   spat) cmd_spat ;;
-  -h|--help|"") sed -n '2,21p' "$0" ;;
+  -h|--help|"") sed -n '2,22p' "$0" ;;
   *) die "Neznámy príkaz: $1 (pomoc: --help)" ;;
 esac
