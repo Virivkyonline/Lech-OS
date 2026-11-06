@@ -33,6 +33,7 @@ NOT_MIRRORED="PRODUCT_SOONG_DEFINED_SYSTEM_IMAGE USE_SOONG_DEFINED_SYSTEM_IMAGE"
 
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
 
+ORIG_ARGS=("$@")
 BUILD_ARGS=()
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -46,10 +47,18 @@ done
 [ -f "$BASE_MK" ] || die "Chýba $BASE_MK – produkt LECH pre Pixel z neho dedí. Zmenila sa štruktúra AOSP?"
 [ -f "$PRODUCT_MK" ] || die "Chýba $PRODUCT_MK – aktualizujte repozitár (git pull)."
 
-# The nightly check and this build must not use the same out/ directory at the same time.
-mkdir -p "$WORKDIR/ci"
-exec 9> "$WORKDIR/ci/.zamok"
-flock -n 9 || die "Práve beží nočná kontrola (alebo iné zostavenie). Počkajte, kým skončí: tail -f $WORKDIR/ci/beh.log"
+# The nightly check and this build must not use the same out/ directory at the same time:
+# the rest of the script runs again under the build lock (lib-cuttlefish.sh).
+if [ -z "${LECH_BUILD_LOCK_HELD:-}" ]; then
+  lech_with_build_lock "$0" ${ORIG_ARGS[@]+"${ORIG_ARGS[@]}"}
+  status=$?
+  if [ "$status" -eq 75 ]; then
+    echo
+    lech_build_lock_report
+    die "Zostavenie sa nespustilo – v strome AOSP práve beží iné zostavenie."
+  fi
+  exit "$status"
+fi
 
 # The LECH product is composed like aosp_arm64.mk (64-bit only: core_64_bit_only.mk instead of core_64_bit.mk);
 # warn when a new AOSP version adds an inherited makefile or a product block variable there.

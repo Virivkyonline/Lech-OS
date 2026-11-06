@@ -53,11 +53,17 @@ if [ "$PULL" -eq 1 ]; then
 fi
 
 # The same lock is taken by other builds in the AOSP tree (11-zostav-gsi.sh): they must not share out/.
-exec 9> "$CI_ROOT/.zamok"
-if ! flock -n 9; then
-  echo "Nočná kontrola už beží alebo prebieha iné zostavenie (11-zostav-gsi.sh) – dnes sa preskočí." >&2
-  echo "$(date +%Y%m%d-%H%M%S) PRESKOČENÉ (beží iné zostavenie)" >> "$CI_ROOT/historia.txt"
-  exit 2
+# The rest of the check runs again under the build lock (lib-cuttlefish.sh: lech_with_build_lock).
+if [ -z "${LECH_BUILD_LOCK_HELD:-}" ]; then
+  lech_with_build_lock "$0" ${ORIG_ARGS[@]+"${ORIG_ARGS[@]}"}
+  status=$?
+  if [ "$status" -eq 75 ]; then
+    echo "Nočná kontrola už beží alebo prebieha iné zostavenie (11-zostav-gsi.sh) – dnes sa preskočí." >&2
+    lech_build_lock_report >&2
+    echo "$(date +%Y%m%d-%H%M%S) PRESKOČENÉ (beží iné zostavenie)" >> "$CI_ROOT/historia.txt"
+    exit 2
+  fi
+  exit "$status"
 fi
 
 STAMP=$(date +%Y%m%d-%H%M%S)

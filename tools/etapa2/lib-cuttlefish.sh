@@ -19,6 +19,44 @@ LECH_TARGET_FILE="${LECH_WORK:-$HOME/lech-work}/lunch-target"   # written by 05-
 
 lech_in_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
 
+# Build lock of the AOSP tree: the nightly check and 11-zostav-gsi.sh must not use out/ at the same time.
+LECH_BUILD_LOCK="${LECH_WORK:-$HOME/lech-work}/ci/.zamok"
+
+# Run a command (the calling script again) under the build lock; returns 75 when the lock is taken.
+# flock -o keeps the lock in the flock process only: daemons that the script starts (adb server, Cuttlefish)
+# do not inherit it. Before, a lock inherited by such a daemon stayed taken after the nightly check (6. 11. 2026).
+lech_with_build_lock() {   # command...
+  mkdir -p "$(dirname "$LECH_BUILD_LOCK")"
+  LECH_BUILD_LOCK_HELD=1 flock -n -o -E 75 "$LECH_BUILD_LOCK" "$@"
+}
+
+# Processes of this user that have a file open, "PID command" per line.
+lech_file_users() {
+  local target p link
+  target=$(readlink -f "$1")
+  for p in /proc/[0-9]*; do
+    for link in "$p"/fd/*; do
+      if [ "$(readlink "$link" 2>/dev/null)" = "$target" ]; then
+        printf '%s %s\n' "${p#/proc/}" "$(tr '\0' ' ' < "$p/cmdline" 2>/dev/null | cut -c1-110)"
+        break
+      fi
+    done
+  done
+}
+
+# Who holds the build lock, and what to do about it.
+lech_build_lock_report() {
+  local users
+  users=$(lech_file_users "$LECH_BUILD_LOCK")
+  echo "Zámok zostavenia ($LECH_BUILD_LOCK) drží:"
+  if [ -n "$users" ]; then printf '%s\n' "$users" | sed 's/^/  /'; else echo "  (proces sa nedá zistiť)"; fi
+  if printf '%s' "$users" | grep -qE '09-nocna-kontrola|11-zostav-gsi'; then
+    echo "Beží nočná kontrola alebo zostavenie – počkajte, kým skončí (priebeh: tail -f ${LECH_WORK:-$HOME/lech-work}/ci/beh.log)."
+  elif [ -n "$users" ]; then
+    echo "Nočná kontrola ani zostavenie nebeží – zámok drží zvyšný proces. Ukončite ho (číslo PID vyššie): kill PID"
+  fi
+}
+
 # Free space in GB where a directory lives. In WSL the Linux disk is a growing virtual disk file on C:,
 # so df inside WSL shows the virtual disk's maximum size; the real limit is the free space on C:.
 lech_free_gb() {
