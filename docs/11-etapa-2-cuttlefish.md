@@ -527,7 +527,9 @@ USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LEC
 | Nabíjanie | OK | 6. 11. 2026 |
 | Otáčanie obrazovky (senzory) | OK | 6. 11. 2026 |
 | Slovenčina v systéme | OK | 6. 11. 2026 |
-| SIM, mobilné dáta, volanie, SMS | ? | zatiaľ bez SIM; VoLTE pravdepodobne nie (IMS je v `/product` Pixelu) |
+| SIM, mobilné dáta | OK | 6. 11. 2026; ikona signálu s výkričníkom |
+| SMS | nie | 6. 11. 2026: SMS neprišla. Pravdepodobne chýba IMS (SMS a volania cez LTE) – IMS Pixelu je v `/product`, ktorú GSI nepoužíva |
+| Volanie | ? | |
 | Bluetooth, GPS, odtlačok prsta, NFC | ? | |
 
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
