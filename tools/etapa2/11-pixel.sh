@@ -16,6 +16,7 @@
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   siet       mobile network diagnostics (SIM, radio HAL, registration, errors) to ~/lech-work/pixel
 #   audit [--minuty N]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default 15 min)
+#   slot a|b   make a slot active and start it (when the phone fell back to the Google system in the other slot)
 #   spat       how to go back to the original Google system
 # Environment: LECH_WORK (default ~/lech-work), LECH_KEYS (default ~/lech-keys/test), LECH_PIXEL_DIR (images;
 #   default /mnt/c/lech/pixel in WSL). In WSL the tools and the driver live in C:\lech (fixed paths).
@@ -634,6 +635,23 @@ EOF
   echo "Správa: $dir/sprava.md (záznam prevádzky: $dir/zachytenie.pcap)"
 }
 
+# Make a slot active and start it (after the bootloader fell back to the Google system in the other slot).
+cmd_slot() {
+  local want=${1:-}
+  case "$want" in a|b) ;; *) die "Použitie: 11-pixel.sh slot a|b (LECH OS je v slote z ~/lech-work/pixel/nahratia.txt)" ;; esac
+  need_tools
+  if ! fastboot_ready; then
+    echo "Telefón nie je v bootloaderi. Vypnite ho a zapnite so stlačeným tlačidlom Zníženie hlasitosti. Čakám 3 minúty…"
+    wait_for 180 fastboot_ready || { windows_usb; driver_hint; die "Telefón sa v bootloaderi neukázal."; }
+  fi
+  echo "Aktívny slot teraz: $(fb_var current-slot); nastavujem $want a spúšťam…"
+  fb --set-active="$want" | grep -E 'OKAY|FAILED' | sed 's/^/  /'
+  fb reboot >/dev/null
+  wait_for 40 fastboot_gone || die "Telefón sa nereštartoval – na telefóne vyberte 'Start' a potvrďte tlačidlom Napájanie."
+  echo "Telefón štartuje zo slotu $want. Ak sa znova objaví systém Google, LECH OS sa v tomto slote nespustí – pošlite"
+  echo "výpis: tools/etapa2/11-pixel.sh stav (v bootloaderi)."
+}
+
 cmd_spat() {
   cat <<EOF
 Návrat k pôvodnému systému Google:
@@ -655,7 +673,8 @@ case "${1:-}" in
   kontrola) cmd_kontrola ;;
   siet) cmd_siet ;;
   audit) shift; cmd_audit "$@" ;;
+  slot) shift; cmd_slot "$@" ;;
   spat) cmd_spat ;;
-  -h|--help|"") sed -n '2,23p' "$0" ;;
+  -h|--help|"") sed -n '2,24p' "$0" ;;
   *) die "Neznámy príkaz: $1 (pomoc: --help)" ;;
 esac
