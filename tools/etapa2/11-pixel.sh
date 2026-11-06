@@ -321,17 +321,25 @@ cez Android Flash Tool (tools/etapa2/11-pixel.sh spat)."
   sleep 5
   wait_for 120 in_fastbootd || { driver_hint; die "Telefón sa v režime fastbootd neukázal."; }
   echo "3/4 Nahrávam systém LECH OS ($(du -h "$PIXEL_DIR/system.img" | cut -f1), niekoľko minút)…"
-  if ! out=$(fb flash system system.img); then
-    printf '%s\n' "$out" | tail -n 5
-    if printf '%s' "$out" | grep -qiE 'not enough space|resize'; then
+  local attempt deleted=0
+  for attempt in 1 2 3; do
+    out=$(fb flash system system.img) && break
+    printf '%s\n' "$out" | tail -n 3
+    if [ "$deleted" -eq 0 ] && printf '%s' "$out" | grep -qiE 'not enough space|resize'; then
       # The GSI does not mount the phone's /product (gsi_skip_mount.cfg); its space in super is needed.
       echo "V partícii super nie je miesto – odstraňujem nepoužívanú partíciu product_$slot (Flash Tool ju obnoví)…"
       fb delete-logical-partition "product_$slot"
-      out=$(fb flash system system.img) || { printf '%s\n' "$out" | tail -n 5; die "Systém sa nepodarilo nahrať."; }
+      deleted=1
+    elif printf '%s' "$out" | grep -qiE 'AdbWriteEndpointSync|AdbReadEndpointSync|not functioning|protocol error|no link|remote: .?Status read failed'; then
+      # USB transfer broke off (6. 11. 2026: "A device attached to the system is not functioning").
+      echo "Spojenie USB sa prerušilo (pokus $attempt z 3). Ak sa to opakuje: kábel priamo do notebooku, iný port USB."
+      sleep 5
+      wait_for 120 in_fastbootd || { driver_hint; die "Telefón sa v režime fastbootd znova neukázal – odpojte a pripojte kábel a spustite znova: tools/etapa2/11-pixel.sh nahrat"; }
     else
       die "Systém sa nepodarilo nahrať."
     fi
-  fi
+    [ "$attempt" -eq 3 ] && die "Systém sa nepodarilo nahrať ani na tretí pokus – skúste iný kábel alebo port USB a spustite znova."
+  done
   printf '%s\n' "$out" | grep -E '^Finished' || true
   finish_flash "$slot"
 }
