@@ -674,6 +674,9 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
 20. **Prvé zostavenie pre ARM (5. 11. 2026, E2-11a):** analýze zostavy (Soong) pre GSI s 64-bitovým aj 32-bitovým
     ARM došla po 37 minútach pamäť (`Killed`, 24 GB RAM + swap vo WSL). Produkt je odteraz len 64-bitový – Pixel 9
     32-bitový kód nespúšťa (Tensor G4 nemá AArch32) a analýza aj preklad majú menej variantov modulov.
+    Druhý pokus (64-bitový GSI) **prešiel za 297 minút** (115 428 krokov): `system.img` 1,6 GB, `vbmeta.img` 64 KB.
+    `out/` má po zostavení pre Cuttlefish aj pre ARM 217 GB, voľných zostalo 109 GB. Nočná kontrola 6. 11. sa počas
+    zostavenia preskočila (spoločný zámok); ďalšia začne novou analýzou Soong pre Cuttlefish.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
