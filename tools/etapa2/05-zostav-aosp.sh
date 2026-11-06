@@ -99,10 +99,31 @@ while :; do
 done
 minutes=$(( SECONDS / 60 ))
 
+# Output of the failed build steps: the lines after "FAILED: <target>" up to the next progress line (the tool's
+# own message, e.g. of checkpolicy or secilc, has no "error:"), long command lines shortened. Up to 3 steps.
+failed_steps() {   # file, byte offset where this build attempt starts
+  tail -c +$(( $2 + 1 )) "$1" 2>/dev/null | awk '
+    /^FAILED: / && !/^FAILED: ninja/ { if (steps++ == 3) exit; show = 1; n = 0 }
+    show && /^(\[ *[0-9]+%|FAILED: ninja|ninja:|[0-9:]+ ninja failed|####)/ { show = 0 }
+    show && n++ < 40 { print "  " (length($0) > 220 ? substr($0, 1, 220) " …" : $0) }'
+}
+
 if [ "$status" -ne 0 ]; then
   echo
-  echo "Zostavenie zlyhalo po ${minutes} min. Posledné chybové riadky:"
-  grep -aE "FAILED:|error:|Error |future mtime" "$LOG" | tail -n 15
+  echo "Zostavenie zlyhalo po ${minutes} min."
+  failed_out=$(failed_steps "$LOG" "$start_bytes")
+  # siso keeps the full output of failed commands in out/siso_output when the console shows a shortened one.
+  if [ -f "$AOSP_DIR/out/siso_output" ] && [ "$AOSP_DIR/out/siso_output" -nt "$TARGET_FILE" ]; then
+    siso_out=$(failed_steps "$AOSP_DIR/out/siso_output" 0)
+    [ "$(printf '%s\n' "$siso_out" | wc -l)" -gt "$(printf '%s\n' "$failed_out" | wc -l)" ] && failed_out=$siso_out
+  fi
+  if [ -n "$failed_out" ]; then
+    echo "Zlyhaný krok a jeho výstup:"
+    printf '%s\n' "$failed_out"
+  else
+    echo "Posledné chybové riadky:"
+    tail -c +$(( start_bytes + 1 )) "$LOG" | grep -aE "FAILED:|error:|Error |ERROR|future mtime" | tail -n 15
+  fi
   if tail -c +$(( start_bytes + 1 )) "$LOG" | grep -aq "soong bootstrap failed" && \
      tail -c +$(( start_bytes + 1 )) "$LOG" | grep -aqE "^Killed|signal:killed"; then
     cat <<EOF
