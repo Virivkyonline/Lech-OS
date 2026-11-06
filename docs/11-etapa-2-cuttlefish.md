@@ -516,6 +516,17 @@ USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LEC
 - **Sieťový audit na Pixeli** (aj mobilná sieť) príde po prvom štarte – zachytávanie priamo v telefóne, lebo
   premávka mobilnej siete nejde cez notebook.
 
+Čo funguje v LECH OS GSI na Pixeli 9 (doplní sa po teste):
+
+| Funkcia | Stav | Poznámka |
+|---------|------|----------|
+| Štart, displej, dotyk, USB (adb) | OK | 6. 11. 2026 |
+| Wi-Fi | ? | |
+| SIM, mobilné dáta, volanie, SMS | ? | VoLTE pravdepodobne nie (IMS je v `/product` Pixelu) |
+| Fotoaparát | ? | |
+| Bluetooth | ? | |
+| GPS, odtlačok prsta, NFC, nabíjanie | ? | |
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
@@ -563,7 +574,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06). Rozhodnuté 5. 11. 2026: doména `lech-web.sk` (Websupport, podadresy), server IONOS (Ubuntu 24.04, nginx) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | **Hotové 5. 11. 2026 (v0)** – `09-nocna-kontrola.sh` na notebooku, každú noc o 02:30 z Plánovača úloh Windows ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); prvý beh (ručne): všetkých 5 krokov OK. Ďalej: CI na serveri v EÚ, kontrola každej zmeny pred zlúčením |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
-| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **Prebieha** – Pixel 9 kúpený 5. 11. 2026 (Android 17, `CP3A.261005.005`), bootloader odomknutý 5. 11. 2026. E2-11a: LECH OS ako GSI (`11-zostav-gsi.sh`, `11-pixel.sh`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)); E2-11b: úplná zostava so stromami zariadenia z GrapheneOS |
+| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **E2-11a hotové 6. 11. 2026** – LECH OS ako GSI beží na Pixeli 9 (vendor Android 17 `CP3A.261005.005`): identita, kľúče LECH, NTP aj animácia overené (`11-pixel.sh kontrola`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)). Zostáva: test funkcií (SIM, Wi-Fi, fotoaparát…), sieťový audit na telefóne, RKP Google z vendora Pixelu; E2-11b: úplná zostava so stromami zariadenia z GrapheneOS |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
 
 ### Záznam z prvého spustenia (4. 11. 2026)
@@ -684,6 +695,14 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     potom na príkazy neodpovedal; vymazanie prešlo v bootloaderi (`11-pixel.sh dokoncit`). Po reštarte logo Google
     (bootloader Pixelu) a animácia LECH OS. Skript odteraz maže dáta v bootloaderi, rozpozná zaseknutý fastbootd
     a overí reštart.
+
+22. **Kontrola LECH OS na Pixeli 9 (6. 11. 2026):** model `LECH-PHONE`, `LECH-OS-0.1.0-dev-userdebug`, animácia,
+    NTP `europe.pool.ntp.org`, `dev-keys`, podpis systému aj Bluetooth kľúčmi LECH – všetko OK; overený štart
+    `orange` (odomknutý bootloader, očakávané). Zistenie: vendor Pixelu nastavuje
+    `remote_provisioning.hostname=remoteprovisioning.googleapis.com` – atestačné kľúče (RKP) by sa sťahovali zo
+    servera Google. Pri GSI sa vendor meniť nedá; LECH OS to musí riešiť v systéme (rkpd) – rozhodnutie a
+    sieťový audit na Pixeli sú ďalší krok. Na audit priamo v telefóne treba do zostavy pridať `tcpdump`
+    (v ladiacej zostave AOSP nie je).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
