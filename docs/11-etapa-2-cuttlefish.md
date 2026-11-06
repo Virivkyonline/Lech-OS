@@ -527,9 +527,9 @@ USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LEC
 | Nabíjanie | OK | 6. 11. 2026 |
 | Otáčanie obrazovky (senzory) | OK | 6. 11. 2026 |
 | Slovenčina v systéme | OK | 6. 11. 2026 |
-| SIM, mobilné dáta | čiastočne | 6. 11. 2026, Orange SK (231 01): SIM načítaná, 15 služieb rádia vendora, hovory registrované (`IN_SERVICE`), ale sieť len **EDGE (2G)**, nie LTE; ikona signálu s výkričníkom |
+| SIM, mobilné dáta | čiastočne | 6. 11. 2026, SIM **4ka**: SIM načítaná, 15 služieb rádia vendora, telefón je v sieti **Orange SK (231 01) cez národný roaming, len EDGE (2G)**; dáta idú, ikona signálu s výkričníkom. 4ka má vlastnú sieť len LTE/5G s hovormi cez VoLTE – bez IMS sa telefón ako „hlasový“ prepne do 2G/3G partnera (3GPP) |
 | SMS | nie | 6. 11. 2026: SMS neprišla. Pravdepodobne chýba IMS (SMS a volania cez LTE) – IMS Pixelu je v `/product`, ktorú GSI nepoužíva |
-| Volanie | ? | |
+| Volanie | OK (2G) | 6. 11. 2026: odchádzajúci hovor ide – cez 2G národného roamingu, nie VoLTE |
 | Bluetooth, GPS, odtlačok prsta, NFC | ? | |
 
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
@@ -714,6 +714,13 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     `init.lech.rc` (pre všetky produkty: `remote_provisioning.hostname` sa pred štartom zygote vyprázdni, rkpd
     potom nič nesťahuje – rovnaké rozhodnutie ako v E2-06 na Cuttlefish; následok: atestačné certifikáty kľúčov
     od Google nie sú) a pre Pixel `tcpdump` v ladiacej zostave na sieťový audit priamo v telefóne.
+
+24. **Mobilná sieť na Pixeli (6. 11. 2026, `11-pixel.sh siet`):** SIM 4ka načítaná, rádio vendora funguje
+    (15 služieb `android.hardware.radio.*`), registrácia pre hovory `IN_SERVICE`, odchádzajúci hovor ide, dáta
+    idú – ale len **EDGE v sieti Orange (národný roaming)**. Príčina: 4ka má vlastnú sieť len LTE/5G a hovory
+    a SMS cez VoLTE; IMS Pixelu (Google) je v `/product`, ktorú GSI nepoužíva, takže telefón bez VoLTE prejde
+    k partnerovi s 2G. SMS 6. 11. neprišla. Riešenie: IMS v úplnej zostave pre Pixel (E2-11b) – zistiť, ako
+    to robí GrapheneOS (súčasti IMS z pôvodného systému Pixelu).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
