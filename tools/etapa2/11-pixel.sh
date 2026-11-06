@@ -226,7 +226,8 @@ cmd_stav() {
     done
   elif fastboot_ready; then
     echo "Telefón je v $(in_fastbootd && echo 'režime fastbootd' || echo 'bootloaderi') (fastboot):"
-    for v in product unlocked current-slot version-bootloader version-baseband snapshot-update-status; do
+    for v in product unlocked current-slot version-bootloader version-baseband snapshot-update-status \
+             slot-successful:a slot-unbootable:a slot-retry-count:a slot-successful:b slot-unbootable:b slot-retry-count:b; do
       printf '  %-24s %s\n' "$v" "$(fb_var "$v")"
     done
   elif adb_unauthorized; then
@@ -324,12 +325,16 @@ cez Android Flash Tool (tools/etapa2/11-pixel.sh spat)."
   echo "4/4 Mažem dáta (fastboot -w) a reštartujem…"
   out=$(fb -w) || { printf '%s\n' "$out" | tail -n 5; die "Dáta sa nepodarilo vymazať – v telefóne: Recovery → Factory reset."; }
   fb reboot >/dev/null
+  mkdir -p "$WORKDIR/pixel"
+  echo "$(date '+%d. %m. %Y %H:%M') LECH OS nahratý do slotu $slot" >> "$WORKDIR/pixel/nahratia.txt"
   cat <<EOF
 
-Hotovo. Telefón štartuje LECH OS:
+Hotovo (slot $slot). Telefón štartuje LECH OS:
   - Najprv ukáže varovanie o odomknutom bootloaderi (oranžové) – je to v poriadku, po chvíli pokračuje.
   - Prvý štart trvá niekoľko minút. Ak sa telefón do 10 minút nedostane na úvodnú obrazovku, pošlite fotku
     obrazovky. Nahratie sa dá zopakovať: tools/etapa2/11-pixel.sh nahrat
+  - Ak sa namiesto LECH OS objaví uvítanie Google ("Vitajte"), LECH OS sa nespustil a telefón sa po niekoľkých
+    pokusoch vrátil k systému Google v druhom slote. Telefón do bootloadera a: tools/etapa2/11-pixel.sh stav
   - Po štarte: Nastavenia → Informácie o telefóne (7× Číslo zostavy) → Systém → Pre vývojárov → Ladenie cez USB,
     povoliť tento počítač a spustiť: tools/etapa2/11-pixel.sh kontrola
   - Bootloader NIKDY nezamykajte s LECH OS (fastboot flashing lock) – telefón by sa nespustil. Zamknúť až
