@@ -12,6 +12,7 @@
 #   stav       what is connected: Android (adb) or bootloader (fastboot), model, version, bootloader state
 #   odomknut   unlock the bootloader – ERASES ALL DATA in the phone (confirm on the phone)
 #   nahrat     flash the LECH OS GSI from 11-zostav-gsi.sh – erases all data
+#   dokoncit   only the last step of nahrat: erase the data and start (when the erase failed)
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   spat       how to go back to the original Google system
 # Environment: LECH_WORK (default ~/lech-work), LECH_KEYS (default ~/lech-keys/test), LECH_PIXEL_DIR (images;
@@ -322,14 +323,48 @@ cez Android Flash Tool (tools/etapa2/11-pixel.sh spat)."
     fi
   fi
   printf '%s\n' "$out" | grep -E '^Finished' || true
-  echo "4/4 Mažem dáta (fastboot -w) a reštartujem…"
-  out=$(fb -w) || { printf '%s\n' "$out" | tail -n 5; die "Dáta sa nepodarilo vymazať – v telefóne: Recovery → Factory reset."; }
-  fb reboot >/dev/null
-  mkdir -p "$WORKDIR/pixel"
-  echo "$(date '+%d. %m. %Y %H:%M') LECH OS nahratý do slotu $slot" >> "$WORKDIR/pixel/nahratia.txt"
+  finish_flash "$slot"
+}
+
+# Erase the data of the previous system. The Pixel 9's fastbootd refuses it ("Error DCK wipe failed",
+# 6. 11. 2026); the bootloader erases userdata and metadata itself.
+wipe_data() {
+  local out
+  if in_fastbootd; then
+    out=$(fb -w) && return 0
+    printf '%s\n' "$out" | grep FAILED | tail -n 1
+    echo "    V režime fastbootd sa dáta vymazať nedajú – mažem ich v bootloaderi…"
+    fb reboot bootloader >/dev/null
+    sleep 8
+    wait_for 120 fastboot_ready || return 1
+    in_fastbootd && return 1
+  fi
+  out=$(fb -w) && return 0
+  printf '%s\n' "$out" | tail -n 3
+  return 1
+}
+recovery_wipe_hint() {
   cat <<EOF
 
-Hotovo (slot $slot). Telefón štartuje LECH OS:
+Vymažte dáta v telefóne ručne (Recovery):
+  1. V bootloaderi tlačidlami hlasitosti vyberte "Recovery mode" a potvrďte tlačidlom Napájanie.
+  2. Keď sa objaví ležiaci Android s nápisom "No command": podržte Napájanie a raz stlačte Zvýšenie hlasitosti.
+  3. Vyberte "Wipe data/factory reset" → "Factory data reset" (tlačidlá hlasitosti, potvrdenie Napájaním).
+  4. Potom "Reboot system now" – spustí sa LECH OS.
+EOF
+}
+finish_flash() {   # slot
+  echo "4/4 Mažem dáta starého systému a reštartujem…"
+  if ! wipe_data; then
+    recovery_wipe_hint
+    die "Dáta sa cez fastboot vymazať nepodarilo. LECH OS je nahratý – chýba len vymazanie dát (postup vyššie)."
+  fi
+  fb reboot >/dev/null
+  mkdir -p "$WORKDIR/pixel"
+  echo "$(date '+%d. %m. %Y %H:%M') LECH OS nahratý do slotu $1" >> "$WORKDIR/pixel/nahratia.txt"
+  cat <<EOF
+
+Hotovo (slot $1). Telefón štartuje LECH OS:
   - Najprv ukáže varovanie o odomknutom bootloaderi (oranžové) – je to v poriadku, po chvíli pokračuje.
   - Prvý štart trvá niekoľko minút. Ak sa telefón do 10 minút nedostane na úvodnú obrazovku, pošlite fotku
     obrazovky. Nahratie sa dá zopakovať: tools/etapa2/11-pixel.sh nahrat
@@ -340,6 +375,20 @@ Hotovo (slot $slot). Telefón štartuje LECH OS:
   - Bootloader NIKDY nezamykajte s LECH OS (fastboot flashing lock) – telefón by sa nespustil. Zamknúť až
     s pôvodným systémom (tools/etapa2/11-pixel.sh spat) alebo s úplnou zostavou LECH OS (úloha E2-12).
 EOF
+}
+
+# Only the last step of `nahrat` (erase data, start) - when the system is flashed and the erase failed.
+cmd_dokoncit() {
+  need_tools
+  if ! fastboot_ready; then
+    echo "Telefón nie je v bootloaderi ani v režime fastbootd. Vypnite ho a zapnite so stlačeným tlačidlom"
+    echo "Zníženie hlasitosti (bootloader). Čakám 3 minúty…"
+    wait_for 180 fastboot_ready || { windows_usb; driver_hint; die "Telefón sa v bootloaderi neukázal."; }
+  fi
+  local slot
+  slot=$(fb_var current-slot)
+  confirm "Vymažú sa dáta v telefóne (slot $slot) a spustí sa LECH OS."
+  finish_flash "$slot"
 }
 
 cmd_kontrola() {
@@ -426,8 +475,9 @@ case "${1:-}" in
   stav) cmd_stav ;;
   odomknut) cmd_odomknut ;;
   nahrat) cmd_nahrat ;;
+  dokoncit) cmd_dokoncit ;;
   kontrola) cmd_kontrola ;;
   spat) cmd_spat ;;
-  -h|--help|"") sed -n '2,20p' "$0" ;;
+  -h|--help|"") sed -n '2,21p' "$0" ;;
   *) die "Neznámy príkaz: $1 (pomoc: --help)" ;;
 esac
