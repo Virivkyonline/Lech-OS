@@ -9,12 +9,13 @@ Optionally, the DNS query log of the phone (adb shell dumpsys dnsresolver queryl
 list (adb shell pm list packages -U) add a section that shows which app asked for which name.
 
 A capture made in the phone itself (real phone, tools/etapa2/11-pixel.sh audit) is analysed with
---siete FILE: the phone's own addresses per network ("label<TAB>address" lines, IPv4 or IPv6) replace the
-Cuttlefish guest networks, and private destinations (router, DNS of the network) count as local network.
+--zariadenie: the phone's own packets are the outgoing ones of the Linux cooked capture (sll.pkttype 4),
+labelled by interface (--rozhrania FILE, "ifindex<TAB>label") or address (--siete FILE, "label<TAB>address").
+Private and carrier-internal destinations (router, DNS of the network) count as local network.
 
 Usage:
     python3 tools/etapa2/analyzuj_audit.py CAPTURE.pcap --out REPORT.md [--allowlist FILE] [--ptr]
-        [--title TEXT] [--strict] [--dns-log FILE --packages FILE] [--siete FILE]
+        [--title TEXT] [--strict] [--dns-log FILE --packages FILE] [--zariadenie [--rozhrania FILE] [--siete FILE]]
 
 Requires tshark (Wireshark command line). Exit code 0 = report written; with --strict, exit code 1
 when a connection is not covered by the allowlist.
@@ -48,27 +49,42 @@ SOURCE_NETS = [
 ]
 
 
-DEVICE_MODE = False  # capture made in the phone itself (--siete)
+DEVICE_MODE = False  # capture made in the phone itself (--zariadenie)
+IFACE_LABELS: dict[str, str] = {}  # interface index -> network of the phone
+CARRIER_NAT = ipaddress.ip_network("100.64.0.0/10")  # carrier-internal (CGNAT): DNS of the mobile operator
 
 
-def use_phone_networks(path: Path) -> None:
-    """Capture from the phone itself: its own addresses (per network) are the sources."""
-    global GUEST_NETS, GUEST_FILTER, SOURCE_NETS, DEVICE_MODE
-    nets = []
+def read_pairs(path: Path) -> list[tuple[str, str]]:
+    pairs = []
     for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip() or line.startswith("#"):
-            continue
-        label, _, addr = line.rpartition("\t")
+        if line.strip() and not line.startswith("#") and "\t" in line:
+            a, _, b = line.partition("\t")
+            pairs.append((a.strip(), b.strip()))
+    return pairs
+
+
+def use_phone_capture(siete: Path | None, rozhrania: Path | None) -> None:
+    """Capture from the phone itself: its outgoing packets are its own traffic, whatever its address."""
+    global GUEST_NETS, GUEST_FILTER, SOURCE_NETS, DEVICE_MODE
+    DEVICE_MODE = True
+    GUEST_FILTER = "sll.pkttype == 4 && (ip || ipv6)"
+    nets = []
+    for label, addr in read_pairs(siete) if siete else []:
         try:
-            nets.append((ipaddress.ip_network(addr.strip(), strict=False), label.strip() or "telefón"))
+            nets.append((ipaddress.ip_network(addr, strict=False), label or "telefón"))
         except ValueError:
             continue
-    if not nets:
-        sys.exit(f"CHYBA: v {path} nie je žiadna adresa telefónu.")
     SOURCE_NETS = nets
     GUEST_NETS = [n for n, _ in nets]
-    GUEST_FILTER = " || ".join(f"{'ip' if n.version == 4 else 'ipv6'}.src == {n}" for n in GUEST_NETS)
-    DEVICE_MODE = True
+    for index, label in read_pairs(rozhrania) if rozhrania else []:
+        IFACE_LABELS[index] = label
+
+
+def source_label(ip: str, ifindex: str) -> str:
+    if DEVICE_MODE and ifindex in IFACE_LABELS:
+        return IFACE_LABELS[ifindex]
+    label = source_net(ip)
+    return "telefón" if DEVICE_MODE and label == "iná" else label
 
 
 def source_net(ip: str) -> str:
@@ -120,7 +136,7 @@ def is_local(ip: str) -> bool:
     addr = ipaddress.ip_address(ip)
     return (addr.is_multicast or addr.is_link_local or ip == "255.255.255.255"
             or any(addr in net for net in GUEST_NETS)
-            or (DEVICE_MODE and (addr.is_private or addr.is_loopback)))
+            or (DEVICE_MODE and (addr.is_private or addr.is_loopback or addr in CARRIER_NAT)))
 
 
 def load_allowlist(path: Path | None) -> list[str]:
@@ -170,7 +186,8 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
     # Pass 2: everything sent by the guest.
     fields = ["frame.time_relative", "ip.src", "ipv6.src", "ip.dst", "ipv6.dst", "ip.proto", "ipv6.nxt",
               "tcp.dstport", "udp.dstport",
-              "dns.flags.response", "dns.qry.name", "tls.handshake.extensions_server_name", "http.host"]
+              "dns.flags.response", "dns.qry.name", "tls.handshake.extensions_server_name", "http.host",
+              "sll.ifindex"]
     destinations: dict[tuple, Destination] = {}
     domains: dict[str, Domain] = {}
     local = defaultdict(int)
@@ -187,7 +204,7 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
 
     for row in run_tshark(pcap, GUEST_FILTER, fields):
         row += [""] * (len(fields) - len(row))
-        t_rel, src4, src6, dst4, dst6, proto4, proto6, tport, uport, dns_resp, qname, sni, host = row
+        t_rel, src4, src6, dst4, dst6, proto4, proto6, tport, uport, dns_resp, qname, sni, host, ifindex = row
         t = max(0.0, float(t_rel or 0))  # "any" captures can be slightly out of order
         duration = max(duration, t)
         # First value only: ICMP errors carry the header of the packet they refer to.
@@ -208,7 +225,7 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
         key = (dst, proto_name, port)
         dest = destinations.setdefault(key, Destination(dst, proto_name, port))
         dest.packets += 1
-        dest.sources.add(source_net(src))
+        dest.sources.add(source_label(src, ifindex.split(",")[0]))
         dest.first_seen = min(dest.first_seen, t)
         if qname and dns_resp in ("0", "False", "false"):
             for q in qname.split(","):
@@ -382,13 +399,15 @@ def main() -> int:
     ap.add_argument("--strict", action="store_true", help="návratový kód 1, ak existuje neznáme spojenie")
     ap.add_argument("--dns-log", type=Path, help="výstup `adb shell dumpsys dnsresolver querylog`")
     ap.add_argument("--packages", type=Path, help="výstup `adb shell pm list packages -U`")
-    ap.add_argument("--siete", type=Path, help="záznam zo samotného telefónu: jeho adresy, riadky 'označenie<TAB>adresa'")
+    ap.add_argument("--zariadenie", action="store_true", help="záznam zo samotného telefónu (tcpdump -i any v telefóne)")
+    ap.add_argument("--rozhrania", type=Path, help="pri --zariadenie: rozhrania telefónu, riadky 'index<TAB>označenie'")
+    ap.add_argument("--siete", type=Path, help="pri --zariadenie: adresy telefónu, riadky 'označenie<TAB>adresa'")
     args = ap.parse_args()
 
     if not args.pcap.exists():
         sys.exit(f"CHYBA: súbor {args.pcap} neexistuje.")
-    if args.siete:
-        use_phone_networks(args.siete)
+    if args.zariadenie or args.siete or args.rozhrania:
+        use_phone_capture(args.siete, args.rozhrania)
     destinations, domains, local, duration = analyze(args.pcap, args.ptr)
     allowlist = load_allowlist(args.allowlist)
     args.out.parent.mkdir(parents=True, exist_ok=True)

@@ -515,10 +515,13 @@ USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LEC
   partíciách `/product` a `/system_ext` (napríklad volania cez LTE – VoLTE – a časť funkcií fotoaparátu), nemusia
   fungovať. Čo funguje a čo nie, zapíšeme do záznamu v časti 6 a použijeme pri E2-11b.
 - **Sieťový audit na Pixeli:** `11-pixel.sh audit [--minuty N]` (predvolene 15 min) – `tcpdump` priamo v telefóne
-  (`adb root`, všetky rozhrania okrem loopback), lebo prevádzka mobilnej siete nejde cez notebook. Adresy telefónu
-  (`ip addr`, Wi-Fi `wlan*`, mobilná sieť `rmnet*`…) dostane `analyzuj_audit.py --siete`; DNS cez router sa ráta
-  ako lokálna sieť, ale názvy domén sa započítajú. Správa: `~/lech-work/pixel/audit-<čas>/sprava.md`, kópia
-  v `C:\lech\pixel`. Pri prvom audite po nahratí: Wi-Fi pripojiť až po spustení auditu.
+  (`adb root`, všetky rozhrania okrem loopback, formát `LINUX_SLL2`), lebo prevádzka mobilnej siete nejde cez
+  notebook. `analyzuj_audit.py --zariadenie` berie ako prevádzku telefónu **odchádzajúce pakety** záznamu
+  (`sll.pkttype` 4) – cudzie zariadenia v Wi-Fi sieti sa nerátajú; sieť (Wi-Fi, mobilná) podľa rozhrania
+  (`ip -o link`). DNS cez router a DNS operátora (CGNAT 100.64.0.0/10) sú lokálna sieť, názvy domén sa však
+  započítajú. Správa: `~/lech-work/pixel/audit-<čas>/sprava.md`, kópia v `C:\lech\pixel`. Pri výpadku USB:
+  `audit --dokoncit`; nové vyhodnotenie bez telefónu: `audit --vyhodnotit`. Pri prvom audite po nahratí: Wi-Fi
+  pripojiť až po spustení auditu.
 
 Čo funguje v LECH OS GSI na Pixeli 9 (doplní sa po teste):
 
@@ -733,6 +736,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     zostavenia, preto sa ráno nespustil `11-zostav-gsi.sh`. Opravy: úloha sa pri prechode na batériu už nezastaví
     (`-DontStopIfGoingOnBatteries`, treba znova spustiť `09-nastav-nocnu-kontrolu.sh`), prerušená kontrola vypne
     Cuttlefish a zapíše súhrn PRERUŠENÉ, zámok drží len `flock -o` (procesy na pozadí ho nezdedia).
+
+26. **Prvý audit na Pixeli 9 (6. 11. 2026 07:33, 15 min):** spojenie USB sa počas auditu prerušilo, záznam sa
+    stiahol cez `audit --dokoncit`: 332 paketov, **žiadny dopyt DNS**, prevádzka takmer len lokálna (ARP, SSDP, mDNS,
+    DHCP). Prvé vyhodnotenie podľa adries telefónu našlo 0 cieľov – adresa mobilnej siete 4ka (CGNAT
+    100.100.x.x) v zozname nebola. Odteraz sa prevádzka telefónu určuje podľa smeru paketov a rozhrania.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

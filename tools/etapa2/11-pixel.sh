@@ -15,8 +15,9 @@
 #   dokoncit   only the last step of nahrat: erase the data and start (when the erase failed)
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   siet       mobile network diagnostics (SIM, radio HAL, registration, errors) to ~/lech-work/pixel
-#   audit [--minuty N] [--dokoncit]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default
-#              15 min); --dokoncit finishes a started audit after the USB connection dropped
+#   audit [--minuty N] [--dokoncit] [--vyhodnotit]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default
+#              15 min); --dokoncit finishes a started audit after the USB connection dropped,
+#              --vyhodnotit evaluates the last downloaded audit again (no phone needed)
 #   slot a|b   make a slot active and start it (when the phone fell back to the Google system in the other slot)
 #   spat       how to go back to the original Google system
 # Environment: LECH_WORK (default ~/lech-work), LECH_KEYS (default ~/lech-keys/test), LECH_PIXEL_DIR (images;
@@ -559,12 +560,20 @@ cmd_audit() {
     case "$1" in
       --minuty) minutes=${2:?chýba počet minút}; shift 2 ;;
       --dokoncit) finish_only=1; shift ;;
-      *) die "Neznámy parameter auditu: $1 (použitie: 11-pixel.sh audit [--minuty N] [--dokoncit])" ;;
+      --vyhodnotit) finish_only=2; shift ;;
+      *) die "Neznámy parameter auditu: $1 (použitie: 11-pixel.sh audit [--minuty N] [--dokoncit] [--vyhodnotit])" ;;
     esac
   done
   case "$minutes" in ''|*[!0-9]*) die "--minuty očakáva celé číslo." ;; esac
-  need_tools
   command -v tshark >/dev/null 2>&1 || die "Chýba tshark – nainštalujte ho: tools/etapa2/01-priprava-notebooku.sh"
+  if [ "$finish_only" -eq 2 ]; then
+    dir=$(ls -td "$WORKDIR"/pixel/audit-* 2>/dev/null | head -n 1)
+    [ -f "${dir:-/nonexistent}/zachytenie.pcap" ] || die "Žiadny stiahnutý záznam auditu v $WORKDIR/pixel."
+    echo "Vyhodnocujem znova $dir"
+    audit_report "$dir"
+    return
+  fi
+  need_tools
   if [ "$finish_only" -eq 1 ]; then
     dir=$(ls -td "$WORKDIR"/pixel/audit-* 2>/dev/null | head -n 1)
     [ -n "$dir" ] || die "Žiadny začatý audit v $WORKDIR/pixel – spustite: tools/etapa2/11-pixel.sh audit"
@@ -581,10 +590,16 @@ cmd_audit() {
   dir="$WORKDIR/pixel/audit-$(date +%Y%m%d-%H%M%S)"
   mkdir -p "$dir" || die "Priečinok $dir sa nedá vytvoriť."
   adb_ shell ip -o addr show > "$dir/adresy-zaciatok.txt"
+  adb_ shell ip -o link show > "$dir/rozhrania-telefonu.txt"
   # setsid + redirects: tcpdump keeps running after this adb shell ends; -U writes every packet at once.
-  adb_ shell "rm -f $remote; setsid tcpdump -i any -s 0 -U -w $remote 'not (net 127.0.0.0/8 or ip6 host ::1)' \
-    </dev/null >/data/local/tmp/lech-audit.log 2>&1 &" >/dev/null
-  sleep 3
+  # LINUX_SLL2 records the interface of every packet (Wi-Fi or mobile network); older tcpdump: without it.
+  local linktype
+  for linktype in "-y LINUX_SLL2" ""; do
+    adb_ shell "rm -f $remote; setsid tcpdump -i any $linktype -s 0 -U -w $remote 'not (net 127.0.0.0/8 or ip6 host ::1)' \
+      </dev/null >/data/local/tmp/lech-audit.log 2>&1 &" >/dev/null
+    sleep 3
+    adb_ shell "pgrep -f lech-audit.pcap" | grep -q '[0-9]' && break
+  done
   if ! adb_ shell "pgrep -f lech-audit.pcap" | grep -q '[0-9]'; then
     adb_ shell cat /data/local/tmp/lech-audit.log | tail -n 5
     die "tcpdump sa v telefóne nespustil."
@@ -631,30 +646,47 @@ audit_finish() {   # audit directory
   running=$(adb_ shell "pgrep -f lech-audit.pcap" | grep -c '[0-9]')
   [ "$running" -eq 0 ] || adb_ shell "pkill -KILL -f lech-audit.pcap" >/dev/null
   adb_ shell ip -o addr show > "$dir/adresy-koniec.txt"
-
-  # The phone's own addresses per network: the sources of its traffic in the capture.
-  cat "$dir/adresy-zaciatok.txt" "$dir/adresy-koniec.txt" | awk '
-    ($3 == "inet" || $3 == "inet6") && / scope global / {
-      iface = $2; addr = $4; sub(/\/.*/, "", addr)
-      if (iface ~ /^wlan/) label = "Wi-Fi telefónu"
-      else if (iface ~ /rmnet|ccmni|seth|clat|v4-/) label = "mobilná sieť telefónu"
-      else if (iface ~ /^tun/) label = "VPN telefónu"
-      else label = "telefón (" iface ")"
-      print label "\t" addr (index(addr, ":") ? "/128" : "/32")
-    }' | sort -u > "$dir/siete.txt"
+  adb_ shell ip -o link show >> "$dir/rozhrania-telefonu.txt"
 
   "${ADB[@]}" exec-out cat "$remote" > "$dir/zachytenie.pcap"
   adb_ shell dumpsys dnsresolver querylog > "$dir/dns-dopyty.txt"
   adb_ shell pm list packages -U > "$dir/balicky.txt"
   adb_ shell "rm -f $remote /data/local/tmp/lech-audit.log" >/dev/null
   [ "$(stat -c %s "$dir/zachytenie.pcap" 2>/dev/null || echo 0)" -gt 24 ] || die "Záznam z telefónu je prázdny ($dir)."
-  [ -s "$dir/siete.txt" ] || die "Telefón počas auditu nemal žiadnu sieť (Wi-Fi ani mobilné dáta) – skúste znova."
+  audit_report "$dir"
+}
+
+# Network of the phone by interface name.
+iface_label() {
+  case "$1" in
+    wlan*) echo "Wi-Fi telefónu" ;;
+    rmnet*|ccmni*|seth*|clat*|v4-*|r_rmnet*) echo "mobilná sieť telefónu" ;;
+    tun*) echo "VPN telefónu" ;;
+    *) echo "telefón ($1)" ;;
+  esac
+}
+
+# Evaluate an audit directory (also again later: audit --vyhodnotit). The phone's own traffic are the outgoing
+# packets of the capture; interfaces (index from `ip -o link/addr`) and addresses only label its networks.
+audit_report() {   # audit directory
+  local dir=$1 index iface line
+  cat "$dir"/adresy-*.txt "$dir"/rozhrania-telefonu.txt 2>/dev/null | while read -r index iface line; do
+    index=${index%:}; iface=${iface%:}; iface=${iface%@*}
+    case "$index" in ''|*[!0-9]*) continue ;; esac
+    printf '%s\t%s\n' "$index" "$(iface_label "$iface")"
+  done | sort -u > "$dir/rozhrania.txt"
+  cat "$dir"/adresy-*.txt 2>/dev/null | awk '
+    ($3 == "inet" || $3 == "inet6") && / scope global / {
+      iface = $2; addr = $4; sub(/\/.*/, "", addr); print iface "\t" addr (index(addr, ":") ? "/128" : "/32")
+    }' | sort -u | while IFS=$'\t' read -r iface line; do
+    printf '%s\t%s\n' "$(iface_label "$iface")" "$line"
+  done > "$dir/siete.txt"
 
   echo
   python3 -B "$REPO_DIR/tools/etapa2/analyzuj_audit.py" "$dir/zachytenie.pcap" --out "$dir/sprava.md" --ptr \
-    --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" --siete "$dir/siete.txt" \
-    --dns-log "$dir/dns-dopyty.txt" --packages "$dir/balicky.txt" \
-    --title "Sieťový audit LECH OS na Pixeli 9 – $(date '+%d. %m. %Y %H:%M')" || die "Vyhodnotenie zlyhalo ($dir)."
+    --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" --zariadenie --rozhrania "$dir/rozhrania.txt" \
+    --siete "$dir/siete.txt" --dns-log "$dir/dns-dopyty.txt" --packages "$dir/balicky.txt" \
+    --title "Sieťový audit LECH OS na Pixeli 9 – $(basename "$dir" | sed 's/^audit-//')" || die "Vyhodnotenie zlyhalo ($dir)."
   echo
   echo "Domény, na ktoré sa telefón pýtal:"
   sed -n '/^## Domény/,/^## /p' "$dir/sprava.md" | grep -E '^\| `' | sed 's/^/  /'
@@ -705,6 +737,6 @@ case "${1:-}" in
   audit) shift; cmd_audit "$@" ;;
   slot) shift; cmd_slot "$@" ;;
   spat) cmd_spat ;;
-  -h|--help|"") sed -n '2,25p' "$0" ;;
+  -h|--help|"") sed -n '2,26p' "$0" ;;
   *) die "Neznámy príkaz: $1 (pomoc: --help)" ;;
 esac
