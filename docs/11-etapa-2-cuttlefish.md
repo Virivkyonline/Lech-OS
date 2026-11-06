@@ -106,6 +106,7 @@ Postup od čistého notebooku po prvý sieťový audit. Skripty sú v [tools/eta
     tools/etapa2/11-pixel.sh odomknut          # odomknutie bootloadera – vymaže telefón
     tools/etapa2/11-pixel.sh nahrat            # nahratie LECH OS – vymaže telefón
     tools/etapa2/11-pixel.sh kontrola          # kontrola po štarte
+    tools/etapa2/11-pixel.sh audit             # sieťový audit priamo v telefóne (Wi-Fi aj mobilná sieť)
     ```
 
 ## 1. Zostavovací počítač
@@ -513,8 +514,11 @@ USB-C a na telefóne povoliť počítač. Odomknutie bootloadera aj nahratie LEC
 - **Očakávané obmedzenia GSI:** varovanie o odomknutom bootloaderi pri štarte; funkcie, ktoré Pixel má v
   partíciách `/product` a `/system_ext` (napríklad volania cez LTE – VoLTE – a časť funkcií fotoaparátu), nemusia
   fungovať. Čo funguje a čo nie, zapíšeme do záznamu v časti 6 a použijeme pri E2-11b.
-- **Sieťový audit na Pixeli** (aj mobilná sieť) príde po prvom štarte – zachytávanie priamo v telefóne, lebo
-  premávka mobilnej siete nejde cez notebook.
+- **Sieťový audit na Pixeli:** `11-pixel.sh audit [--minuty N]` (predvolene 15 min) – `tcpdump` priamo v telefóne
+  (`adb root`, všetky rozhrania okrem loopback), lebo prevádzka mobilnej siete nejde cez notebook. Adresy telefónu
+  (`ip addr`, Wi-Fi `wlan*`, mobilná sieť `rmnet*`…) dostane `analyzuj_audit.py --siete`; DNS cez router sa ráta
+  ako lokálna sieť, ale názvy domén sa započítajú. Správa: `~/lech-work/pixel/audit-<čas>/sprava.md`, kópia
+  v `C:\lech\pixel`. Pri prvom audite po nahratí: Wi-Fi pripojiť až po spustení auditu.
 
 Čo funguje v LECH OS GSI na Pixeli 9 (doplní sa po teste):
 

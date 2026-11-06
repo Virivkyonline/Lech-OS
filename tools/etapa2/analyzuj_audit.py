@@ -8,9 +8,13 @@ headers; IP addresses without a name can optionally be labelled with a reverse D
 Optionally, the DNS query log of the phone (adb shell dumpsys dnsresolver querylog) and its package
 list (adb shell pm list packages -U) add a section that shows which app asked for which name.
 
+A capture made in the phone itself (real phone, tools/etapa2/11-pixel.sh audit) is analysed with
+--siete FILE: the phone's own addresses per network ("label<TAB>address" lines, IPv4 or IPv6) replace the
+Cuttlefish guest networks, and private destinations (router, DNS of the network) count as local network.
+
 Usage:
     python3 tools/etapa2/analyzuj_audit.py CAPTURE.pcap --out REPORT.md [--allowlist FILE] [--ptr]
-        [--title TEXT] [--strict] [--dns-log FILE --packages FILE]
+        [--title TEXT] [--strict] [--dns-log FILE --packages FILE] [--siete FILE]
 
 Requires tshark (Wireshark command line). Exit code 0 = report written; with --strict, exit code 1
 when a connection is not covered by the allowlist.
@@ -42,6 +46,29 @@ SOURCE_NETS = [
     (ipaddress.ip_network("192.168.94.0/23"), "Wi-Fi/router OpenWrt"),
     (ipaddress.ip_network("192.168.96.0/24"), "Wi-Fi/router OpenWrt"),
 ]
+
+
+DEVICE_MODE = False  # capture made in the phone itself (--siete)
+
+
+def use_phone_networks(path: Path) -> None:
+    """Capture from the phone itself: its own addresses (per network) are the sources."""
+    global GUEST_NETS, GUEST_FILTER, SOURCE_NETS, DEVICE_MODE
+    nets = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip() or line.startswith("#"):
+            continue
+        label, _, addr = line.rpartition("\t")
+        try:
+            nets.append((ipaddress.ip_network(addr.strip(), strict=False), label.strip() or "telefón"))
+        except ValueError:
+            continue
+    if not nets:
+        sys.exit(f"CHYBA: v {path} nie je žiadna adresa telefónu.")
+    SOURCE_NETS = nets
+    GUEST_NETS = [n for n, _ in nets]
+    GUEST_FILTER = " || ".join(f"{'ip' if n.version == 4 else 'ipv6'}.src == {n}" for n in GUEST_NETS)
+    DEVICE_MODE = True
 
 
 def source_net(ip: str) -> str:
@@ -92,7 +119,8 @@ def run_tshark(pcap: Path, display_filter: str, fields: list[str]) -> list[list[
 def is_local(ip: str) -> bool:
     addr = ipaddress.ip_address(ip)
     return (addr.is_multicast or addr.is_link_local or ip == "255.255.255.255"
-            or any(addr in net for net in GUEST_NETS))
+            or any(addr in net for net in GUEST_NETS)
+            or (DEVICE_MODE and (addr.is_private or addr.is_loopback)))
 
 
 def load_allowlist(path: Path | None) -> list[str]:
@@ -140,7 +168,8 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
                 ip_names[ip].add(qname)
 
     # Pass 2: everything sent by the guest.
-    fields = ["frame.time_relative", "ip.src", "ip.dst", "ip.proto", "tcp.dstport", "udp.dstport",
+    fields = ["frame.time_relative", "ip.src", "ipv6.src", "ip.dst", "ipv6.dst", "ip.proto", "ipv6.nxt",
+              "tcp.dstport", "udp.dstport",
               "dns.flags.response", "dns.qry.name", "tls.handshake.extensions_server_name", "http.host"]
     destinations: dict[tuple, Destination] = {}
     domains: dict[str, Domain] = {}
@@ -158,20 +187,28 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
 
     for row in run_tshark(pcap, GUEST_FILTER, fields):
         row += [""] * (len(fields) - len(row))
-        t_rel, src, dst, proto, tport, uport, dns_resp, qname, sni, host = row
+        t_rel, src4, src6, dst4, dst6, proto4, proto6, tport, uport, dns_resp, qname, sni, host = row
         t = max(0.0, float(t_rel or 0))  # "any" captures can be slightly out of order
         duration = max(duration, t)
+        # First value only: ICMP errors carry the header of the packet they refer to.
+        src = (src4 or src6).split(",")[0]
+        dst = (dst4 or dst6).split(",")[0]
+        proto = (proto4 or proto6).split(",")[0]
         if not dst:
             continue
-        proto_name = {"6": "TCP", "17": "UDP", "1": "ICMP"}.get(proto.split(",")[0], proto or "?")
+        proto_name = {"6": "TCP", "17": "UDP", "1": "ICMP", "58": "ICMPv6"}.get(proto, proto or "?")
         port = int((tport or uport or "0").split(",")[0] or 0)
+        # DNS queries to the network's own resolver (router) are local traffic, but their names count.
+        if qname and dns_resp in ("0", "False", "false") and (is_local(dst) or port in LOCAL_PORTS):
+            for q in qname.split(","):
+                add_domain(q, "DNS", t)
         if is_local(dst) or port in LOCAL_PORTS:
             local[f"{proto_name}/{port}"] += 1
             continue
         key = (dst, proto_name, port)
         dest = destinations.setdefault(key, Destination(dst, proto_name, port))
         dest.packets += 1
-        dest.sources.add(source_net(src.split(",")[0]))
+        dest.sources.add(source_net(src))
         dest.first_seen = min(dest.first_seen, t)
         if qname and dns_resp in ("0", "False", "false"):
             for q in qname.split(","):
@@ -285,8 +322,10 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
             lines.append("| – | – | – | – | – |")
 
     lines += ["", "## Ciele (IP adresa, protokol, port)", "",
-              "Odkiaľ: sieť virtuálneho telefónu, z ktorej paket odišiel. Prevádzka telefónu cez Wi-Fi odchádza "
-              "cez virtuálny router OpenWrt, preto má rovnaké označenie ako prevádzka samotného routra.", ""]
+              ("Odkiaľ: sieť telefónu (Wi-Fi, mobilná sieť), z ktorej paket odišiel. Záznam je priamo z telefónu."
+               if DEVICE_MODE else
+               "Odkiaľ: sieť virtuálneho telefónu, z ktorej paket odišiel. Prevádzka telefónu cez Wi-Fi odchádza "
+               "cez virtuálny router OpenWrt, preto má rovnaké označenie ako prevádzka samotného routra."), ""]
     header = "| IP adresa | Protokol/port | Názvy | Odkiaľ | Pakety | Prvýkrát |" + (" Stav |" if use_allow else "")
     lines += [header, "|" + "---|" * (7 if use_allow else 6)]
     dest_rows = []
@@ -306,7 +345,8 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
     if not destinations:
         lines.append("| – | – | – | – | – | – |" + (" – |" if use_allow else ""))
 
-    lines += ["", "## Lokálna prevádzka (neopúšťa notebook)", ""]
+    lines += ["", "## Lokálna sieť (router, DNS siete, multicast)" if DEVICE_MODE
+              else "## Lokálna prevádzka (neopúšťa notebook)", ""]
     if local:
         lines += ["| Protokol/port | Pakety |", "|---|---|"]
         lines += [f"| {k} | {v} |" for k, v in sorted(local.items())]
@@ -342,10 +382,13 @@ def main() -> int:
     ap.add_argument("--strict", action="store_true", help="návratový kód 1, ak existuje neznáme spojenie")
     ap.add_argument("--dns-log", type=Path, help="výstup `adb shell dumpsys dnsresolver querylog`")
     ap.add_argument("--packages", type=Path, help="výstup `adb shell pm list packages -U`")
+    ap.add_argument("--siete", type=Path, help="záznam zo samotného telefónu: jeho adresy, riadky 'označenie<TAB>adresa'")
     args = ap.parse_args()
 
     if not args.pcap.exists():
         sys.exit(f"CHYBA: súbor {args.pcap} neexistuje.")
+    if args.siete:
+        use_phone_networks(args.siete)
     destinations, domains, local, duration = analyze(args.pcap, args.ptr)
     allowlist = load_allowlist(args.allowlist)
     args.out.parent.mkdir(parents=True, exist_ok=True)

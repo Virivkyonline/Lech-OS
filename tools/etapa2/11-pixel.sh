@@ -15,6 +15,7 @@
 #   dokoncit   only the last step of nahrat: erase the data and start (when the erase failed)
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   siet       mobile network diagnostics (SIM, radio HAL, registration, errors) to ~/lech-work/pixel
+#   audit [--minuty N]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default 15 min)
 #   spat       how to go back to the original Google system
 # Environment: LECH_WORK (default ~/lech-work), LECH_KEYS (default ~/lech-keys/test), LECH_PIXEL_DIR (images;
 #   default /mnt/c/lech/pixel in WSL). In WSL the tools and the driver live in C:\lech (fixed paths).
@@ -528,6 +529,92 @@ cmd_siet() {
   echo "Pošlite snímku tohto súhrnu; ak treba, aj: tail -n 60 $out"
 }
 
+# Network audit in the phone itself: tcpdump on all interfaces (Wi-Fi and mobile network, which does not pass
+# the notebook), DNS queries by app, evaluated by analyzuj_audit.py --siete against spec/povolene-spojenia.txt.
+cmd_audit() {
+  local minutes=15 dir remote=/data/local/tmp/lech-audit.pcap m running
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --minuty) minutes=${2:?chýba počet minút}; shift 2 ;;
+      *) die "Neznámy parameter auditu: $1 (použitie: 11-pixel.sh audit [--minuty N])" ;;
+    esac
+  done
+  case "$minutes" in ''|*[!0-9]*) die "--minuty očakáva celé číslo." ;; esac
+  need_tools
+  command -v tshark >/dev/null 2>&1 || die "Chýba tshark – nainštalujte ho: tools/etapa2/01-priprava-notebooku.sh"
+  wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
+  [ -n "$(prop ro.lech.version)" ] || die "V telefóne nebeží LECH OS – audit je pre LECH OS (11-pixel.sh nahrat)."
+  if [ "$(adb_ shell id -u | head -n 1)" != 0 ]; then
+    adb_ root >/dev/null
+    sleep 4
+    wait_for 60 adb_ready || die "Telefón sa po adb root neozval."
+  fi
+  [ "$(adb_ shell id -u | head -n 1)" = 0 ] || die "adb root nefunguje – audit potrebuje ladiacu zostavu (userdebug)."
+  adb_ shell 'command -v tcpdump' | grep -q tcpdump || \
+    die "V telefóne nie je tcpdump – nahrajte novšiu zostavu: tools/etapa2/11-zostav-gsi.sh a 11-pixel.sh nahrat"
+
+  dir="$WORKDIR/pixel/audit-$(date +%Y%m%d-%H%M%S)"
+  mkdir -p "$dir" || die "Priečinok $dir sa nedá vytvoriť."
+  adb_ shell ip -o addr show > "$dir/adresy-zaciatok.txt"
+  # setsid + redirects: tcpdump keeps running after this adb shell ends; -U writes every packet at once.
+  adb_ shell "rm -f $remote; setsid tcpdump -i any -s 0 -U -w $remote 'not (net 127.0.0.0/8 or ip6 host ::1)' \
+    </dev/null >/data/local/tmp/lech-audit.log 2>&1 &" >/dev/null
+  sleep 3
+  if ! adb_ shell "pgrep -f lech-audit.pcap" | grep -q '[0-9]'; then
+    adb_ shell cat /data/local/tmp/lech-audit.log | tail -n 5
+    die "tcpdump sa v telefóne nespustil."
+  fi
+  cat <<EOF
+
+Zachytávam sieťovú prevádzku telefónu $minutes min (Wi-Fi aj mobilná sieť). Teraz:
+  - zapnite Wi-Fi alebo mobilné dáta (pri prvom audite po nahratí: pripojte Wi-Fi až teraz),
+  - telefón potom nechajte ležať, nič nespúšťajte – audit meria, čo robí sám.
+Skončiť skôr: Enter.
+EOF
+  for (( m = minutes; m > 0; m-- )); do
+    printf '\r  zostáva %3d min ' "$m"
+    if [ -t 0 ]; then read -r -t 60 && break; else sleep 60; fi
+  done
+  printf '\r  záznam končí…    \n'
+  adb_ shell "pkill -INT -f lech-audit.pcap" >/dev/null
+  sleep 3
+  running=$(adb_ shell "pgrep -f lech-audit.pcap" | grep -c '[0-9]')
+  [ "$running" -eq 0 ] || adb_ shell "pkill -KILL -f lech-audit.pcap" >/dev/null
+  adb_ shell ip -o addr show > "$dir/adresy-koniec.txt"
+
+  # The phone's own addresses per network: the sources of its traffic in the capture.
+  cat "$dir/adresy-zaciatok.txt" "$dir/adresy-koniec.txt" | awk '
+    ($3 == "inet" || $3 == "inet6") && / scope global / {
+      iface = $2; addr = $4; sub(/\/.*/, "", addr)
+      if (iface ~ /^wlan/) label = "Wi-Fi telefónu"
+      else if (iface ~ /rmnet|ccmni|seth|clat|v4-/) label = "mobilná sieť telefónu"
+      else if (iface ~ /^tun/) label = "VPN telefónu"
+      else label = "telefón (" iface ")"
+      print label "\t" addr (index(addr, ":") ? "/128" : "/32")
+    }' | sort -u > "$dir/siete.txt"
+
+  "${ADB[@]}" exec-out cat "$remote" > "$dir/zachytenie.pcap"
+  adb_ shell dumpsys dnsresolver querylog > "$dir/dns-dopyty.txt"
+  adb_ shell pm list packages -U > "$dir/balicky.txt"
+  adb_ shell "rm -f $remote /data/local/tmp/lech-audit.log" >/dev/null
+  [ "$(stat -c %s "$dir/zachytenie.pcap" 2>/dev/null || echo 0)" -gt 24 ] || die "Záznam z telefónu je prázdny ($dir)."
+  [ -s "$dir/siete.txt" ] || die "Telefón počas auditu nemal žiadnu sieť (Wi-Fi ani mobilné dáta) – skúste znova."
+
+  echo
+  python3 -B "$REPO_DIR/tools/etapa2/analyzuj_audit.py" "$dir/zachytenie.pcap" --out "$dir/sprava.md" --ptr \
+    --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" --siete "$dir/siete.txt" \
+    --dns-log "$dir/dns-dopyty.txt" --packages "$dir/balicky.txt" \
+    --title "Sieťový audit LECH OS na Pixeli 9 – $(date '+%d. %m. %Y %H:%M')" || die "Vyhodnotenie zlyhalo ($dir)."
+  echo
+  echo "Domény, na ktoré sa telefón pýtal:"
+  sed -n '/^## Domény/,/^## /p' "$dir/sprava.md" | grep -E '^\| `' | sed 's/^/  /'
+  if [ "$WINDOWS" -eq 1 ]; then
+    mkdir -p /mnt/c/lech/pixel && cp "$dir/sprava.md" "/mnt/c/lech/pixel/$(basename "$dir").md" && \
+      echo "Správa aj vo Windows: C:\\lech\\pixel\\$(basename "$dir").md"
+  fi
+  echo "Správa: $dir/sprava.md (záznam prevádzky: $dir/zachytenie.pcap)"
+}
+
 cmd_spat() {
   cat <<EOF
 Návrat k pôvodnému systému Google:
@@ -548,7 +635,8 @@ case "${1:-}" in
   dokoncit) cmd_dokoncit ;;
   kontrola) cmd_kontrola ;;
   siet) cmd_siet ;;
+  audit) shift; cmd_audit "$@" ;;
   spat) cmd_spat ;;
-  -h|--help|"") sed -n '2,22p' "$0" ;;
+  -h|--help|"") sed -n '2,23p' "$0" ;;
   *) die "Neznámy príkaz: $1 (pomoc: --help)" ;;
 esac
