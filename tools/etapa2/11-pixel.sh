@@ -591,6 +591,7 @@ cmd_audit() {
   mkdir -p "$dir" || die "Priečinok $dir sa nedá vytvoriť."
   adb_ shell ip -o addr show > "$dir/adresy-zaciatok.txt"
   adb_ shell ip -o link show > "$dir/rozhrania-telefonu.txt"
+  adb_ shell dumpsys connectivity > "$dir/connectivity-zaciatok.txt"
   # setsid + redirects: tcpdump keeps running after this adb shell ends; -U writes every packet at once.
   # LINUX_SLL2 records the interface of every packet (Wi-Fi or mobile network); older tcpdump: without it.
   local linktype
@@ -647,6 +648,7 @@ audit_finish() {   # audit directory
   [ "$running" -eq 0 ] || adb_ shell "pkill -KILL -f lech-audit.pcap" >/dev/null
   adb_ shell ip -o addr show > "$dir/adresy-koniec.txt"
   adb_ shell ip -o link show >> "$dir/rozhrania-telefonu.txt"
+  adb_ shell dumpsys connectivity > "$dir/connectivity-koniec.txt"
 
   "${ADB[@]}" exec-out cat "$remote" > "$dir/zachytenie.pcap"
   adb_ shell dumpsys dnsresolver querylog > "$dir/dns-dopyty.txt"
@@ -682,8 +684,15 @@ audit_report() {   # audit directory
     printf '%s\t%s\n' "$(iface_label "$iface")" "$line"
   done > "$dir/siete.txt"
 
+  # DNS servers the networks gave the phone (LinkProperties "DnsAddresses: [ /84.245.112.80,/... ]").
+  # Older audits have no connectivity dump: a dns-siete.txt written by hand is kept.
+  if ls "$dir"/connectivity-*.txt >/dev/null 2>&1; then
+    cat "$dir"/connectivity-*.txt | grep -oE 'DnsAddresses: \[[^]]*\]' | grep -oE '/[0-9a-fA-F:.]+' \
+      | tr -d / | sort -u > "$dir/dns-siete.txt"
+  fi
   echo
   python3 -B "$REPO_DIR/tools/etapa2/analyzuj_audit.py" "$dir/zachytenie.pcap" --out "$dir/sprava.md" --ptr \
+    --dns-siete "$dir/dns-siete.txt" \
     --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" --zariadenie --rozhrania "$dir/rozhrania.txt" \
     --siete "$dir/siete.txt" --dns-log "$dir/dns-dopyty.txt" --packages "$dir/balicky.txt" \
     --title "Sieťový audit LECH OS na Pixeli 9 – $(basename "$dir" | sed 's/^audit-//')" || die "Vyhodnotenie zlyhalo ($dir)."

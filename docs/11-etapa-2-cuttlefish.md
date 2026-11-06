@@ -586,7 +586,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-08 | Server aktualizácií v0 | Cuttlefish nainštaluje aktualizáciu z nášho servera (A/B) | **Hotové 5. 11. 2026 (v0)** – `0.1.0-dev → 0.1.0-dev-ota`, slot `_a → _b`, balík podpísaný kľúčom LECH zo servera `ota_server.py` ([časť 4e](#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)). E2-08b: server v EÚ, aplikácia na aktualizácie, podpis celej zostavy; so serverom aj kontrola pripojenia, doména na overenie DNS a kópia zoznamu CT (z E2-06). Rozhodnuté 5. 11. 2026: doména `lech-web.sk` (Websupport, podadresy), server IONOS (Ubuntu 24.04, nginx) |
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | **Hotové 5. 11. 2026 (v0)** – `09-nocna-kontrola.sh` na notebooku, každú noc o 02:30 z Plánovača úloh Windows ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); prvý beh (ručne): všetkých 5 krokov OK. Ďalej: CI na serveri v EÚ, kontrola každej zmeny pred zlúčením |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
-| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **E2-11a hotové 6. 11. 2026** – LECH OS ako GSI beží na Pixeli 9 (vendor Android 17 `CP3A.261005.005`): identita, kľúče LECH, NTP aj animácia overené (`11-pixel.sh kontrola`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)). Zostáva: test funkcií (SIM, Wi-Fi, fotoaparát…), sieťový audit na telefóne, RKP Google z vendora Pixelu; E2-11b: úplná zostava so stromami zariadenia z GrapheneOS |
+| E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **E2-11a hotové 6. 11. 2026** – LECH OS ako GSI beží na Pixeli 9 (vendor Android 17 `CP3A.261005.005`): identita, kľúče LECH, NTP aj animácia overené (`11-pixel.sh kontrola`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)). Bez RKP servera Google (`init.lech.rc`); sieťový audit na telefóne: žiadne spojenie na Google (5. a 6. audit). Zostáva: SMS a VoLTE (IMS), verzia „Baklava“ namiesto 17; E2-11b: úplná zostava so stromami zariadenia z GrapheneOS |
 | E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
 
 ### Záznam z prvého spustenia (4. 11. 2026)
@@ -741,6 +741,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     stiahol cez `audit --dokoncit`: 332 paketov, **žiadny dopyt DNS**, prevádzka takmer len lokálna (ARP, SSDP, mDNS,
     DHCP). Prvé vyhodnotenie podľa adries telefónu našlo 0 cieľov – adresa mobilnej siete 4ka (CGNAT
     100.100.x.x) v zozname nebola. Odteraz sa prevádzka telefónu určuje podľa smeru paketov a rozhrania.
+
+27. **Sieťový audit LECH OS na Pixeli 9 (6. 11. 2026):** vyhodnotené podľa smeru paketov – 1. audit (15 min)
+    aj 2. audit (5 min, Wi-Fi aj mobilné dáta): **žiadny dopyt DNS, žiadne spojenie na Google**; jediné ciele mimo
+    lokálnej siete sú DNS servery 4ka `84.245.112.80/.81` na TCP/853 (Android skúša šifrované DNS). Zhrnutie v
+    [audit/README.md](../audit/README.md) (5. a 6. audit). Audit odteraz povolí DNS servery, ktoré dala sieť.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

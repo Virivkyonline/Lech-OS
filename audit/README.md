@@ -13,6 +13,8 @@ v repozitári nie sú – zostávajú na počítači, na ktorom audit prebehol.
 | 4. 11. 2026 (2.) | To isté, DNS mobilnej siete opravené na Quad9 | To isté | Android: **7 cieľov Google**, rovnakých ako v 1. audite – [úplná správa](2026-11-04-audit-2/sprava.md) |
 | 5. 11. 2026 (3.) | **LECH OS 0.1.0-dev** (`lech_cf_x86_64_only_phone`, vlastná zostava s úpravami E2-06) | Notebook, WSL, Cuttlefish z vlastnej zostavy | **1 cieľ Google** (`g.co`) namiesto 7 – pozri nižšie |
 | 5. 11. 2026 (4.) | LECH OS 0.1.0-dev, aj s úpravou `g.co` | To isté | **Žiadne spojenie na Google.** Telefón: len DNS testovacieho prostredia a `europe.pool.ntp.org` – pozri nižšie |
+| 6. 11. 2026 (5.) | LECH OS 0.1.0-dev ako GSI (`lech_gsi_arm64`) | **Pixel 9** (vendor Android 17), SIM 4ka, domáca Wi-Fi; záznam priamo v telefóne (`11-pixel.sh audit`), 15 min | 332 paketov, **žiadny dopyt DNS**; mimo lokálnej siete len DNS operátora – pozri nižšie |
+| 6. 11. 2026 (6.) | To isté | To isté, počas auditu zapnutá Wi-Fi aj mobilné dáta, 5 min | **2 ciele, oba DNS servery 4ka (TCP/853).** Žiadne spojenie na Google ani inam |
 
 ## 1. audit – 4. 11. 2026, čisté AOSP
 
@@ -155,4 +157,30 @@ sa v rovnakom teste spojilo so 7 cieľmi Google (2. audit).
 
 Ostáva (nie je to spojenie telefónu): DNS `8.8.8.8` virtuálneho routra OpenWrt – dá sa zmeniť v konfigurácii
 routra v testovacom prostredí (`external/openwrt-prebuilts`), ak bude treba úplne čistú správu.
+
+## 5. a 6. audit – 6. 11. 2026, LECH OS na Pixeli 9 (E2-11a)
+
+Prvé audity na skutočnom telefóne: LECH OS 0.1.0-dev ako GSI (`lech_gsi_arm64`) na Pixeli 9 s pôvodným vendorom
+(Android 17), bez vypnutého servera RKP Google v systéme (`init.lech.rc`), SIM 4ka a domáca Wi-Fi. Prevádzku
+zaznamenal `tcpdump` priamo v telefóne (aj mobilná sieť, ktorá nejde cez notebook), vyhodnotenie
+`analyzuj_audit.py --zariadenie`: prevádzka telefónu = jeho odchádzajúce pakety, cudzie zariadenia vo Wi-Fi sa
+nerátajú. Správy a záznamy sú na notebooku v `~/lech-work/pixel/audit-20261106-073318` a `…-075533`.
+
+| Cieľ | Protokol/port | Odkiaľ | Pakety | Čo to je |
+|------|---------------|--------|-------:|----------|
+| `84.245.112.80`, `84.245.112.81` | TCP/853 | mobilná sieť telefónu | 6 + 6 | DNS servery mobilnej siete 4ka: Android skúša šifrované DNS (režim Súkromné DNS – automaticky) na DNS serveri, ktorý dala sieť; operátor ho nepodporuje |
+| router Wi-Fi, multicast | DHCP, ARP, ICMPv6 | Wi-Fi telefónu | – | lokálna sieť |
+
+### Zistenie
+
+**Na skutočnom telefóne sa LECH OS v pokoji nespojí so žiadnym serverom na internete** – ani Google, ani inde.
+Za 15 minút (5. audit) a 5 minút s Wi-Fi aj mobilnými dátami (6. audit) telefón neposlal ani jeden dopyt DNS;
+jediné spojenia mimo lokálnej siete sú pokusy o šifrované DNS na DNS serveri mobilnej siete. Server času sa v
+auditoch neobjavil – čas sa nastavil pri štarte pred auditom (sieťový čas sa obnovuje raz za deň).
+
+Poznámky:
+- DNS servery, ktoré telefónu dajú siete (DHCP, mobilný operátor), audit odteraz zisťuje z telefónu
+  (`dumpsys connectivity`) a označí ich ako „DNS siete“ (povolené) – v týchto dvoch auditoch sú ešte neznáme.
+- Audit prvého spustenia (hneď po nahratí, pred pripojením Wi-Fi) na Pixeli ešte chýba: telefón mal SIM a
+  mobilné dáta už pri štarte, kým audit nebežal.
 

@@ -51,6 +51,7 @@ SOURCE_NETS = [
 
 DEVICE_MODE = False  # capture made in the phone itself (--zariadenie)
 IFACE_LABELS: dict[str, str] = {}  # interface index -> network of the phone
+NETWORK_DNS: set[str] = set()  # DNS servers the networks gave the phone (DHCP, mobile operator)
 CARRIER_NAT = ipaddress.ip_network("100.64.0.0/10")  # carrier-internal (CGNAT): DNS of the mobile operator
 
 
@@ -78,6 +79,14 @@ def use_phone_capture(siete: Path | None, rozhrania: Path | None) -> None:
     GUEST_NETS = [n for n, _ in nets]
     for index, label in read_pairs(rozhrania) if rozhrania else []:
         IFACE_LABELS[index] = label
+
+
+def use_network_dns(path: Path) -> None:
+    for line in path.read_text(encoding="utf-8").split():
+        try:
+            NETWORK_DNS.add(str(ipaddress.ip_address(line.strip().lstrip("/"))))
+        except ValueError:
+            continue
 
 
 def source_label(ip: str, ifindex: str) -> str:
@@ -240,6 +249,8 @@ def analyze(pcap: Path, use_ptr: bool) -> tuple[dict, dict, dict, float]:
 
     for dest in destinations.values():
         dest.names |= ip_names.get(dest.ip, set())
+        if dest.ip in NETWORK_DNS and dest.port in (53, 853):
+            dest.names.add("DNS siete")
         if use_ptr and not dest.names:
             name = ptr(dest.ip)
             if name:
@@ -352,7 +363,10 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
         row = f"| {dest.ip} | {dest.proto}/{dest.port} | {names} | {origin} | {dest.packets} | {fmt_time(dest.first_seen)} |"
         ok = None
         if use_allow:
-            ok = allowed({n.replace(" (ptr)", "") for n in dest.names}, dest.ip, allowlist)
+            # The DNS server of the network the phone is in (router, mobile operator) is always allowed:
+            # without it the phone resolves no name; on Cuttlefish it is 9.9.9.9 in the allowlist.
+            ok = (dest.ip in NETWORK_DNS and dest.port in (53, 853)) or \
+                allowed({n.replace(" (ptr)", "") for n in dest.names}, dest.ip, allowlist)
             unknown += 0 if ok else 1
             row += " povolené |" if ok else " **NEZNÁME** |"
         lines.append(row)
@@ -402,12 +416,15 @@ def main() -> int:
     ap.add_argument("--zariadenie", action="store_true", help="záznam zo samotného telefónu (tcpdump -i any v telefóne)")
     ap.add_argument("--rozhrania", type=Path, help="pri --zariadenie: rozhrania telefónu, riadky 'index<TAB>označenie'")
     ap.add_argument("--siete", type=Path, help="pri --zariadenie: adresy telefónu, riadky 'označenie<TAB>adresa'")
+    ap.add_argument("--dns-siete", type=Path, help="DNS servery, ktoré telefónu dali siete (adresy), sú povolené")
     args = ap.parse_args()
 
     if not args.pcap.exists():
         sys.exit(f"CHYBA: súbor {args.pcap} neexistuje.")
     if args.zariadenie or args.siete or args.rozhrania:
         use_phone_capture(args.siete, args.rozhrania)
+    if args.dns_siete and args.dns_siete.exists():
+        use_network_dns(args.dns_siete)
     destinations, domains, local, duration = analyze(args.pcap, args.ptr)
     allowlist = load_allowlist(args.allowlist)
     args.out.parent.mkdir(parents=True, exist_ok=True)
