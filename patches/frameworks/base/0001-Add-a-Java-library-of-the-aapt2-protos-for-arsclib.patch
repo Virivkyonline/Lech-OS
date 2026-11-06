@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Fri, 6 Nov 2026 12:00:00 +0100
+Subject: [PATCH] Add a Java library of the aapt2 protos for arsclib
+
+tools/arsclib of GrapheneOS reads compiled resources with the Java classes
+of the aapt2 protos (module aapt2_proto_java, as in GrapheneOS). adevtool
+uses arsclib for the overlays when it generates the vendor module of the
+Pixel 9 for LECH OS (task E2-11b, manifests/lech-pixel.xml).
+---
+ tools/aapt2/Android.bp | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/tools/aapt2/Android.bp b/tools/aapt2/Android.bp
+index 687e7a4..0285850 100644
+--- a/tools/aapt2/Android.bp
++++ b/tools/aapt2/Android.bp
+@@ -20,2 +20,14 @@ package {
+ 
++// LECH OS: Java classes of the aapt2 protos (Resources.proto…), as in GrapheneOS. tools/arsclib of GrapheneOS
++// needs them; adevtool uses arsclib for the overlays of the Pixel (task E2-11b, manifests/lech-pixel.xml).
++java_library_host {
++    name: "aapt2_proto_java",
++    srcs: [
++        "*.proto",
++    ],
++    proto: {
++        type: "full",
++    },
++}
++
+ toolSources = [
+-- 
+2.43.0
+
