@@ -140,11 +140,12 @@ if [ "$PREPARE" -eq 0 ]; then
   echo "Úpravy LECH OS…"
   AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/aplikuj-zaplaty.sh" || exit 1
 fi
-# Platform SELinux policy of the AOSP build (step 5, or of any earlier build: the newest one); the policy of the
-# Pixel is computed against it, not against the GrapheneOS one in vendor/state.
-plat_cil=$(ls -t "$AOSP_DIR/out_adevtool_deps/plat_sepolicy.cil" \
-  "$AOSP_DIR"/out/target/product/*/system/etc/selinux/plat_sepolicy.cil 2>/dev/null | head -n 1)
-[ -n "$plat_cil" ] || die "Chýba platformová politika SELinux zostavy AOSP (plat_sepolicy.cil) – spustite skript bez --len-generovat."
+# Platform SELinux policy of the AOSP build (LECH_PLAT_CIL, set by 12-zostav-pixel.sh with the policy of the Pixel
+# build itself; otherwise step 5 or any earlier build, the newest one). The policy of the Pixel is computed against
+# it, not against the GrapheneOS one in vendor/state; 12-zostav-pixel.sh compares it with its own release.
+plat_cil=${LECH_PLAT_CIL:-$(ls -t "$AOSP_DIR/out_adevtool_deps/plat_sepolicy.cil" \
+  "$AOSP_DIR"/out/target/product/*/system/etc/selinux/plat_sepolicy.cil 2>/dev/null | head -n 1)}
+[ -f "$plat_cil" ] || die "Chýba platformová politika SELinux zostavy AOSP (plat_sepolicy.cil) – spustite skript bez --len-generovat."
 echo "6/6 adevtool generate-all -d $DEVICE (stiahne pôvodný obraz Google, ~3 GB, potom ho rozbalí)…"
 echo "    platformová politika SELinux: ${plat_cil#"$AOSP_DIR"/}"
 log="$WORKDIR/pixel-adevtool-$(date +%Y%m%d-%H%M%S).log"
@@ -160,6 +161,7 @@ log="$WORKDIR/pixel-adevtool-$(date +%Y%m%d-%H%M%S).log"
 status=${PIPESTATUS[0]}
 [ "$status" -eq 0 ] || die "adevtool zlyhal – log: $log (pošlite koniec výpisu)."
 [ -f "$AOSP_DIR/vendor/google_devices/$DEVICE/$DEVICE.mk" ] || die "adevtool skončil, ale chýba vendor/google_devices/$DEVICE/$DEVICE.mk."
+cp "$plat_cil" "$WORKDIR/pixel-plat_sepolicy.cil"   # the platform policy this module was generated against
 echo
 echo "Hotovo: $AOSP_DIR/vendor/google_devices/$DEVICE ($(du -sh "$AOSP_DIR/vendor/google_devices/$DEVICE" | cut -f1))."
 echo "Ďalší krok: zostavenie LECH OS pre Pixel 9 (tools/etapa2/12-zostav-pixel.sh)."

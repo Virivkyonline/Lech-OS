@@ -28,6 +28,11 @@ TARGET_BOARD_KERNEL_HEADERS :=
 # so the system already compiled for the GSI is reused (patches/vendor/adevtool/0002). Release builds: false.
 LECH_PIXEL_GENERIC_CPU := true
 
+# Mainline modules from source, so the LECH patches in packages/modules apply (as in lech_gsi_arm64.mk).
+# The release configuration is cp2a (tools/etapa2/12-zostav-pixel.sh): vendor API level 202604 of the stock
+# vendor files.
+MODULE_BUILD_FROM_SOURCE := true
+
 $(call inherit-product, vendor/google_devices/tokay/tokay.mk)
 $(call inherit-product, vendor/lech/config/common.mk)
 

@@ -11,7 +11,9 @@
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_CLOCK_RETRIES (default 5),
 #   LECH_PRODUCT (default aosp_cf_x86_64_only_phone), LECH_RELEASE (force a release config),
 #   LECH_VARIANT (default userdebug), LECH_RERUN (command suggested after a failure; set by 06-zostav-lech.sh),
-#   LECH_TARGET_SAVE (file for the chosen target; default the Cuttlefish one, ~/lech-work/lunch-target)
+#   LECH_TARGET_SAVE (file for the chosen target; default the Cuttlefish one, ~/lech-work/lunch-target),
+#   LECH_RELEASE_ONLY (with LECH_RELEASE: no other release configuration is tried),
+#   LECH_M_TARGETS (build only these targets instead of the whole product, e.g. plat_sepolicy.cil)
 
 set -uo pipefail   # no -e: build/envsetup.sh and lunch are not written for errexit
 
@@ -36,7 +38,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --ulohy) JOBS=${2:?chýba počet úloh}; shift 2 ;;
     --spustit) START=1; shift ;;
-    -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,16p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
@@ -57,6 +59,7 @@ echo "Pripravujem prostredie zostavenia (build/envsetup.sh)…"
 source build/envsetup.sh >>"$LOG" 2>&1 || die "build/envsetup.sh zlyhal – pozri $LOG"
 
 release_candidates() {
+  if [ -n "${LECH_RELEASE:-}" ] && [ -n "${LECH_RELEASE_ONLY:-}" ]; then echo "$LECH_RELEASE"; return; fi
   [ -n "${LECH_RELEASE:-}" ] && echo "$LECH_RELEASE"
   [ -f "$TARGET_FILE" ] && sed -n "s/^${PRODUCT}-\(.*\)-${VARIANT}\$/\1/p" "$TARGET_FILE"
   echo trunk_staging
@@ -77,7 +80,12 @@ done
 echo "$TARGET" > "$TARGET_FILE"
 echo "Cieľ zostavenia: $TARGET"
 
-echo "Zostavujem (${JOBS} súbežných úloh). Prvé zostavenie AOSP trvá na notebooku niekoľko hodín, ďalšie sú kratšie; log: $LOG"
+read -r -a M_TARGETS <<< "${LECH_M_TARGETS:-}"
+if [ "${#M_TARGETS[@]}" -gt 0 ]; then
+  echo "Zostavujem len ${M_TARGETS[*]} (${JOBS} súbežných úloh); log: $LOG"
+else
+  echo "Zostavujem (${JOBS} súbežných úloh). Prvé zostavenie AOSP trvá na notebooku niekoľko hodín, ďalšie sú kratšie; log: $LOG"
+fi
 SECONDS=0
 # Under heavy load the WSL clock can step backwards; the build then rejects freshly written files
 # ("future mtime"). Nothing is wrong with the build, so retry automatically a few times.
@@ -85,7 +93,7 @@ MAX_CLOCK_RETRIES=${LECH_CLOCK_RETRIES:-5}
 attempt=0
 while :; do
   start_bytes=$(stat -c %s "$LOG" 2>/dev/null || echo 0)
-  m -j"$JOBS" 2>&1 | tee -a "$LOG"
+  m -j"$JOBS" ${M_TARGETS[@]+"${M_TARGETS[@]}"} 2>&1 | tee -a "$LOG"
   status=${PIPESTATUS[0]}
   [ "$status" -eq 0 ] && break
   if tail -c +$(( start_bytes + 1 )) "$LOG" | grep -aq "future mtime" && [ "$attempt" -lt "$MAX_CLOCK_RETRIES" ]; then

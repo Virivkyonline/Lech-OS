@@ -577,7 +577,7 @@ bez testovacej obrazovky GrapheneOS, ktorá potrebuje rozhrania GmsCompat.
 | Krok | Skript | Trvanie (odhad) |
 |------|--------|-----------------|
 | Príprava | `12-priprav-pixel.sh`: Node.js 24 a yarn do `~/lech-work/node` (oficiálna zostava, overený súčet), projekty GrapheneOS (`repo sync` len ich), záplaty, `yarn install`, nástroje pre adevtool v bežnom `out/`, `adevtool generate-all -d tokay` (stiahne obraz Google ~3 GB) | 1–2 h (nová analýza Soong) |
-| Zostavenie | `12-zostav-pixel.sh`: produkt `lech_tokay` ([vendor/lech/products/lech_tokay.mk](../vendor/lech/products/lech_tokay.mk)), balík `C:\lech\pixel-uplne\lech-tokay-img.zip` | prvýkrát niekoľko hodín |
+| Zostavenie | `12-zostav-pixel.sh`: cieľ `lech_tokay-cp2a-userdebug` ([vendor/lech/products/lech_tokay.mk](../vendor/lech/products/lech_tokay.mk)); najprv platformová politika SELinux vydania `cp2a` (ak sa líši od tej, s ktorou vznikol modul Pixelu, modul sa vytvorí znova), potom celá zostava; balík `C:\lech\pixel-uplne\lech-tokay-img.zip` | prvýkrát niekoľko hodín |
 | Nahratie | `11-pixel.sh nahrat-uplne`: `fastboot update` (partície bootloadera, potom dynamické vo fastbootd), vymazanie dát v bootloaderi, štart | 10–15 min |
 
 Potom `11-pixel.sh kontrola`, `siet`, `audit` ako pri GSI a test SMS a volania cez LTE. Úloha E2-12 (zamknutý
@@ -804,6 +804,14 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     zmena GrapheneOS pre `system/sepolicy/Android.bp`. `12-zostav-pixel.sh` odteraz zastaví zostavenie, ak modul
     Pixelu vytvorila iná verzia adevtool (treba `12-priprav-pixel.sh --len-generovat`); `05-zostav-aosp.sh` pri chybe
     vypíše výstup zlyhaného kroku.
+30. **Druhé zostavenie `lech_tokay` (6. 11. 2026):** politika `system_ext` prešla, zlyhala politika vendora
+    (`version_policy … -n 202704`: `Failed to resolve allow statement`). Príčina: konfigurácia vydania `trunk_staging`
+    má úroveň API vendora 202704 (rozpracovaná), pravidlá pôvodného vendora Pixelu (Android 17) menujú typy platformy
+    `…_202604`. Úplná zostava pre Pixel preto používa konfiguráciu Androidu 17 **`cp2a`** (202604; rovnako GrapheneOS,
+    jeho `cur` = `aosp_current` = `cp2a`) – zároveň sa verzia zobrazí ako 17, nie „Baklava“. Moduly mainline sa
+    zostavujú zo zdrojov (`MODULE_BUILD_FROM_SOURCE`, záplaty LECH v `packages/modules` platia). `12-zostav-pixel.sh`
+    najprv zostaví `plat_sepolicy.cil` vydania `cp2a` a modul Pixelu vytvorí znova, ak bol vygenerovaný voči inej
+    platformovej politike. Cuttlefish a GSI zatiaľ ostávajú na `trunk_staging`.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
