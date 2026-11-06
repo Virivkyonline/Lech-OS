@@ -9,13 +9,15 @@
 #   4. `yarn install` for adevtool,
 #   5. the host tools adevtool needs (aapt2, lpunpack, simg2img…), built in the normal out/ with the target of the
 #      Pixel GSI and offered to adevtool through out_adevtool_deps (adevtool would otherwise run a separate build),
+#      and the platform SELinux policy of AOSP (plat_sepolicy.cil, out_adevtool_deps/plat_sepolicy.cil),
 #   6. `adevtool generate-all -d tokay`: downloads the stock factory image of the Pixel 9 (CP3A.261005.005, about
-#      3 GB) and generates vendor/google_devices/tokay – vendor files, firmware, overlays, IMS (ShannonIms).
+#      3 GB) and generates vendor/google_devices/tokay – vendor files, firmware, overlays, IMS (ShannonIms). The
+#      SELinux policy of the Pixel is computed against the AOSP platform policy (patches/vendor/adevtool/0003).
 # The new projects make the next build run the Soong analysis again (about 25 GB of RAM incl. swap).
 #
 # Usage: tools/etapa2/12-priprav-pixel.sh [--bez-generovania] [--len-generovat]
 #   --bez-generovania   steps 1–5 only
-#   --len-generovat     step 6 only (e.g. again after a failure)
+#   --len-generovat     the LECH patches and step 6 only (e.g. again after a failure or after the patches changed)
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work)
 
 set -uo pipefail
@@ -115,15 +117,16 @@ if [ "$PREPARE" -eq 1 ]; then
   (
     cd "$AOSP_DIR" || exit 1
     set +u
+    mkdir -p out_adevtool_deps
     # shellcheck disable=SC1091
-    source build/envsetup.sh >/dev/null && lunch "$target" >/dev/null && m "${HOST_TOOLS[@]}"
+    source build/envsetup.sh >/dev/null && lunch "$target" >/dev/null && m "${HOST_TOOLS[@]}" plat_sepolicy.cil &&
+      cp "$ANDROID_PRODUCT_OUT/system/etc/selinux/plat_sepolicy.cil" out_adevtool_deps/plat_sepolicy.cil
   ) 2>&1 | tee "$log"
   [ "${PIPESTATUS[0]}" -eq 0 ] || die "Nástroje sa nepodarilo zostaviť – log: $log (ak je v ňom Killed: zatvorte aplikácie vo Windows a spustite znova)."
   for t in "${HOST_TOOLS[@]}"; do
     [ -x "$AOSP_DIR/out/host/linux-x86/bin/$t" ] || die "Po zostavení chýba out/host/linux-x86/bin/$t (log: $log)."
   done
   # adevtool takes its tools from out_adevtool_deps/host/linux-x86/bin (ADEVTOOL_SKIP_DEP_BUILD=1 below).
-  mkdir -p "$AOSP_DIR/out_adevtool_deps"
   ln -sfn ../out/host "$AOSP_DIR/out_adevtool_deps/host"
   echo "    hotovo (log: $log)"
 fi
@@ -132,14 +135,25 @@ fi
 
 # 6. Vendor module of the Pixel 9 from the stock factory image.
 [ -x "$AOSP_DIR/vendor/adevtool/bin/run" ] || die "Chýba vendor/adevtool – spustite skript bez --len-generovat."
+if [ "$PREPARE" -eq 0 ]; then
+  # The patches of adevtool may have changed since the last preparation (git pull).
+  echo "Úpravy LECH OS…"
+  AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/aplikuj-zaplaty.sh" || exit 1
+fi
+# Platform SELinux policy of the AOSP build (step 5, or of any earlier build: the newest one); the policy of the
+# Pixel is computed against it, not against the GrapheneOS one in vendor/state.
+plat_cil=$(ls -t "$AOSP_DIR/out_adevtool_deps/plat_sepolicy.cil" \
+  "$AOSP_DIR"/out/target/product/*/system/etc/selinux/plat_sepolicy.cil 2>/dev/null | head -n 1)
+[ -n "$plat_cil" ] || die "Chýba platformová politika SELinux zostavy AOSP (plat_sepolicy.cil) – spustite skript bez --len-generovat."
 echo "6/6 adevtool generate-all -d $DEVICE (stiahne pôvodný obraz Google, ~3 GB, potom ho rozbalí)…"
+echo "    platformová politika SELinux: ${plat_cil#"$AOSP_DIR"/}"
 log="$WORKDIR/pixel-adevtool-$(date +%Y%m%d-%H%M%S).log"
 (
   cd "$AOSP_DIR" || exit 1
   set +u
   # shellcheck disable=SC1091
   source build/envsetup.sh >/dev/null
-  export ANDROID_BUILD_TOP="$AOSP_DIR" ADEVTOOL_SKIP_DEP_BUILD=1
+  export ANDROID_BUILD_TOP="$AOSP_DIR" ADEVTOOL_SKIP_DEP_BUILD=1 LECH_PLAT_SEPOLICY_CIL="$plat_cil"
   # --noVerify: the LECH patches change generated files, so they differ from the GrapheneOS reference list.
   vendor/adevtool/bin/run generate-all -d "$DEVICE" --noVerify
 ) 2>&1 | tee "$log"

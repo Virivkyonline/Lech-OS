@@ -569,7 +569,9 @@ Verzie sú pevné v [manifests/lech-pixel.xml](../manifests/lech-pixel.xml). Úp
 varovanie (LECH OS má vlastné `BUILD_ID`); (2) vývojárska zostava môže použiť cieľ GSI – ARMv8-A bez pamäťových
 značiek (MTE) – a využiť tak systém už zostavený pre GSI (miesto a čas notebooku). Vydania: ARMv9 s MTE.
 adevtool potrebuje rozšírenia nástrojov AOSP od GrapheneOS (`aapt2`, `apksigner print-certs`, `dispol -a`); sú
-prevzaté ako záplaty s pôvodnými autormi ([patches/README.md](../patches/README.md)). CarrierConfig2 sa zostavuje
+prevzaté ako záplaty s pôvodnými autormi ([patches/README.md](../patches/README.md)), rovnako podpora súborov
+`sepolicy_ext.cil` v `system/sepolicy`, do ktorých adevtool zapisuje pravidlá SELinux Pixelu. Politiku Pixelu adevtool
+počíta voči platformovej politike AOSP (`plat_sepolicy.cil` zostavy, záplata adevtool 0003). CarrierConfig2 sa zostavuje
 bez testovacej obrazovky GrapheneOS, ktorá potrebuje rozhrania GmsCompat.
 
 | Krok | Skript | Trvanie (odhad) |
@@ -794,6 +796,14 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     rozšírenia `aapt2` (5 commitov), `apksigner print-certs` a `dispol -a`. Pred prvým zostavením: CarrierConfig2
     bez testovacej obrazovky GmsCompat (inak by sa na AOSP nezostavil) a prázdne `TARGET_BOARD_KERNEL_HEADERS`
     (balík jadra GrapheneOS nemá `kernel-headers`).
+29. **Prvé zostavenie `lech_tokay` (6. 11. 2026):** analýza Soong prijala modul Pixelu, po 38 min zlyhala politika
+    SELinux `system_ext`: `Duplicate declaration of type` (`preloads_copy`) v `vendor/google_devices/tokay/sepolicy/system_ext/public/types.te`.
+    Príčina: adevtool počíta politiku Pixelu voči politike GrapheneOS, ktorá niektoré typy AOSP odstránila. Oprava:
+    adevtool dostane `plat_sepolicy.cil` zostavy AOSP (`LECH_PLAT_SEPOLICY_CIL`). Cestou sa ukázalo, že AOSP
+    nepoužíva súbory `sepolicy_ext.cil`, do ktorých adevtool zapisuje pravidlá pôvodnej politiky Pixelu – prevzatá
+    zmena GrapheneOS pre `system/sepolicy/Android.bp`. `12-zostav-pixel.sh` odteraz zastaví zostavenie, ak modul
+    Pixelu vytvorila iná verzia adevtool (treba `12-priprav-pixel.sh --len-generovat`); `05-zostav-aosp.sh` pri chybe
+    vypíše výstup zlyhaného kroku.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Fri, 6 Nov 2026 13:30:00 +0100
+Subject: [PATCH] Generate the sepolicy against the AOSP platform policy
+
+The generated vendor module of LECH OS is built with the platform
+sepolicy of AOSP, while vendor/state holds the one of GrapheneOS, which
+removed some types (preloads_copy, system_server_startup). adevtool then
+declared these types again in the generated system_ext policy and the
+build failed with "Duplicate declaration of type".
+
+With LECH_PLAT_SEPOLICY_CIL pointing to the plat_sepolicy.cil of the AOSP
+build, its types and attributes replace the platform part of the state,
+so the generated policy only adds what the platform does not have.
+Without the variable nothing changes.
+---
+ src/processor/sepolicy.ts | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/src/processor/sepolicy.ts b/src/processor/sepolicy.ts
+index 1e6d5b56..3633b137 100644
+--- a/src/processor/sepolicy.ts
++++ b/src/processor/sepolicy.ts
+@@ -68,6 +68,19 @@ export async function processSepolicy(
+   let syspropInclusions = new Set(deviceConfig.sysprop_inclusions)
+   let typeAttrs = new Map<string, Set<string>>()
+ 
++  // LECH OS: the platform policy of the build is the one of AOSP, not the GrapheneOS one in vendor/state. Some
++  // types differ (GrapheneOS removed e.g. preloads_copy and system_server_startup), and a platform type declared
++  // again in the generated policy fails the build. LECH_PLAT_SEPOLICY_CIL names the plat_sepolicy.cil of the AOSP
++  // build; its types and attributes replace the platform part of the state.
++  let lechPlatCil = process.env.LECH_PLAT_SEPOLICY_CIL
++  if (lechPlatCil !== undefined && lechPlatCil !== '') {
++    let platCil = await parseCil(Partition.System, (await readFile(lechPlatCil)).split('\n'))
++    let sysSepolicy = customState.sepolicy[Partition.System]
++    sysSepolicy.types = platCil.typeAttrs
++    sysSepolicy.typeAttrNames = platCil.typeAttrNames
++    log(`platform sepolicy from ${lechPlatCil}: ${platCil.types.length} types`)
++  }
++
+   let definedAttrs = new Set<string>(customState.sepolicy[Partition.System].typeAttrNames)
+   let definedTypes = new Set<string>()
+ 
+-- 
+2.43.0
+

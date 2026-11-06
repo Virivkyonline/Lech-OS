@@ -21,6 +21,8 @@ tools/etapa2/aplikuj-zaplaty.sh --kontrola  # len vypíše, ktoré záplaty sú 
 | `packages/apps/CarrierConfig2` (GrapheneOS, E2-11b) | Bez testovacej obrazovky `TestActivity` (porovnanie s aplikáciou Google CarrierSettings cez GmsCompat) | Používa rozhrania, ktoré má len GrapheneOS (`gmscompat`, `android.ext`); na AOSP by sa aplikácia nezostavila. Načítanie nastavení operátora (SMS, VoLTE, APN) ostáva nezmenené |
 | `vendor/adevtool` (GrapheneOS, E2-11b) | Iné číslo zostavy systému ako vendora je len varovanie | LECH OS má vlastné `BUILD_ID`, súbory vendora sú z pôvodnej zostavy Google `CP3A.261005.005` |
 | `vendor/adevtool` (GrapheneOS, E2-11b) | Vývojárska zostava s cieľom ARMv8-A (`LECH_PIXEL_GENERIC_CPU`) | Využije systém zostavený pre GSI; vydania zostávajú ARMv9 s MTE |
+| `vendor/adevtool` (GrapheneOS, E2-11b) | Politika SELinux Pixelu sa počíta voči platformovej politike AOSP (`LECH_PLAT_SEPOLICY_CIL`) | adevtool ju inak počíta voči politike GrapheneOS (`vendor/state`), ktorá nemá napr. `preloads_copy` a `system_server_startup`; tieto typy deklaroval znova a zostava zlyhala (`Duplicate declaration of type`) |
+| `system/sepolicy` (z GrapheneOS, E2-11b) | Súbory `sepolicy_ext.cil` v priečinkoch politiky sa pridajú do politiky partícií (system_ext, product, vendor, odm, recovery) | adevtool do nich zapisuje pravidlá pôvodnej politiky Pixelu; AOSP by ich vynechal a vendor Pixelu by nemal svoje pravidlá SELinux. Produkty bez týchto súborov sa nemenia |
 
 Záplaty pre projekty Pixelu ([manifests/lech-pixel.xml](../manifests/lech-pixel.xml)) sa preskočia, kým projekty
 nie sú stiahnuté (`tools/etapa2/12-priprav-pixel.sh`).

@@ -62,6 +62,15 @@ free_gb=$(lech_free_gb "$AOSP_DIR")
 # vendor/lech, keys and patches (also those for vendor/adevtool): the same preparation as for Cuttlefish.
 "$SCRIPT_DIR/06-zostav-lech.sh" --len-skopirovat || exit 1
 
+# The vendor module records the adevtool revision it was generated with (only a warning in the build, --noVerify).
+# A different revision means the LECH patches of adevtool changed: generate the module again first.
+gen_rev=$(sed -n 's/^ifneq (\$(shell git -C [^ ]* rev-parse HEAD),\([0-9a-f]\{40\}\))$/\1/p' \
+  "$AOSP_DIR/vendor/google_devices/$DEVICE/adevtool-version-check.mk" 2>/dev/null)
+cur_rev=$(git -C "$AOSP_DIR/vendor/adevtool" rev-parse HEAD 2>/dev/null)
+if [ -n "$gen_rev" ] && [ "$gen_rev" != "$cur_rev" ]; then
+  die "Podporu Pixelu (vendor/google_devices/$DEVICE) vytvorila iná verzia adevtool, než je teraz (zmenili sa úpravy LECH OS). Najprv: tools/etapa2/12-priprav-pixel.sh --len-generovat"
+fi
+
 if lech_phone_running; then
   echo "Vypínam virtuálny telefón, aby mala analýza zostavy viac pamäte."
   lech_reset_phones
