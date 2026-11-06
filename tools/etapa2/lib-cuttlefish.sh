@@ -52,6 +52,8 @@ lech_build_lock_report() {
   if [ -n "$users" ]; then printf '%s\n' "$users" | sed 's/^/  /'; else echo "  (proces sa nedá zistiť)"; fi
   if printf '%s' "$users" | grep -qE '09-nocna-kontrola|11-zostav-gsi'; then
     echo "Beží nočná kontrola alebo zostavenie – počkajte, kým skončí (priebeh: tail -f ${LECH_WORK:-$HOME/lech-work}/ci/beh.log)."
+  elif printf '%s' "$users" | grep -qE 'run_cvd|crosvm|cvd_internal|/cvd/'; then
+    echo "Zámok drží bežiaci virtuálny telefón Cuttlefish (zostal po nočnej kontrole). Vypnite ho: cvd reset --yes"
   elif [ -n "$users" ]; then
     echo "Nočná kontrola ani zostavenie nebeží – zámok drží zvyšný proces. Ukončite ho (číslo PID vyššie): kill PID"
   fi
