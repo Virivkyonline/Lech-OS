@@ -517,10 +517,10 @@ cmd_siet() {
   reg=$(grep -m1 -oE 'mVoiceRegState=[0-9]+\([A-Z_]+\)|mDataRegState=[0-9]+\([A-Z_]+\)' "$out" | head -n 1)
   echo
   echo "Mobilná sieť na Pixeli:"
-  printf '  %-26s %s\n' "SIM" "${sim:-?} (READY = karta rozpoznaná, ABSENT = bez karty)"
+  printf '  %-26s %s\n' "SIM" "${sim:-?} (READY/LOADED = karta rozpoznaná, ABSENT = bez karty)"
   printf '  %-26s %s\n' "rádio vendora (HAL)" "$hal služieb android.hardware.radio.*"
   printf '  %-26s %s\n' "operátor" "$(prop gsm.operator.alpha) $(prop gsm.operator.numeric)"
-  printf '  %-26s %s\n' "typ siete" "$(prop gsm.network.type)"
+  printf '  %-26s %s\n' "typ siete" "$(prop gsm.network.type) (GPRS/EDGE = 2G, UMTS/HSPA = 3G, LTE = 4G, NR = 5G)"
   printf '  %-26s %s\n' "registrácia" "${reg:-?}"
   printf '  %-26s %s\n' "chyby rádia v logu" "$(sed -n '/^== Chyby v logu rádia/,/^== Chyby telefónnej/p' "$out" | grep -cE ' [EF] ')"
   echo
