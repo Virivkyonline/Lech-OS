@@ -566,7 +566,8 @@ cmd_siet() {
   need_tools
   wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
   mkdir -p "$WORKDIR/pixel"
-  local out="$WORKDIR/pixel/siet-$(date +%Y%m%d-%H%M%S).txt" p hal sim reg
+  local out="$WORKDIR/pixel/siet-$(date +%Y%m%d-%H%M%S).txt" p hal sim reg simnum sms_app
+  simnum=$(prop gsm.sim.operator.numeric); simnum=${simnum%%,*}
   {
     echo "== Vlastnosti"
     for p in gsm.sim.state gsm.operator.alpha gsm.operator.numeric gsm.network.type gsm.version.ril-impl \
@@ -585,6 +586,13 @@ cmd_siet() {
     echo "== IMS registrácia"; adb_ shell dumpsys phone | grep -iE 'ImsRegistered|ImsRegistration|isVolteEnabled|isWifiCallingEnabled' | head -n 12
     echo "== Nastavenia operátora (CarrierConfig2)"
     adb_ shell dumpsys carrier_config | grep -E 'carrier_config_version_string|carrier_volte_available_bool|carrier_vt_available_bool|carrier_wfc_ims_available_bool|vonr_enabled_bool|config_ims_package_override_string' | head -n 12
+    echo "== Balík nastavení operátora"; adb_ shell dumpsys carrier_config | grep -iE 'carrierconfig2|com\.android\.carrierconfig|CarrierService' | head -n 5
+    echo "== APN pre SIM $simnum (TelephonyProvider)"
+    adb_ shell "content query --uri content://telephony/carriers --projection name:apn:type:numeric:edited | grep 'numeric=$simnum'" | head -n 20
+    echo "== APN spolu"; adb_ shell "content query --uri content://telephony/carriers --projection numeric | grep -c numeric="
+    echo "== Log CarrierConfig2"
+    adb_ logcat -d | grep -iE 'carrierconfig2|CSettingsDir|CarrierConfigLoader|CarrierServiceImpl|ApnServiceImpl|subIdToCarrierId|TelephonyProvider' | tail -n 30
+    echo "== Predvolená aplikácia SMS"; adb_ shell cmd role get-role-holders android.app.role.SMS
     echo "== Chyby v logu rádia"; adb_ logcat -b radio -d | grep -E ' [EF] ' | tail -n 60
     echo "== Chyby telefónnej služby"; adb_ logcat -d | grep -iE 'com\.android\.phone|RILJ|IRadio|AndroidRuntime' | grep -E ' [EF] ' | tail -n 40
   } > "$out" 2>&1
@@ -598,9 +606,13 @@ cmd_siet() {
   printf '  %-26s %s\n' "operátor" "$(prop gsm.operator.alpha) $(prop gsm.operator.numeric)"
   printf '  %-26s %s\n' "typ siete" "$(prop gsm.network.type) (GPRS/EDGE = 2G, UMTS/HSPA = 3G, LTE = 4G, NR = 5G)"
   printf '  %-26s %s\n' "registrácia" "${reg:-?}"
-  printf '  %-26s %s\n' "služba IMS" "$(sed -n '/^== IMS služba/,/^== IMS registrácia/p' "$out" | grep -oE 'com\.[a-z0-9_.]+' | head -n 1 | sed 's/^$/?/')"
+  printf '  %-26s %s\n' "služba IMS" "$(sed -n '/^== IMS služba/,/^== IMS registrácia/p' "$out" | sed '1d;/^== /d' | head -n 1 | cut -c1-90)"
   printf '  %-26s %s\n' "IMS registrovaná" "$(sed -n '/^== IMS registrácia/,/^== Nastavenia operátora/p' "$out" | grep -oiE 'ImsRegistered[^,]*=[ ]*(true|false)' | head -n 1)"
   printf '  %-26s %s\n' "VoLTE podľa operátora" "$(grep -m1 -oE 'carrier_volte_available_bool *= *[a-z]+' "$out" || echo '?')"
+  printf '  %-26s %s\n' "nastavenia operátora" "$(grep -m1 -oE 'carrier_config_version_string *= *[^ ]+' "$out" | cut -c1-90 || echo '?')"
+  printf '  %-26s %s\n' "APN pre SIM ${simnum:-?}" "$(sed -n '/^== APN pre SIM/,/^== APN spolu/p' "$out" | grep -c 'numeric=') (v telefóne spolu: $(sed -n '/^== APN spolu/{n;p}' "$out"))"
+  sms_app=$(sed -n '/^== Predvolená aplikácia SMS/{n;p}' "$out")
+  printf '  %-26s %s\n' "predvolená aplikácia SMS" "${sms_app:-žiadna – Nastavenia → Aplikácie → Predvolené aplikácie → SMS}"
   printf '  %-26s %s\n' "chyby rádia v logu" "$(sed -n '/^== Chyby v logu rádia/,/^== Chyby telefónnej/p' "$out" | grep -cE ' [EF] ')"
   echo
   echo "Úplný výpis: $out"
