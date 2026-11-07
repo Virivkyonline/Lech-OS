@@ -71,7 +71,14 @@ adb_start() {
 }
 # Windows programs print CRLF; fastboot prints its answers to stderr. Images are passed by name from PIXEL_DIR.
 # fastboot waits forever for a phone that is not connected: call fb_var only after fastboot_ready.
-adb_() { "${ADB[@]}" "$@" 2>&1 | tr -d '\r'; }
+# With ADB_TIMEOUT set (seconds) a command that does not answer is stopped (siet hung for 10 min, 7. 11. 2026).
+adb_() {
+  if [ -n "${ADB_TIMEOUT:-}" ]; then
+    { timeout "$ADB_TIMEOUT" "${ADB[@]}" "$@" 2>&1; [ $? -eq 124 ] && echo "(adb: časový limit ${ADB_TIMEOUT} s: $*)"; } | tr -d '\r'
+  else
+    "${ADB[@]}" "$@" 2>&1 | tr -d '\r'
+  fi
+}
 fb() { (cd "$PIXEL_DIR" 2>/dev/null || cd "${TOOLS:-/}" 2>/dev/null || cd /; "${FASTBOOT[@]}" "$@") 2>&1 | tr -d '\r'; }
 fb_var() {   # a phone that is busy (just after a failed command) may not answer the first time
   local value i
@@ -567,6 +574,8 @@ cmd_siet() {
   wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
   mkdir -p "$WORKDIR/pixel"
   local out="$WORKDIR/pixel/siet-$(date +%Y%m%d-%H%M%S).txt" p hal sim reg simnum sms_app
+  local ADB_TIMEOUT=45
+  echo "Zbieram stav siete (najviac pár minút)…"
   simnum=$(prop gsm.sim.operator.numeric); simnum=${simnum%%,*}
   {
     echo "== Vlastnosti"
