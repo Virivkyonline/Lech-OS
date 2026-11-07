@@ -818,6 +818,13 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     sadu zmien „17-qpr1“. Prevzatých 6 (overené proti súborom AOSP 26Q2): `AID_AOAD` (system/core), `android.frameworks.stats`
     V3 (frameworks/hardware/interfaces, frameworks/native, frameworks/base), nová funkcia `Parcel` v libbinder
     (frameworks/native) a ID zdrojov frameworku podľa CP3A (frameworks/base). Matica kompatibility HAL zmeny nepotrebuje.
+32. **Miesto na disku (7. 11. 2026):** ďalšie zostavenie sa nespustilo – na C: ostalo 17 GB (WSL má vnútri 546 GB
+    voľných). Disk WSL je jeden súbor na C: (`ext4.vhdx`, 462 GB), ktorý pri zápise rastie a po zmazaní súborov sa sám
+    nezmenší; celý sa na D: (120 GB voľných) nezmestí. Nový skript `tools/etapa2/uvolni-miesto.sh` zmaže výstupy, ktoré
+    vzniknú znova (obraz Google pre adevtool, výstupy GSI a Cuttlefish), označí voľné miesto (`fstrim`) a pripraví
+    `C:\lech\zmensi-disk-wsl.ps1`, ktorý v PowerShell ako správca vypne WSL a zmenší `ext4.vhdx` (`diskpart compact vdisk`).
+    Nočná kontrola počas prác na zostave Pixelu zlyhávala (plný disk, iné nastavenia vydania) – vypnutá, kým zostava
+    Pixelu nebude hotová.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
