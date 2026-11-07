@@ -531,7 +531,7 @@ cmd_kontrola() {
     adb_unauthorized && die "Telefón čaká na povolenie ladenia cez USB – potvrďte na telefóne 'Povoliť'."
     die "Telefón sa cez adb neozval – zapnite Ladenie cez USB (Pre vývojárov) a povoľte tento počítač."
   fi
-  local version ok=1
+  local version anim ok=1
   version=$(sed -n '1s/^LECH OS \([^ ]*\) .*/\1/p' "$PIXEL_DIR/info.txt" 2>/dev/null)
   [ -n "$version" ] || version=$(sed -n 's/^LECH_VERSION *[:?]= *//p' "$REPO_DIR/vendor/lech/config/version.mk")
   report() {   # OK|CHYBA|INFO, what, detail
@@ -553,10 +553,16 @@ cmd_kontrola() {
   expect "model" ro.product.model "LECH-PHONE"
   expect "verzia LECH OS" ro.lech.version "$version"
   expect "číslo zostavy" ro.build.display.id "LECH-OS-$version*"
-  if adb_ shell 'test -f /product/media/bootanimation.zip && echo ano' | grep -qx ano; then
-    report OK "animácia pri štarte" /product/media/bootanimation.zip
+  # The file the boot animation really opens (frameworks/base/cmds/bootanimation): ro.product.bootanim.file, else
+  # bootanimation-dark.zip when the bootloader passes the dark theme (ro.boot.theme=1, Pixel), else bootanimation.zip.
+  anim=$(prop ro.product.bootanim.file)
+  if [ -z "$anim" ]; then
+    if [ "$(prop ro.boot.theme)" = 1 ]; then anim=bootanimation-dark.zip; else anim=bootanimation.zip; fi
+  fi
+  if adb_ shell "test -f /product/media/$anim && echo ano" | grep -qx ano; then
+    report OK "animácia pri štarte" "/product/media/$anim"
   else
-    report CHYBA "animácia pri štarte" "/product/media/bootanimation.zip chýba"
+    report CHYBA "animácia pri štarte" "/product/media/$anim chýba – pri štarte je logo „android“ z AOSP"
   fi
   if adb_ shell cmd overlay list android | grep -q '\[x\] lech.os.overlay.framework'; then
     report OK "čas (NTP)" "europe.pool.ntp.org"
