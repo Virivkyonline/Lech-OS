@@ -69,7 +69,7 @@ fi
 if [ -d "$PRODUCT_OUT" ]; then need=$MIN_FREE_GB; else need=$MIN_FREE_FIRST_GB; fi
 free_gb=$(lech_free_gb "$AOSP_DIR")
 [ "${free_gb:-0}" -ge "$need" ] || \
-  die "Na zostavenie LECH OS pre Pixel 9 treba aspoň ${need} GB voľného miesta, voľných je ${free_gb:-0} GB."
+  die "Na zostavenie LECH OS pre Pixel 9 treba aspoň ${need} GB voľného miesta, voľných je ${free_gb:-0} GB ($(lech_free_detail "$AOSP_DIR"))."
 
 # vendor/lech, keys and patches (also those for vendor/adevtool): the same preparation as for Cuttlefish.
 "$SCRIPT_DIR/06-zostav-lech.sh" --len-skopirovat || exit 1

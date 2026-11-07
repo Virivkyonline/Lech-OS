@@ -71,6 +71,19 @@ lech_free_gb() {
   echo "${gb:-0}"
 }
 
+# Where the free space of lech_free_gb comes from: in WSL the Linux disk (ext4.vhdx) lies on C:, and files deleted
+# in Linux do not make C: freer by themselves (the vhdx file does not shrink).
+lech_free_detail() {
+  local gb win
+  gb=$(df -Pk "$1" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
+  if lech_in_wsl && [ -d /mnt/c ]; then
+    win=$(df -Pk /mnt/c 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
+    echo "Linux (WSL) ${gb:-?} GB, Windows C: ${win:-?} GB"
+  else
+    echo "${gb:-?} GB"
+  fi
+}
+
 # Enter the environment of the local build saved by 05-zostav-aosp.sh
 # (sets ANDROID_HOST_OUT and ANDROID_PRODUCT_OUT, which `cvd create` uses).
 lech_enter_build_env() {
