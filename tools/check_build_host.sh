@@ -102,18 +102,26 @@ fi
 rota=$(lsblk -dno ROTA "$(df -P "$target_dir" 2>/dev/null | awk 'NR==2 {print $1}')" 2>/dev/null | head -1 | tr -d ' ')
 if [ "$in_wsl" -eq 1 ]; then
   warn "Vo WSL je disk virtuálny – typ disku (SSD/HDD) sa nedá zistiť"
-  # The WSL virtual disk is a file on the Windows drive (C: by default), so that drive's free space is the real limit.
-  win_gb=$(df -Pk /mnt/c 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
+  # The WSL virtual disk is a file on a Windows drive (C: by default, docs/11 part 4j: its own partition), so that
+  # drive's free space is the real limit.
+  win_mnt=/mnt/c
+  if [ -f "$(dirname "$0")/etapa2/lib-cuttlefish.sh" ]; then
+    # shellcheck source=etapa2/lib-cuttlefish.sh
+    . "$(dirname "$0")/etapa2/lib-cuttlefish.sh"
+    win_mnt=$(lech_wsl_drive_mnt)
+  fi
+  win_drive=${win_mnt#/mnt/}; win_drive="${win_drive^^}:"
+  win_gb=$(df -Pk "$win_mnt" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
   if [ -n "${win_gb:-}" ]; then
     if [ "$win_gb" -ge "$BUILD_GOOD_DISK_GB" ]; then
-      pass "Voľné miesto na disku C: vo Windows (tam leží disk WSL): ${win_gb} GB"
+      pass "Voľné miesto na disku $win_drive vo Windows (tam leží disk WSL): ${win_gb} GB"
     elif [ "$win_gb" -ge "$BUILD_MIN_DISK_GB" ]; then
-      warn "Voľné miesto na disku C: vo Windows: ${win_gb} GB – stačí pri sťahovaní bez histórie, ale tesne; nechajte Windows aspoň 30 GB voľných"
+      warn "Voľné miesto na disku $win_drive vo Windows: ${win_gb} GB – stačí pri sťahovaní bez histórie, ale tesne; nechajte Windows aspoň 30 GB voľných"
     elif [ "$win_gb" -ge "$RUN_MIN_DISK_GB" ]; then
-      bad "Voľné miesto na disku C: vo Windows: ${win_gb} GB – disk WSL tam leží, na zostavenie treba ${BUILD_MIN_DISK_GB} GB"
+      bad "Voľné miesto na disku $win_drive vo Windows: ${win_gb} GB – disk WSL tam leží, na zostavenie treba ${BUILD_MIN_DISK_GB} GB"
       build_ok=0
     else
-      bad "Voľné miesto na disku C: vo Windows: ${win_gb} GB – nestačí ani na hotové obrazy"
+      bad "Voľné miesto na disku $win_drive vo Windows: ${win_gb} GB – nestačí ani na hotové obrazy"
       build_ok=0; run_ok=0
     fi
   fi

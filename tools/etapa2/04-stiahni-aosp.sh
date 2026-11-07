@@ -15,6 +15,8 @@
 
 set -euo pipefail
 
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+. "$SCRIPT_DIR/lib-cuttlefish.sh"
 AOSP_DIR=${AOSP_DIR:-$HOME/aosp}
 BRANCH=${AOSP_BRANCH:-android-latest-release}
 MANIFEST_URL=https://android.googlesource.com/platform/manifest
@@ -49,10 +51,11 @@ need=$MIN_FREE_GB
 [ -d "$AOSP_DIR/.repo" ] && need=50   # resuming: most data is already there
 here=$(free_gb "$AOSP_DIR")
 [ "${here:-0}" -ge "$need" ] || die "V $AOSP_DIR je voľných ${here:-0} GB, potrebných je aspoň ${need} GB."
-if grep -qi microsoft /proc/version 2>/dev/null; then
-  win=$(free_gb /mnt/c)
+if lech_in_wsl && [ -d /mnt/c ]; then
+  win_mnt=$(lech_wsl_drive_mnt)
+  win=$(free_gb "$win_mnt")
   if [ -n "${win:-}" ] && [ "$win" -lt "$need" ]; then
-    die "Na disku C: vo Windows (tam leží disk WSL) je voľných ${win} GB, potrebných je aspoň ${need} GB."
+    die "Na disku $(lech_drive_label "$win_mnt") vo Windows (tam leží disk WSL) je voľných ${win} GB, potrebných je aspoň ${need} GB."
   fi
 fi
 

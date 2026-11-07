@@ -595,8 +595,19 @@ len **dva súbory** – všetko ostatné vytvoria skripty znova:
    ```
    Oba súbory preniesť na nový počítač do `C:\lech\` (USB kľúč). **Kľúče sú tajné** – po prenose ich z USB zmazať.
    S rovnakými kľúčmi sa dá do telefónu nahrať nová zostava bez mazania dát; s inými by sa telefón musel vymazať.
-2. **Windows na novom počítači:** v PowerShell ako správca `wsl --install -d Ubuntu-24.04`, reštart, v Ubuntu
-   vytvoriť používateľa. Pamäť a swap pre WSL (pri 64 GB RAM: 48 GB pre WSL, zvyšok pre Windows):
+2. **Windows na novom počítači – disk WSL na vlastnej partícii.** Disk Linuxu (`ext4.vhdx`) rastie so
+   zostavami (na starom počítači 462 GB) a sám sa nezmenšuje; na C: by znova vzal miesto Windows. Preto patrí na
+   samostatnú partíciu s ~1 TB:
+   - *Správa diskov* (pravý klik na Štart): dve prázdne partície **na tom istom disku, tesne vedľa seba** (napr.
+     E: a F:) zlúčiť – pravý klik na F: → *Odstrániť zväzok*, pravý klik na E: → *Rozšíriť zväzok* (celé voľné
+     miesto). Ak by Windows ponúkol prevod na **dynamický disk**, zrušiť – vtedy partície nie sú vedľa seba alebo sú
+     na rôznych diskoch.
+   - V PowerShell ako správca: `wsl --install --no-distribution`, reštart, potom
+     `wsl --update` a `wsl --install -d Ubuntu-24.04 --location E:\WSL\Ubuntu` a v Ubuntu vytvoriť používateľa.
+     (Už nainštalované Ubuntu sa dá presunúť: `wsl --shutdown`, `wsl --manage Ubuntu-24.04 --move E:\WSL\Ubuntu`.)
+     Skripty zisťujú voľné miesto na disku, kde `ext4.vhdx` naozaj leží (`lech_wsl_vhd_win`).
+
+   Pamäť a swap pre WSL (pri 64 GB RAM: 48 GB pre WSL, zvyšok pre Windows):
    ```powershell
    "[wsl2]`nmemory=48GB`nswap=16GB" | Set-Content -Encoding ASCII "$env:USERPROFILE\.wslconfig"; wsl --shutdown
    ```

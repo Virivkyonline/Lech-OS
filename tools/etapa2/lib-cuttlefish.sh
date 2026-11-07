@@ -59,26 +59,70 @@ lech_build_lock_report() {
   fi
 }
 
-# Free space in GB where a directory lives. In WSL the Linux disk is a growing virtual disk file on C:,
-# so df inside WSL shows the virtual disk's maximum size; the real limit is the free space on C:.
+# The Linux disk of this WSL distribution (ext4.vhdx) as a Windows path, e.g. E:\WSL\Ubuntu\ext4.vhdx. It lies on C:
+# unless the distribution was installed elsewhere (wsl --install --location, docs/11 part 4j). Found in the WSL
+# registry (BasePath of this distribution); fallback: the only ext4.vhdx in the default places on C:. Remembered in
+# $LECH_WORK/wsl-disk, because PowerShell starts slowly. Prints nothing when it is not found.
+lech_wsl_vhd_win() {
+  local cache="${LECH_WORK:-$HOME/lech-work}/wsl-disk" vhd="" ps_script
+  local -a found=()
+  lech_in_wsl && [ -d /mnt/c ] || return 0
+  if [ -f "$cache" ]; then vhd=$(head -n 1 "$cache"); fi
+  if [ -n "$vhd" ] && [ -f "$(wslpath -u "$vhd" 2>/dev/null)" ]; then printf '%s\n' "$vhd"; return 0; fi
+  vhd=""
+  if command -v powershell.exe >/dev/null 2>&1; then
+    ps_script=$(sed "s/__DISTRO__/${WSL_DISTRO_NAME:-}/" <<'EOF'
+$d = Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss' | Get-ItemProperty | Where-Object { $_.DistributionName -eq '__DISTRO__' }
+if ($d) { 'LECH-OK ' + (Join-Path ($d.BasePath -replace '^\\\\\?\\', '') 'ext4.vhdx') }
+EOF
+)
+    vhd=$(cd /mnt/c && powershell.exe -NoProfile -NonInteractive -EncodedCommand \
+      "$(printf '%s' "$ps_script" | iconv -f UTF-8 -t UTF-16LE | base64 -w0)" < /dev/null 2>/dev/null \
+      | tr -d '\r' | sed -n 's/^LECH-OK //p' | head -n 1) || vhd=""
+  fi
+  if [ -z "$vhd" ] || [ ! -f "$(wslpath -u "$vhd" 2>/dev/null)" ]; then
+    vhd=""
+    mapfile -t found < <(ls /mnt/c/Users/*/AppData/Local/wsl/*/ext4.vhdx \
+      /mnt/c/Users/*/AppData/Local/Packages/*/LocalState/ext4.vhdx 2>/dev/null)
+    if [ "${#found[@]}" -eq 1 ]; then vhd=$(wslpath -w "${found[0]}"); fi
+  fi
+  [ -n "$vhd" ] || return 0
+  mkdir -p "$(dirname "$cache")" && printf '%s\n' "$vhd" > "$cache"
+  printf '%s\n' "$vhd"
+}
+
+# Mount point of the Windows drive that holds the WSL disk (/mnt/c, /mnt/e…); /mnt/c when the disk is not found.
+lech_wsl_drive_mnt() {
+  local letter
+  letter=$(lech_wsl_vhd_win | cut -c1 | tr '[:upper:]' '[:lower:]')
+  case "$letter" in [a-z]) ;; *) letter=c ;; esac
+  if [ -d "/mnt/$letter" ]; then echo "/mnt/$letter"; else echo /mnt/c; fi
+}
+
+# Drive name for messages: /mnt/e -> E:
+lech_drive_label() { local l=${1#/mnt/}; printf '%s:\n' "${l^^}"; }
+
+# Free space in GB where a directory lives. In WSL the Linux disk is a growing virtual disk file on a Windows drive
+# (C: by default), so df inside WSL shows the virtual disk's maximum size; the real limit is the free space there.
 lech_free_gb() {
   local gb win
   gb=$(df -Pk "$1" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
   if lech_in_wsl && [ -d /mnt/c ]; then
-    win=$(df -Pk /mnt/c 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
+    win=$(df -Pk "$(lech_wsl_drive_mnt)" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
     if [ -n "$win" ] && [ "$win" -lt "${gb:-0}" ]; then gb=$win; fi
   fi
   echo "${gb:-0}"
 }
 
-# Where the free space of lech_free_gb comes from: in WSL the Linux disk (ext4.vhdx) lies on C:, and files deleted
-# in Linux do not make C: freer by themselves (the vhdx file does not shrink).
+# Where the free space of lech_free_gb comes from: in WSL the Linux disk (ext4.vhdx) lies on a Windows drive, and
+# files deleted in Linux do not make that drive freer by themselves (the vhdx file does not shrink).
 lech_free_detail() {
-  local gb win
+  local gb win mnt
   gb=$(df -Pk "$1" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
   if lech_in_wsl && [ -d /mnt/c ]; then
-    win=$(df -Pk /mnt/c 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
-    echo "Linux (WSL) ${gb:-?} GB, Windows C: ${win:-?} GB"
+    mnt=$(lech_wsl_drive_mnt)
+    win=$(df -Pk "$mnt" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}')
+    echo "Linux (WSL) ${gb:-?} GB, Windows $(lech_drive_label "$mnt") ${win:-?} GB"
   else
     echo "${gb:-?} GB"
   fi

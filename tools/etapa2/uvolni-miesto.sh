@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Frees space on the Windows disk C: for the AOSP builds in WSL (E2-11b, 7. 11. 2026: C: had 17 GB free).
-# The Linux disk of WSL is one file on C: (ext4.vhdx) that grows while builds write and never shrinks by itself,
-# so files deleted in Linux do not make C: freer. The script:
+# Frees space on the Windows drive of the WSL disk for the AOSP builds (E2-11b, 7. 11. 2026: C: had 17 GB free).
+# The Linux disk of WSL is one file (ext4.vhdx, on C: unless WSL was installed elsewhere) that grows while builds
+# write and never shrinks by itself, so files deleted in Linux do not make that drive freer. The script:
 #   1. deletes outputs that can be made again (after confirmation): the stock Google image downloaded for adevtool
 #      (vendor/adevtool/dl), the outputs of the Pixel GSI (out/target/product/lech_arm64; its images for flashing
 #      are in C:\lech\pixel) and of Cuttlefish (out/target/product/vsoc_x86_64_only; the nightly check builds them
@@ -33,7 +33,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-lech_in_wsl && [ -d /mnt/c ] || die "Skript je pre WSL vo Windows (disk WSL na C:)."
+lech_in_wsl && [ -d /mnt/c ] || die "Skript je pre WSL vo Windows."
 
 # Nothing may build while outputs are deleted.
 if [ -z "${LECH_BUILD_LOCK_HELD:-}" ]; then
@@ -91,23 +91,10 @@ echo
 echo "Označujem voľné miesto disku WSL (sudo fstrim – môže sa pýtať heslo)…"
 sudo fstrim -v / || echo "UPOZORNENIE: fstrim zlyhal – zmenšenie disku uvoľní menej miesta."
 
-# 3. The compaction script for Windows. Find ext4.vhdx of this distribution (registry of WSL; fallback: the only one).
-vhd_win=""
-if command -v powershell.exe >/dev/null 2>&1; then
-  ps_script=$(sed "s/__DISTRO__/${WSL_DISTRO_NAME:-}/" <<'EOF'
-$d = Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss' | Get-ItemProperty | Where-Object { $_.DistributionName -eq '__DISTRO__' }
-if ($d) { 'LECH-OK ' + (Join-Path ($d.BasePath -replace '^\\\\\?\\', '') 'ext4.vhdx') }
-EOF
-)
-  vhd_win=$(cd /mnt/c && powershell.exe -NoProfile -NonInteractive -EncodedCommand \
-    "$(printf '%s' "$ps_script" | iconv -f UTF-8 -t UTF-16LE | base64 -w0)" < /dev/null 2>/dev/null | tr -d '\r' | sed -n 's/^LECH-OK //p' | head -n 1)
-fi
-if [ -z "$vhd_win" ] || [ ! -f "$(wslpath -u "$vhd_win" 2>/dev/null)" ]; then
-  mapfile -t found < <(ls /mnt/c/Users/*/AppData/Local/wsl/*/ext4.vhdx \
-    /mnt/c/Users/*/AppData/Local/Packages/*/LocalState/ext4.vhdx 2>/dev/null)
-  [ "${#found[@]}" -eq 1 ] || die "Súbor disku WSL (ext4.vhdx) sa nenašiel jednoznačne (${#found[@]}). Pošlite tento výpis."
-  vhd_win=$(wslpath -w "${found[0]}")
-fi
+# 3. The compaction script for Windows, for the ext4.vhdx of this distribution (lech_wsl_vhd_win).
+vhd_win=$(lech_wsl_vhd_win)
+[ -n "$vhd_win" ] || die "Súbor disku WSL (ext4.vhdx) sa nenašiel jednoznačne. Pošlite tento výpis."
+drive=${vhd_win:0:1}
 vhd_size=$(( $(stat -c %s "$(wslpath -u "$vhd_win")") / 1024 / 1024 / 1024 ))
 used_gb=$(df -Pk / | awk 'NR==2 {print int($3/1024/1024)}')
 
@@ -117,7 +104,7 @@ mkdir -p "$(dirname "$PS1_FILE")"
   printf '\xEF\xBB\xBF'
   vhd_ps=${vhd_win//\'/\'\'}   # inside a single-quoted PowerShell string
   sed "s|__VHD__|${vhd_ps//\\/\\\\}|" <<'EOF'
-# LECH OS: zmenší virtuálny disk WSL (ext4.vhdx), aby sa miesto uvoľnené v Linuxe vrátilo na disk C:.
+# LECH OS: zmenší virtuálny disk WSL (ext4.vhdx), aby sa miesto uvoľnené v Linuxe vrátilo na disk Windows.
 # Vytvoril ho tools/etapa2/uvolni-miesto.sh. Spúšťa sa v PowerShell ako správca; WSL sa počas neho vypne.
 $ErrorActionPreference = 'Stop'
 $vhd = '__VHD__'
@@ -147,8 +134,9 @@ Write-Host 'Zmenšujem disk WSL (diskpart, compact vdisk) - môže to trvať aj 
 diskpart /s $cmd
 $failed = $LASTEXITCODE -ne 0
 $after = (Get-Item -LiteralPath $vhd).Length
-$freeC = (Get-PSDrive -Name C).Free
-$sizes = 'disk WSL {0:N1} GB -> {1:N1} GB, voľné na C: {2:N1} GB.' -f ($before / 1GB), ($after / 1GB), ($freeC / 1GB)
+$drive = $vhd.Substring(0, 1)
+$free = (Get-PSDrive -Name $drive).Free
+$sizes = 'disk WSL {0:N1} GB -> {1:N1} GB, voľné na {2}: {3:N1} GB.' -f ($before / 1GB), ($after / 1GB), $drive, ($free / 1GB)
 if ($failed) { Write-Host ('diskpart skončil s chybou - pošlite tento výpis. ' + $sizes) -ForegroundColor Red; exit 1 }
 Write-Host ('Hotovo: ' + $sizes) -ForegroundColor Green
 Write-Host 'Otvorte znova Ubuntu a pokračujte: cd ~/Lech-OS && tools/etapa2/12-zostav-pixel.sh'
@@ -157,7 +145,7 @@ EOF
 
 echo
 echo "Disk WSL: ${vhd_win}"
-echo "  na C: zaberá ${vhd_size} GB, Linux v ňom používa ${used_gb} GB → zmenšením sa uvoľní približne $(( vhd_size > used_gb ? vhd_size - used_gb : 0 )) GB."
+echo "  na ${drive}: zaberá ${vhd_size} GB, Linux v ňom používa ${used_gb} GB → zmenšením sa uvoľní približne $(( vhd_size > used_gb ? vhd_size - used_gb : 0 )) GB."
 cat <<EOF
 
 Posledný krok vo Windows (WSL sa pri ňom vypne – zatvorte otvorené okná Ubuntu):
