@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Wed, 23 Sep 2026 10:53:38 +0000
+Subject: [PATCH] 17-qpr1: update android.frameworks.stats reference
+
+(cherry picked from GrapheneOS platform_frameworks_base, branch 17, commit de1d1d2506ef37bdd994a13a40b579edd4cbc9c6; LECH OS task E2-11b:
+the vendor files of the Pixel come from Android 17 QPR1 (CP3A.261005.005) and need this
+on the Android 17 platform)
+---
+ services/core/jni/Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/services/core/jni/Android.bp b/services/core/jni/Android.bp
+index 2b6629c8771..cf5385d8b65 100644
+--- a/services/core/jni/Android.bp
++++ b/services/core/jni/Android.bp
+@@ -194,7 +194,7 @@ cc_defaults {
+         "android.hidl.token@1.0-utils",
+         "android.frameworks.sensorservice@1.0",
+         "android.frameworks.sensorservice-V1-ndk",
+-        "android.frameworks.stats-V2-ndk",
++        "android.frameworks.stats-V3-ndk",
+         "android.os.vibrator.flags-aconfig-cc",
+         "aconfig_libgui_flags_c_lib",
+         "android.system.suspend.control-V1-cpp",
+-- 
+2.43.0
+

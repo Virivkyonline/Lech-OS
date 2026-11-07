@@ -1,0 +1,351 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Wed, 23 Sep 2026 10:53:21 +0000
+Subject: [PATCH] 17-qpr1: update android.frameworks.stats definition
+
+(cherry picked from GrapheneOS platform_frameworks_hardware_interfaces, branch 17, commit 458b97268ecfa0c1ee473e76243abdb1613dffeb; LECH OS task E2-11b:
+the vendor files of the Pixel come from Android 17 QPR1 (CP3A.261005.005) and need this
+on the Android 17 platform)
+---
+ stats/aidl/Android.bp                         |  5 ++-
+ .../android/frameworks/stats/IStats.aidl      |  2 +
+ .../stats/IVendorPullAtomCallback.aidl        | 38 ++++++++++++++++++
+ .../stats/IVendorPullAtomResultReceiver.aidl  | 38 ++++++++++++++++++
+ .../android/frameworks/stats/VendorAtom.aidl  |  1 +
+ .../stats/VendorPullAtomMetadata.aidl         | 40 +++++++++++++++++++
+ .../stats/VendorPullAtomReturnCode.aidl       | 39 ++++++++++++++++++
+ .../aidl/android/frameworks/stats/IStats.aidl |  9 +++++
+ .../stats/IVendorPullAtomCallback.aidl        |  9 +++++
+ .../stats/IVendorPullAtomResultReceiver.aidl  |  9 +++++
+ .../android/frameworks/stats/VendorAtom.aidl  |  2 +
+ .../stats/VendorPullAtomMetadata.aidl         |  8 ++++
+ .../stats/VendorPullAtomReturnCode.aidl       |  8 ++++
+ 13 files changed, 207 insertions(+), 1 deletion(-)
+ create mode 100644 stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IVendorPullAtomCallback.aidl
+ create mode 100644 stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IVendorPullAtomResultReceiver.aidl
+ create mode 100644 stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorPullAtomMetadata.aidl
+ create mode 100644 stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorPullAtomReturnCode.aidl
+ create mode 100644 stats/aidl/android/frameworks/stats/IVendorPullAtomCallback.aidl
+ create mode 100644 stats/aidl/android/frameworks/stats/IVendorPullAtomResultReceiver.aidl
+ create mode 100644 stats/aidl/android/frameworks/stats/VendorPullAtomMetadata.aidl
+ create mode 100644 stats/aidl/android/frameworks/stats/VendorPullAtomReturnCode.aidl
+
+diff --git a/stats/aidl/Android.bp b/stats/aidl/Android.bp
+index 9b78d51..106082b 100644
+--- a/stats/aidl/Android.bp
++++ b/stats/aidl/Android.bp
+@@ -28,6 +28,9 @@ aidl_interface {
+         },
+         java: {
+             enabled: true,
++            additional_libs: [
++                "framework-annotations-lib",
++            ],
+         },
+         ndk: {
+             enabled: true,
+@@ -52,5 +55,5 @@ aidl_interface {
+ 
+     ],
+     host_supported: true,
+-    frozen: true,
++    frozen: false,
+ }
+diff --git a/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IStats.aidl b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IStats.aidl
+index 5be1d2f..0aa3c28 100644
+--- a/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IStats.aidl
++++ b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IStats.aidl
+@@ -35,4 +35,6 @@ package android.frameworks.stats;
+ @VintfStability
+ interface IStats {
+   oneway void reportVendorAtom(in android.frameworks.stats.VendorAtom vendorAtom);
++  oneway @JavaPassthrough(annotation="@android.annotation.RequiresPermission(android.Manifest.permission.REGISTER_STATS_PULL_ATOM)") void setPullAtomCallback(int atomTag, in @nullable android.frameworks.stats.VendorPullAtomMetadata metadata, in android.frameworks.stats.IVendorPullAtomCallback pullerCallback);
++  oneway @JavaPassthrough(annotation="@android.annotation.RequiresPermission(android.Manifest.permission.REGISTER_STATS_PULL_ATOM)") void clearPullAtomCallback(int atomTag);
+ }
+diff --git a/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IVendorPullAtomCallback.aidl b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IVendorPullAtomCallback.aidl
+new file mode 100644
+index 0000000..d18596f
+--- /dev/null
++++ b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IVendorPullAtomCallback.aidl
+@@ -0,0 +1,38 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++///////////////////////////////////////////////////////////////////////////////
++// THIS FILE IS IMMUTABLE. DO NOT EDIT IN ANY CASE.                          //
++///////////////////////////////////////////////////////////////////////////////
++
++// This file is a snapshot of an AIDL file. Do not edit it manually. There are
++// two cases:
++// 1). this is a frozen version file - do not edit this in any case.
++// 2). this is a 'current' file. If you make a backwards compatible change to
++//     the interface (from the latest frozen version), the build system will
++//     prompt you to update this file with `m <name>-update-api`.
++//
++// You must not make a backward incompatible change to any AIDL file built
++// with the aidl_interface module type with versions property set. The module
++// type is used to build AIDL files in a way that they can be used across
++// independently updatable components of the system. If a device is shipped
++// with such a backward incompatible change, it has a high risk of breaking
++// later when a module using the interface is updated, e.g., Mainline modules.
++
++package android.frameworks.stats;
++@VintfStability
++interface IVendorPullAtomCallback {
++  oneway void onPullAtom(int atomTag, android.frameworks.stats.IVendorPullAtomResultReceiver resultReceiver);
++}
+diff --git a/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IVendorPullAtomResultReceiver.aidl b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IVendorPullAtomResultReceiver.aidl
+new file mode 100644
+index 0000000..2d7346e
+--- /dev/null
++++ b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/IVendorPullAtomResultReceiver.aidl
+@@ -0,0 +1,38 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++///////////////////////////////////////////////////////////////////////////////
++// THIS FILE IS IMMUTABLE. DO NOT EDIT IN ANY CASE.                          //
++///////////////////////////////////////////////////////////////////////////////
++
++// This file is a snapshot of an AIDL file. Do not edit it manually. There are
++// two cases:
++// 1). this is a frozen version file - do not edit this in any case.
++// 2). this is a 'current' file. If you make a backwards compatible change to
++//     the interface (from the latest frozen version), the build system will
++//     prompt you to update this file with `m <name>-update-api`.
++//
++// You must not make a backward incompatible change to any AIDL file built
++// with the aidl_interface module type with versions property set. The module
++// type is used to build AIDL files in a way that they can be used across
++// independently updatable components of the system. If a device is shipped
++// with such a backward incompatible change, it has a high risk of breaking
++// later when a module using the interface is updated, e.g., Mainline modules.
++
++package android.frameworks.stats;
++@VintfStability
++interface IVendorPullAtomResultReceiver {
++  oneway void pullFinished(int atomTag, android.frameworks.stats.VendorPullAtomReturnCode code, in List<android.frameworks.stats.VendorAtom> result);
++}
+diff --git a/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorAtom.aidl b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorAtom.aidl
+index 3174d5f..57101a0 100644
+--- a/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorAtom.aidl
++++ b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorAtom.aidl
+@@ -39,4 +39,5 @@ parcelable VendorAtom {
+   android.frameworks.stats.VendorAtomValue[] values;
+   @nullable android.frameworks.stats.AnnotationSet[] valuesAnnotations;
+   @nullable android.frameworks.stats.Annotation[] atomAnnotations;
++  long timestampNanos = 0;
+ }
+diff --git a/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorPullAtomMetadata.aidl b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorPullAtomMetadata.aidl
+new file mode 100644
+index 0000000..151f6a3
+--- /dev/null
++++ b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorPullAtomMetadata.aidl
+@@ -0,0 +1,40 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++///////////////////////////////////////////////////////////////////////////////
++// THIS FILE IS IMMUTABLE. DO NOT EDIT IN ANY CASE.                          //
++///////////////////////////////////////////////////////////////////////////////
++
++// This file is a snapshot of an AIDL file. Do not edit it manually. There are
++// two cases:
++// 1). this is a frozen version file - do not edit this in any case.
++// 2). this is a 'current' file. If you make a backwards compatible change to
++//     the interface (from the latest frozen version), the build system will
++//     prompt you to update this file with `m <name>-update-api`.
++//
++// You must not make a backward incompatible change to any AIDL file built
++// with the aidl_interface module type with versions property set. The module
++// type is used to build AIDL files in a way that they can be used across
++// independently updatable components of the system. If a device is shipped
++// with such a backward incompatible change, it has a high risk of breaking
++// later when a module using the interface is updated, e.g., Mainline modules.
++
++package android.frameworks.stats;
++@VintfStability
++parcelable VendorPullAtomMetadata {
++  long coolDownMillis;
++  long timeoutMillis;
++  @nullable int[] additiveFields;
++}
+diff --git a/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorPullAtomReturnCode.aidl b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorPullAtomReturnCode.aidl
+new file mode 100644
+index 0000000..e2e6c31
+--- /dev/null
++++ b/stats/aidl/aidl_api/android.frameworks.stats/current/android/frameworks/stats/VendorPullAtomReturnCode.aidl
+@@ -0,0 +1,39 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++///////////////////////////////////////////////////////////////////////////////
++// THIS FILE IS IMMUTABLE. DO NOT EDIT IN ANY CASE.                          //
++///////////////////////////////////////////////////////////////////////////////
++
++// This file is a snapshot of an AIDL file. Do not edit it manually. There are
++// two cases:
++// 1). this is a frozen version file - do not edit this in any case.
++// 2). this is a 'current' file. If you make a backwards compatible change to
++//     the interface (from the latest frozen version), the build system will
++//     prompt you to update this file with `m <name>-update-api`.
++//
++// You must not make a backward incompatible change to any AIDL file built
++// with the aidl_interface module type with versions property set. The module
++// type is used to build AIDL files in a way that they can be used across
++// independently updatable components of the system. If a device is shipped
++// with such a backward incompatible change, it has a high risk of breaking
++// later when a module using the interface is updated, e.g., Mainline modules.
++
++package android.frameworks.stats;
++@Backing(type="int") @VintfStability
++enum VendorPullAtomReturnCode {
++  PULL_SUCCESS = 0,
++  PULL_SKIP = 1,
++}
+diff --git a/stats/aidl/android/frameworks/stats/IStats.aidl b/stats/aidl/android/frameworks/stats/IStats.aidl
+index 8ccd41d..1930ddb 100644
+--- a/stats/aidl/android/frameworks/stats/IStats.aidl
++++ b/stats/aidl/android/frameworks/stats/IStats.aidl
+@@ -15,7 +15,9 @@
+ //
+ package android.frameworks.stats;
+ 
++import android.frameworks.stats.IVendorPullAtomCallback;
+ import android.frameworks.stats.VendorAtom;
++import android.frameworks.stats.VendorPullAtomMetadata;
+ 
+ /**
+  * IStats is an interface that allows clients to report specific hardware
+@@ -32,4 +34,11 @@ interface IStats {
+      *        atom ID and server-side configs.
+      */
+     oneway void reportVendorAtom(in VendorAtom vendorAtom);
++
++    @JavaPassthrough(annotation="@android.annotation.RequiresPermission(android.Manifest.permission.REGISTER_STATS_PULL_ATOM)")
++    oneway void setPullAtomCallback(int atomTag, in @nullable VendorPullAtomMetadata metadata,
++                                    in IVendorPullAtomCallback pullerCallback);
++
++    @JavaPassthrough(annotation="@android.annotation.RequiresPermission(android.Manifest.permission.REGISTER_STATS_PULL_ATOM)")
++    oneway void clearPullAtomCallback(int atomTag);
+ }
+diff --git a/stats/aidl/android/frameworks/stats/IVendorPullAtomCallback.aidl b/stats/aidl/android/frameworks/stats/IVendorPullAtomCallback.aidl
+new file mode 100644
+index 0000000..a3bbb69
+--- /dev/null
++++ b/stats/aidl/android/frameworks/stats/IVendorPullAtomCallback.aidl
+@@ -0,0 +1,9 @@
++package android.frameworks.stats;
++
++import android.frameworks.stats.VendorAtom;
++import android.frameworks.stats.IVendorPullAtomResultReceiver;
++
++@VintfStability
++interface IVendorPullAtomCallback {
++    oneway void onPullAtom(int atomTag, IVendorPullAtomResultReceiver resultReceiver);
++}
+diff --git a/stats/aidl/android/frameworks/stats/IVendorPullAtomResultReceiver.aidl b/stats/aidl/android/frameworks/stats/IVendorPullAtomResultReceiver.aidl
+new file mode 100644
+index 0000000..4e449d6
+--- /dev/null
++++ b/stats/aidl/android/frameworks/stats/IVendorPullAtomResultReceiver.aidl
+@@ -0,0 +1,9 @@
++package android.frameworks.stats;
++
++import android.frameworks.stats.VendorPullAtomReturnCode;
++import android.frameworks.stats.VendorAtom;
++
++@VintfStability
++interface IVendorPullAtomResultReceiver  {
++    oneway void pullFinished(int atomTag, VendorPullAtomReturnCode code, in List<VendorAtom> result);
++}
+diff --git a/stats/aidl/android/frameworks/stats/VendorAtom.aidl b/stats/aidl/android/frameworks/stats/VendorAtom.aidl
+index 58038ad..ba8e4fb 100644
+--- a/stats/aidl/android/frameworks/stats/VendorAtom.aidl
++++ b/stats/aidl/android/frameworks/stats/VendorAtom.aidl
+@@ -90,4 +90,6 @@ parcelable VendorAtom {
+     * Vector of annotations associated with VendorAtom
+     */
+     @nullable Annotation[] atomAnnotations;
++
++    long timestampNanos = 0;
+ }
+diff --git a/stats/aidl/android/frameworks/stats/VendorPullAtomMetadata.aidl b/stats/aidl/android/frameworks/stats/VendorPullAtomMetadata.aidl
+new file mode 100644
+index 0000000..cb2995b
+--- /dev/null
++++ b/stats/aidl/android/frameworks/stats/VendorPullAtomMetadata.aidl
+@@ -0,0 +1,8 @@
++package android.frameworks.stats;
++
++@VintfStability
++parcelable VendorPullAtomMetadata {
++    long coolDownMillis;
++    long timeoutMillis;
++    @nullable int[] additiveFields;
++}
+diff --git a/stats/aidl/android/frameworks/stats/VendorPullAtomReturnCode.aidl b/stats/aidl/android/frameworks/stats/VendorPullAtomReturnCode.aidl
+new file mode 100644
+index 0000000..9db8f98
+--- /dev/null
++++ b/stats/aidl/android/frameworks/stats/VendorPullAtomReturnCode.aidl
+@@ -0,0 +1,8 @@
++package android.frameworks.stats;
++
++@VintfStability
++@Backing(type="int")
++enum VendorPullAtomReturnCode {
++    PULL_SUCCESS = 0,
++    PULL_SKIP = 1,
++}
+-- 
+2.43.0
+

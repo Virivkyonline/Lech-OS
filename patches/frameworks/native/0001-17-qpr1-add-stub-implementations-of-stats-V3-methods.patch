@@ -1,0 +1,109 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Wed, 23 Sep 2026 10:53:27 +0000
+Subject: [PATCH] 17-qpr1: add stub implementations of stats-V3 methods
+
+(cherry picked from GrapheneOS platform_frameworks_native, branch 17, commit 8b7a21951b36a5f89609936c371bb642fd8124fc; LECH OS task E2-11b:
+the vendor files of the Pixel come from Android 17 QPR1 (CP3A.261005.005) and need this
+on the Android 17 platform)
+---
+ services/stats/Android.bp                         |  7 +++++--
+ services/stats/StatsAidl.cpp                      | 15 +++++++++++++++
+ .../stats/android.frameworks.stats-service.xml    |  2 +-
+ services/stats/include/stats/StatsAidl.h          |  6 ++++++
+ 4 files changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/services/stats/Android.bp b/services/stats/Android.bp
+index 3e13d2eac..b6b3429c7 100644
+--- a/services/stats/Android.bp
++++ b/services/stats/Android.bp
+@@ -22,10 +22,13 @@ cc_library_shared {
+         "-Werror",
+     ],
+     shared_libs: [
+-        "android.frameworks.stats-V2-ndk",
++        "android.frameworks.stats-V3-ndk",
++        "libandroid",
++        "libbase",
+         "libbinder_ndk",
+         "libexpresslog",
+         "liblog",
++        "libstatspull",
+         "libstatssocket",
+         "libutils",
+     ],
+@@ -33,7 +36,7 @@ cc_library_shared {
+         "include/",
+     ],
+     export_shared_lib_headers: [
+-        "android.frameworks.stats-V2-ndk",
++        "android.frameworks.stats-V3-ndk",
+     ],
+     local_include_dirs: [
+         "include/stats",
+diff --git a/services/stats/StatsAidl.cpp b/services/stats/StatsAidl.cpp
+index e4869fe55..baf6d0058 100644
+--- a/services/stats/StatsAidl.cpp
++++ b/services/stats/StatsAidl.cpp
+@@ -39,6 +39,7 @@ namespace frameworks {
+ namespace stats {
+ 
+ using ::android::expresslog::Counter;
++using ndk::ScopedAStatus;
+ 
+ template <typename E>
+ constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept {
+@@ -268,6 +269,20 @@ ndk::ScopedAStatus StatsHal::reportVendorAtom(const VendorAtom& vendorAtom) {
+                     : ndk::ScopedAStatus::ok();
+ }
+ 
++ScopedAStatus StatsHal::setPullAtomCallback(
++        int32_t atomTag, const std::optional<VendorPullAtomMetadata>& metadata __unused,
++        const std::shared_ptr<IVendorPullAtomCallback>& pullerCallback __unused) {
++    VLOG("setPullAtomCallback for atom tag %d", atomTag);
++    return ScopedAStatus::ok();
++    // return ScopedAStatus::fromServiceSpecificErrorWithMessage(1, "Feature is disabled");
++}
++
++ScopedAStatus StatsHal::clearPullAtomCallback(int32_t atomTag) {
++    VLOG("clearPullAtomCallback for atom tag %d", atomTag);
++    return ScopedAStatus::ok();
++    // return ScopedAStatus::fromServiceSpecificErrorWithMessage(1, "Feature is disabled");
++}
++
+ }  // namespace stats
+ }  // namespace frameworks
+ }  // namespace android
+diff --git a/services/stats/android.frameworks.stats-service.xml b/services/stats/android.frameworks.stats-service.xml
+index 228def003..4505000c3 100644
+--- a/services/stats/android.frameworks.stats-service.xml
++++ b/services/stats/android.frameworks.stats-service.xml
+@@ -1,7 +1,7 @@
+ <manifest version="1.0" type="framework">
+     <hal format="aidl">
+         <name>android.frameworks.stats</name>
+-        <version>2</version>
++        <version>3</version>
+         <fqname>IStats/default</fqname>
+     </hal>
+ </manifest>
+diff --git a/services/stats/include/stats/StatsAidl.h b/services/stats/include/stats/StatsAidl.h
+index 340b53955..8377dd0cc 100644
+--- a/services/stats/include/stats/StatsAidl.h
++++ b/services/stats/include/stats/StatsAidl.h
+@@ -29,6 +29,12 @@ public:
+      * Binder call to get vendor atom.
+      */
+     virtual ndk::ScopedAStatus reportVendorAtom(const VendorAtom& in_vendorAtom) override;
++
++    virtual ndk::ScopedAStatus setPullAtomCallback(
++            int32_t atomTag, const std::optional<VendorPullAtomMetadata>& metadata,
++            const std::shared_ptr<IVendorPullAtomCallback>& pullerCallback) override;
++
++    virtual ndk::ScopedAStatus clearPullAtomCallback(int32_t atomTag) override;
+ };
+ 
+ }  // namespace stats
+-- 
+2.43.0
+

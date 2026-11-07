@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Fri, 25 Sep 2026 15:53:12 +0000
+Subject: [PATCH] 17-qpr1: update libbinder API
+
+(cherry picked from GrapheneOS platform_frameworks_native, branch 17, commit 1c83ac6ae533c74ecb0486369c0d2f9e79783b3d; LECH OS task E2-11b:
+the vendor files of the Pixel come from Android 17 QPR1 (CP3A.261005.005) and need this
+on the Android 17 platform)
+---
+ libs/binder/Parcel.cpp              | 10 ++++++----
+ libs/binder/include/binder/Parcel.h |  6 +++---
+ 2 files changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
+index 1ae7af322..ddfd334c5 100644
+--- a/libs/binder/Parcel.cpp
++++ b/libs/binder/Parcel.cpp
+@@ -1393,9 +1393,9 @@ restart_write:
+     return nullptr;
+ }
+ 
+-status_t Parcel::writeUtf8AsUtf16(const std::string& str) {
+-    const uint8_t* strData = (uint8_t*)str.data();
+-    const size_t strLen= str.length();
++status_t Parcel::writeUtf8AsUtf16(std::string_view sv) {
++    const uint8_t* strData = (uint8_t*)sv.data();
++    const size_t strLen = sv.size();
+     const ssize_t utf16Len = utf8_to_utf16_length(strData, strLen);
+     if (utf16Len < 0 || utf16Len > std::numeric_limits<int32_t>::max()) {
+         return BAD_VALUE;
+@@ -1417,7 +1417,9 @@ status_t Parcel::writeUtf8AsUtf16(const std::string& str) {
+     return NO_ERROR;
+ }
+ 
+-
++status_t Parcel::writeUtf8AsUtf16(const std::string& str) {
++    return writeUtf8AsUtf16(std::string_view(str));
++}
+ status_t Parcel::writeUtf8AsUtf16(const std::optional<std::string>& str) { return writeData(str); }
+ status_t Parcel::writeUtf8AsUtf16(const std::unique_ptr<std::string>& str) { return writeData(str); }
+ 
+diff --git a/libs/binder/include/binder/Parcel.h b/libs/binder/include/binder/Parcel.h
+index a5142805a..170fbafb9 100644
+--- a/libs/binder/include/binder/Parcel.h
++++ b/libs/binder/include/binder/Parcel.h
+@@ -21,6 +21,7 @@
+ #include <map> // for legacy reasons
+ #include <optional>
+ #include <string>
++#include <string_view>
+ #include <type_traits>
+ #include <variant>
+ #include <vector>
+@@ -195,6 +196,7 @@ public:
+     LIBBINDER_EXPORTED status_t writeByte(int8_t val);
+ 
+     // Take a UTF8 encoded string, convert to UTF16, write it to the parcel.
++    LIBBINDER_EXPORTED status_t writeUtf8AsUtf16(std::string_view sv);
+     LIBBINDER_EXPORTED status_t writeUtf8AsUtf16(const std::string& str);
+     LIBBINDER_EXPORTED status_t writeUtf8AsUtf16(const std::optional<std::string>& str);
+     LIBBINDER_EXPORTED status_t writeUtf8AsUtf16(const std::unique_ptr<std::string>& str)
+@@ -1018,9 +1020,7 @@ private:
+         return writeString16(t);
+     }
+ 
+-    status_t writeData(const std::string& t) {
+-        return writeUtf8AsUtf16(t);
+-    }
++    status_t writeData(const std::string& t) { return writeUtf8AsUtf16(std::string_view(t)); }
+ 
+     status_t writeData(const binder::unique_fd& t) { return writeUniqueFileDescriptor(t); }
+ 
+-- 
+2.43.0
+

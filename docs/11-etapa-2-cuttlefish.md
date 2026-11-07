@@ -812,6 +812,12 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     zostavujú zo zdrojov (`MODULE_BUILD_FROM_SOURCE`, záplaty LECH v `packages/modules` platia). `12-zostav-pixel.sh`
     najprv zostaví `plat_sepolicy.cil` vydania `cp2a` a modul Pixelu vytvorí znova, ak bol vygenerovaný voči inej
     platformovej politike. Cuttlefish a GSI zatiaľ ostávajú na `trunk_staging`.
+31. **Tretie zostavenie `lech_tokay` (6.–7. 11. 2026, `cp2a`):** politika SELinux prešla, po 89 min (32 425 krokov)
+    zlyhal `host_init_verifier` na `init.zumapro.usb.rc` vendora: `mkdir /dev/usb-ffs/ctrl 0770 aoad aoad` – používateľ
+    `aoad` je až v Androide 17 QPR1. Vendor Pixelu je z QPR1 (`CP3A`), platforma Android 17 (26Q2); GrapheneOS má pre to
+    sadu zmien „17-qpr1“. Prevzatých 6 (overené proti súborom AOSP 26Q2): `AID_AOAD` (system/core), `android.frameworks.stats`
+    V3 (frameworks/hardware/interfaces, frameworks/native, frameworks/base), nová funkcia `Parcel` v libbinder
+    (frameworks/native) a ID zdrojov frameworku podľa CP3A (frameworks/base). Matica kompatibility HAL zmeny nepotrebuje.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
