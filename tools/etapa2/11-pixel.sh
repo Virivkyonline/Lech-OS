@@ -401,8 +401,14 @@ wipe_data() {
     out=$(fb -w) && { printf '%s\n' "$out" | grep -E "^(Erasing|Formatting|Finished)" | sed 's/^/    /'; return 0; }
     printf '%s\n' "$out" | grep FAILED | tail -n 1
     echo "    V režime fastbootd sa dáta vymazať nedajú – mažem ich v bootloaderi…"
-    fb reboot bootloader >/dev/null
-    in_bootloader_wait || return 1
+    # After the failed wipe fastbootd may not answer at all: the reboot command then hangs (7. 11. 2026).
+    if ! (cd "$PIXEL_DIR" 2>/dev/null || cd /; timeout 30 "${FASTBOOT[@]}" reboot bootloader) >/dev/null 2>&1; then
+      echo "    Telefón (fastbootd) neodpovedá. Na telefóne tlačidlami hlasitosti vyberte 'Reboot to bootloader'"
+      echo "    a potvrďte tlačidlom Napájanie – čakám 5 minút…"
+      in_bootloader_wait 300 || return 1
+    else
+      in_bootloader_wait || return 1
+    fi
   fi
   out=$(fb -w)
   printf '%s\n' "$out" | grep -vE '^ *$' | tail -n 4 | sed 's/^/    /'
@@ -412,10 +418,10 @@ wipe_data() {
 }
 # Wait until the phone answers from the bootloader (not fastbootd): a reboot takes some seconds, and in the
 # meantime the old fastbootd can still be listed.
-in_bootloader_wait() {
-  local i
+in_bootloader_wait() {   # [seconds, default 120]
+  local i limit=${1:-120}
   sleep 3
-  for (( i = 0; i < 120; i += 3 )); do
+  for (( i = 0; i < limit; i += 3 )); do
     if fastboot_ready && [ -n "$(fb_var product)" ] && [ "$(fb_var is-userspace)" != yes ]; then return 0; fi
     sleep 3
   done
