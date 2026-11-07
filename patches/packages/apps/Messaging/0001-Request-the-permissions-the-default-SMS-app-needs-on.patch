@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sat, 7 Nov 2026 10:30:00 +0100
+Subject: [PATCH] Request the permissions the default SMS app needs on Android
+ 17
+
+Android recognises the default SMS app (Telephony.Sms.getDefaultSmsPackage,
+SmsApplication) only when the app ops in DEFAULT_APP_EXCLUSIVE_APPOPS are
+allowed for it, among them RECEIVE_WAP_PUSH and READ_CELL_BROADCASTS. These
+app ops follow runtime permissions, and the SMS role grants a permission
+only when the app requests it. Messaging did not request these two, so on
+Android 17 the app ops stayed "ignore": the app held the SMS role but kept
+asking to become the default SMS app, could not send and posted no
+notification for received messages (LECH OS on the Pixel 9, 7. 11. 2026).
+The Messaging app of GrapheneOS requests both.
+---
+ AndroidManifest.xml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -30,2 +30,6 @@
+     <uses-permission android:name="android.permission.SEND_SMS"/>
++    <!-- LECH OS: the default SMS app needs these app ops (SmsApplication); the SMS role grants the
++         permissions behind them only when they are requested. -->
++    <uses-permission android:name="android.permission.RECEIVE_WAP_PUSH"/>
++    <uses-permission android:name="android.permission.READ_CELL_BROADCASTS"/>
+     <!-- Application needs access to MMS network -->
+-- 
+2.43.0
+

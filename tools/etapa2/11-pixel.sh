@@ -12,7 +12,8 @@
 #   stav       what is connected: Android (adb) or bootloader (fastboot), model, version, bootloader state
 #   odomknut   unlock the bootloader – ERASES ALL DATA in the phone (confirm on the phone)
 #   nahrat     flash the LECH OS GSI from 11-zostav-gsi.sh – erases all data
-#   nahrat-uplne  flash the full LECH OS for the Pixel 9 from 12-zostav-pixel.sh (E2-11b) – erases all data
+#   nahrat-uplne [--bez-mazania]  flash the full LECH OS for the Pixel 9 from 12-zostav-pixel.sh (E2-11b) – erases
+#              all data; --bez-mazania keeps the data (a newer build of LECH OS over a running one, same keys)
 #   dokoncit   only the last step of nahrat: erase the data and start (when the erase failed)
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   siet       mobile network diagnostics (SIM, radio HAL, registration, errors) to ~/lech-work/pixel
@@ -370,6 +371,12 @@ cez Android Flash Tool (tools/etapa2/11-pixel.sh spat)."
 # Full LECH OS for the Pixel 9 (E2-11b, 12-zostav-pixel.sh): all partitions with `fastboot update`, which flashes
 # the boot partitions in the bootloader and the dynamic ones (system, vendor…) in fastbootd.
 cmd_nahrat_uplne() {
+  local keep=0
+  case "${1:-}" in
+    --bez-mazania) keep=1 ;;
+    "") ;;
+    *) die "Neznámy parameter: $1 (použitie: 11-pixel.sh nahrat-uplne [--bez-mazania])" ;;
+  esac
   need_tools
   local zip_dir zip=lech-tokay-img.zip out attempt slot product unlocked snapshot
   if [ "$WINDOWS" -eq 1 ]; then zip_dir=/mnt/c/lech/pixel-uplne; else zip_dir=${LECH_PIXEL_FULL_DIR:-$WORKDIR/pixel-uplne}; fi
@@ -383,8 +390,13 @@ cmd_nahrat_uplne() {
   [ "$product" = "$EXPECTED_DEVICE" ] || die "Úplná zostava je pre Pixel 9 ($EXPECTED_DEVICE), pripojený je $product."
   snapshot=$(fb_var snapshot-update-status)
   case "$snapshot" in ""|none) ;; *) die "Telefón ešte dokončuje aktualizáciu (snapshot-update-status: $snapshot)." ;; esac
-  confirm "Do telefónu sa nahrá ÚPLNÝ LECH OS (systém, vendor, boot, vbmeta) a VYMAŽÚ SA VŠETKY DÁTA.
+  if [ "$keep" -eq 1 ]; then
+    confirm "Do telefónu sa nahrá nová zostava ÚPLNÉHO LECH OS; dáta ostanú (len nad bežiaci úplný LECH OS
+s rovnakými kľúčmi – nie nad systém Google ani GSI; ak by telefón potom nenaštartoval: nahrat-uplne bez --bez-mazania)."
+  else
+    confirm "Do telefónu sa nahrá ÚPLNÝ LECH OS (systém, vendor, boot, vbmeta) a VYMAŽÚ SA VŠETKY DÁTA.
 Pôvodný systém sa dá vrátiť cez Android Flash Tool (tools/etapa2/11-pixel.sh spat)."
+  fi
   echo
   echo "1/2 Nahrávam obrazy (fastboot update, niekoľko minút; telefón sa medzitým prepne do fastbootd)…"
   for attempt in 1 2 3; do
@@ -402,8 +414,13 @@ Pôvodný systém sa dá vrátiť cez Android Flash Tool (tools/etapa2/11-pixel.
     [ "$attempt" -eq 3 ] && die "Obrazy sa nepodarilo nahrať ani na tretí pokus – skúste iný kábel alebo port USB."
   done
   printf '%s\n' "$out" | grep -E '^(Finished|Sending|Writing)' | tail -n 3 | sed 's/^/    /'
-  echo "2/2 Vymazanie dát a štart:"
-  finish_flash "$slot"
+  if [ "$keep" -eq 1 ]; then
+    echo "2/2 Štart (dáta ostávajú):"
+    finish_flash "$slot" keep
+  else
+    echo "2/2 Vymazanie dát a štart:"
+    finish_flash "$slot"
+  fi
 }
 
 # Erase the data of the previous system. The Pixel 9's fastbootd refuses it ("Error DCK wipe failed",
@@ -457,10 +474,14 @@ Vymažte dáta v telefóne ručne (Recovery):
   4. Potom "Reboot system now" – spustí sa LECH OS.
 EOF
 }
-finish_flash() {   # slot
-  echo "4/4 Mažem dáta starého systému a reštartujem…"
+finish_flash() {   # slot [keep]
   local status=0
-  wipe_data || status=$?
+  if [ "${2:-}" = keep ]; then
+    echo "    Reštartujem (bez mazania dát)…"
+  else
+    echo "4/4 Mažem dáta starého systému a reštartujem…"
+    wipe_data || status=$?
+  fi
   [ "$status" -eq 2 ] && die "Dáta sa nevymazali, telefón neodpovedá (postup vyššie). LECH OS je nahratý."
   if [ "$status" -ne 0 ]; then
     recovery_wipe_hint
@@ -882,7 +903,7 @@ case "${1:-}" in
   stav) cmd_stav ;;
   odomknut) cmd_odomknut ;;
   nahrat) cmd_nahrat ;;
-  nahrat-uplne) cmd_nahrat_uplne ;;
+  nahrat-uplne) shift; cmd_nahrat_uplne "$@" ;;
   dokoncit) cmd_dokoncit ;;
   kontrola) cmd_kontrola ;;
   siet) cmd_siet ;;

@@ -832,6 +832,14 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     kľúče LECH, NTP, animácia, RKP bez Google). SIM 4ka **v sieti 4ka na LTE** (s GSI národný roaming Orange, EDGE).
     Obrazy `vbmeta_system` a `vbmeta_vendor` zostava nemá (systém je priamo vo `vbmeta`) – rieši sa pri zamknutí (E2-12).
     `11-pixel.sh siet` odteraz ukazuje aj službu IMS, jej registráciu a VoLTE z nastavení operátora (CarrierConfig2).
+34. **Test úplnej zostavy (7. 11. 2026):** Android 17, hovory, Wi-Fi a mobilné dáta (IPv4, DNS) fungujú; CarrierConfig2
+    načítal nastavenia Google pre 4ka (`4ka_sk`, 3 APN), VoLTE v nich pre 4ka vypnuté (`carrier_volte_available_bool
+    = false`), služba IMS `com.shannon.imsservice` naviazaná. **SMS:** prijaté sa uložia, ale bez upozornenia, a odoslať
+    nejde – aplikácia SMS a MMS (AOSP Messaging, `targetSdk 24`) má rolu SMS, no `SmsApplication` ju vyradí:
+    `lost android:receive_wap_push` → `isDefaultSmsApp=false`. Android 17 vyžaduje app ops `RECEIVE_WAP_PUSH`
+    a `READ_CELL_BROADCASTS`, ktoré nasledujú oprávnenia, a aplikácia si ich nežiadala (aplikácia SMS od GrapheneOS
+    áno). Záplata manifestu: [patches/packages/apps/Messaging](../patches/packages/apps/Messaging). Nové príkazy:
+    `11-pixel.sh sms` (záznam jedného pokusu o SMS) a `nahrat-uplne --bez-mazania` (novšia zostava bez mazania dát).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
