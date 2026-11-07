@@ -16,6 +16,7 @@
 #   dokoncit   only the last step of nahrat: erase the data and start (when the erase failed)
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   siet       mobile network diagnostics (SIM, radio HAL, registration, errors) to ~/lech-work/pixel
+#   sms        log of one SMS attempt: clears the log, waits while an SMS is sent in the phone, keeps the SMS lines
 #   audit [--minuty N] [--dokoncit] [--vyhodnotit]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default
 #              15 min); --dokoncit finishes a started audit after the USB connection dropped,
 #              --vyhodnotit evaluates the last downloaded audit again (no phone needed)
@@ -648,6 +649,39 @@ cmd_siet() {
   echo "Pošlite snímku tohto súhrnu; ak treba, aj: tail -n 60 $out"
 }
 
+# One SMS attempt in the log (E2-11b: the messaging app keeps asking to become the default SMS app although it
+# holds the SMS role, received messages make no sound): the app, its permissions and app ops, and the log lines.
+cmd_sms() {
+  need_tools
+  wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
+  mkdir -p "$WORKDIR/pixel"
+  local out="$WORKDIR/pixel/sms-$(date +%Y%m%d-%H%M%S).txt" app
+  local ADB_TIMEOUT=45
+  app=$(adb_ shell cmd role get-role-holders android.app.role.SMS | head -n 1)
+  adb_ logcat -c >/dev/null; adb_ logcat -b radio -c >/dev/null
+  echo "Predvolená aplikácia SMS podľa systému: ${app:-žiadna}"
+  echo
+  echo "Teraz v telefóne v aplikácii SMS a MMS pošlite SMS (ak sa pýta na predvolenú aplikáciu, potvrďte to)."
+  echo "Môžete si nechať poslať aj SMS. Čakám 60 sekúnd…"
+  sleep 60
+  {
+    echo "== Rola SMS"; adb_ shell cmd role get-role-holders android.app.role.SMS
+    echo "== Predvolená SMS podľa telefónnej služby"; adb_ shell settings get secure sms_default_application
+    echo "== Balík ${app:-com.android.messaging}"
+    adb_ shell dumpsys package "${app:-com.android.messaging}" | grep -E 'versionName|targetSdk|SMS|MMS|NOTIFICATIONS|granted=false' | head -n 40
+    echo "== App ops"; adb_ shell cmd appops get "${app:-com.android.messaging}" | grep -iE 'sms|mms|notification' | head -n 20
+    echo "== Log aplikácie a telefónu"
+    adb_ logcat -d | grep -iE 'messaging|sms|RoleManager|RoleService|DefaultSms|SmsApplication|AndroidRuntime' | tail -n 120
+    echo "== Log rádia"; adb_ logcat -b radio -d | grep -iE 'sms|smsc' | tail -n 40
+  } > "$out" 2>&1
+  echo
+  echo "Výťah (chyby a upozornenia):"
+  sed -n '/^== Log aplikácie a telefónu/,$p' "$out" | grep -E ' [EWF] |Exception|denied|not default|default' | tail -n 25 | cut -c1-170 | sed 's/^/  /'
+  echo
+  echo "Úplný výpis: $out"
+  echo "Pošlite snímku tohto výťahu."
+}
+
 # Network audit in the phone itself: tcpdump on all interfaces (Wi-Fi and mobile network, which does not pass
 # the notebook), DNS queries by app, evaluated by analyzuj_audit.py --siete against spec/povolene-spojenia.txt.
 cmd_audit() {
@@ -840,6 +874,7 @@ case "${1:-}" in
   dokoncit) cmd_dokoncit ;;
   kontrola) cmd_kontrola ;;
   siet) cmd_siet ;;
+  sms) cmd_sms ;;
   audit) shift; cmd_audit "$@" ;;
   slot) shift; cmd_slot "$@" ;;
   spat) cmd_spat ;;
