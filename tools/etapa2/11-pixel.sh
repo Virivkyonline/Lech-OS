@@ -614,9 +614,10 @@ cmd_siet() {
     echo "== Dáta: adresy"; adb_ shell ip -o addr show | grep -vE ' lo |dummy' | awk '{print $2, $3, $4}'
     echo "== Dáta: súkromné DNS"; adb_ shell settings get global private_dns_mode; adb_ shell settings get global private_dns_specifier
     echo "== Dáta: test"
-    echo "ping IPv4 9.9.9.9: $(adb_ shell ping -c 2 -W 4 9.9.9.9 | grep -oE '[0-9]+ received' || echo zlyhal)"
-    echo "ping IPv6 2620:fe::fe: $(adb_ shell ping6 -c 2 -W 4 2620:fe::fe | grep -oE '[0-9]+ received' || echo zlyhal)"
-    echo "ping meno www.wikipedia.org: $(adb_ shell ping -c 2 -W 4 www.wikipedia.org | head -n 1 | cut -c1-80; adb_ shell ping -c 2 -W 4 www.wikipedia.org | grep -oE '[0-9]+ received' || echo zlyhal)"
+    # -w: deadline – ping of toybox otherwise waits for replies without end (siet hung, 7. 11. 2026).
+    echo "ping IPv4 9.9.9.9: $(adb_ shell ping -c 2 -w 8 9.9.9.9 | grep -oE '[0-9]+ received' || echo zlyhal)"
+    echo "ping IPv6 2620:fe::fe: $(adb_ shell ping6 -c 2 -w 8 2620:fe::fe | grep -oE '[0-9]+ received' || echo zlyhal)"
+    echo "DNS www.wikipedia.org: $(adb_ shell ping -c 1 -w 8 www.wikipedia.org | head -n 1 | grep -oE '\([0-9a-f.:]+\)' || echo zlyhal)"
     echo "== Chyby v logu rádia"; adb_ logcat -b radio -d | grep -E ' [EF] ' | tail -n 60
     echo "== Chyby telefónnej služby"; adb_ logcat -d | grep -iE 'com\.android\.phone|RILJ|IRadio|AndroidRuntime' | grep -E ' [EF] ' | tail -n 40
   } > "$out" 2>&1
