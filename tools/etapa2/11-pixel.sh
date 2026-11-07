@@ -598,6 +598,15 @@ cmd_siet() {
     adb_ logcat -b radio -d | grep -iE 'sms|smsc|SEND_SMS|NEW_SMS|IMS_SEND|CDMA_SEND|ackSms' | tail -n 50
     echo "== SMS v logu telefónu"
     adb_ logcat -d | grep -iE 'SmsDispatcher|SmsController|InboundSms|SmsManager|MessagingApp|SendMessageAction|ProcessSentMessage|smsc' | tail -n 40
+    # Mobile data (E2-11b: slow, some sites do not open): addresses, DNS, private DNS and reachability by address
+    # and by name, IPv4 and IPv6 (Quad9 and Wikipedia, no Google servers).
+    echo "== Dáta: siete"; adb_ shell dumpsys connectivity | grep -E '^ *NetworkAgentInfo\{' | cut -c1-400 | head -n 4
+    echo "== Dáta: adresy"; adb_ shell ip -o addr show | grep -vE ' lo |dummy' | awk '{print $2, $3, $4}'
+    echo "== Dáta: súkromné DNS"; adb_ shell settings get global private_dns_mode; adb_ shell settings get global private_dns_specifier
+    echo "== Dáta: test"
+    echo "ping IPv4 9.9.9.9: $(adb_ shell ping -c 2 -W 4 9.9.9.9 | grep -oE '[0-9]+ received' || echo zlyhal)"
+    echo "ping IPv6 2620:fe::fe: $(adb_ shell ping6 -c 2 -W 4 2620:fe::fe | grep -oE '[0-9]+ received' || echo zlyhal)"
+    echo "ping meno www.wikipedia.org: $(adb_ shell ping -c 2 -W 4 www.wikipedia.org | head -n 1 | cut -c1-80; adb_ shell ping -c 2 -W 4 www.wikipedia.org | grep -oE '[0-9]+ received' || echo zlyhal)"
     echo "== Chyby v logu rádia"; adb_ logcat -b radio -d | grep -E ' [EF] ' | tail -n 60
     echo "== Chyby telefónnej služby"; adb_ logcat -d | grep -iE 'com\.android\.phone|RILJ|IRadio|AndroidRuntime' | grep -E ' [EF] ' | tail -n 40
   } > "$out" 2>&1
@@ -620,6 +629,11 @@ cmd_siet() {
   printf '  %-26s %s\n' "SMS v logu" "$(sed -n '/^== SMS v logu rádia/,/^== SMS v logu telefónu/p' "$out" | grep -ciE 'send|deliver|new_sms') záznamov odoslania/prijatia, $(sed -n '/^== SMS v logu rádia/,$p' "$out" | grep -ciE 'fail|error|exception') chýb"
   printf '  %-26s %s\n' "predvolená aplikácia SMS" "${sms_app:-žiadna – Nastavenia → Aplikácie → Predvolené aplikácie → SMS}"
   printf '  %-26s %s\n' "chyby rádia v logu" "$(sed -n '/^== Chyby v logu rádia/,/^== Chyby telefónnej/p' "$out" | grep -cE ' [EF] ')"
+  printf '  %-26s %s\n' "súkromné DNS" "$(sed -n '/^== Dáta: súkromné DNS/,/^== Dáta: test/p' "$out" | sed '1d;$d' | tr '\n' ' ')"
+  sed -n '/^== Dáta: test/,$p' "$out" | sed '1d' | sed 's/^/  /'
+  echo
+  echo "Chyby SMS v logu (posledné):"
+  sed -n '/^== SMS v logu rádia/,/^== Dáta: siete/p' "$out" | grep -iE 'fail|error|exception|denied' | tail -n 14 | cut -c1-170 | sed 's/^/  /'
   echo
   echo "Úplný výpis: $out"
   echo "Pošlite snímku tohto súhrnu; ak treba, aj: tail -n 60 $out"
