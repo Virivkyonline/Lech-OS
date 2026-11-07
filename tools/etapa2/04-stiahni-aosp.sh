@@ -3,9 +3,14 @@
 # By default the checkout is shallow (--depth=1, no history, current branch only), which saves a lot of disk
 # space and is enough for building. The download can be interrupted and resumed by running the script again.
 #
-# Usage: tools/etapa2/04-stiahni-aosp.sh [--plna-historia] [--ulohy N]
+# With --manifest the same revisions as in another tree are downloaded (a new build computer gets exactly the
+# sources the LECH patches were made for): the file comes from `repo manifest -r -o FILE` in that tree; the
+# projects of the Pixel support (manifests/lech-pixel.xml, added by 12-priprav-pixel.sh) are left out of it.
+#
+# Usage: tools/etapa2/04-stiahni-aosp.sh [--plna-historia] [--ulohy N] [--manifest FILE]
 #   --plna-historia   full git history (much larger download)
 #   --ulohy N         parallel download jobs (default 8)
+#   --manifest FILE   pinned manifest of another AOSP tree (repo manifest -r), kept as .repo/manifests/lech-pinned.xml
 # Environment: AOSP_DIR (default ~/aosp), AOSP_BRANCH (default android-latest-release)
 
 set -euo pipefail
@@ -15,6 +20,7 @@ BRANCH=${AOSP_BRANCH:-android-latest-release}
 MANIFEST_URL=https://android.googlesource.com/platform/manifest
 JOBS=8
 DEPTH_ARGS=(--depth=1)
+PINNED=""
 MIN_FREE_GB=300     # shallow sources + one Cuttlefish build; full history needs more
 
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
@@ -23,11 +29,16 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --plna-historia) DEPTH_ARGS=(); MIN_FREE_GB=400; shift ;;
     --ulohy) JOBS=${2:?chýba počet úloh}; shift 2 ;;
-    -h|--help) sed -n '2,10p' "$0"; exit 0 ;;
+    --manifest) PINNED=${2:?chýba súbor manifestu}; shift 2 ;;
+    -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
 case "$JOBS" in ''|*[!0-9]*) die "--ulohy očakáva celé číslo." ;; esac
+if [ -n "$PINNED" ]; then
+  [ -f "$PINNED" ] || die "Manifest $PINNED neexistuje."
+  PINNED=$(cd "$(dirname "$PINNED")" && pwd)/$(basename "$PINNED")
+fi
 
 command -v repo >/dev/null 2>&1 || die "Chýba nástroj repo – spustite tools/etapa2/01-priprava-notebooku.sh (alebo otvorte nový terminál)."
 command -v git >/dev/null 2>&1 || die "Chýba git."
@@ -71,6 +82,29 @@ if [ ! -d .repo ]; then
   logged repo init -u "$MANIFEST_URL" -b "$BRANCH" "${DEPTH_ARGS[@]}" || die "repo init zlyhal – pozri $LOG"
 else
   echo "Pokračujem v sťahovaní do $AOSP_DIR (repo už je inicializované)."
+fi
+
+if [ -n "$PINNED" ]; then
+  # The pinned manifest without the Pixel projects of GrapheneOS: 12-priprav-pixel.sh adds them as a local
+  # manifest, the same path in both would stop repo.
+  python3 - "$PINNED" .repo/manifests/lech-pinned.xml <<'PYEOF' || die "Manifest $PINNED sa nedá spracovať."
+import sys, xml.etree.ElementTree as ET
+tree = ET.parse(sys.argv[1])
+root = tree.getroot()
+pixel = {r.get("name") for r in root.findall("remote") if r.get("name", "").startswith("lech-")}
+removed = 0
+for el in list(root):
+    if (el.tag == "project" and el.get("remote") in pixel) or (el.tag == "remote" and el.get("name") in pixel):
+        root.remove(el)
+        removed += el.tag == "project"
+projects = len(root.findall("project"))
+if projects < 100:
+    sys.exit("too few projects: %d" % projects)
+tree.write(sys.argv[2], encoding="UTF-8", xml_declaration=True)
+print("    pripnutý manifest: %d projektov (bez %d projektov Pixelu)" % (projects, removed))
+PYEOF
+  echo "Používam pripnuté verzie z $PINNED (.repo/manifests/lech-pinned.xml)…"
+  logged repo init -m lech-pinned.xml || die "repo init s pripnutým manifestom zlyhal – pozri $LOG"
 fi
 
 echo "Sťahujem zdrojové kódy (${JOBS} súbežných úloh). Môže to trvať niekoľko hodín; log: $LOG"

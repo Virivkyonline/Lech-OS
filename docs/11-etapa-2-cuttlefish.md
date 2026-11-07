@@ -583,6 +583,42 @@ bez testovacej obrazovky GrapheneOS, ktorá potrebuje rozhrania GmsCompat.
 Potom `11-pixel.sh kontrola`, `siet`, `audit` ako pri GSI a test SMS a volania cez LTE. Úloha E2-12 (zamknutý
 bootloader s vlastným kľúčom AVB) stavia na tejto zostave.
 
+## 4j. Nový zostavovací počítač
+
+Prechod na iný počítač (7. 11. 2026: notebook s 64 GB RAM a 1,8 TB diskom namiesto 24 GB a plného C:). Prenášajú sa
+len **dva súbory** – všetko ostatné vytvoria skripty znova:
+
+1. **Na starom počítači** – pripnuté verzie zdrojov AOSP a podpisové kľúče LECH OS:
+   ```bash
+   cd ~/aosp && repo manifest -r -o /mnt/c/lech/aosp-pinned.xml
+   tar -czf /mnt/c/lech/lech-keys.tgz -C ~ lech-keys
+   ```
+   Oba súbory preniesť na nový počítač do `C:\lech\` (USB kľúč). **Kľúče sú tajné** – po prenose ich z USB zmazať.
+   S rovnakými kľúčmi sa dá do telefónu nahrať nová zostava bez mazania dát; s inými by sa telefón musel vymazať.
+2. **Windows na novom počítači:** v PowerShell ako správca `wsl --install -d Ubuntu-24.04`, reštart, v Ubuntu
+   vytvoriť používateľa. Pamäť a swap pre WSL (pri 64 GB RAM: 48 GB pre WSL, zvyšok pre Windows):
+   ```powershell
+   "[wsl2]`nmemory=48GB`nswap=16GB" | Set-Content -Encoding ASCII "$env:USERPROFILE\.wslconfig"; wsl --shutdown
+   ```
+3. **Ubuntu na novom počítači:**
+   ```bash
+   sudo apt update && sudo apt install -y git
+   git clone https://github.com/Virivkyonline/Lech-OS.git ~/Lech-OS && cd ~/Lech-OS && git checkout claude/lech-os-vision-tudkiw
+   tools/etapa2/01-priprava-notebooku.sh          # balíky, Cuttlefish, repo; potom nový terminál
+   tools/check_build_host.sh                      # má vyjsť „zvládne zostavenie“
+   tar -xzf /mnt/c/lech/lech-keys.tgz -C ~ && chmod -R go-rwx ~/lech-keys && rm /mnt/c/lech/lech-keys.tgz
+   tools/etapa2/04-stiahni-aosp.sh --manifest /mnt/c/lech/aosp-pinned.xml   # tie isté verzie AOSP, niekoľko hodín
+   tools/etapa2/12-priprav-pixel.sh               # podpora Pixelu (GrapheneOS, adevtool, obraz Google)
+   tools/etapa2/12-zostav-pixel.sh --ulohy 16     # prvé úplné zostavenie
+   tools/etapa2/11-pixel.sh nastroje && tools/etapa2/11-pixel.sh ovladac   # adb/fastboot a ovládač USB vo Windows
+   tools/etapa2/11-pixel.sh nahrat-uplne --bez-mazania
+   ```
+   Cuttlefish a nočná kontrola (05/06, `09-nastav-nocnu-kontrolu.sh`) neskôr.
+
+`04-stiahni-aosp.sh --manifest` stiahne presne tie verzie projektov ako na starom počítači (vetva
+`android-latest-release` sa posúva a záplaty LECH OS by na novšom AOSP nemuseli sedieť); projekty Pixelu z
+`manifests/lech-pixel.xml` z neho vynechá, pridá ich `12-priprav-pixel.sh`.
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):

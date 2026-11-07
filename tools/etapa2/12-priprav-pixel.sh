@@ -5,7 +5,7 @@
 #      nothing is installed into the system; yarn 1 into the same directory,
 #   2. the GrapheneOS projects of manifests/lech-pixel.xml: ~/aosp/.repo/local_manifests/lech-pixel.xml and
 #      `repo sync` of only these projects (pinned revisions),
-#   3. the LECH patches (aplikuj-zaplaty.sh), among them two for adevtool,
+#   3. vendor/lech, the keys and the LECH patches (06-zostav-lech.sh --len-skopirovat), also those for adevtool,
 #   4. `yarn install` for adevtool,
 #   5. the host tools adevtool needs (aapt2, lpunpack, simg2img…), built in the normal out/ with the target of the
 #      Pixel GSI and offered to adevtool through out_adevtool_deps (adevtool would otherwise run a separate build),
@@ -102,9 +102,10 @@ if [ "$PREPARE" -eq 1 ]; then
   mapfile -t projects < <(grep -oE 'path="[^"]+"' "$MANIFEST" | cut -d'"' -f2)
   (cd "$AOSP_DIR" && "$REPO_BIN" sync -c --no-tags --force-sync -j4 "${projects[@]}") || die "repo sync projektov GrapheneOS zlyhal."
 
-  # 3. LECH patches (also vendor/adevtool).
-  echo "3/6 Úpravy LECH OS…"
-  AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/aplikuj-zaplaty.sh" || exit 1
+  # 3. vendor/lech, the keys and the LECH patches (also vendor/adevtool) – as for every build; on a new build
+  # computer vendor/lech is not in the tree yet, and step 5 builds with a LECH OS target.
+  echo "3/6 Úpravy LECH OS (vendor/lech, kľúče, záplaty)…"
+  AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/06-zostav-lech.sh" --len-skopirovat || exit 1
 
   # 4. adevtool dependencies.
   echo "4/6 Knižnice adevtool (yarn install)…"
