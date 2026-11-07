@@ -582,7 +582,7 @@ cmd_siet() {
     echo "== SIM (isub)"; adb_ shell dumpsys isub | head -n 60
     # IMS (VoLTE, SMS over IMS; E2-11b): the bound IMS service (on the Pixel com.shannon.imsservice), its
     # registration and the carrier settings loaded by CarrierConfig2.
-    echo "== IMS služba"; adb_ shell cmd phone ims get-ims-service 2>&1 | head -n 5
+    echo "== IMS služba"; adb_ shell cmd phone ims get-ims-service -d 2>&1 | head -n 3; adb_ shell cmd phone ims get-ims-service -c 2>&1 | head -n 3
     echo "== IMS registrácia"; adb_ shell dumpsys phone | grep -iE 'ImsRegistered|ImsRegistration|isVolteEnabled|isWifiCallingEnabled' | head -n 12
     echo "== Nastavenia operátora (CarrierConfig2)"
     adb_ shell dumpsys carrier_config | grep -E 'carrier_config_version_string|carrier_volte_available_bool|carrier_vt_available_bool|carrier_wfc_ims_available_bool|vonr_enabled_bool|config_ims_package_override_string' | head -n 12
@@ -593,6 +593,11 @@ cmd_siet() {
     echo "== Log CarrierConfig2"
     adb_ logcat -d | grep -iE 'carrierconfig2|CSettingsDir|CarrierConfigLoader|CarrierServiceImpl|ApnServiceImpl|subIdToCarrierId|TelephonyProvider' | tail -n 30
     echo "== Predvolená aplikácia SMS"; adb_ shell cmd role get-role-holders android.app.role.SMS
+    # SMS (E2-11b): sending and receiving in the radio and telephony logs, incl. the SMS centre (SMSC).
+    echo "== SMS v logu rádia"
+    adb_ logcat -b radio -d | grep -iE 'sms|smsc|SEND_SMS|NEW_SMS|IMS_SEND|CDMA_SEND|ackSms' | tail -n 50
+    echo "== SMS v logu telefónu"
+    adb_ logcat -d | grep -iE 'SmsDispatcher|SmsController|InboundSms|SmsManager|MessagingApp|SendMessageAction|ProcessSentMessage|smsc' | tail -n 40
     echo "== Chyby v logu rádia"; adb_ logcat -b radio -d | grep -E ' [EF] ' | tail -n 60
     echo "== Chyby telefónnej služby"; adb_ logcat -d | grep -iE 'com\.android\.phone|RILJ|IRadio|AndroidRuntime' | grep -E ' [EF] ' | tail -n 40
   } > "$out" 2>&1
@@ -612,6 +617,7 @@ cmd_siet() {
   printf '  %-26s %s\n' "nastavenia operátora" "$(grep -m1 -oE 'carrier_config_version_string *= *[^ ]+' "$out" | cut -c1-90 || echo '?')"
   printf '  %-26s %s\n' "APN pre SIM ${simnum:-?}" "$(sed -n '/^== APN pre SIM/,/^== APN spolu/p' "$out" | grep -c 'numeric=') (v telefóne spolu: $(sed -n '/^== APN spolu/{n;p}' "$out"))"
   sms_app=$(sed -n '/^== Predvolená aplikácia SMS/{n;p}' "$out")
+  printf '  %-26s %s\n' "SMS v logu" "$(sed -n '/^== SMS v logu rádia/,/^== SMS v logu telefónu/p' "$out" | grep -ciE 'send|deliver|new_sms') záznamov odoslania/prijatia, $(sed -n '/^== SMS v logu rádia/,$p' "$out" | grep -ciE 'fail|error|exception') chýb"
   printf '  %-26s %s\n' "predvolená aplikácia SMS" "${sms_app:-žiadna – Nastavenia → Aplikácie → Predvolené aplikácie → SMS}"
   printf '  %-26s %s\n' "chyby rádia v logu" "$(sed -n '/^== Chyby v logu rádia/,/^== Chyby telefónnej/p' "$out" | grep -cE ' [EF] ')"
   echo
