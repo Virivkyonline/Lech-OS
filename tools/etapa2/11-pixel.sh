@@ -17,7 +17,9 @@
 #   dokoncit   only the last step of nahrat: erase the data and start (when the erase failed)
 #   kontrola   checks in the running LECH OS (identity, keys, network time, mobile network)
 #   siet       mobile network diagnostics (SIM, radio HAL, registration, errors) to ~/lech-work/pixel
-#   sms        log of one SMS attempt: clears the log, waits while an SMS is sent in the phone, keeps the SMS lines
+#   sms [--rola]  log of one SMS attempt: state of the SMS app (permissions, app ops), clears the log, waits while
+#              an SMS is sent in the phone, keeps the SMS lines; --rola first removes and adds the SMS role again
+#              (the role grants the permissions of a newer app version)
 #   audit [--minuty N] [--dokoncit] [--vyhodnotit]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default
 #              15 min); --dokoncit finishes a started audit after the USB connection dropped,
 #              --vyhodnotit evaluates the last downloaded audit again (no phone needed)
@@ -685,14 +687,36 @@ cmd_siet() {
 # One SMS attempt in the log (E2-11b: the messaging app keeps asking to become the default SMS app although it
 # holds the SMS role, received messages make no sound): the app, its permissions and app ops, and the log lines.
 cmd_sms() {
+  local renew=0
+  case "${1:-}" in --rola) renew=1 ;; "") ;; *) die "Neznámy parameter: $1 (použitie: 11-pixel.sh sms [--rola])" ;; esac
   need_tools
   adb_wait 60 || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač (prípadne odpojte a zapojte kábel)."
   mkdir -p "$WORKDIR/pixel"
   local out="$WORKDIR/pixel/sms-$(date +%Y%m%d-%H%M%S).txt" app
   local ADB_TIMEOUT=45
   app=$(adb_ shell cmd role get-role-holders android.app.role.SMS | head -n 1)
-  adb_ logcat -c >/dev/null; adb_ logcat -b radio -c >/dev/null
+  if [ "$renew" -eq 1 ] && [ -n "$app" ]; then
+    echo "Odoberám a znova prideľujem rolu SMS ($app)…"
+    adb_ shell cmd role remove-role-holder android.app.role.SMS "$app" >/dev/null
+    sleep 2
+    adb_ shell cmd role add-role-holder android.app.role.SMS "$app" >/dev/null
+    sleep 3
+  fi
+  local pkg=${app:-com.android.messaging} dump p state
+  echo "Zostava v telefóne: $(prop ro.build.display.id), $(prop ro.build.date)"
   echo "Predvolená aplikácia SMS podľa systému: ${app:-žiadna}"
+  dump=$(adb_ shell dumpsys package "$pkg")
+  for p in RECEIVE_WAP_PUSH READ_CELL_BROADCASTS; do
+    if ! printf '%s\n' "$dump" | sed -n '/requested permissions:/,/install permissions:\|runtime permissions:/p' | grep -q "android.permission.$p"; then
+      state="aplikácia si ho NEŽIADA (záplata nie je v zostave?)"
+    else
+      state=$(printf '%s\n' "$dump" | grep -m1 "android.permission.$p: granted=" | grep -oE 'granted=(true|false)')
+      state="žiada si ho, ${state:-granted=?}"
+    fi
+    printf '  %-24s %s; app op (UID): %s\n' "$p" "$state" \
+      "$(adb_ shell appops get --uid "$pkg" "$p" | grep -oE '(allow|ignore|deny|default|foreground)' | head -n 1)"
+  done
+  adb_ logcat -c >/dev/null; adb_ logcat -b radio -c >/dev/null
   echo
   echo "Teraz v telefóne v aplikácii SMS a MMS pošlite SMS (ak sa pýta na predvolenú aplikáciu, potvrďte to)."
   echo "Môžete si nechať poslať aj SMS. Čakám 60 sekúnd…"
@@ -907,7 +931,7 @@ case "${1:-}" in
   dokoncit) cmd_dokoncit ;;
   kontrola) cmd_kontrola ;;
   siet) cmd_siet ;;
-  sms) cmd_sms ;;
+  sms) shift; cmd_sms "$@" ;;
   audit) shift; cmd_audit "$@" ;;
   slot) shift; cmd_slot "$@" ;;
   spat) cmd_spat ;;
