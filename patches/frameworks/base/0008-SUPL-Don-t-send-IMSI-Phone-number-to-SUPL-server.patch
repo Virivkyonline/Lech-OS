@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MSe1969 <mse1969@posteo.de>
+Date: Mon, 29 Oct 2018 12:14:17 +0100
+Subject: [PATCH] SUPL: Don't send IMSI / Phone number to SUPL server
+
+Change-Id: I5ccc4d61e52ac11ef33f44618d0e610089885b87
+
+Squashed with:
+Author: Daniel Micay <danielmicay@gmail.com>
+Date:   Wed Mar 15 06:32:20 2023 -0400
+
+    simplify removal of SUPL IMSI / phone number
+
+    This is not required for SUPL to work and the comment about Google is
+    unnecessary.
+
+(cherry picked from GrapheneOS platform_frameworks_base, branch 17, commit
+bd75ca83e6a; LECH OS task E2-11b: on the Pixel 9 the GNSS asked supl.google.com
+at every start, the SET ID would identify the SIM card)
+---
+ .../location/gnss/GnssLocationProvider.java   | 29 +------------------
+ 1 file changed, 1 insertion(+), 28 deletions(-)
+
+diff --git a/services/core/java/com/android/server/location/gnss/GnssLocationProvider.java b/services/core/java/com/android/server/location/gnss/GnssLocationProvider.java
+index 34acc21254b..d9ac92e63ee 100644
+--- a/services/core/java/com/android/server/location/gnss/GnssLocationProvider.java
++++ b/services/core/java/com/android/server/location/gnss/GnssLocationProvider.java
+@@ -1817,34 +1817,7 @@ public class GnssLocationProvider extends AbstractLocationProvider implements
+ 
+     @Override
+     public void onRequestSetID(@GnssNative.AGpsCallbacks.AgpsSetIdFlags int flags) {
+-        TelephonyManager phone = (TelephonyManager)
+-                mContext.getSystemService(Context.TELEPHONY_SERVICE);
+-        int type = AGPS_SETID_TYPE_NONE;
+-        String setId = null;
+-
+-        int subId = SubscriptionManager.getDefaultDataSubscriptionId();
+-        if (mGnssConfiguration.isActiveSimEmergencySuplEnabled() && mNIHandler.getInEmergency()
+-                && mNetworkConnectivityHandler.getActiveSubId() >= 0) {
+-            subId = mNetworkConnectivityHandler.getActiveSubId();
+-        }
+-        if (SubscriptionManager.isValidSubscriptionId(subId)) {
+-            phone = phone.createForSubscriptionId(subId);
+-        }
+-        if ((flags & AGPS_REQUEST_SETID_IMSI) == AGPS_REQUEST_SETID_IMSI) {
+-            setId = phone.getSubscriberId();
+-            if (setId != null) {
+-                // This means the framework has the SIM card.
+-                type = AGPS_SETID_TYPE_IMSI;
+-            }
+-        } else if ((flags & AGPS_REQUEST_SETID_MSISDN) == AGPS_REQUEST_SETID_MSISDN) {
+-            setId = phone.getLine1Number();
+-            if (setId != null) {
+-                // This means the framework has the SIM card.
+-                type = AGPS_SETID_TYPE_MSISDN;
+-            }
+-        }
+-
+-        mGnssNative.setAgpsSetId(type, (setId == null) ? "" : setId);
++        mGnssNative.setAgpsSetId(AGPS_SETID_TYPE_NONE, "");
+     }
+ 
+     @Override
+-- 
+2.43.0
+

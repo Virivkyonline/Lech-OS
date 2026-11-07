@@ -843,6 +843,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     Po zostave so záplatou a nahratí bez mazania dát bolo treba rolu SMS prideliť znova (`11-pixel.sh sms --rola`),
     aby udelila nové oprávnenia – potom **SMS fungujú: odoslanie aj prijatie so zvukom** (7. 11. 2026). Pri čistej
     inštalácii (nahratie s mazaním dát) sa rola prideľuje už s novými oprávneniami.
+35. **7. audit – úplný LECH OS (7. 11. 2026):** bez používania žiadne spojenie do 125. s; reklamy a sledovače
+    (Google, doubleclick, criteo…) načítal prehliadač zo stránok rádií. Pri štarte však GPS kontaktoval
+    `supl.google.com` (A-GPS z nastavení operátora Google) a systém `1.ssiloc.com` (PSDS Samsungu). Rozhodnutie:
+    A-GPS a PSDS predvolene vypnuté – záplaty `frameworks/base` 0008 (GrapheneOS: bez IMSI pre SUPL) a 0009
+    (mimo tiesňového volania bez serverov SUPL a PSDS). Podrobnosti: [audit/README.md](../audit/README.md), 7. audit.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

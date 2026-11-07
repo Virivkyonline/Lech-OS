@@ -184,3 +184,31 @@ Poznámky:
 - Audit prvého spustenia (hneď po nahratí, pred pripojením Wi-Fi) na Pixeli ešte chýba: telefón mal SIM a
   mobilné dáta už pri štarte, kým audit nebežal.
 
+
+## 7. audit – 7. 11. 2026, úplný LECH OS na Pixeli 9 (E2-11b)
+
+Prvý audit úplnej zostavy (`lech_tokay-cp2a-userdebug`: vlastný systém, vendor Pixelu z adevtool vrátane IMS,
+CarrierConfig2). 15 minút, Wi-Fi aj mobilné dáta 4ka; počas auditu sa telefón používal (Bluetooth, prehliadač,
+stránky internetových rádií). Správa: `~/lech-work/pixel/audit-20261107-100635/sprava.md`.
+
+| Kto | Ciele | Čo to je |
+|-----|-------|----------|
+| prehliadač `org.chromium.webview_shell` (18 dopytov) | `www.google.com`, `googleadservices.com`, `doubleclick.net`, `googlesyndication.com`, `criteo`, `pubmatic`, `flashtalking`, `analytics.yahoo.com`… | vyhľadávanie Google a stránky rádií s reklamami a sledovačmi – **obsah stránok, nie systém**; prvý dopyt až v 125. s |
+| vyhľadávacie pole `com.android.quicksearchbox` | `www.google.com` | vyhľadávanie zadané používateľom |
+| **gps** (UID 1021), pri štarte | `s***` = **`supl.google.com`** | A-GPS (SUPL) z nastavení operátora Google pre 4ka (`gps.supl_host`); pri SUPL sa posiela identita SIM (IMSI) |
+| systém (UID 1000), pri štarte | `1***` = **`1.ssiloc.com`** | predpovede satelitov (PSDS) Samsungu (`gps.longterm_psds_server_1`) |
+| systém (UID 1000), pri štarte | `e***` = `europe.pool.ntp.org` | čas – povolené |
+| eSIM `com.google.android.euicc`, pri štarte | `l***` (pravdepodobne `lpa.ds.gsma.com`) | vyhľadanie profilov eSIM (GSMA) – bez eSIM zbytočné |
+
+Dopyty „pri štarte“ (10:00:58 – 10:01:00) sú zo záznamu DNS v telefóne (`dumpsys dnsresolver`, z mena len prvé
+písmeno); audit sa začal až 10:06:35, ich prevádzka v zázname nie je – domény sú odvodené z nastavení
+(`dumpsys carrier_config`: `gps.supl_host`, `gps.longterm_psds_server_1`).
+
+### Zistenie a zmeny
+
+**Bez používania telefón do 125. s nič nevolal; všetko ostatné spôsobil prehliadač.** Systém sa však pri štarte
+spojil s Google (SUPL) a Samsungom (PSDS) kvôli GPS. Rozhodnutie (7. 11. 2026): **A-GPS a PSDS predvolene
+vypnuté** – záplaty `frameworks/base` 0008 (z GrapheneOS: IMSI ani telefónne číslo sa serveru SUPL neposielajú)
+a 0009 (mimo tiesňového volania žiadny server SUPL ani PSDS; GPS samostatne, prvá poloha trvá dlhšie). Neskôr
+vlastný sprostredkujúci server na lech-web.sk. Ďalej: prehliadač s blokovaním reklám a sledovačov namiesto
+vývojárskeho WebView Shell, aplikácia eSIM od Google predvolene vypnutá, audit hneď od štartu telefónu.

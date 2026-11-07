@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sat, 7 Nov 2026 11:00:00 +0100
+Subject: [PATCH] Use no location assistance servers outside an emergency
+
+LECH OS sends no data to location assistance servers of third parties
+by default. On the Pixel 9 the carrier settings name supl.google.com
+for SUPL (A-GPS) and 1.ssiloc.com (Samsung) for the satellite
+predictions (PSDS); both were contacted at every start (network audit,
+7. 11. 2026). Outside an emergency the GNSS now works standalone: the
+SUPL server is localhost with SUPL_MODE 0 and no PSDS server is set, so
+nothing is downloaded. The first fix takes longer. In an emergency the
+configuration of the vendor and the carrier is kept, so a call to 112
+gets a fast location. Servers of LECH OS can take their place later.
+---
+ .../location/gnss/GnssConfiguration.java      | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/services/core/java/com/android/server/location/gnss/GnssConfiguration.java b/services/core/java/com/android/server/location/gnss/GnssConfiguration.java
+index 04b11c0..0559bde 100644
+--- a/services/core/java/com/android/server/location/gnss/GnssConfiguration.java
++++ b/services/core/java/com/android/server/location/gnss/GnssConfiguration.java
+@@ -294,6 +294,9 @@ public class GnssConfiguration {
+          */
+         loadPropertiesFromGpsDebugConfig(mProperties, DEBUG_PROPERTIES_VENDOR_FILE);
+         loadPropertiesFromGpsDebugConfig(mProperties, DEBUG_PROPERTIES_SYSTEM_FILE);
++        if (!inEmergency) {
++            removeAssistanceServers(mProperties);
++        }
+         mEsExtensionSec = getRangeCheckedConfigEsExtensionSec();
+ 
+         logConfigurations();
+@@ -346,6 +349,25 @@ public class GnssConfiguration {
+         }
+     }
+ 
++    /**
++     * LECH OS: no location assistance servers outside an emergency. The vendor files and the
++     * carrier settings name servers of third parties (on the Pixel 9 supl.google.com for SUPL and
++     * 1.ssiloc.com of Samsung for PSDS), which learn the IP address, the time and the cell of the
++     * phone. Instead the GNSS works standalone: no SUPL (the server is localhost, SUPL_MODE 0) and
++     * no download of satellite predictions (no PSDS server) - the first fix takes longer. In an
++     * emergency the configuration of the vendor and the carrier is kept. Servers of LECH OS can
++     * take their place later.
++     */
++    private static void removeAssistanceServers(Properties properties) {
++        properties.setProperty(CONFIG_SUPL_HOST, "localhost");
++        properties.setProperty(CONFIG_SUPL_MODE, "0");
++        properties.remove(CONFIG_LONGTERM_PSDS_SERVER_1);
++        properties.remove(CONFIG_LONGTERM_PSDS_SERVER_2);
++        properties.remove(CONFIG_LONGTERM_PSDS_SERVER_3);
++        properties.remove(CONFIG_NORMAL_PSDS_SERVER);
++        properties.remove(CONFIG_REALTIME_PSDS_SERVER);
++    }
++
+     private void logConfigurations() {
+         FrameworkStatsLog.write(FrameworkStatsLog.GNSS_CONFIGURATION_REPORTED,
+                 getSuplHost(),
+-- 
+2.43.0
+
