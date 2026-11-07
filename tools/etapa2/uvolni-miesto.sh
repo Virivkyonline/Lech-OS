@@ -129,15 +129,28 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
 $before = (Get-Item -LiteralPath $vhd).Length
 Write-Host ('Disk WSL má teraz {0:N1} GB. Vypínam WSL...' -f ($before / 1GB))
 wsl.exe --shutdown
-Start-Sleep -Seconds 10
+# WSL stops in the background; wait until nothing has the disk file open (up to 3 minutes).
+$deadline = (Get-Date).AddMinutes(3)
+while ($true) {
+    try { $fs = [IO.File]::Open($vhd, 'Open', 'Read', 'None'); $fs.Close(); break }
+    catch {
+        if ((Get-Date) -gt $deadline) {
+            Write-Host 'Súbor disku WSL je stále otvorený (beží WSL alebo iný program, napr. Docker). Zatvorte ho, spustite wsl --shutdown a tento skript znova.' -ForegroundColor Red
+            exit 1
+        }
+        Start-Sleep -Seconds 3
+    }
+}
 $cmd = Join-Path $env:TEMP 'lech-zmensi-disk-wsl.txt'
 Set-Content -LiteralPath $cmd -Encoding Ascii -Value @("select vdisk file=""$vhd""", 'attach vdisk readonly', 'compact vdisk', 'detach vdisk')
 Write-Host 'Zmenšujem disk WSL (diskpart, compact vdisk) - môže to trvať aj desiatky minút, nezatvárajte okno...'
 diskpart /s $cmd
-if ($LASTEXITCODE -ne 0) { Write-Host 'diskpart skončil s chybou - pošlite tento výpis.' -ForegroundColor Red }
+$failed = $LASTEXITCODE -ne 0
 $after = (Get-Item -LiteralPath $vhd).Length
 $freeC = (Get-PSDrive -Name C).Free
-Write-Host ('Hotovo: disk WSL {0:N1} GB -> {1:N1} GB, voľné na C: {2:N1} GB.' -f ($before / 1GB), ($after / 1GB), ($freeC / 1GB)) -ForegroundColor Green
+$sizes = 'disk WSL {0:N1} GB -> {1:N1} GB, voľné na C: {2:N1} GB.' -f ($before / 1GB), ($after / 1GB), ($freeC / 1GB)
+if ($failed) { Write-Host ('diskpart skončil s chybou - pošlite tento výpis. ' + $sizes) -ForegroundColor Red; exit 1 }
+Write-Host ('Hotovo: ' + $sizes) -ForegroundColor Green
 Write-Host 'Otvorte znova Ubuntu a pokračujte: cd ~/Lech-OS && tools/etapa2/12-zostav-pixel.sh'
 EOF
 } > "$PS1_FILE" || die "Súbor $PS1_FILE sa nedá zapísať."
