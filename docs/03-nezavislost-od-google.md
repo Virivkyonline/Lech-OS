@@ -22,7 +22,9 @@ LECH OS stavia **len na AOSP**. Všetko, čo pochádza z GMS, musíme nahradiť 
 | Záloha | Šifrovaná záloha na strane klienta (vychádzame zo Seedvault, ktorý je integrovaný v AOSP) | Stredná | Kľúč má len používateľ |
 | Mapy | Mapy postavené na OpenStreetMap, offline | Nízka | Existujú vyspelé open-source aplikácie |
 | Sieťová poloha (Fused Location) | Lokálna fúzia GNSS + databáza Wi-Fi / BTS (BeaconDB alebo vlastná), offline cache | Stredná | Mozilla Location Service bola v roku 2024 ukončená |
-| A-GPS (SUPL) | Vlastný proxy alebo nezávislý poskytovateľ | Nízka | AOSP predvolene používa server Google – treba zmeniť |
+| A-GPS (SUPL) | Vlastný proxy alebo nezávislý poskytovateľ | Nízka | AOSP predvolene používa server Google – treba zmeniť. **Od 7. 11. 2026 v LECH OS predvolene vypnuté** (GPS samostatne, bez IMSI; pri tiesňovom volaní ostáva nastavenie operátora); vlastný proxy na lech-web.sk neskôr |
+| Predpovede satelitov (PSDS/XTRA) | Vlastný proxy | Nízka | Pixel 9 sťahoval z `1.ssiloc.com` (Samsung); **od 7. 11. 2026 vypnuté** – prvá poloha trvá dlhšie |
+| eSIM (správca profilov EuiccGoogle, vyhľadávanie profilov u Google) | **OpenEUICC** – otvorený správca eSIM (LPA, GPL); profil sa stiahne len zo servera operátora (SM-DP+) pri aktivácii QR kódom | Stredná | Štandard GSMA, Google nie je potrebný. Aplikácie eSIM od Google volali pri každom štarte `lpa.live.esimdiscovery.com`; **od 7. 11. 2026 vylúčené, LECH OS zatiaľ bez eSIM**. Úloha: OpenEUICC ako systémová aplikácia, overiť so zabudovaným čipom eSIM Pixelu 9; ak nepôjde, eSIM od Google len ako vedomá voľba používateľa. Bez prenosu eSIM cez Google |
 | Kontrola pripojenia, NTP čas | Vlastné servery | Nízka | AOSP predvolene volá servery Google |
 | WebView (Chrome) | Vlastná zostava Chromium WebView s úpravami súkromia | Vysoká | WebView treba aktualizovať tak často ako prehliadač |
 | Play Protect | Skener aplikácií LECH Security | Stredná | Pozri [docs/05](05-lech-security.md) |

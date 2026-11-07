@@ -60,7 +60,7 @@ Postup a zoznam úloh: [docs/11 – štart na Cuttlefish](11-etapa-2-cuttlefish.
 | | |
 |---|---|
 | **Cieľ** | Rozpoznateľný a pohodlný LECH OS |
-| **Výstupy** | Vizuálna identita; launcher; úpravy SystemUI a nastavení; sprievodca prvým spustením s voľbami súkromia (bez konta, voľba vrstvy kompatibility); prístupnosť; lokalizácia EN, SK, CZ (vlna 1 podľa [ADR-0009](adr/0009-trh-eu.md)) |
+| **Výstupy** | Vizuálna identita; launcher; úpravy SystemUI a nastavení; sprievodca prvým spustením s voľbami súkromia (bez konta, voľba vrstvy kompatibility); prístupnosť; lokalizácia EN, SK, CZ (vlna 1 podľa [ADR-0009](adr/0009-trh-eu.md)); moderné základné aplikácie namiesto starých z AOSP (prehliadač s blokovaním sledovačov, fotoaparát, galéria, SMS); **eSIM bez Google** – správca eSIM OpenEUICC overený na Pixeli 9 ([docs/03](03-nezavislost-od-google.md#náhrady-služieb-google)) |
 | **Hotové, keď** | Splnená **brána 2 – Použiteľný systém**: testovací používatelia bez technických znalostí nastavia a používajú telefón bez pomoci |
 
 ### Etapa 4 – Bezpečnostný systém a LECH Privacy Control
