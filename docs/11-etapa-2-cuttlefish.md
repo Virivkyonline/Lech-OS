@@ -825,6 +825,13 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     `C:\lech\zmensi-disk-wsl.ps1`, ktorý v PowerShell ako správca vypne WSL a zmenší `ext4.vhdx` (`diskpart compact vdisk`).
     Nočná kontrola počas prác na zostave Pixelu zlyhávala (plný disk, iné nastavenia vydania) – vypnutá, kým zostava
     Pixelu nebude hotová.
+33. **Prvá úplná zostava LECH OS na Pixeli 9 (7. 11. 2026):** `lech_tokay-cp2a-userdebug` zostavená za 119 min
+    (balík 2,9 GB), nahratá `11-pixel.sh nahrat-uplne` (`fastboot update` 157 s; mazanie dát vo fastbootd opäť
+    „DCK wipe failed“, v bootloaderi OK – fastbootd potom neodpovedal, `fastboot reboot bootloader` dostal limit 30 s).
+    LECH OS naštartoval s vlastným vendorom, boot aj vbmeta; `11-pixel.sh kontrola` všetko OK (model, verzia,
+    kľúče LECH, NTP, animácia, RKP bez Google). SIM 4ka **v sieti 4ka na LTE** (s GSI národný roaming Orange, EDGE).
+    Obrazy `vbmeta_system` a `vbmeta_vendor` zostava nemá (systém je priamo vo `vbmeta`) – rieši sa pri zamknutí (E2-12).
+    `11-pixel.sh siet` odteraz ukazuje aj službu IMS, jej registráciu a VoLTE z nastavení operátora (CarrierConfig2).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

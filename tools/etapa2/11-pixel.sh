@@ -579,6 +579,12 @@ cmd_siet() {
     echo "== Registrácia v sieti"
     adb_ shell dumpsys telephony.registry | grep -E 'mServiceState=|mDataConnectionState|mSignalStrength=|mCallState' | head -n 12
     echo "== SIM (isub)"; adb_ shell dumpsys isub | head -n 60
+    # IMS (VoLTE, SMS over IMS; E2-11b): the bound IMS service (on the Pixel com.shannon.imsservice), its
+    # registration and the carrier settings loaded by CarrierConfig2.
+    echo "== IMS služba"; adb_ shell cmd phone ims get-ims-service 2>&1 | head -n 5
+    echo "== IMS registrácia"; adb_ shell dumpsys phone | grep -iE 'ImsRegistered|ImsRegistration|isVolteEnabled|isWifiCallingEnabled' | head -n 12
+    echo "== Nastavenia operátora (CarrierConfig2)"
+    adb_ shell dumpsys carrier_config | grep -E 'carrier_config_version_string|carrier_volte_available_bool|carrier_vt_available_bool|carrier_wfc_ims_available_bool|vonr_enabled_bool|config_ims_package_override_string' | head -n 12
     echo "== Chyby v logu rádia"; adb_ logcat -b radio -d | grep -E ' [EF] ' | tail -n 60
     echo "== Chyby telefónnej služby"; adb_ logcat -d | grep -iE 'com\.android\.phone|RILJ|IRadio|AndroidRuntime' | grep -E ' [EF] ' | tail -n 40
   } > "$out" 2>&1
@@ -592,6 +598,9 @@ cmd_siet() {
   printf '  %-26s %s\n' "operátor" "$(prop gsm.operator.alpha) $(prop gsm.operator.numeric)"
   printf '  %-26s %s\n' "typ siete" "$(prop gsm.network.type) (GPRS/EDGE = 2G, UMTS/HSPA = 3G, LTE = 4G, NR = 5G)"
   printf '  %-26s %s\n' "registrácia" "${reg:-?}"
+  printf '  %-26s %s\n' "služba IMS" "$(sed -n '/^== IMS služba/,/^== IMS registrácia/p' "$out" | grep -oE 'com\.[a-z0-9_.]+' | head -n 1 | sed 's/^$/?/')"
+  printf '  %-26s %s\n' "IMS registrovaná" "$(sed -n '/^== IMS registrácia/,/^== Nastavenia operátora/p' "$out" | grep -oiE 'ImsRegistered[^,]*=[ ]*(true|false)' | head -n 1)"
+  printf '  %-26s %s\n' "VoLTE podľa operátora" "$(grep -m1 -oE 'carrier_volte_available_bool *= *[a-z]+' "$out" || echo '?')"
   printf '  %-26s %s\n' "chyby rádia v logu" "$(sed -n '/^== Chyby v logu rádia/,/^== Chyby telefónnej/p' "$out" | grep -cE ' [EF] ')"
   echo
   echo "Úplný výpis: $out"
