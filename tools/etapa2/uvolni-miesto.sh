@@ -78,7 +78,9 @@ else
   case "$answer" in
     a|A|ano|áno)
       for c in "${candidates[@]}"; do
-        rm -rf -- "$c" && echo "  zmazané: ${c/#"$HOME"/\~}"
+        # The unpacked images of adevtool contain read-only directories (as in the image); rm needs write access.
+        chmod -R u+w -- "$c" 2>/dev/null
+        if rm -rf -- "$c"; then echo "  zmazané: ${c/#"$HOME"/\~}"; else echo "  UPOZORNENIE: ${c/#"$HOME"/\~} sa nezmazal celý."; fi
       done ;;
     *) echo "  nič som nezmazal." ;;
   esac
