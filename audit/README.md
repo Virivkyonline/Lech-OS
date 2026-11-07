@@ -212,3 +212,12 @@ vypnuté** – záplaty `frameworks/base` 0008 (z GrapheneOS: IMSI ani telefónn
 a 0009 (mimo tiesňového volania žiadny server SUPL ani PSDS; GPS samostatne, prvá poloha trvá dlhšie). Neskôr
 vlastný sprostredkujúci server na lech-web.sk. Ďalej: prehliadač s blokovaním reklám a sledovačov namiesto
 vývojárskeho WebView Shell, aplikácia eSIM od Google predvolene vypnutá, audit hneď od štartu telefónu.
+
+## 8.–10. audit – 7. 11. 2026, 5 minút hneď po štarte (úplný LECH OS)
+
+Telefón počas auditu ležal. **GPS už nikam nevolá** (záplaty `frameworks/base` 0008/0009). Ostali:
+
+| Kto | Cieľ | Čo to je | Riešenie |
+|-----|------|----------|----------|
+| `com.google.android.euicc` (aplikácia eSIM od Google) | `lpa.live.esimdiscovery.com`, `lpa.ds.gsma.com` | vyhľadanie profilov eSIM (Google, GSMA) pri každom štarte | `pm disable-user` systém pri štarte zrušil; aplikácie eSIM sa vylúčia zo zostavy (adevtool 0004, `lech-no-esim.xml`) |
+| systém (UID 1000) | `epdg.epc.mnc003.mcc231.pub.3gppnetwork.org` (len DNS) | ePDG operátora 4ka pre volania cez Wi-Fi (3GPP) | infraštruktúra operátora – povolené |

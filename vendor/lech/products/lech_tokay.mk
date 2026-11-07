@@ -33,6 +33,11 @@ LECH_PIXEL_GENERIC_CPU := true
 # vendor files.
 MODULE_BUILD_FROM_SOURCE := true
 
+# No eSIM support for now: the eSIM apps of Google are left out (patches/vendor/adevtool/0004), so the device does
+# not announce the feature either (vendor/lech/config/sysconfig/lech-no-esim.xml).
+PRODUCT_COPY_FILES += \
+    vendor/lech/config/sysconfig/lech-no-esim.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/sysconfig/lech-no-esim.xml \
+
 $(call inherit-product, vendor/google_devices/tokay/tokay.mk)
 $(call inherit-product, vendor/lech/config/common.mk)
 

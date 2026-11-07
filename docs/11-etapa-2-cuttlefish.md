@@ -848,6 +848,10 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     `supl.google.com` (A-GPS z nastavení operátora Google) a systém `1.ssiloc.com` (PSDS Samsungu). Rozhodnutie:
     A-GPS a PSDS predvolene vypnuté – záplaty `frameworks/base` 0008 (GrapheneOS: bez IMSI pre SUPL) a 0009
     (mimo tiesňového volania bez serverov SUPL a PSDS). Podrobnosti: [audit/README.md](../audit/README.md), 7. audit.
+36. **8.–10. audit (7. 11. 2026, 5 min hneď po štarte):** so záplatami 0008/0009 GPS nikam nevolá. Ostali aplikácie
+    eSIM od Google (`lpa.live.esimdiscovery.com`, `lpa.ds.gsma.com`); `pm disable-user` systém pri štarte zrušil.
+    Riešenie: adevtool 0004 vylúči aplikácie eSIM z modulu Pixelu a produkt neohlasuje funkciu eSIM. Dopyt DNS na
+    `epdg.epc.mnc003.mcc231.pub.3gppnetwork.org` je ePDG 4ka (volania cez Wi-Fi) – infraštruktúra operátora.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

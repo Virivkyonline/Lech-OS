@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 The LECH OS Project
+     SPDX-License-Identifier: Apache-2.0
+
+     LECH OS: no eSIM support for now (task E2-11b). The eSIM apps of Google are left out of the vendor module
+     (patches/vendor/adevtool/0004) - they contacted lpa.live.esimdiscovery.com (Google) and lpa.ds.gsma.com at
+     every start. Without them the device must not announce eSIM support, so Settings and telephony do not look
+     for a missing eSIM manager. The physical SIM is not affected.
+-->
+<config>
+    <unavailable-feature name="android.hardware.telephony.euicc" />
+    <unavailable-feature name="android.hardware.telephony.euicc.mep" />
+</config>

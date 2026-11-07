@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sat, 7 Nov 2026 12:00:00 +0100
+Subject: [PATCH] Leave out the eSIM apps of Google
+
+LECH OS has no eSIM support for now. On the Pixel 9 the eSIM apps of
+Google (EuiccGoogle, EuiccSupportPixel) contacted lpa.live.esimdiscovery.com
+(Google) and lpa.ds.gsma.com at every start, and the system enabled them
+again after `pm disable-user`. The vendor module leaves them out; the
+physical SIM is not affected. eSIM can come back later as an explicit
+choice.
+---
+ config/device/common/apk.yml | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/config/device/common/apk.yml b/config/device/common/apk.yml
+index a8d08477..56066e2b 100644
+--- a/config/device/common/apk.yml
++++ b/config/device/common/apk.yml
+@@ -838,6 +838,12 @@ package_exclusions:
+   - com.verizon.mips.services
+   - com.verizon.services
+   - com.vzw.apnlib
++  # LECH OS: no eSIM support for now - the eSIM apps of Google contacted lpa.live.esimdiscovery.com (Google) and
++  # lpa.ds.gsma.com at every start and were enabled again after `pm disable-user` (network audit, 7. 11. 2026).
++  - com.google.android.euicc
++  - com.google.android.euiccoverlay
++  - com.google.euiccpixel
++  - com.google.euiccpixel.permissions
+ 
+ # GrapheneOS APK path to stock OS package
+ apk_map:
+-- 
+2.43.0
+
