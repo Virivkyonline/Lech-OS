@@ -91,6 +91,17 @@ fb_var() {   # a phone that is busy (just after a failed command) may not answer
   printf '%s\n' "$value"
 }
 adb_ready() { adb_ devices | grep -q $'\tdevice$'; }
+# Wait for the phone over adb; when it does not show up, restart the Windows adb server once (after an
+# interrupted command a hung adb.exe kept the phone, 7. 11. 2026: "no devices/emulators found").
+adb_wait() {   # seconds
+  wait_for 20 adb_ready && return 0
+  echo "Telefón sa cez adb neukázal – reštartujem adb…"
+  "${ADB[@]}" kill-server >/dev/null 2>&1
+  [ "$WINDOWS" -eq 1 ] && taskkill.exe /IM adb.exe /F >/dev/null 2>&1
+  sleep 2
+  adb_start
+  wait_for "${1:-60}" adb_ready
+}
 adb_unauthorized() { adb_ devices | grep -q $'\tunauthorized$'; }
 # "fastboot devices" prints "<serial><TAB><interface>"; the interface name differs between bootloaders
 # ("fastboot" in fastbootd), so any listed device counts.
@@ -493,7 +504,7 @@ cmd_dokoncit() {
 cmd_kontrola() {
   need_tools
   echo "Čakám na telefón cez adb (povoľte tento počítač na telefóne)…"
-  if ! wait_for 180 adb_ready; then
+  if ! adb_wait 180; then
     adb_unauthorized && die "Telefón čaká na povolenie ladenia cez USB – potvrďte na telefóne 'Povoliť'."
     die "Telefón sa cez adb neozval – zapnite Ladenie cez USB (Pre vývojárov) a povoľte tento počítač."
   fi
@@ -572,7 +583,7 @@ cmd_kontrola() {
 # The full output goes to ~/lech-work/pixel/siet-<time>.txt, a summary to the screen.
 cmd_siet() {
   need_tools
-  wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
+  adb_wait 60 || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač (prípadne odpojte a zapojte kábel)."
   mkdir -p "$WORKDIR/pixel"
   local out="$WORKDIR/pixel/siet-$(date +%Y%m%d-%H%M%S).txt" p hal sim reg simnum sms_app
   local ADB_TIMEOUT=45
@@ -654,7 +665,7 @@ cmd_siet() {
 # holds the SMS role, received messages make no sound): the app, its permissions and app ops, and the log lines.
 cmd_sms() {
   need_tools
-  wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
+  adb_wait 60 || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač (prípadne odpojte a zapojte kábel)."
   mkdir -p "$WORKDIR/pixel"
   local out="$WORKDIR/pixel/sms-$(date +%Y%m%d-%H%M%S).txt" app
   local ADB_TIMEOUT=45
@@ -712,7 +723,7 @@ cmd_audit() {
     audit_finish "$dir"
     return
   fi
-  wait_for 60 adb_ready || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač."
+  adb_wait 60 || die "Telefón sa cez adb neozval – zapnite Ladenie cez USB a povoľte tento počítač (prípadne odpojte a zapojte kábel)."
   [ -n "$(prop ro.lech.version)" ] || die "V telefóne nebeží LECH OS – audit je pre LECH OS (11-pixel.sh nahrat)."
   audit_root
   adb_ shell 'command -v tcpdump' | grep -q tcpdump || \
