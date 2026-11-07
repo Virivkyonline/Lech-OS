@@ -4,13 +4,17 @@
 # space and is enough for building. The download can be interrupted and resumed by running the script again.
 #
 # With --manifest the same revisions as in another tree are downloaded (a new build computer gets exactly the
-# sources the LECH patches were made for): the file comes from `repo manifest -r -o FILE` in that tree; the
-# projects of the Pixel support (manifests/lech-pixel.xml, added by 12-priprav-pixel.sh) are left out of it.
+# sources the LECH patches were made for): the file comes from --vytvor-manifest in that tree; the projects of the
+# Pixel support (manifests/lech-pixel.xml, added by 12-priprav-pixel.sh) are left out of it.
 #
 # Usage: tools/etapa2/04-stiahni-aosp.sh [--plna-historia] [--ulohy N] [--manifest FILE]
-#   --plna-historia   full git history (much larger download)
-#   --ulohy N         parallel download jobs (default 8)
-#   --manifest FILE   pinned manifest of another AOSP tree (repo manifest -r), kept as .repo/manifests/lech-pinned.xml
+#        tools/etapa2/04-stiahni-aosp.sh --vytvor-manifest FILE
+#   --plna-historia          full git history (much larger download)
+#   --ulohy N                parallel download jobs (default 8)
+#   --manifest FILE          pinned manifest of another AOSP tree, kept as .repo/manifests/lech-pinned.xml
+#   --vytvor-manifest FILE   write the pinned manifest of this tree (repo manifest -r) and stop; projects with
+#                            LECH OS commits (patches/) are pinned to the AOSP commit below them, because the LECH
+#                            commits exist only in this tree
 # Environment: AOSP_DIR (default ~/aosp), AOSP_BRANCH (default android-latest-release)
 
 set -euo pipefail
@@ -23,6 +27,8 @@ MANIFEST_URL=https://android.googlesource.com/platform/manifest
 JOBS=8
 DEPTH_ARGS=(--depth=1)
 PINNED=""
+MAKE_PINNED=""
+LECH_EMAIL=dev@lech-os.invalid   # committer of the LECH OS commits, as in aplikuj-zaplaty.sh
 MIN_FREE_GB=300     # shallow sources + one Cuttlefish build; full history needs more
 
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
@@ -32,7 +38,8 @@ while [ $# -gt 0 ]; do
     --plna-historia) DEPTH_ARGS=(); MIN_FREE_GB=400; shift ;;
     --ulohy) JOBS=${2:?chýba počet úloh}; shift 2 ;;
     --manifest) PINNED=${2:?chýba súbor manifestu}; shift 2 ;;
-    -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
+    --vytvor-manifest) MAKE_PINNED=${2:?chýba súbor manifestu}; shift 2 ;;
+    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
@@ -44,6 +51,42 @@ fi
 
 command -v repo >/dev/null 2>&1 || die "Chýba nástroj repo – spustite tools/etapa2/01-priprava-notebooku.sh (alebo otvorte nový terminál)."
 command -v git >/dev/null 2>&1 || die "Chýba git."
+
+if [ -n "$MAKE_PINNED" ]; then
+  [ -d "$AOSP_DIR/.repo" ] || die "V $AOSP_DIR nie sú zdrojové kódy AOSP (chýba .repo)."
+  # Projects with LECH OS commits on top: pinned to the commit below them (plain AOSP, or the GrapheneOS revision).
+  bases=()
+  while IFS= read -r project; do
+    dir="$AOSP_DIR/$project"
+    git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 || continue
+    # awk reads all lines (no early exit): git must not get SIGPIPE under errexit and pipefail.
+    lech=$(git -C "$dir" log --format='%ce' -n 200 | awk -v e="$LECH_EMAIL" 'stop {next} $1 != e {stop = 1; next} {n++} END {print n + 0}')
+    [ "$lech" -gt 0 ] || continue
+    bases+=("$project=$(git -C "$dir" rev-parse "HEAD~$lech")")
+  done < <(cd "$SCRIPT_DIR/../../patches" && find . -name '*.patch' -type f | sed 's|^\./||' | xargs -n1 dirname | LC_ALL=C sort -u)
+  tmp=$(mktemp)
+  (cd "$AOSP_DIR" && repo manifest -r -o "$tmp") || { rm -f "$tmp"; die "repo manifest -r zlyhal."; }
+  mkdir -p "$(dirname "$MAKE_PINNED")"
+  python3 - "$tmp" "$MAKE_PINNED" ${bases[@]+"${bases[@]}"} <<'PYEOF' || { rm -f "$tmp"; die "Pripnutý manifest sa nepodarilo zapísať."; }
+import sys, xml.etree.ElementTree as ET
+src, dst, base = sys.argv[1], sys.argv[2], dict(a.split("=", 1) for a in sys.argv[3:])
+tree = ET.parse(src)
+pinned = 0
+for el in tree.getroot().findall("project"):
+    path = el.get("path") or el.get("name")
+    if path in base:
+        el.set("revision", base.pop(path))
+        pinned += 1
+if base:
+    sys.exit("projects missing in the manifest: " + ", ".join(sorted(base)))
+tree.write(dst, encoding="UTF-8", xml_declaration=True)
+print("    %d projektov, z toho %d s úpravami LECH OS pripnutých na verziu pod nimi"
+      % (len(tree.getroot().findall("project")), pinned))
+PYEOF
+  rm -f "$tmp"
+  echo "Pripnutý manifest: $MAKE_PINNED"
+  exit 0
+fi
 
 mkdir -p "$AOSP_DIR"
 free_gb() { df -Pk "$1" 2>/dev/null | awk 'NR==2 {print int($4/1024/1024)}'; }

@@ -590,9 +590,12 @@ len **dva súbory** – všetko ostatné vytvoria skripty znova:
 
 1. **Na starom počítači** – pripnuté verzie zdrojov AOSP a podpisové kľúče LECH OS:
    ```bash
-   cd ~/aosp && repo manifest -r -o /mnt/c/lech/aosp-pinned.xml
+   cd ~/Lech-OS && git pull
+   tools/etapa2/04-stiahni-aosp.sh --vytvor-manifest /mnt/c/lech/aosp-pinned.xml
    tar -czf /mnt/c/lech/lech-keys.tgz -C ~ lech-keys
    ```
+   Pripnutý manifest je `repo manifest -r`, len projekty so záplatami LECH OS sú v ňom pripnuté na commit pod
+   commitmi LECH OS – tie sú len v tomto strome a nový počítač by ich nestiahol. Dá sa vytvoriť aj počas zostavenia.
    Oba súbory preniesť na nový počítač do `C:\lech\` (USB kľúč). **Kľúče sú tajné** – po prenose ich z USB zmazať.
    S rovnakými kľúčmi sa dá do telefónu nahrať nová zostava bez mazania dát; s inými by sa telefón musel vymazať.
 2. **Windows na novom počítači – disk WSL na vlastnej partícii.** Disk Linuxu (`ext4.vhdx`) rastie so
