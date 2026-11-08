@@ -929,6 +929,10 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
 
     `fastboot update` musí začínať v bootloaderi – vo fastbootd zlyhá na `dtbo` („No such file or directory“);
     `nahrat-uplne` telefón do bootloadera prepne sám.
+40. **12.–14. audit (8. 11. 2026):** LECH OS z nového počítača po vymazaní dát – nečinný telefón aj 5 min po štarte
+    **0 cieľov**, záznam DNS od štartu prázdny; čas sa synchronizuje s `europe.pool.ntp.org` pri pripojení k sieti.
+    Kontrolný audit s Wikipédiou meranie potvrdil; spojenia na Google boli len z vyhľadávania v prehliadači.
+    Hovory, SMS, dáta a Wi-Fi fungujú. Podrobnosti: [audit/README.md](../audit/README.md), 11.–14. audit.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

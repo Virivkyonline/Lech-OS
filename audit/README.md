@@ -221,3 +221,22 @@ Telefón počas auditu ležal. **GPS už nikam nevolá** (záplaty `frameworks/b
 |-----|------|----------|----------|
 | `com.google.android.euicc` (aplikácia eSIM od Google) | `lpa.live.esimdiscovery.com`, `lpa.ds.gsma.com` | vyhľadanie profilov eSIM (Google, GSMA) pri každom štarte | `pm disable-user` systém pri štarte zrušil; aplikácie eSIM sa vylúčia zo zostavy (adevtool 0004, `lech-no-esim.xml`) |
 | systém (UID 1000) | `epdg.epc.mnc003.mcc231.pub.3gppnetwork.org` (len DNS) | ePDG operátora 4ka pre volania cez Wi-Fi (3GPP) | infraštruktúra operátora – povolené |
+
+## 11.–14. audit – 7.–8. 11. 2026, bez aplikácií eSIM (úplný LECH OS)
+
+| Audit | Podmienky | Výsledok |
+|-------|-----------|----------|
+| 11. (7. 11.) | Zostava bez eSIM (adevtool 0004), 5 min, počas auditu sa používal prehliadač | Žiadne eSIM ani GPS. 7 domén Google (`www.google.com`, `encrypted-tbn0.gstatic.com`, `googleadservices`…) z vyhľadávania v prehliadači |
+| 12. (8. 11.) | Zostava z nového zostavovacieho počítača po vymazaní dát; telefón už bežal, mobilné dáta, 5 min | **0 cieľov** – 35 paketov, len lokálna sieť |
+| 13. (8. 11.) | Audit začatý ~1 min po reštarte, mobilné dáta (`rmnet1`), 5 min | **0 cieľov, záznam DNS od štartu prázdny** (4 pakety) |
+| 14. (8. 11.) – kontrolný | 2 min, počas auditu otvorená Wikipédia cez vyhľadávanie v prehliadači | Zachytené `sk.wikipedia.org` a `*.wikimedia.org` → meranie funguje. K tomu 8 domén Google zo stránky vyhľadávania Google v prehliadači (`www.google.com`, `www.gstatic.com`, `consent.google.com`, `ogads-pa.clients6.google.com`, `play.google.com`, `content-autofill.googleapis.com`, `encrypted-tbn0.gstatic.com`, `www.googleadservices.com`) |
+
+### Zistenie
+
+- **Systém LECH OS sám od seba kontaktuje len časový server** `europe.pool.ntp.org`, a to pri pripojení k sieti
+  (`dumpsys network_time_update_service`: synchronizácia 8. 11. 2026 o 7:27 pri zapnutí Wi-Fi, ďalšia o 18 h).
+  Žiadne spojenie na Google, eSIM ani GPS; dopyt na ePDG 4ka sa objaví len pri Wi-Fi (volania cez Wi-Fi).
+- **Všetky spojenia na Google boli z prehliadača**, keď sa v ňom vyhľadávalo (predvolený vyhľadávač Google). Úloha
+  etapy 3: náhrada prehliadača a súkromný predvolený vyhľadávač ([docs/08](../docs/08-plan-etap.md)).
+- Audit spustený po štarte nezachytí prvú minútu (štart, `adb root`); záznam DNS z telefónu (`dns-dopyty.txt`)
+  ju pokrýva – v 13. audite bol prázdny.
