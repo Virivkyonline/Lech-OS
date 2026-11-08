@@ -734,6 +734,12 @@ SIM je počas merania vybratá, aby všetka prevádzka išla cez Wi-Fi notebooku
 telefónu zachytiť nedá); meranie so SIM (ePDG, VoLTE) je samostatný krok. `pktmon` môže paket zaznamenať na viacerých
 miestach adaptéra – `vyhodnotit` presné duplikáty odstráni (`editcap -d`).
 
+**Prvý pokus (8. 11. 2026) sa stratil:** po 7 h Windows padol (modrá obrazovka `DRIVER_IRQL_NOT_LESS_OR_EQUAL`,
+`vfpext.sys` – filtrovanie siete Hyper-V, cez ktoré ide WSL) počas zostavovania v Ubuntu a záznamu naraz. `pktmon`
+drží pakety v pamäti a do súboru ich zapíše až pri zastavení – záznam mal 0 paketov (`pktmon counters` pritom
+ukazoval 1355 paketov z telefónu). Odteraz `start.ps1` vytvorí naplánovanú úlohu „LECH meranie“, ktorá každú hodinu
+uzavrie súbor a začne ďalší (`rotate.ps1`), a počas merania je Ubuntu vypnuté (`wsl --shutdown`).
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):

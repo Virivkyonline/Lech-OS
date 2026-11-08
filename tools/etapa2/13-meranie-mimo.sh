@@ -57,11 +57,35 @@ pktmon stop 2>&1 | Out-Null
 pktmon filter remove 2>&1 | Out-Null
 New-Item -ItemType Directory -Force $dir | Out-Null
 Remove-Item "$dir\meranie*.etl", "$dir\meranie*.pcapng" -ErrorAction SilentlyContinue
-pktmon start --capture --comp $id --pkt-size 0 --file-name "$dir\meranie.etl" --log-mode multi-file --file-size 256 2>&1 | Out-Null
+Set-Content -Encoding Ascii "$dir\adapter.txt" $id
+pktmon start --capture --comp $id --pkt-size 0 --file-name "$dir\meranie-000.etl" --log-mode multi-file --file-size 256 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) { Write-Host 'pktmon sa nespustil - pošlite tento výpis.' -ForegroundColor Red; exit 1 }
 Set-Content -Encoding Ascii "$dir\zaciatok.txt" (Get-Date -Format o)
-Write-Host "Meranie beží od $(Get-Date -Format 'dd. MM. yyyy HH:mm') (adaptér $id, $desc)." -ForegroundColor Green
+# pktmon keeps packets in memory buffers and writes them to the file only when a buffer is full or the record stops:
+# with an idle phone a whole day fits in the buffers, and the Windows crash of 8. 11. 2026 (vfpext.sys) lost 7 h.
+# A scheduled task (as SYSTEM) therefore closes the file every hour and starts the next one (gap ~1 s).
+$action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -ExecutionPolicy Bypass -File C:\lech\meranie\rotate.ps1'
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddHours(1) -RepetitionInterval (New-TimeSpan -Hours 1) -RepetitionDuration (New-TimeSpan -Days 3)
+$principalTask = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest
+Register-ScheduledTask -TaskName 'LECH meranie' -Action $action -Trigger $trigger -Principal $principalTask -Force | Out-Null
+if (-not (Get-ScheduledTask -TaskName 'LECH meranie' -ErrorAction SilentlyContinue)) {
+    Write-Host 'UPOZORNENIE: hodinové ukladanie záznamu (naplánovaná úloha) sa nevytvorilo - pri páde Windows by sa záznam stratil.' -ForegroundColor Yellow
+}
+Write-Host "Meranie beží od $(Get-Date -Format 'dd. MM. yyyy HH:mm') (adaptér $id, $desc), záznam sa ukladá každú hodinu." -ForegroundColor Green
 Write-Host 'Teraz pripojte telefón k Wi-Fi tohto počítača. Ukončenie: powershell -ExecutionPolicy Bypass -File C:\lech\meranie\stop.ps1'
+EOF
+  write_ps1 "$WIN_DIR/rotate.ps1" <<'EOF'
+# LECH OS: closes the current record file of the hotspot measurement and starts the next one (run every hour by the
+# scheduled task "LECH meranie" from start.ps1), so a crash of Windows loses at most one hour. Also restarts the
+# record after a restart of Windows, when the hotspot is on again.
+$ErrorActionPreference = 'Continue'
+$dir = 'C:\lech\meranie'
+$id = (Get-Content "$dir\adapter.txt" -ErrorAction SilentlyContinue | Select-Object -First 1)
+if (-not $id) { exit 1 }
+pktmon stop 2>&1 | Out-Null
+$n = @(Get-ChildItem "$dir\meranie-*.etl" -ErrorAction SilentlyContinue).Count
+pktmon start --capture --comp $id --pkt-size 0 --file-name ("$dir\meranie-{0:D3}.etl" -f $n) --log-mode multi-file --file-size 256 2>&1 | Out-Null
+Add-Content -Encoding Ascii "$dir\rotacie.txt" ("{0} subor {1} pktmon {2}" -f (Get-Date -Format o), $n, $LASTEXITCODE)
 EOF
   write_ps1 "$WIN_DIR/stop.ps1" <<'EOF'
 # LECH OS: stops the record of the hotspot and converts it to pcapng. From tools/etapa2/13-meranie-mimo.sh.
@@ -71,6 +95,7 @@ $principal = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIde
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host 'Spustite PowerShell ako správca.' -ForegroundColor Red; exit 1
 }
+Unregister-ScheduledTask -TaskName 'LECH meranie' -Confirm:$false -ErrorAction SilentlyContinue
 pktmon stop 2>&1 | Out-Null
 Set-Content -Encoding Ascii "$dir\koniec.txt" (Get-Date -Format o)
 $files = Get-ChildItem "$dir\meranie*.etl"
@@ -78,12 +103,13 @@ if (-not $files) { Write-Host 'Záznam (meranie*.etl) sa nenašiel.' -Foreground
 foreach ($f in $files) {
     pktmon etl2pcap $f.FullName --out ($f.FullName -replace '\.etl$', '.pcapng') 2>&1 | Out-Null
 }
+Get-ChildItem "$dir\meranie*.etl" | ForEach-Object { '{0}  {1:N0} B  {2}' -f $_.Name, $_.Length, $_.LastWriteTime } | Write-Host
 $start = Get-Date (Get-Content "$dir\zaciatok.txt")
 Write-Host ('Meranie ukončené po {0:N1} h, súbory: {1}. Vyhodnotenie v Ubuntu: tools/etapa2/13-meranie-mimo.sh vyhodnotit' -f `
     ((Get-Date) - $start).TotalHours, $files.Count) -ForegroundColor Green
 EOF
   cat <<'EOF'
-Pripravené: C:\lech\meranie\start.ps1 a stop.ps1.
+Pripravené: C:\lech\meranie\start.ps1, rotate.ps1 (každú hodinu, naplánovaná úloha „LECH meranie“) a stop.ps1.
 
 Postup (prvý štart a 24 h nečinnosti, merané mimo telefónu):
   1. Windows: Nastavenia → Sieť a internet → Mobilný prístupový bod – zapnúť; Úsporu energie (vypnúť prístupový
@@ -92,6 +118,8 @@ Postup (prvý štart a 24 h nečinnosti, merané mimo telefónu):
   3. Telefón: vybrať SIM (všetka prevádzka pôjde cez Wi-Fi notebooku), obnoviť výrobné nastavenia
      (Nastavenia → Systém → Možnosti obnovenia → Vymazať všetky údaje). V sprievodcovi pripojiť len Wi-Fi notebooku,
      nič neinštalovať ani neprihlasovať. Potom nechať 24 h ležať na nabíjačke.
+     Počas merania notebook nezaťažovať: Ubuntu vypnúť (PowerShell: wsl --shutdown) – 8. 11. 2026 Windows padol
+     (vfpext.sys, sieť Hyper-V/WSL) počas zostavovania a záznamu naraz.
   4. Po 24 h:  powershell -ExecutionPolicy Bypass -File C:\lech\meranie\stop.ps1
      a v Ubuntu:  tools/etapa2/13-meranie-mimo.sh vyhodnotit
 Notebook počas merania nesmie zaspať (nabíjačka, veko otvorené alebo „Nerobiť nič“).
