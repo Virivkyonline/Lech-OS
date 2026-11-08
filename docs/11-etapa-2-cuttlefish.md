@@ -686,7 +686,20 @@ tools/etapa2/11-pixel.sh aktualizovat                       # telefón v LECH OS
   novší čas zostavenia, overený štart `yellow`.
 - Aktualizácia na staršiu zostavu nie je dovolená (`update_engine` porovná čas zostavenia).
 
-Brána 1 vyžaduje 3 aktualizácie a automatický návrat po chybnej – tá sa overí zámerne pokazenou zostavou (ďalší krok).
+Brána 1 vyžaduje 3 aktualizácie a automatický návrat po chybnej. Skúšobná chybná aktualizácia:
+
+```bash
+tools/etapa2/12-zostav-pixel.sh --ota --verzia 0.1.3 --chybna   # balík lech-tokay-ota-0.1.3-chybna.zip
+tools/etapa2/11-pixel.sh aktualizovat                          # očakáva sa návrat do pôvodného slotu
+```
+
+`--chybna` pridá `init.lech-test-chybna.rc`: init reštartuje telefón v `late-fs`, skôr ako `update_verifier` označí
+nový slot za úspešný. Bootloader vyčerpá pokusy nového slotu a vráti sa do predchádzajúceho; `aktualizovat` to
+overí (verzia a slot ako pred aktualizáciou). Obrazy pre fastboot sa pri tom neprepíšu a bežná zostava sa zastaví,
+ak by v nej súbor ostal.
+
+**1. aktualizácia OTA (8. 11. 2026):** 0.1.0-dev → 0.1.1-dev zo servera v0 cez `adb reverse` (balík 1190 MB),
+slot `_b` → `_a`, overený štart `yellow` – do telefónu so zamknutým bootloaderom.
 
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 

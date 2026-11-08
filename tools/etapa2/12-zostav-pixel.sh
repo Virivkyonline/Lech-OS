@@ -12,9 +12,12 @@
 # With --ota also the full A/B update package (OTA) signed with the LECH OS keys, for a phone with the locked
 # bootloader (E2-12): ~/lech-work/pixel-ota/lech-tokay-ota-<version>.zip, installed by 11-pixel.sh aktualizovat.
 #
-# Usage: tools/etapa2/12-zostav-pixel.sh [--ulohy N] [--ota --verzia V]
+# Usage: tools/etapa2/12-zostav-pixel.sh [--ulohy N] [--ota --verzia V [--chybna]]
 #   --ota        also build the update package (m otapackage)
 #   --verzia V   LECH OS version of this build (default vendor/lech/config/version.mk); an update must differ
+#   --chybna     gate 1 test: an update that never finishes booting (restart in late-fs, init.lech-test-chybna.rc),
+#                to check the automatic return to the previous slot; the version gets "-chybna", the image package
+#                for fastboot is left as it was
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_PIXEL_FULL_DIR (where the image
 #   package goes; default /mnt/c/lech/pixel-uplne in WSL, ~/lech-work/pixel-uplne otherwise),
 #   LECH_PIXEL_RELEASE (release configuration, default cp2a)
@@ -48,12 +51,20 @@ while [ $# -gt 0 ]; do
     --ulohy) BUILD_ARGS+=(--ulohy "${2:?chýba počet úloh}"); shift 2 ;;
     --ota) MAKE_OTA=1; shift ;;
     --verzia) export LECH_VERSION=${2:?chýba verzia}; shift 2 ;;
-    -h|--help) sed -n '2,21p' "$0"; exit 0 ;;
+    --chybna) export LECH_TEST_BROKEN_UPDATE=true; shift ;;
+    -h|--help) sed -n '2,24p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
 
 case "${LECH_VERSION-0}" in ""|*[!A-Za-z0-9._-]*) die "Verzia smie obsahovať len písmená, číslice, bodku, - a _." ;; esac
+if [ "${LECH_TEST_BROKEN_UPDATE:-}" = true ]; then
+  [ "$MAKE_OTA" -eq 1 ] && [ -n "${LECH_VERSION:-}" ] || die "--chybna patrí k --ota --verzia V (skúšobná aktualizácia)."
+  case "$LECH_VERSION" in *chybna*) ;; *) export LECH_VERSION="$LECH_VERSION-chybna" ;; esac
+else
+  unset LECH_TEST_BROKEN_UPDATE
+fi
+TEST_RC=product/etc/init/init.lech-test-chybna.rc
 [ -f "$AOSP_DIR/build/envsetup.sh" ] || die "V $AOSP_DIR nie sú zdrojové kódy AOSP – najprv tools/etapa2/04-stiahni-aosp.sh."
 [ -f "$AOSP_DIR/vendor/google_devices/$DEVICE/$DEVICE.mk" ] || \
   die "Chýba vendor/google_devices/$DEVICE – najprv pripravte podporu Pixelu: tools/etapa2/12-priprav-pixel.sh"
@@ -122,6 +133,8 @@ echo
 echo "2/2 Zostavujem LECH OS pre Pixel 9 ($PRODUCT-$RELEASE): systém, vendor, boot a vbmeta. Prvé zostavenie:"
 echo "nová analýza zostavy, moduly Pixelu a systém s nastaveniami vydania $RELEASE (niekoľko hodín)."
 stamp="$WORKDIR/.zostava-pixel-zaciatok"; touch "$stamp"
+# The broken test build must not leave its restart in a normal build (out/ keeps installed files).
+[ "${LECH_TEST_BROKEN_UPDATE:-}" = true ] || rm -f "$PRODUCT_OUT/$TEST_RC"
 if [ "$MAKE_OTA" -eq 1 ]; then
   echo "Aj balík aktualizácie OTA (m otapackage), verzia ${LECH_VERSION:-zo súboru version.mk}."
   LECH_M_TARGETS="droid otapackage" "$SCRIPT_DIR/05-zostav-aosp.sh" ${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}
@@ -132,6 +145,11 @@ status=$?
 [ "$status" -eq 0 ] || exit "$status"
 
 [ -f "$PRODUCT_OUT/android-info.txt" ] || die "Zostavenie skončilo, ale chýba $PRODUCT_OUT/android-info.txt."
+if [ "${LECH_TEST_BROKEN_UPDATE:-}" = true ]; then
+  [ -f "$PRODUCT_OUT/$TEST_RC" ] || die "Skúšobná chybná zostava nemá $TEST_RC – nevznikla by chybná aktualizácia."
+elif [ -f "$PRODUCT_OUT/$TEST_RC" ]; then
+  die "V bežnej zostave je $TEST_RC zo skúšobnej chybnej zostavy – telefón by nenaštartoval. Zostavte znova."
+fi
 present=()
 for img in "${IMAGES[@]}"; do
   if [ -f "$PRODUCT_OUT/$img.img" ]; then present+=("$img.img"); else echo "  (obraz $img.img zostava nemá)"; fi
@@ -150,7 +168,11 @@ if ! avb_out=$("$avbtool" verify_image --image "$PRODUCT_OUT/vbmeta.img" --key "
 fi
 avb_sha1=$("$avbtool" info_image --image "$PRODUCT_OUT/vbmeta.img" 2>/dev/null | sed -n 's/^Public key (sha1): *//p')
 
+version=${LECH_VERSION:-$(sed -n 's/^LECH_VERSION *[:?]= *//p' "$REPO_DIR/vendor/lech/config/version.mk")}
 echo
+if [ "${LECH_TEST_BROKEN_UPDATE:-}" = true ]; then
+  echo "Skúšobná chybná zostava – obrazy pre fastboot v $OUT_DIR_IMG ostávajú z predchádzajúcej zostavy."
+else
 echo "Balím obrazy pre fastboot do $OUT_DIR_IMG/lech-tokay-img.zip…"
 mkdir -p "$OUT_DIR_IMG" || die "Priečinok $OUT_DIR_IMG sa nedá vytvoriť."
 python3 -c '
@@ -161,7 +183,6 @@ with zipfile.ZipFile(out + ".tmp", "w", zipfile.ZIP_STORED, allowZip64=True) as 
         z.write(os.path.join(src, f), f)
 os.replace(out + ".tmp", out)
 ' "$OUT_DIR_IMG/lech-tokay-img.zip" "$PRODUCT_OUT" "${present[@]}" || die "Balenie obrazov zlyhalo."
-version=${LECH_VERSION:-$(sed -n 's/^LECH_VERSION *[:?]= *//p' "$REPO_DIR/vendor/lech/config/version.mk")}
 {
   echo "LECH OS $version - Pixel 9 ($PRODUCT-$RELEASE-userdebug, úplná zostava)"
   echo "zostavené: $(date '+%d. %m. %Y %H:%M'), commit $(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo '?')"
@@ -172,6 +193,7 @@ version=${LECH_VERSION:-$(sed -n 's/^LECH_VERSION *[:?]= *//p' "$REPO_DIR/vendor
   (cd "$OUT_DIR_IMG" && sha256sum lech-tokay-img.zip)
 } > "$OUT_DIR_IMG/info.txt"
 ls -lh "$OUT_DIR_IMG" | sed 1d
+fi
 
 if [ "$MAKE_OTA" -eq 1 ]; then
   # Make products: $PRODUCT_OUT/<product>-ota.zip; Soong-built devices: an ota.zip in the intermediates.

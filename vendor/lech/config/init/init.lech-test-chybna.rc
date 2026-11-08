@@ -1,0 +1,12 @@
+# Copyright (C) 2026 The LECH OS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+# LECH OS TEST ONLY (gate 1, tools/etapa2/12-zostav-pixel.sh --chybna): an update that never finishes booting.
+# Installed only when LECH_TEST_BROKEN_UPDATE=true (vendor/lech/products/lech_tokay.mk); never in a normal build
+# (12-zostav-pixel.sh stops when this file is in the product partition of a normal build).
+#
+# Init restarts the phone in late-fs, before update_verifier marks the new slot as successful (post-fs-data). The
+# bootloader uses up the boot attempts of the new slot and returns to the previous slot by itself - the automatic
+# rollback after a broken A/B update that gate 1 requires (docs/adr/0008).
+on late-fs
+    setprop sys.powerctl reboot,lech-test-chybna-aktualizacia

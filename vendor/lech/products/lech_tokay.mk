@@ -49,6 +49,14 @@ MODULE_BUILD_FROM_SOURCE := true
 PRODUCT_COPY_FILES += \
     vendor/lech/config/sysconfig/lech-no-esim.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/sysconfig/lech-no-esim.xml \
 
+# Gate 1 test only: an update that does not start, to check the automatic return to the previous slot
+# (tools/etapa2/12-zostav-pixel.sh --chybna sets LECH_TEST_BROKEN_UPDATE; vendor/lech/config/init/init.lech-test-chybna.rc).
+ifeq ($(LECH_TEST_BROKEN_UPDATE),true)
+PRODUCT_COPY_FILES += \
+    vendor/lech/config/init/init.lech-test-chybna.rc:$(TARGET_COPY_OUT_PRODUCT)/etc/init/init.lech-test-chybna.rc \
+
+endif
+
 $(call inherit-product, vendor/google_devices/tokay/tokay.mk)
 $(call inherit-product, vendor/lech/config/common.mk)
 

@@ -557,6 +557,15 @@ cmd_aktualizovat() {
   echo "Telefón: LECH OS $before_version, slot ${before_slot:-?}, overený štart $(prop ro.boot.verifiedbootstate)"
   echo "Balík:   $ota (LECH OS $version, $(( $(stat -c %s "$ota") / 1024 / 1024 )) MB)"
   [ "$version" != "$before_version" ] || die "V telefóne už beží LECH OS $version – zostavte novšiu verziu (--verzia)."
+  local broken=0 boot_wait=600
+  case "$version" in
+    *chybna*)
+      broken=1; boot_wait=1500
+      confirm "SKÚŠOBNÁ CHYBNÁ aktualizácia (brána 1): LECH OS $version nikdy nedokončí štart – telefón sa opakovane
+reštartuje, kým bootloader nevyčerpá pokusy nového slotu, a potom sa SÁM vráti do slotu ${before_slot:-?} s LECH OS
+$before_version. Trvá to niekoľko minút; telefón medzitým nechajte ležať, nič nestláčajte (žlté varovanie
+pokračuje samo). Dáta ostanú." ;;
+  esac
 
   python3 -B "$SCRIPT_DIR/ota_server.py" publish "$ota" "$server_dir" --version "$version" > "$ota_dir/zverejnene.json" \
     || die "Balík aktualizácie je neplatný ($ota)."
@@ -573,10 +582,11 @@ print("\n".join(u["headers"] + ["USER_AGENT=LECH-OS-updater-v0", "NETWORK_ID=0"]
     die "Balík ($version) nie je novší ako systém v telefóne – aktualizácia na staršiu zostavu nie je dovolená."
 
   audit_root
+  # Also from the EXIT trap after a die (the locals are still visible then); unset values are fine.
   cleanup_ota() {
-    [ -n "$server_pid" ] && kill "$server_pid" 2>/dev/null
-    adb_ reverse --remove "tcp:$port" >/dev/null 2>&1
-    [ -n "$pushed" ] && adb_ shell rm -f "$pushed" >/dev/null 2>&1
+    [ -n "${server_pid:-}" ] && kill "$server_pid" 2>/dev/null
+    [ -n "${port:-}" ] && adb_ reverse --remove "tcp:$port" >/dev/null 2>&1
+    [ -n "${pushed:-}" ] && adb_ shell rm -f "$pushed" >/dev/null 2>&1
     true
   }
   trap 'cleanup_ota; cleanup' EXIT
@@ -618,17 +628,35 @@ print("\n".join(u["headers"] + ["USER_AGENT=LECH-OS-updater-v0", "NETWORK_ID=0"]
   grep -q "kSuccess\|kUpdatedButNotActive" "$log" && [ "$status" -eq 0 ] || \
     die "Inštalácia aktualizácie zlyhala – telefón ostáva na LECH OS $before_version. Log: $log"
   cleanup_ota; server_pid=""; pushed=""
+  trap cleanup EXIT
 
   echo "Aktualizácia je v druhom slote. Reštartujem telefón do LECH OS $version…"
   adb_ reboot >/dev/null
   sleep 20
-  adb_wait 600 || die "Telefón sa po reštarte cez adb neozval. Ak ostal v bootloaderi alebo ukazuje chybu, pošlite fotku."
-  wait_for 600 boot_completed || die "Telefón po aktualizácii nedokončil štart."
+  [ "$broken" -eq 1 ] && echo "Telefón sa teraz opakovane reštartuje (chybná aktualizácia) – čakám na návrat (do 25 min)…"
+  adb_wait "$boot_wait" || die "Telefón sa po reštarte cez adb neozval. Ak ostal v bootloaderi alebo ukazuje chybu, pošlite fotku."
+  wait_for "$boot_wait" boot_completed || die "Telefón po aktualizácii nedokončil štart."
   after_version=$(prop ro.lech.version); after_slot=$(prop ro.boot.slot_suffix); after_build=$(prop ro.build.date.utc)
   vb=$(prop ro.boot.verifiedbootstate)
   ok=1
-  row() { printf '  %-7s %s%*s %s\n' "$1" "$2" $(( 18 - ${#2} )) "" "$3"; [ "$1" = OK ] || ok=0; }
+  row() { printf '  %-7s %s%*s %s\n' "$1" "$2" $(( 18 - ${#2} )) "" "$3"; [ "$1" = OK ] || [ "$1" = INFO ] || ok=0; }
   echo
+  if [ "$broken" -eq 1 ]; then
+    mkdir -p "$WORKDIR/pixel"
+    if [ "$after_version" = "$before_version" ] && [ "$after_slot" = "$before_slot" ]; then
+      row OK "automatický návrat" "chybná $version sa nespustila → späť LECH OS $after_version, slot $after_slot"
+    else
+      row CHYBA "automatický návrat" "telefón beží ${after_version:-?} zo slotu ${after_slot:-?} (očakávané $before_version, $before_slot)"
+    fi
+    row INFO "posledné reštarty" "$(prop sys.boot.reason.last) / $(prop ro.boot.bootreason)"
+    case "$vb" in yellow) row OK "overený štart" "yellow – zamknutý bootloader, kľúč LECH OS" ;; *) row INFO "overený štart" "${vb:-?}" ;; esac
+    echo "$(date '+%d. %m. %Y %H:%M') skúšobná chybná aktualizácia $version: návrat na ${after_version:-?} (${after_slot:-?}), ok=$ok" \
+      >> "$WORKDIR/pixel/nahratia.txt"
+    echo
+    [ "$ok" -eq 1 ] || die "Návrat po chybnej aktualizácii nie je v poriadku – pošlite tento výpis a $log."
+    echo "Automatický návrat po chybnej aktualizácii funguje: telefón beží LECH OS $after_version zo slotu $after_slot."
+    return 0
+  fi
   if [ "$after_version" = "$version" ]; then row OK "verzia" "$before_version → $after_version"
   else row CHYBA "verzia" "$before_version → ${after_version:-?} (očakávané $version)"; fi
   if [ -n "$after_slot" ] && [ "$after_slot" != "$before_slot" ]; then row OK "slot A/B" "$before_slot → $after_slot"
