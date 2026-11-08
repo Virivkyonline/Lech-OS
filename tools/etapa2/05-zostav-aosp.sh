@@ -122,6 +122,13 @@ failed_steps() {   # file, byte offset where this build attempt starts
     show && n++ < 40 { print "  " (length($0) > 220 ? substr($0, 1, 220) " …" : $0) }'
 }
 
+# Ctrl+C: m ends with 130 (SIGINT) and siso/ninja reports "interrupted" - not a failure of the build.
+if [ "$status" -ne 0 ] && { [ "$status" -eq 130 ] || tail -c +$(( start_bytes + 1 )) "$LOG" | tail -n 20 | grep -aqiE 'interrupt'; }; then
+  echo
+  echo "Zostavenie prerušené po ${minutes} min (Ctrl+C). Hotová časť ostáva – po novom spustení pokračuje tam, kde skončilo."
+  exit 130
+fi
+
 if [ "$status" -ne 0 ]; then
   echo
   echo "Zostavenie zlyhalo po ${minutes} min."
