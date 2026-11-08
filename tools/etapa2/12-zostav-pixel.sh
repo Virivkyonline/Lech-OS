@@ -93,6 +93,17 @@ free_gb=$(lech_free_gb "$AOSP_DIR")
 # vendor/lech, keys and patches (also those for vendor/adevtool): the same preparation as for Cuttlefish.
 "$SCRIPT_DIR/06-zostav-lech.sh" --len-skopirovat || exit 1
 
+# LECH OS icons of the system apps (branding/ikony): overlays generated from the apps of the last build (aapt2 reads
+# which resources are their launcher icons); vendor/lech/config/common.mk includes the generated ikony.mk.
+echo "Ikony LECH OS (branding/ikony) pre systémové aplikácie:"
+if [ -x "$AOSP_DIR/out/host/linux-x86/bin/aapt2" ]; then
+  python3 -I "$SCRIPT_DIR/ikony_prekrytia.py" --aapt2 "$AOSP_DIR/out/host/linux-x86/bin/aapt2" \
+    --product-out "$PRODUCT_OUT" --icons "$REPO_DIR/branding/ikony/android-res" \
+    --out "$AOSP_DIR/vendor/lech/overlay/ikony" || die "Prekrytia ikon sa nepodarilo vytvoriť."
+else
+  echo "  (zatiaľ bez ikon – aapt2 ešte nie je zostavený; ikony prídu s ďalšou zostavou)"
+fi
+
 # The vendor module records the adevtool revision it was generated with (only a warning in the build, --noVerify).
 # A different revision means the LECH patches of adevtool changed: generate the module again first.
 gen_rev=$(sed -n 's/^ifneq (\$(shell git -C [^ ]* rev-parse HEAD),\([0-9a-f]\{40\}\))$/\1/p' \

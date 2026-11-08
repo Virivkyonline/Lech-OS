@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><g transform="translate(512 512) scale(0.92) translate(-512 -512)">
+<defs>
+  <mask id="mback">
+    <rect width="1024" height="1024" fill="white"/>
+    <rect x="250.0" y="355.0" width="484" height="394" rx="78" fill="black"/>
+  </mask>
+  <mask id="mfront">
+    <rect width="1024" height="1024" fill="white"/>
+    <rect x="312.0" y="417.0" width="360" height="270" rx="24" fill="black"/>
+  </mask>
+  <clipPath id="win">
+    <rect x="312.0" y="417.0" width="360" height="270" rx="24"/>
+  </clipPath>
+</defs>
+<g mask="url(#mback)">
+  <rect x="377.0" y="292.0" width="380" height="290" rx="48" fill="none" stroke="#FFFFFF" stroke-width="34"
+        transform="rotate(-9 567 437)"/>
+</g>
+<rect x="272.0" y="377.0" width="440" height="350" rx="56" fill="#FFFFFF" mask="url(#mfront)"/>
+<g clip-path="url(#win)">
+  <circle cx="592.0" cy="497.0" r="34" fill="#FFFFFF"/>
+  <path d="M 272.0 727.0 L 272.0 607.0 L 392.0 512.0 L 487.0 607.0 L 547.0 562.0
+           L 712.0 677.0 L 712.0 727.0 Z" fill="#FFFFFF"/>
+</g></g></svg>

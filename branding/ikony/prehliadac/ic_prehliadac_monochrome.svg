@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><g transform="translate(512 512) scale(0.75) translate(-512 -512)">
+<defs>
+  <mask id="ringmask">
+    <rect width="1024" height="1024" fill="white"/>
+    <!-- hide the half of the ring that passes behind the globe (the side above the ring's major axis) -->
+    <g transform="rotate(-28 512 512)">
+      <rect x="257" y="257" width="510" height="255" fill="black"/>
+    </g>
+  </mask>
+  <mask id="globemask">
+    <rect width="1024" height="1024" fill="white"/>
+    <!-- gap where the front of the ring crosses the globe outline -->
+    <ellipse cx="512" cy="512" rx="395" ry="118" fill="none" stroke="black" stroke-width="74"
+             transform="rotate(-28 512 512)" mask="url(#ringmask)"/>
+  </mask>
+</defs>
+<g mask="url(#globemask)">
+  <circle cx="512" cy="512" r="215" fill="none" stroke="#FFFFFF" stroke-width="30"/>
+  <ellipse cx="512" cy="512" rx="90.3" ry="215" fill="none" stroke="#FFFFFF" stroke-width="22"/>
+  <line x1="297" y1="512" x2="727" y2="512" stroke="#FFFFFF" stroke-width="22"/>
+  <path d="M 327.1 404.5 Q 512 357.20000000000005 696.9 404.5" fill="none" stroke="#FFFFFF" stroke-width="18"/>
+  <path d="M 327.1 619.5 Q 512 666.8 696.9 619.5" fill="none" stroke="#FFFFFF" stroke-width="18"/>
+</g>
+<!-- back half of the ring, thinner (behind the globe) -->
+<g mask="url(#ringmask)" opacity="1">
+</g>
+<ellipse cx="512" cy="512" rx="395" ry="118" fill="none" stroke="#FFFFFF" stroke-width="30"
+         transform="rotate(-28 512 512)" mask="url(#ringmask)"/>
+<!-- the part of the ring behind the globe but outside it -->
+<defs>
+  <mask id="backring">
+    <rect width="1024" height="1024" fill="black"/>
+    <g transform="rotate(-28 512 512)">
+      <rect x="77" y="334" width="870" height="178" fill="white"/>
+    </g>
+    <circle cx="512" cy="512" r="229" fill="black"/>
+  </mask>
+</defs>
+<ellipse cx="512" cy="512" rx="395" ry="118" fill="none" stroke="#FFFFFF" stroke-width="30"
+         transform="rotate(-28 512 512)" mask="url(#backring)"/></g></svg>

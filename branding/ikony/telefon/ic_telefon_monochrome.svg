@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><g transform="translate(512 512) scale(0.73) translate(-512 -512)">
+<defs><mask id="phonegap"><rect width="1024" height="1024" fill="white"/><path d="M 580.7 736.7 A 235 235 0 0 1 287.3 443.3" fill="none" stroke="black" stroke-width="180" stroke-linecap="round"/><ellipse cx="623.7" cy="723.6" rx="118" ry="82" transform="rotate(-17.0 623.7 723.6)" fill="black" stroke="black" stroke-width="56"/><ellipse cx="300.4" cy="400.3" rx="118" ry="82" transform="rotate(-73.0 300.4 400.3)" fill="black" stroke="black" stroke-width="56"/></mask></defs>
+<ellipse cx="512" cy="542" rx="405" ry="125" fill="none" stroke="#FFFFFF" stroke-width="26"
+         transform="rotate(-24 512 542)" mask="url(#phonegap)"/>
+<path d="M 580.7 736.7 A 235 235 0 0 1 287.3 443.3" fill="none" stroke="#FFFFFF" stroke-width="112" stroke-linecap="round"/><ellipse cx="623.7" cy="723.6" rx="118" ry="82" transform="rotate(-17.0 623.7 723.6)" fill="#FFFFFF" /><ellipse cx="300.4" cy="400.3" rx="118" ry="82" transform="rotate(-73.0 300.4 400.3)" fill="#FFFFFF" /></g></svg>

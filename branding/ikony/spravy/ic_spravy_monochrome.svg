@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><g transform="translate(512 512) scale(0.84) translate(-512 -512)">
+<defs>
+  <mask id="dots">
+    <rect width="1024" height="1024" fill="white"/>
+    <circle cx="362" cy="482.0" r="46" fill="black"/>
+    <circle cx="512" cy="482.0" r="46" fill="black"/>
+    <circle cx="662" cy="482.0" r="46" fill="black"/>
+  </mask>
+</defs>
+<g mask="url(#dots)">
+  <rect x="232.0" y="277.0" width="560" height="410" rx="205.0" fill="#FFFFFF"/>
+  <path d="M 372.0 627.0 Q 342.0 727.0 287.0 787.0 Q 412.0 757.0 497.0 679.0 Z" fill="#FFFFFF"/>
+</g></g></svg>

@@ -51,6 +51,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     LechFrameworksResOverlay \
 
+# LECH OS icons of the system apps (branding/ikony): overlays generated into vendor/lech/overlay/ikony by
+# tools/etapa2/12-zostav-pixel.sh (tools/etapa2/ikony_prekrytia.py); absent in builds that do not generate them.
+-include vendor/lech/overlay/ikony/ikony.mk
+
 # Init settings of LECH OS: no remote key provisioning by Google, also when the phone's vendor partition
 # names the Google server (Pixel). On Cuttlefish the server is removed by a patch (patches/device/google/cuttlefish).
 PRODUCT_COPY_FILES += \
