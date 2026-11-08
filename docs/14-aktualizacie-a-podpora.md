@@ -105,6 +105,11 @@ Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro
    telefónia CVE-2026-55270). Všetkých 6 má GrapheneOS upravených pre Android 17 – prevzaté (`bezpecnost/prisposobene/`).
    **GrapheneOS zverejnil novembrové opravy platformy 2. 11.** (deň bulletinu) vo svojich repozitároch; LECH OS ich
    odteraz preberá odtiaľ podľa čísla chyby z bulletinu, kým ich Google nedá do AOSP.
+   **Neprevzatá:** kritická `CVE-2026-58868` (framework, spustenie kódu na diaľku bez zásahu používateľa; chyba
+   A-486464711) – 8. 11. 2026 nie je ani v AOSP, ani vo verejných repozitároch GrapheneOS (vetva `17`). GrapheneOS
+   takéto opravy dodáva vo svojich „security preview“ vydaniach z opráv, ktoré Google vopred posiela partnerom –
+   ich zdrojový kód nie je verejný. LECH OS ju dostane až so zverejnením v AOSP: konkrétny príklad, prečo je pre
+   mesačný cyklus dôležitý prístup k opravám vopred (partnerstvo s Google alebo dohoda s GrapheneOS).
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.
    **Prvý odhad z generálky (8. 11. 2026, Pixel 9, nový zostavovací notebook):**
 
