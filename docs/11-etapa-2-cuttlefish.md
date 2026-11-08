@@ -698,8 +698,19 @@ nový slot za úspešný. Bootloader vyčerpá pokusy nového slotu a vráti sa 
 overí (verzia a slot ako pred aktualizáciou). Obrazy pre fastboot sa pri tom neprepíšu a bežná zostava sa zastaví,
 ak by v nej súbor ostal.
 
-**1. aktualizácia OTA (8. 11. 2026):** 0.1.0-dev → 0.1.1-dev zo servera v0 cez `adb reverse` (balík 1190 MB),
-slot `_b` → `_a`, overený štart `yellow` – do telefónu so zamknutým bootloaderom.
+Výsledky 8. 11. 2026 (telefón so zamknutým bootloaderom, server v0 cez `adb reverse`, balíky 1190 MB, zostava
+balíka 7 min):
+
+| Aktualizácia | Výsledok |
+|--------------|----------|
+| 1. 0.1.0-dev → 0.1.1-dev | slot `_b` → `_a`, overený štart `yellow` |
+| 2. 0.1.1-dev → 0.1.2-dev | slot `_a` → `_b`, `yellow` |
+| skúšobná chybná 0.1.3-chybna | nainštalovaná do `_a`, nikdy nedokončila štart (`reboot,lech-test-chybna-aktualizacia`); bootloader sa po vyčerpaní pokusov **sám vrátil** do `_b` s 0.1.2-dev (asi 4 min), dáta ostali, `veritymode` `enforcing` |
+
+**Otvorené:** pri každom pokuse o štart chybného slotu ukázal bootloader červené „Your device is corrupt“ a čakal na
+tlačidlo napájania (bez neho by sa telefón vypol a návrat by sa zastavil). V dobrom slote potom `veritymode`
+`enforcing`, varovanie zmizlo samo. Pôvod (správanie bootloadera Pixelu pri opakovanom prerušenom štarte nového
+slotu Virtual A/B) treba ešte overiť – napr. iným druhom chyby (pád jadra namiesto reštartu z init).
 
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
