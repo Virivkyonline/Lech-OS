@@ -475,13 +475,23 @@ Zostavte ju znova (12-zostav-pixel.sh) a nahrajte (nahrat-uplne)."
   [ -n "$digest_zip" ] && [ "$digest_phone" = "$digest_zip" ] || \
     die "V telefóne nebeží zostava z $zip_dir (vbmeta telefónu: ${digest_phone:-?}, zostavy: ${digest_zip:-?}).
 Najprv ju nahrajte: tools/etapa2/11-pixel.sh nahrat-uplne"
-  [ "$(prop sys.oem_unlock_allowed)" = 1 ] || \
-    die "Zapnite v telefóne Nastavenia → Systém → Pre vývojárov → Odomknutie OEM – bez neho by sa bootloader už nedal odomknúť."
+  # Android 17 on the Pixel 9 does not set sys.oem_unlock_allowed (empty, 8. 11. 2026); only an explicit 0 stops here.
+  # The bootloader answers for itself below (flashing get_unlock_ability).
+  [ "$(prop sys.oem_unlock_allowed)" != 0 ] || \
+    die "Odomknutie OEM je vypnuté (Pre vývojárov) – po zamknutí by sa bootloader už nedal odomknúť."
 
   fp=$(sha256sum "$pkmd" | cut -d' ' -f1)
   to_bootloader
   ensure_bootloader
   [ "$(fb_var unlocked)" = yes ] || die "Bootloader je už zamknutý (tools/etapa2/11-pixel.sh stav)."
+  # Whether the bootloader will allow `flashing unlock` again (OEM unlocking in Developer options; while unlocked the
+  # switch is grey there). Without it a locked phone that does not start could not be recovered.
+  local ability
+  ability=$(fb flashing get_unlock_ability | sed -n 's/.*get_unlock_ability: *\([0-9]\).*/\1/p' | head -n 1)
+  [ "$ability" = 1 ] || \
+    die "Bootloader by sa po zamknutí už nedal odomknúť (flashing get_unlock_ability: ${ability:-?}). Nič som nezmenil.
+Telefón reštartujte do LECH OS a pošlite tento výpis."
+  echo "Bootloader povolí neskoršie odomknutie (get_unlock_ability: 1)."
   confirm "Bootloader sa zamkne s kľúčom overeného štartu LECH OS
   (odtlačok SHA-256: $fp).
 Zamknutie VYMAŽE VŠETKY DÁTA v telefóne. Na telefóne potom tlačidlami hlasitosti vyberte 'Lock the bootloader'
