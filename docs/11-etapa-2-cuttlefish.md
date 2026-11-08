@@ -664,6 +664,9 @@ telefóne, dáta sa vymažú). Pri každom štarte potom **žlté varovanie s ID
 bootloaderom (rovnako GrapheneOS); `kontrola` hlási `overený štart: yellow`. Nové zostavy sa odteraz nahrávajú ako
 podpísaná aktualizácia OTA. Odomknutie OEM ostáva zapnuté, kým nie je overené aj OTA.
 
+Overené 8. 11. 2026 (záznam 41). Pri `zamknut` sa Odomknutie OEM overuje v bootloaderi
+(`fastboot flashing get_unlock_ability`); Android 17 vlastnosť `sys.oem_unlock_allowed` nenastavuje.
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
@@ -712,7 +715,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | **Hotové 5. 11. 2026 (v0)** – `09-nocna-kontrola.sh` na notebooku, každú noc o 02:30 z Plánovača úloh Windows ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); prvý beh (ručne): všetkých 5 krokov OK. Ďalej: CI na serveri v EÚ, kontrola každej zmeny pred zlúčením |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **E2-11a hotové 6. 11. 2026** – LECH OS ako GSI beží na Pixeli 9 (vendor Android 17 `CP3A.261005.005`): identita, kľúče LECH, NTP aj animácia overené (`11-pixel.sh kontrola`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)). Bez RKP servera Google (`init.lech.rc`); sieťový audit na telefóne: žiadne spojenie na Google (5. a 6. audit). Zostáva: SMS a VoLTE (IMS), verzia „Baklava“ namiesto 17; E2-11b (začaté 6. 11. 2026): úplná zostava s podporou zariadenia z GrapheneOS (adevtool, [časť 4i](#4i-úplná-zostava-lech-os-pre-pixel-9-úloha-e2-11b)) – **7. 11. 2026 beží úplný LECH OS** (Android 17, `cp2a`): hovory, SMS, mobilné dáta (4ka LTE), Wi-Fi; VoLTE pre 4ka vypnuté už v nastaveniach operátora od Google. Bluetooth a fotoaparát fungujú. Zostáva: sieťový audit úplnej zostavy, GPS; staré aplikácie AOSP Fotoaparát (Camera2) a Galéria (Gallery2) kreslia pod navigačné tlačidlá (vynútené zobrazenie od okraja po okraj od Androidu 15) – nahradiť modernými aplikáciami; eSIM zatiaľ nie je (aplikácie Google vylúčené) – eSIM bez Google cez OpenEUICC je úloha etapy 3 |
-| E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | **Rozpracované 8. 11. 2026** – kľúč AVB LECH OS, podpis `vbmeta`, kontrola podpisu po zostavení a príkaz `11-pixel.sh zamknut` ([časť 4k](#4k-zamknutý-bootloader-s-vlastným-kľúčom-úloha-e2-12)); na telefóne zatiaľ neoverené |
+| E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | **Hotové 8. 11. 2026** – `vbmeta` podpísaná kľúčom AVB LECH OS (verejný kľúč sha1 `d12f5c50…ac2d`, SHA-256 `95318521…f4fb`), kľúč v `avb_custom_key`, bootloader zamknutý: žlté varovanie pri štarte, `kontrola`: `yellow`, `vbmeta: locked` ([časť 4k](#4k-zamknutý-bootloader-s-vlastným-kľúčom-úloha-e2-12)). Odomknutie OEM ostáva zapnuté do overenia OTA |
 
 ### Záznam z prvého spustenia (4. 11. 2026)
 
@@ -963,6 +966,12 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     **0 cieľov**, záznam DNS od štartu prázdny; čas sa synchronizuje s `europe.pool.ntp.org` pri pripojení k sieti.
     Kontrolný audit s Wikipédiou meranie potvrdil; spojenia na Google boli len z vyhľadávania v prehliadači.
     Hovory, SMS, dáta a Wi-Fi fungujú. Podrobnosti: [audit/README.md](../audit/README.md), 11.–14. audit.
+41. **Zamknutý bootloader (8. 11. 2026, E2-12):** nový kľúč AVB LECH OS (`07-vytvor-kluce.sh`, záloha `lech-keys.tgz` na
+    USB kľúči), zostava podpísaná za 1 min (zmenila sa len `vbmeta`), `avbtool verify_image` prešiel. `nahrat-uplne
+    --bez-mazania` prvýkrát bez ručných zásahov (z fastbootd sám do bootloadera). `zamknut`: kontrola
+    `sys.oem_unlock_allowed` zlyhala – Android 17 ju nenastavuje (prepínač Odomknutie OEM je pri odomknutom
+    bootloaderi sivý); rozhoduje `fastboot flashing get_unlock_ability: 1`. Po zamknutí žlté varovanie,
+    `kontrola`: `overený štart yellow, vbmeta: locked`. Nové zostavy odteraz len ako podpísaná aktualizácia OTA.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,
