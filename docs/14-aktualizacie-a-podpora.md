@@ -102,7 +102,9 @@ Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro
    (GrapheneOS ich má ako partner); pre LECH OS je to riziko mesačného cyklu. Preberanie opráv: [bezpecnost/](../bezpecnost/README.md).
    Zostava 0.1.4-dev (8. 11. 2026) prevzala opravy zo septembra a októbra: **84 použitých**, 6 už v AOSP,
    6 treba prispôsobiť (Bluetooth CVE-2026-55269, -58880, -49933; NFC CVE-2026-49879; framework CVE-2026-58834;
-   telefónia CVE-2026-55270).
+   telefónia CVE-2026-55270). Všetkých 6 má GrapheneOS upravených pre Android 17 – prevzaté (`bezpecnost/prisposobene/`).
+   **GrapheneOS zverejnil novembrové opravy platformy 2. 11.** (deň bulletinu) vo svojich repozitároch; LECH OS ich
+   odteraz preberá odtiaľ podľa čísla chyby z bulletinu, kým ich Google nedá do AOSP.
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.
    **Prvý odhad z generálky (8. 11. 2026, Pixel 9, nový zostavovací notebook):**
 

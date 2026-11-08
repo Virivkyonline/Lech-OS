@@ -4,7 +4,7 @@ its fixes with their AOSP commits, for the monthly update of LECH OS (gate 1: mo
 
 Output (JSON on stdout):
     {"published": "...", "fixes": [{"cve", "component", "patch_level", "severity", "type", "versions",
-                                     "commits": [{"project", "sha"}]}]}
+                                     "bugs": ["412345678", ...], "commits": [{"project", "sha"}]}]}
 
 Only the standard library is used. The page layout: an <h2>/<h3> per security patch level and component, then a
 table whose rows start with the CVE id; the References cell links to android.googlesource.com/<project>/+/<sha>.
@@ -21,6 +21,7 @@ from html.parser import HTMLParser
 
 CVE = re.compile(r"CVE-\d{4}-\d{4,}")
 COMMIT = re.compile(r"https?://android\.googlesource\.com/(?P<project>[\w./+-]+?)/\+/(?P<sha>[0-9a-f]{7,40})\b")
+BUG = re.compile(r"\bA-(\d{6,})")
 LEVEL = re.compile(r"(\d{4}-\d{2}-\d{2}) security patch level", re.I)
 SEVERITIES = ("Critical", "High", "Moderate", "Low")
 TYPES = ("RCE", "EoP", "ID", "DoS")
@@ -96,6 +97,7 @@ class Bulletin(HTMLParser):
             "severity": next((s for s in SEVERITIES if any(t == s for t in texts)), ""),
             "type": next((s for s in TYPES if any(t == s for t in texts)), ""),
             "versions": next((t for t in texts[1:] if re.fullmatch(r"[\d.,\s\-QPR]+", t) and re.search(r"\d", t)), ""),
+            "bugs": sorted({b for t in texts for b in BUG.findall(t)}),
             "commits": commits,
         })
 

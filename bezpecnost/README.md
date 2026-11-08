@@ -17,6 +17,11 @@ tools/etapa2/12-zostav-pixel.sh --ota --verzia …     # aplikuj-zaplaty.sh pou�
   použije namiesto commitu z AOSP. Overené prispôsobené opravy sú v repozitári v `prisposobene/<projekt>/<CVE>.patch`
   (majú prednosť). 8. 11. 2026: všetkých 6 neprispôsobených opráv zo septembra a októbra prevzatých z GrapheneOS
   (autor z AOSP ostáva, licencia Apache 2.0).
+- **Opravy bez odkazu do AOSP:** Google zverejňuje opravy platformy v AOSP neskoro (november 2026: ani 6 dní po
+  bulletine), GrapheneOS ich zverejní vo svojich repozitároch v deň bulletinu. `14-bezpecnost.sh stav` preto opravy,
+  ktoré bulletin uvádza bez commitu, hľadá podľa čísla chyby (`A-…` v bulletine, `Bug: …` v commite) v repozitároch
+  GrapheneOS, ktoré má aj strom LECH OS (manifest GrapheneOS, `aosp-name`); nájdené použije `aplikuj-zaplaty.sh`.
+  Súčasti výrobcov čipov (Qualcomm, Arm…) takto nájsť nemožno – tie prídu s firmvérom (vendor).
 - `vynechat.txt` – opravy, ktoré LECH OS zámerne nepreberá (s dôvodom).
 - Opravy jadra prídu s novším predzostaveným jadrom GrapheneOS a opravy firmvéru a súčastí výrobcov čipov
   s novším pôvodným obrazom Google (vendor) – tie bulletin neodkazuje do AOSP.

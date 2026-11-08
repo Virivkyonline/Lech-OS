@@ -1,5 +1,7 @@
-# Mesiace Android Security Bulletinov, ktorých opravy z AOSP LECH OS preberá (tools/etapa2/aplikuj-zaplaty.sh).
+# Mesiace Android Security Bulletinov, ktorých opravy LECH OS preberá (tools/etapa2/aplikuj-zaplaty.sh).
 # Opravy pred zostavením stiahne: tools/etapa2/14-bezpecnost.sh stav <mesiac>  (do ~/lech-work/bezpecnost/<mesiac>).
-# Júl a august 2026: bulletin bez opráv pre AOSP; november 2026: opravy platformy v AOSP ešte nie sú (8. 11. 2026).
+# Júl a august 2026: bulletin bez opráv pre AOSP. November 2026: AOSP opravy platformy ešte nemá (8. 11.), preberajú
+# sa z repozitárov GrapheneOS (zverejnené 2. 11.) podľa čísla chyby v bulletine.
 2026-09
 2026-10
+2026-11
