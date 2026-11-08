@@ -9,7 +9,8 @@
 # Security fixes from the Android Security Bulletins (months in bezpecnost/mesiace.txt, AOSP commits fetched by
 # 14-bezpecnost.sh stav into ~/lech-work/bezpecnost/<month>/patches) go first in each project, in bulletin order;
 # a fix that is already in AOSP or does not apply is skipped and reported (it never stops the build), fixes listed
-# in bezpecnost/vynechat.txt (CVE or commit) are left out.
+# in bezpecnost/vynechat.txt (CVE or commit) are left out. An adapted version replaces the AOSP commit: from
+# bezpecnost/prisposobene/<path>/<CVE>.patch, else the GrapheneOS version found by 14-bezpecnost.sh stav.
 # A later `repo sync` puts the projects back to plain AOSP; running this script again re-applies the set.
 #
 # Usage: tools/etapa2/aplikuj-zaplaty.sh [--kontrola]
@@ -54,8 +55,16 @@ if [ -f "$SECURITY_MONTHS" ]; then
     while IFS=$'\t' read -r cve _level _comp _sev project sha path _status; do
       [ -n "$path" ] && [ -n "$sha" ] || continue
       if [ -f "$SECURITY_SKIP" ] && grep -qE "^($cve|${sha:0:12}[0-9a-f]*)([[:space:]]|$)" "$SECURITY_SKIP"; then continue; fi
-      f="$SECURITY_CACHE/$month/patches/$cve-${project//\//_}-${sha:0:12}.patch"
-      [ -s "$f" ] && security+=("$path"$'\t'"$f"$'\t'"$month $cve (${sha:0:12})")
+      # Adapted versions first: in the repository (bezpecnost/prisposobene/<path>/<CVE>.patch), then the one of
+      # GrapheneOS found by 14-bezpecnost.sh stav, then the AOSP commit itself.
+      f="$REPO_DIR/bezpecnost/prisposobene/$path/$cve.patch"; label="$month $cve (prispôsobená)"
+      if [ ! -s "$f" ]; then
+        f="$SECURITY_CACHE/$month/grapheneos/$cve-${project//\//_}-${sha:0:12}.patch"; label="$month $cve (verzia GrapheneOS)"
+      fi
+      if [ ! -s "$f" ]; then
+        f="$SECURITY_CACHE/$month/patches/$cve-${project//\//_}-${sha:0:12}.patch"; label="$month $cve (${sha:0:12})"
+      fi
+      [ -s "$f" ] && security+=("$path"$'\t'"$f"$'\t'"$label")
     done < "$tsv"
   done < "$SECURITY_MONTHS"
 fi

@@ -11,7 +11,12 @@ tools/etapa2/12-zostav-pixel.sh --ota --verzia …     # aplikuj-zaplaty.sh pou�
 - `mesiace.txt` – ktoré bulletiny sa preberajú. Opravy idú v každom projekte **pred** úpravy LECH OS (`patches/`),
   v poradí bulletinu; commit má autora z AOSP a committera `LECH OS`.
 - Oprava, ktorá už v AOSP je, sa preskočí; oprava, ktorá sa na strom nedá použiť (bola pre inú vetvu), sa preskočí
-  a vypíše ako *neprispôsobená* – zostavenie nezastaví. Prispôsobená verzia patrí ako záplata do `patches/`.
+  a vypíše ako *neprispôsobená* – zostavenie nezastaví.
+- **Prispôsobené opravy:** pri konflikte `14-bezpecnost.sh stav` hľadá verziu, ktorú GrapheneOS upravil pre svoju
+  vetvu Androidu 17 (rovnaké `Change-Id`, github.com/GrapheneOS, vetva `17`); ak sa dá použiť, `aplikuj-zaplaty.sh` ju
+  použije namiesto commitu z AOSP. Overené prispôsobené opravy sú v repozitári v `prisposobene/<projekt>/<CVE>.patch`
+  (majú prednosť). 8. 11. 2026: všetkých 6 neprispôsobených opráv zo septembra a októbra prevzatých z GrapheneOS
+  (autor z AOSP ostáva, licencia Apache 2.0).
 - `vynechat.txt` – opravy, ktoré LECH OS zámerne nepreberá (s dôvodom).
 - Opravy jadra prídu s novším predzostaveným jadrom GrapheneOS a opravy firmvéru a súčastí výrobcov čipov
   s novším pôvodným obrazom Google (vendor) – tie bulletin neodkazuje do AOSP.

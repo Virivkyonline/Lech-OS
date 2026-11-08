@@ -6,6 +6,9 @@
 # fetches every commit from android.googlesource.com into its project (no checkout, the tree is not changed) and
 # checks its diff against the tree: already there (applies in reverse), missing but applies, or missing with a
 # conflict (has to be adapted). The patches are kept for the next step (applying them).
+# For a fix with a conflict the version GrapheneOS adapted for its Android release branch is looked up by the
+# Change-Id of the AOSP commit (github.com/GrapheneOS/<project with _>, branch $LECH_GRAPHENEOS_BRANCH, default 17)
+# and kept in <month>/grapheneos/ when it applies to the tree; aplikuj-zaplaty.sh then uses it instead.
 #
 # Usage: tools/etapa2/14-bezpecnost.sh stav [YYYY-MM ...]   (default: the current month)
 #   e.g. tools/etapa2/14-bezpecnost.sh stav 2026-07 2026-08 2026-09 2026-10 2026-11
@@ -21,8 +24,26 @@ WORKDIR=${LECH_WORK:-$HOME/lech-work}
 OUT_BASE="$WORKDIR/bezpecnost"
 GOOGLESOURCE=${LECH_GOOGLESOURCE:-https://android.googlesource.com}   # tests: a local mirror (file://...)
 BULLETIN_URL=https://source.android.com/docs/security/bulletin
+GRAPHENEOS_URL=${LECH_GRAPHENEOS_URL:-https://github.com/GrapheneOS}
+GRAPHENEOS_BRANCH=${LECH_GRAPHENEOS_BRANCH:-17}
 
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
+
+# The GrapheneOS version of an AOSP fix (same Change-Id) as a patch file; history only (commits, no files) is kept
+# in ~/lech-work/bezpecnost/grapheneos/<repo>.git, the files of the one commit are fetched when it is exported.
+grapheneos_patch() {   # AOSP project name (platform/frameworks/base), Change-Id, output file
+  local repo=${1//\//_} cache sha
+  cache="$OUT_BASE/grapheneos/$repo.git"
+  if [ -d "$cache" ]; then
+    git -C "$cache" fetch -q --filter=tree:0 origin "+refs/heads/$GRAPHENEOS_BRANCH:refs/heads/$GRAPHENEOS_BRANCH" 2>/dev/null || return 1
+  else
+    git clone -q --bare --filter=tree:0 --shallow-since="1 year ago" --single-branch -b "$GRAPHENEOS_BRANCH" \
+      "$GRAPHENEOS_URL/$repo" "$cache" 2>/dev/null || { rm -rf "$cache"; return 1; }
+  fi
+  sha=$(git -C "$cache" log --format=%H -n 1 --grep="^Change-Id: $2\$" "$GRAPHENEOS_BRANCH" 2>/dev/null)
+  [ -n "$sha" ] || return 1
+  git -C "$cache" format-patch -1 --stdout "$sha" > "$3" 2>/dev/null && [ -s "$3" ]
+}
 
 # Security patch level of the last Pixel build of LECH OS (system and vendor).
 patch_levels() {
@@ -47,7 +68,7 @@ cmd_stav() {
 
   for month in "${months[@]}"; do
     dir="$OUT_BASE/$month"
-    mkdir -p "$dir/patches" || die "Priečinok $dir sa nedá vytvoriť."
+    mkdir -p "$dir/patches" "$dir/grapheneos" || die "Priečinok $dir sa nedá vytvoriť."
     echo
     echo "== Bulletin $month"
     if ! curl -fsSL --retry 3 -o "$dir/bulletin.html" "$BULLETIN_URL/${month%%-*}/$month-01"; then
@@ -69,7 +90,7 @@ for f in json.load(open(sys.argv[1]))["fixes"]:
     for c in f["commits"] or [{"project": "", "sha": ""}]:
         print("\t".join([f["cve"], f["patch_level"], f["component"], f["severity"], c["project"], c["sha"]]))
 ' "$json" > "$dir/commity.tsv"
-    local n=0 total cve level comp sev project sha path status patch
+    local n=0 total cve level comp sev project sha path status patch changeid gos
     total=$(wc -l < "$dir/commity.tsv")
     while IFS=$'\t' read -r cve level comp sev project sha; do
       n=$((n + 1))
@@ -91,7 +112,17 @@ for f in json.load(open(sys.argv[1]))["fixes"]:
           git -C "$AOSP_DIR/$path" format-patch -1 --stdout FETCH_HEAD > "$patch" 2>/dev/null
           if git -C "$AOSP_DIR/$path" apply --check -R "$patch" 2>/dev/null; then status="už je"
           elif git -C "$AOSP_DIR/$path" apply --check "$patch" 2>/dev/null; then status="chýba – dá sa použiť"
-          else status="chýba – konflikt (treba prispôsobiť)"
+          else
+            status="chýba – konflikt (treba prispôsobiť)"
+            changeid=$(sed -n 's/^Change-Id: *//p' "$patch" | tail -n 1)
+            gos="$dir/grapheneos/$cve-${project//\//_}-${sha:0:12}.patch"
+            rm -f "$gos"
+            if [ -n "$changeid" ] && grapheneos_patch "$project" "$changeid" "$gos"; then
+              if git -C "$AOSP_DIR/$path" apply --check "$gos" 2>/dev/null; then status="chýba – prevezme sa verzia GrapheneOS"
+              elif git -C "$AOSP_DIR/$path" apply --check -R "$gos" 2>/dev/null; then status="už je (verzia GrapheneOS)"; rm -f "$gos"
+              else status="chýba – konflikt aj vo verzii GrapheneOS"; rm -f "$gos"
+              fi
+            fi
           fi
         fi
       fi
