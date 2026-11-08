@@ -34,7 +34,9 @@ cmd_pripravit() {
   mkdir -p "$WIN_DIR" || die "Priečinok C:\\lech\\meranie sa nedá vytvoriť."
   write_ps1 "$WIN_DIR/start.ps1" <<'EOF'
 # LECH OS: starts the record of the Wi-Fi hotspot of this computer (pktmon). From tools/etapa2/13-meranie-mimo.sh.
-$ErrorActionPreference = 'Stop'
+# Not 'Stop': Windows PowerShell 5.1 turns any stderr line of a native program (pktmon) into a terminating error
+# then - "pktmon stop" when nothing runs printed "Packet Monitor is not running" and ended the script (8. 11. 2026).
+$ErrorActionPreference = 'Continue'
 $dir = 'C:\lech\meranie'
 $principal = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -51,11 +53,11 @@ foreach ($line in (pktmon list)) {
     if ($line -match '^\s*(\d+)\s+\S+\s+(.+?)\s*$' -and $Matches[2] -eq $desc) { $id = $Matches[1] }
 }
 if (-not $id) { Write-Host "Adaptér prístupového bodu '$desc' nie je v zozname pktmon list. Pošlite výpis pktmon list." -ForegroundColor Red; exit 1 }
-pktmon stop 2>$null | Out-Null
-pktmon filter remove | Out-Null
+pktmon stop 2>&1 | Out-Null
+pktmon filter remove 2>&1 | Out-Null
 New-Item -ItemType Directory -Force $dir | Out-Null
 Remove-Item "$dir\meranie*.etl", "$dir\meranie*.pcapng" -ErrorAction SilentlyContinue
-pktmon start --capture --comp $id --pkt-size 0 --file-name "$dir\meranie.etl" --log-mode multi-file --file-size 256 | Out-Null
+pktmon start --capture --comp $id --pkt-size 0 --file-name "$dir\meranie.etl" --log-mode multi-file --file-size 256 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) { Write-Host 'pktmon sa nespustil - pošlite tento výpis.' -ForegroundColor Red; exit 1 }
 Set-Content -Encoding Ascii "$dir\zaciatok.txt" (Get-Date -Format o)
 Write-Host "Meranie beží od $(Get-Date -Format 'dd. MM. yyyy HH:mm') (adaptér $id, $desc)." -ForegroundColor Green
@@ -63,18 +65,18 @@ Write-Host 'Teraz pripojte telefón k Wi-Fi tohto počítača. Ukončenie: power
 EOF
   write_ps1 "$WIN_DIR/stop.ps1" <<'EOF'
 # LECH OS: stops the record of the hotspot and converts it to pcapng. From tools/etapa2/13-meranie-mimo.sh.
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 'Continue'   # see start.ps1: native programs and stderr
 $dir = 'C:\lech\meranie'
 $principal = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host 'Spustite PowerShell ako správca.' -ForegroundColor Red; exit 1
 }
-pktmon stop | Out-Null
+pktmon stop 2>&1 | Out-Null
 Set-Content -Encoding Ascii "$dir\koniec.txt" (Get-Date -Format o)
 $files = Get-ChildItem "$dir\meranie*.etl"
 if (-not $files) { Write-Host 'Záznam (meranie*.etl) sa nenašiel.' -ForegroundColor Red; exit 1 }
 foreach ($f in $files) {
-    pktmon etl2pcap $f.FullName --out ($f.FullName -replace '\.etl$', '.pcapng') | Out-Null
+    pktmon etl2pcap $f.FullName --out ($f.FullName -replace '\.etl$', '.pcapng') 2>&1 | Out-Null
 }
 $start = Get-Date (Get-Content "$dir\zaciatok.txt")
 Write-Host ('Meranie ukončené po {0:N1} h, súbory: {1}. Vyhodnotenie v Ubuntu: tools/etapa2/13-meranie-mimo.sh vyhodnotit' -f `
