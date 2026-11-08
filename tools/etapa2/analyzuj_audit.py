@@ -50,6 +50,7 @@ SOURCE_NETS = [
 
 
 DEVICE_MODE = False  # capture made in the phone itself (--zariadenie)
+HOTSPOT_MODE = False  # capture outside the phone, on the Wi-Fi hotspot of the computer (--hotspot)
 IFACE_LABELS: dict[str, str] = {}  # interface index -> network of the phone
 NETWORK_DNS: set[str] = set()  # DNS servers the networks gave the phone (DHCP, mobile operator)
 CARRIER_NAT = ipaddress.ip_network("100.64.0.0/10")  # carrier-internal (CGNAT): DNS of the mobile operator
@@ -79,6 +80,18 @@ def use_phone_capture(siete: Path | None, rozhrania: Path | None) -> None:
     GUEST_NETS = [n for n, _ in nets]
     for index, label in read_pairs(rozhrania) if rozhrania else []:
         IFACE_LABELS[index] = label
+
+
+def use_hotspot(net: str) -> None:
+    """Capture on the Wi-Fi hotspot of the computer (outside the phone): the phone is a client of that network.
+    Its packets are those from the network, except from the gateway (the computer itself, e.g. its DNS proxy)."""
+    global GUEST_NETS, GUEST_FILTER, SOURCE_NETS, HOTSPOT_MODE
+    HOTSPOT_MODE = True
+    network = ipaddress.ip_network(net, strict=False)
+    gateway = next(network.hosts())
+    GUEST_NETS = [network]
+    GUEST_FILTER = f"ip.src == {network} && ip.src != {gateway}"
+    SOURCE_NETS = [(network, "telefón (prístupový bod)")]
 
 
 def use_network_dns(path: Path) -> None:
@@ -352,6 +365,9 @@ def write_report(out: Path, title: str, pcap: Path, destinations: dict, domains:
     lines += ["", "## Ciele (IP adresa, protokol, port)", "",
               ("Odkiaľ: sieť telefónu (Wi-Fi, mobilná sieť), z ktorej paket odišiel. Záznam je priamo z telefónu."
                if DEVICE_MODE else
+               "Záznam je mimo telefónu: na Wi-Fi prístupovom bode počítača, ku ktorému bol telefón pripojený. "
+               "Zachytáva všetko, čo telefón poslal cez túto Wi-Fi (nie mobilnú sieť)."
+               if HOTSPOT_MODE else
                "Odkiaľ: sieť virtuálneho telefónu, z ktorej paket odišiel. Prevádzka telefónu cez Wi-Fi odchádza "
                "cez virtuálny router OpenWrt, preto má rovnaké označenie ako prevádzka samotného routra."), ""]
     header = "| IP adresa | Protokol/port | Názvy | Odkiaľ | Pakety | Prvýkrát |" + (" Stav |" if use_allow else "")
@@ -417,11 +433,15 @@ def main() -> int:
     ap.add_argument("--rozhrania", type=Path, help="pri --zariadenie: rozhrania telefónu, riadky 'index<TAB>označenie'")
     ap.add_argument("--siete", type=Path, help="pri --zariadenie: adresy telefónu, riadky 'označenie<TAB>adresa'")
     ap.add_argument("--dns-siete", type=Path, help="DNS servery, ktoré telefónu dali siete (adresy), sú povolené")
+    ap.add_argument("--hotspot", metavar="SIEŤ", help="záznam mimo telefónu na prístupovom bode počítača, sieť klientov "
+                    "(napr. 192.168.137.0/24 pri Mobilnom prístupovom bode Windows); brána je prvá adresa siete")
     args = ap.parse_args()
 
     if not args.pcap.exists():
         sys.exit(f"CHYBA: súbor {args.pcap} neexistuje.")
-    if args.zariadenie or args.siete or args.rozhrania:
+    if args.hotspot:
+        use_hotspot(args.hotspot)
+    elif args.zariadenie or args.siete or args.rozhrania:
         use_phone_capture(args.siete, args.rozhrania)
     if args.dns_siete and args.dns_siete.exists():
         use_network_dns(args.dns_siete)

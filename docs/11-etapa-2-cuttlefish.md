@@ -716,6 +716,24 @@ tlačidlo napájania (bez neho by sa telefón vypol a návrat by sa zastavil). V
 `enforcing`, varovanie zmizlo samo. Pôvod (správanie bootloadera Pixelu pri opakovanom prerušenom štarte nového
 slotu Virtual A/B) treba ešte overiť – napr. iným druhom chyby (pád jadra namiesto reštartu z init).
 
+## 4m. Meranie mimo telefónu (brána 1)
+
+Brána 1 chce 0 neznámych spojení pri prvom štarte a počas 24 h nečinnosti, **zmerané mimo telefónu** – záznam
+v telefóne (`11-pixel.sh audit`) by upravený systém mohol obísť. Telefón je preto klientom Wi-Fi prístupového bodu
+zostavovacieho notebooku (Windows: Mobilný prístupový bod, sieť `192.168.137.0/24`) a notebook zaznamenáva všetko, čo
+telefón pošle, nástrojom `pktmon` zabudovaným vo Windows (len adaptér prístupového bodu).
+
+```bash
+tools/etapa2/13-meranie-mimo.sh pripravit    # C:\lech\meranie\start.ps1 a stop.ps1 + postup
+# PowerShell ako správca: start.ps1; telefón bez SIM, obnovenie výrobných nastavení, len Wi-Fi notebooku, 24 h
+# po 24 h: stop.ps1 (ako správca), potom:
+tools/etapa2/13-meranie-mimo.sh vyhodnotit   # analyzuj_audit.py --hotspot, povolené spojenia z spec/
+```
+
+SIM je počas merania vybratá, aby všetka prevádzka išla cez Wi-Fi notebooku (prevádzka v mobilnej sieti sa mimo
+telefónu zachytiť nedá); meranie so SIM (ePDG, VoLTE) je samostatný krok. `pktmon` môže paket zaznamenať na viacerých
+miestach adaptéra – `vyhodnotit` presné duplikáty odstráni (`editcap -d`).
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
