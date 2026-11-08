@@ -104,3 +104,18 @@ Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro
    6 treba prispôsobiť (Bluetooth CVE-2026-55269, -58880, -49933; NFC CVE-2026-49879; framework CVE-2026-58834;
    telefónia CVE-2026-55270).
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.
+   **Prvý odhad z generálky (8. 11. 2026, Pixel 9, nový zostavovací notebook):**
+
+   | Krok | Nástroj | Zmerané / odhad |
+   |------|---------|-----------------|
+   | Zistiť chýbajúce opravy z bulletinu | `14-bezpecnost.sh stav` | ~15 min (5 bulletinov naraz), bez obsluhy |
+   | Prispôsobiť opravy, ktoré sa na strom nedajú použiť | ručne | 6 z 96 za dva mesiace; odhad 0,5–2 h na opravu (s testom) |
+   | Jadro | predzostavené jadro GrapheneOS (`manifests/lech-pixel.xml`) | 8. 11. už najnovšie (značka `2026110700`); nová verzia = zmena revízie + zostavenie |
+   | Firmvér a súčasti výrobcov čipov (vendor) | adevtool, pôvodný obraz Google | 8. 11. najnovší známy `CP3A.261005.005`; nový obraz = `12-priprav-pixel.sh --len-generovat` (~30 min) |
+   | Zostavenie + balík OTA | `12-zostav-pixel.sh --ota` | 2–3 h bez obsluhy (84 opráv vo frameworku: 138 min pri 16 úlohách) |
+   | Test v telefóne (aktualizácia, hovory, SMS, dáta, audit) | `11-pixel.sh aktualizovat`, `audit` | ~1 h |
+
+   Práca človeka: pri bežnom mesiaci rádovo **1–2 dni jedného vývojára** (hlavne prispôsobenie opráv a test), zvyšok
+   beží sám. **Najväčšie oneskorenie nie je práca, ale zdroj:** opravy platformy prichádzajú do AOSP neskoro
+   (november 2026: ani 6 dní po bulletine). Možnosti: prebrať opravy, ktoré zverejní GrapheneOS, alebo partnerstvo
+   s Google (prístup k opravám vopred, ako majú výrobcovia) – rozhodnúť do etapy 9.
