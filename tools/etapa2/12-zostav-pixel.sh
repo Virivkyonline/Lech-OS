@@ -9,8 +9,12 @@
 # Steps: 1. the platform SELinux policy of this release (plat_sepolicy.cil); when it differs from the one the vendor
 # module was generated against, the module is generated again (12-priprav-pixel.sh --len-generovat),
 # 2. the whole product, 3. the image package.
+# With --ota also the full A/B update package (OTA) signed with the LECH OS keys, for a phone with the locked
+# bootloader (E2-12): ~/lech-work/pixel-ota/lech-tokay-ota-<version>.zip, installed by 11-pixel.sh aktualizovat.
 #
-# Usage: tools/etapa2/12-zostav-pixel.sh [--ulohy N]
+# Usage: tools/etapa2/12-zostav-pixel.sh [--ulohy N] [--ota --verzia V]
+#   --ota        also build the update package (m otapackage)
+#   --verzia V   LECH OS version of this build (default vendor/lech/config/version.mk); an update must differ
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_PIXEL_FULL_DIR (where the image
 #   package goes; default /mnt/c/lech/pixel-uplne in WSL, ~/lech-work/pixel-uplne otherwise),
 #   LECH_PIXEL_RELEASE (release configuration, default cp2a)
@@ -38,14 +42,18 @@ ORIG_ARGS=("$@")
 die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
 
 BUILD_ARGS=()
+MAKE_OTA=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --ulohy) BUILD_ARGS+=(--ulohy "${2:?chýba počet úloh}"); shift 2 ;;
-    -h|--help) sed -n '2,17p' "$0"; exit 0 ;;
+    --ota) MAKE_OTA=1; shift ;;
+    --verzia) export LECH_VERSION=${2:?chýba verzia}; shift 2 ;;
+    -h|--help) sed -n '2,21p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
 
+case "${LECH_VERSION-0}" in ""|*[!A-Za-z0-9._-]*) die "Verzia smie obsahovať len písmená, číslice, bodku, - a _." ;; esac
 [ -f "$AOSP_DIR/build/envsetup.sh" ] || die "V $AOSP_DIR nie sú zdrojové kódy AOSP – najprv tools/etapa2/04-stiahni-aosp.sh."
 [ -f "$AOSP_DIR/vendor/google_devices/$DEVICE/$DEVICE.mk" ] || \
   die "Chýba vendor/google_devices/$DEVICE – najprv pripravte podporu Pixelu: tools/etapa2/12-priprav-pixel.sh"
@@ -113,7 +121,13 @@ fi
 echo
 echo "2/2 Zostavujem LECH OS pre Pixel 9 ($PRODUCT-$RELEASE): systém, vendor, boot a vbmeta. Prvé zostavenie:"
 echo "nová analýza zostavy, moduly Pixelu a systém s nastaveniami vydania $RELEASE (niekoľko hodín)."
-"$SCRIPT_DIR/05-zostav-aosp.sh" ${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}
+stamp="$WORKDIR/.zostava-pixel-zaciatok"; touch "$stamp"
+if [ "$MAKE_OTA" -eq 1 ]; then
+  echo "Aj balík aktualizácie OTA (m otapackage), verzia ${LECH_VERSION:-zo súboru version.mk}."
+  LECH_M_TARGETS="droid otapackage" "$SCRIPT_DIR/05-zostav-aosp.sh" ${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}
+else
+  "$SCRIPT_DIR/05-zostav-aosp.sh" ${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}
+fi
 status=$?
 [ "$status" -eq 0 ] || exit "$status"
 
@@ -158,5 +172,23 @@ version=${LECH_VERSION:-$(sed -n 's/^LECH_VERSION *[:?]= *//p' "$REPO_DIR/vendor
   (cd "$OUT_DIR_IMG" && sha256sum lech-tokay-img.zip)
 } > "$OUT_DIR_IMG/info.txt"
 ls -lh "$OUT_DIR_IMG" | sed 1d
-echo
-echo "Hotovo. Nahratie do Pixelu: tools/etapa2/11-pixel.sh nahrat-uplne (postup: docs/11, časť 4i)."
+
+if [ "$MAKE_OTA" -eq 1 ]; then
+  # Make products: $PRODUCT_OUT/<product>-ota.zip; Soong-built devices: an ota.zip in the intermediates.
+  ota=$( { find "$PRODUCT_OUT" -maxdepth 1 -name '*-ota*.zip' -newer "$stamp" -printf '%T@ %p\n'
+           find "$AOSP_DIR/out/soong/.intermediates" -name ota.zip -path "*${PRODUCT}*" -newer "$stamp" -printf '%T@ %p\n'
+         } 2>/dev/null | sort -rn | head -n 1 | cut -d' ' -f2-)
+  [ -n "$ota" ] || die "Balík aktualizácie sa po m otapackage nenašiel (v $PRODUCT_OUT ani v out/soong)."
+  OTA_DIR="$WORKDIR/pixel-ota"
+  mkdir -p "$OTA_DIR" || die "Priečinok $OTA_DIR sa nedá vytvoriť."
+  ota_out="$OTA_DIR/lech-tokay-ota-$version.zip"
+  cp "$ota" "$ota_out" || die "Balík aktualizácie sa nedá skopírovať do $OTA_DIR."
+  # The payload must be stored and start with its magic; the package carries the signed vbmeta of this build.
+  python3 -B "$SCRIPT_DIR/ota_server.py" info "$ota_out" > "$ota_out.json" || die "Balík $ota_out je neplatný."
+  echo
+  echo "Balík aktualizácie: $ota_out ($(( $(stat -c %s "$ota_out") / 1024 / 1024 )) MB, LECH OS $version)"
+  echo "Inštalácia do telefónu: tools/etapa2/11-pixel.sh aktualizovat"
+else
+  echo
+  echo "Hotovo. Nahratie do Pixelu: tools/etapa2/11-pixel.sh nahrat-uplne (postup: docs/11, časť 4i)."
+fi

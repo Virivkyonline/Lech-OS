@@ -23,6 +23,9 @@
 #   audit [--minuty N] [--dokoncit] [--vyhodnotit]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default
 #              15 min); --dokoncit finishes a started audit after the USB connection dropped,
 #              --vyhodnotit evaluates the last downloaded audit again (no phone needed)
+#   aktualizovat [--subor OTA.zip]  install an A/B update (OTA) of LECH OS from 12-zostav-pixel.sh --ota into the other
+#              slot with update_engine and restart into it (E2-08 on the Pixel; also with the locked bootloader);
+#              default: the newest package in ~/lech-work/pixel-ota
 #   zamknut   lock the bootloader with the LECH OS verified boot key (E2-12) – ERASES ALL DATA; the phone must run
 #              the full LECH OS from the last 12-zostav-pixel.sh, signed with that key
 #   slot a|b   make a slot active and start it (when the phone fell back to the Google system in the other slot)
@@ -525,6 +528,127 @@ Bootloader je zamknutý s kľúčom LECH OS. Telefón štartuje:
     a tools/etapa2/11-pixel.sh odomknut (vymaže dáta), potom nahrat-uplne.
 EOF
 }
+
+# E2-08 on the Pixel: an A/B update (full OTA package of 12-zostav-pixel.sh --ota, signed with the LECH OS keys)
+# installed by update_engine into the inactive slot - the only way to bring a new build into a phone with the locked
+# bootloader. The package comes from the update server v0 (ota_server.py) through adb reverse, as on Cuttlefish
+# (E2-08); when Windows cannot reach the server in WSL, it is copied into the phone (/data/ota_package, as
+# system/update_engine/scripts/update_device.py --file). After the restart the bootloader verifies the new slot with
+# the LECH OS AVB key; when the slot does not start, it falls back to the previous one.
+cmd_aktualizovat() {
+  local ota="" ota_dir="$WORKDIR/pixel-ota" server_dir port=${LECH_OTA_PORT:-8008} version file offset size headers
+  local before_version before_slot before_build post_ts url server_pid="" pushed="" log status ok after_version after_slot
+  local after_build vb
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --subor) ota=${2:?chýba súbor}; shift 2 ;;
+      *) die "Neznámy parameter: $1 (použitie: 11-pixel.sh aktualizovat [--subor OTA.zip])" ;;
+    esac
+  done
+  [ -n "$ota" ] || ota=$(ls -t "$ota_dir"/lech-tokay-ota-*.zip 2>/dev/null | head -n 1)
+  [ -f "${ota:-/nonexistent}" ] || die "Balík aktualizácie nie je – zostavte ho: tools/etapa2/12-zostav-pixel.sh --ota --verzia <nová verzia>"
+  version=$(basename "$ota" .zip); version=${version#lech-tokay-ota-}
+  server_dir="$ota_dir/server"
+  log="$ota_dir/aktualizacia-$(date +%Y%m%d-%H%M%S).log"
+  need_tools
+  adb_wait 120 || die "Telefón sa cez adb neozval – musí bežať LECH OS so zapnutým ladením cez USB."
+  [ -n "$(prop ro.lech.version)" ] || die "V telefóne nebeží LECH OS."
+  before_version=$(prop ro.lech.version); before_slot=$(prop ro.boot.slot_suffix); before_build=$(prop ro.build.date.utc)
+  echo "Telefón: LECH OS $before_version, slot ${before_slot:-?}, overený štart $(prop ro.boot.verifiedbootstate)"
+  echo "Balík:   $ota (LECH OS $version, $(( $(stat -c %s "$ota") / 1024 / 1024 )) MB)"
+  [ "$version" != "$before_version" ] || die "V telefóne už beží LECH OS $version – zostavte novšiu verziu (--verzia)."
+
+  python3 -B "$SCRIPT_DIR/ota_server.py" publish "$ota" "$server_dir" --version "$version" > "$ota_dir/zverejnene.json" \
+    || die "Balík aktualizácie je neplatný ($ota)."
+  read -r file offset size post_ts < <(python3 -c '
+import json, sys
+u = json.load(open(sys.argv[1]))["aktualizacie"][0]
+print(u["subor"], u["offset"], u["size"], u.get("post_timestamp") or 0)' "$server_dir/aktualizacie.json")
+  headers=$(python3 -c '
+import json, sys
+u = json.load(open(sys.argv[1]))["aktualizacie"][0]
+print("\n".join(u["headers"] + ["USER_AGENT=LECH-OS-updater-v0", "NETWORK_ID=0"]))' "$server_dir/aktualizacie.json")
+  # update_engine refuses a package older than the running build (no downgrade).
+  [ "${post_ts:-0}" -gt "${before_build:-0}" ] 2>/dev/null || \
+    die "Balík ($version) nie je novší ako systém v telefóne – aktualizácia na staršiu zostavu nie je dovolená."
+
+  audit_root
+  cleanup_ota() {
+    [ -n "$server_pid" ] && kill "$server_pid" 2>/dev/null
+    adb_ reverse --remove "tcp:$port" >/dev/null 2>&1
+    [ -n "$pushed" ] && adb_ shell rm -f "$pushed" >/dev/null 2>&1
+    true
+  }
+  trap 'cleanup_ota; cleanup' EXIT
+  python3 -B "$SCRIPT_DIR/ota_server.py" serve "$server_dir" --port "$port" > "$ota_dir/server.log" 2>&1 &
+  server_pid=$!
+  sleep 1
+  url=""
+  if kill -0 "$server_pid" 2>/dev/null; then
+    # adb reverse points the phone at the adb server, which runs in Windows: the server in WSL must be reachable there.
+    if [ "$WINDOWS" -eq 0 ] || (cd /mnt/c && powershell.exe -NoProfile -NonInteractive -Command \
+         "(Invoke-WebRequest -UseBasicParsing -TimeoutSec 5 http://127.0.0.1:$port/aktualizacie.json).StatusCode" \
+         < /dev/null 2>/dev/null | tr -d '\r' | grep -qx 200); then
+      adb_ reverse "tcp:$port" "tcp:$port" >/dev/null && url="http://127.0.0.1:$port/$file"
+    fi
+  fi
+  if [ -n "$url" ]; then
+    echo "Server aktualizácií v0 beží (port $port); telefón ho dosiahne cez adb reverse."
+  else
+    echo "Server v WSL nie je z Windows dosiahnuteľný – kopírujem balík do telefónu (/data/ota_package)…"
+    pushed=/data/ota_package/lech-update.zip
+    local src=$ota
+    [ "$WINDOWS" -eq 1 ] && src=$(wslpath -w "$ota")
+    "${ADB[@]}" push "$src" "$pushed" 2>&1 | tr -d '\r' | tail -n 1
+    adb_ shell "ls -l $pushed" | grep -q lech-update.zip || die "Balík sa do telefónu neskopíroval."
+    url="file://$pushed"
+  fi
+
+  echo "update_engine inštaluje LECH OS $version do druhého slotu (niekoľko minút, telefón môžete používať)…"
+  adb_ shell "update_engine_client --update --follow --payload=$url --offset=$offset --size=$size --headers=\"$headers\"" \
+    | tee "$log" \
+    | awk '/onStatusUpdate/ {
+             match($0, /UPDATE_STATUS_[A-Z_]+/); s = substr($0, RSTART, RLENGTH)
+             match($0, /[0-9.eE+-]+\)$/); p = substr($0, RSTART, RLENGTH - 1) + 0; b = int(p * 10)
+             if (s != ls || b != lb) { printf "  %-34s %3d %%\n", s, p * 100; fflush(); ls = s; lb = b }
+             next }
+           /onPayloadApplicationComplete|rror/ { print "  " $0; fflush() }'
+  status=${PIPESTATUS[0]}
+  [ -n "$server_pid" ] && echo "Server v0 obslúžil požiadaviek: $(grep -c '" 20[06] ' "$ota_dir/server.log" 2>/dev/null || echo 0)"
+  grep -q "kSuccess\|kUpdatedButNotActive" "$log" && [ "$status" -eq 0 ] || \
+    die "Inštalácia aktualizácie zlyhala – telefón ostáva na LECH OS $before_version. Log: $log"
+  cleanup_ota; server_pid=""; pushed=""
+
+  echo "Aktualizácia je v druhom slote. Reštartujem telefón do LECH OS $version…"
+  adb_ reboot >/dev/null
+  sleep 20
+  adb_wait 600 || die "Telefón sa po reštarte cez adb neozval. Ak ostal v bootloaderi alebo ukazuje chybu, pošlite fotku."
+  wait_for 600 boot_completed || die "Telefón po aktualizácii nedokončil štart."
+  after_version=$(prop ro.lech.version); after_slot=$(prop ro.boot.slot_suffix); after_build=$(prop ro.build.date.utc)
+  vb=$(prop ro.boot.verifiedbootstate)
+  ok=1
+  row() { printf '  %-7s %s%*s %s\n' "$1" "$2" $(( 18 - ${#2} )) "" "$3"; [ "$1" = OK ] || ok=0; }
+  echo
+  if [ "$after_version" = "$version" ]; then row OK "verzia" "$before_version → $after_version"
+  else row CHYBA "verzia" "$before_version → ${after_version:-?} (očakávané $version)"; fi
+  if [ -n "$after_slot" ] && [ "$after_slot" != "$before_slot" ]; then row OK "slot A/B" "$before_slot → $after_slot"
+  else row CHYBA "slot A/B" "${before_slot:-?} → ${after_slot:-?} (mal sa zmeniť; telefón sa mohol vrátiť do starého slotu)"; fi
+  if [ "${after_build:-0}" -gt "${before_build:-0}" ] 2>/dev/null; then
+    row OK "čas zostavenia" "$(date -d "@$before_build" '+%d. %m. %Y %H:%M') → $(date -d "@$after_build" '+%d. %m. %Y %H:%M')"
+  else row CHYBA "čas zostavenia" "nezmenil sa"; fi
+  case "$vb" in
+    yellow) row OK "overený štart" "yellow – zamknutý bootloader, kľúč LECH OS" ;;
+    orange) row INFO "overený štart" "orange – odomknutý bootloader" ;;
+    *) row CHYBA "overený štart" "${vb:-?}" ;;
+  esac
+  mkdir -p "$WORKDIR/pixel"
+  echo "$(date '+%d. %m. %Y %H:%M') aktualizácia OTA $before_version ($before_slot) → ${after_version:-?} (${after_slot:-?}), ok=$ok" \
+    >> "$WORKDIR/pixel/nahratia.txt"
+  echo
+  [ "$ok" -eq 1 ] || die "Aktualizácia nie je v poriadku – pošlite tento výpis a $log."
+  echo "Aktualizácia OTA prebehla: LECH OS $after_version beží zo slotu $after_slot. Log: $log"
+}
+boot_completed() { [ "$(prop sys.boot_completed)" = 1 ]; }
 
 # Erase the data of the previous system. The Pixel 9's fastbootd refuses it ("Error DCK wipe failed",
 # 6. 11. 2026); the bootloader erases userdata and metadata itself.
@@ -1047,6 +1171,7 @@ case "${1:-}" in
   nahrat) cmd_nahrat ;;
   nahrat-uplne) shift; cmd_nahrat_uplne "$@" ;;
   zamknut) cmd_zamknut ;;
+  aktualizovat) shift; cmd_aktualizovat "$@" ;;
   dokoncit) cmd_dokoncit ;;
   kontrola) cmd_kontrola ;;
   siet) cmd_siet ;;
@@ -1054,6 +1179,6 @@ case "${1:-}" in
   audit) shift; cmd_audit "$@" ;;
   slot) shift; cmd_slot "$@" ;;
   spat) cmd_spat ;;
-  -h|--help|"") sed -n '2,27p' "$0" ;;
+  -h|--help|"") sed -n '2,34p' "$0" ;;
   *) die "Neznámy príkaz: $1 (pomoc: --help)" ;;
 esac

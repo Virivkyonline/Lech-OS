@@ -667,6 +667,27 @@ podpísaná aktualizácia OTA. Odomknutie OEM ostáva zapnuté, kým nie je over
 Overené 8. 11. 2026 (záznam 41). Pri `zamknut` sa Odomknutie OEM overuje v bootloaderi
 (`fastboot flashing get_unlock_ability`); Android 17 vlastnosť `sys.oem_unlock_allowed` nenastavuje.
 
+## 4l. Aktualizácia OTA na Pixeli (E2-08 na telefóne, brána 1)
+
+So zamknutým bootloaderom sa nová zostava dostane do telefónu len ako **aktualizácia A/B (OTA)**: `update_engine` ju
+nainštaluje do neaktívneho slotu, bootloader ho pri reštarte overí kľúčom AVB LECH OS a ak nenaštartuje, vráti sa
+do predchádzajúceho slotu.
+
+```bash
+tools/etapa2/12-zostav-pixel.sh --ota --verzia 0.1.1-dev   # zostava + balík ~/lech-work/pixel-ota/lech-tokay-ota-0.1.1-dev.zip
+tools/etapa2/11-pixel.sh aktualizovat                       # telefón v LECH OS, ladenie cez USB zapnuté
+```
+
+- Balík je úplná aktualizácia (`m otapackage`) podpísaná kľúčmi LECH OS (`testkey` – rovnaký ako `otacerts` a kľúč
+  `update_engine` v telefóne); obsahuje `vbmeta` podpísanú kľúčom AVB LECH OS.
+- `aktualizovat` zverejní balík na serveri v0 (`ota_server.py`, ako v časti 4e) a telefón ho stiahne cez
+  `adb reverse` (server v WSL musí byť dosiahnuteľný z Windows, kde beží `adb.exe`); inak balík skopíruje do
+  telefónu (`/data/ota_package`, ako `update_device.py --file`). Potom reštart a kontrola: nová verzia, iný slot,
+  novší čas zostavenia, overený štart `yellow`.
+- Aktualizácia na staršiu zostavu nie je dovolená (`update_engine` porovná čas zostavenia).
+
+Brána 1 vyžaduje 3 aktualizácie a automatický návrat po chybnej – tá sa overí zámerne pokazenou zostavou (ďalší krok).
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
