@@ -903,6 +903,32 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     eSIM od Google (`lpa.live.esimdiscovery.com`, `lpa.ds.gsma.com`); `pm disable-user` systém pri štarte zrušil.
     Riešenie: adevtool 0004 vylúči aplikácie eSIM z modulu Pixelu a produkt neohlasuje funkciu eSIM. Dopyt DNS na
     `epdg.epc.mnc003.mcc231.pub.3gppnetwork.org` je ePDG 4ka (volania cez Wi-Fi) – infraštruktúra operátora.
+37. **Zostava bez eSIM (7. 11. 2026):** 58 min; 11. audit bez eSIM aj GPS – 7 domén Google boli z vyhľadávania
+    v prehliadači počas auditu. Pri štarte bolo logo „android“ z AOSP: bootloader Pixelu odovzdá tmavý motív
+    (`ro.boot.theme=1`) a animácia sa potom hľadá len v `/product/media/bootanimation-dark.zip`. LECH OS ju odteraz
+    inštaluje pod oboma menami; `11-pixel.sh kontrola` overuje súbor, ktorý telefón naozaj otvára.
+38. **Nový zostavovací počítač (7.–8. 11. 2026, [časť 4j](#4j-nový-zostavovací-počítač)):** WSL na `D:\WSL\Ubuntu`
+    (D:, E: a F: zlúčené, ~1,4 TB), AOSP podľa pripnutého manifestu za 26 min (`04-stiahni-aosp.sh
+    --vytvor-manifest` na starom počítači: 15 projektov so záplatami pripnutých pod commitmi LECH OS), prvé úplné
+    zostavenie od nuly 7 h 46 min (178 967 krokov; varovania `memory stall` – pamäť bola plná). Ďalšie zostavenia
+    prekladajú len zmeny.
+39. **Prerušené nahratie (8. 11. 2026):** z nového notebooku sa spojenie USB opakovane prerušilo (chyby 22, 31, 433)
+    – `vendor_b` ostal napoly zapísaný a telefón zo slotu b nenaštartoval ani do fastbootd. Port, do ktorého bol
+    telefón pripojený, sa predtým poškodil (dym pri pripojení telefónu); nahrávalo sa cez iný port. Postup opravy:
+    1. Štartovacie oddiely v bootloaderi: z `lech-tokay-img.zip` vybaliť `boot init_boot vendor_boot
+       vendor_kernel_boot dtbo pvmfw vbmeta` a `fastboot flash <oddiel>_b <oddiel>.img`.
+    2. `fastboot reboot fastboot` – po štarte z poškodeného slotu Pixel pri každom štarte ukáže „Your device is
+       corrupt“ (dm-verity v režime eio) a čaká na tlačidlo napájania; bez neho sa vypne. `fastboot update` naň
+       nepočká („Failed to boot into userspace fastboot“), preto ručne.
+    3. Vo fastbootd `fastboot flash` pre `system system_ext product vendor system_dlkm vendor_dlkm`, potom reboot.
+    4. Slot b po neúspešných štartoch minul pokusy (`slot-retry-count:b` 1) a init so starými dátami štart zastavil
+       (Fastboot Mode, „Enter reason: BL1 requested“) – `fastboot -w` a `fastboot --set-active=b` (telefón bol
+       prázdny). Potom LECH OS naštartoval s animáciou LECH OS.
+    5. Varovanie „Your device is corrupt“ zruší reštart s dôvodom `dm-verity enforcing`:
+       `adb shell 'reboot "dm-verity enforcing"'` (`adb reboot "…"` text rozdelí). `kontrola` stav hlási.
+
+    `fastboot update` musí začínať v bootloaderi – vo fastbootd zlyhá na `dtbo` („No such file or directory“);
+    `nahrat-uplne` telefón do bootloadera prepne sám.
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

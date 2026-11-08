@@ -424,6 +424,10 @@ Pôvodný systém sa dá vrátiť cez Android Flash Tool (tools/etapa2/11-pixel.
       sleep 5
       wait_for 120 fastboot_ready || die "Telefón sa vo fastboot znova neukázal – pripojte kábel a spustite znova: tools/etapa2/11-pixel.sh nahrat-uplne"
       ensure_bootloader
+    elif printf '%s' "$out" | grep -q 'Failed to boot into userspace fastboot'; then
+      die "Telefón sa neprepol do fastbootd. Ak na ňom svieti „Your device is corrupt“, čaká na tlačidlo: pri ďalšom
+pokuse ťuknite na napájanie hneď, ako sa varovanie objaví. Ak sa fastbootd nespustí vôbec, sú poškodené štartovacie
+oddiely – postup v docs/11, časť 4i (záznam 39)."
     else
       die "Obrazy sa nepodarilo nahrať (výpis vyššie)."
     fi
@@ -596,6 +600,13 @@ cmd_kontrola() {
     esac
   done
   report INFO "overený štart" "$(prop ro.boot.verifiedbootstate) (orange = odomknutý bootloader, v E2-11a očakávané)"
+  # After dm-verity found corruption (e.g. a boot from a half-flashed slot) the bootloader keeps the EIO mode and shows
+  # "Your device is corrupt" at every boot, waiting for the power button; without a press the phone switches off.
+  # The reboot reason "dm-verity enforcing" resets it (8. 11. 2026).
+  if [ "$(prop ro.boot.veritymode)" = eio ]; then
+    report CHYBA "kontrola systému" "dm-verity v režime eio – pri štarte „Your device is corrupt“; oprava:
+            ${ADB[*]} shell 'reboot \"dm-verity enforcing\"'"
+  fi
   report INFO "SIM a mobilná sieť" "SIM $(prop gsm.sim.state), operátor $(prop gsm.operator.alpha), sieť $(prop gsm.network.type)"
   report INFO "Wi-Fi" "$(adb_ shell cmd wifi status | head -n 1)"
   local rkp
