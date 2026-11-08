@@ -86,6 +86,8 @@ Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro
 1. Tri po sebe idúce aktualizácie na Pixeli, z toho jedna zámerne chybná – telefón sa musí sám vrátiť na funkčnú verziu.
    Prvý krok na Cuttlefish (E2-08): aktualizácia A/B z vlastného servera v0, podpísaná kľúčom LECH OS
    ([docs/11, časť 4e](11-etapa-2-cuttlefish.md#4e-aktualizácia-z-vlastného-servera-úloha-e2-08)).
+   **Splnené 8. 11. 2026 na Pixeli 9 so zamknutým bootloaderom:** 0.1.1 → 0.1.2 → chybná (sám späť na 0.1.2) → 0.1.3
+   ([docs/11, časť 4l](11-etapa-2-cuttlefish.md#4l-aktualizácia-ota-na-pixeli-e2-08-na-telefóne-brána-1)).
 2. **Generálka mesačnej aktualizácie:** prevziať jeden skutočný bezpečnostný bulletin a zmerať, koľko dní trvá od
    zverejnenia po nainštalovanú aktualizáciu.
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.
