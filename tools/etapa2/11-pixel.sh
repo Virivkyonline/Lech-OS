@@ -596,8 +596,8 @@ Hotovo (slot ${1:-nezistený}). Telefón štartuje LECH OS:
     pokusoch vrátil k systému Google v druhom slote. Telefón do bootloadera a: tools/etapa2/11-pixel.sh stav
   - Po štarte: Nastavenia → Informácie o telefóne (7× Číslo zostavy) → Systém → Pre vývojárov → Ladenie cez USB,
     povoliť tento počítač a spustiť: tools/etapa2/11-pixel.sh kontrola
-  - Bootloader NIKDY nezamykajte s LECH OS (fastboot flashing lock) – telefón by sa nespustil. Zamknúť až
-    s pôvodným systémom (tools/etapa2/11-pixel.sh spat) alebo s úplnou zostavou LECH OS (úloha E2-12).
+  - Bootloader nezamykajte priamo (fastboot flashing lock) – telefón by sa nespustil. Úplný LECH OS podpísaný
+    kľúčom AVB LECH OS zamknite príkazom tools/etapa2/11-pixel.sh zamknut (nahrá kľúč a overí zostavu, E2-12).
 EOF
 }
 
