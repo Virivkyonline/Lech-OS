@@ -6,6 +6,10 @@
 # (git patch-id): patches already there are skipped, new ones are added; when a patch changed or was removed,
 # the project goes back to its state before the LECH commits and the whole set is applied again.
 # If AOSP changed and a patch no longer applies, the script stops with an error.
+# Security fixes from the Android Security Bulletins (months in bezpecnost/mesiace.txt, AOSP commits fetched by
+# 14-bezpecnost.sh stav into ~/lech-work/bezpecnost/<month>/patches) go first in each project, in bulletin order;
+# a fix that is already in AOSP or does not apply is skipped and reported (it never stops the build), fixes listed
+# in bezpecnost/vynechat.txt (CVE or commit) are left out.
 # A later `repo sync` puts the projects back to plain AOSP; running this script again re-applies the set.
 #
 # Usage: tools/etapa2/aplikuj-zaplaty.sh [--kontrola]
@@ -18,6 +22,9 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 PATCH_DIR="$REPO_DIR/patches"
 PIXEL_MANIFEST="$REPO_DIR/manifests/lech-pixel.xml"
+SECURITY_MONTHS="$REPO_DIR/bezpecnost/mesiace.txt"
+SECURITY_SKIP="$REPO_DIR/bezpecnost/vynechat.txt"
+SECURITY_CACHE="${LECH_WORK:-$HOME/lech-work}/bezpecnost"
 AOSP_DIR=${AOSP_DIR:-$HOME/aosp}
 LECH_EMAIL=dev@lech-os.invalid
 CHECK_ONLY=0
@@ -36,20 +43,52 @@ done
 [ -d "$PATCH_DIR" ] || { echo "Žiadne úpravy AOSP (chýba $PATCH_DIR)."; exit 0; }
 
 mapfile -t patches < <(cd "$PATCH_DIR" && find . -name '*.patch' -type f | sed 's|^\./||' | LC_ALL=C sort)
-[ "${#patches[@]}" -gt 0 ] || { echo "Žiadne úpravy AOSP."; exit 0; }
-mapfile -t projects < <(printf '%s\n' "${patches[@]}" | xargs -n1 dirname | LC_ALL=C sort -u)
 
-# Tree after applying patches to a commit, computed in a temporary index (the working tree stays untouched).
-# Prints one tree id per patch; fails (with git's message) when a patch does not apply.
-trees_after() {   # project dir, base commit, patch files...
-  local dir=$1 base=$2 index rc=0
-  shift 2
+# Security fixes: lines "project path<TAB>patch file<TAB>label", in month and bulletin order.
+security=()
+if [ -f "$SECURITY_MONTHS" ]; then
+  while read -r month _; do
+    case "$month" in ''|'#'*) continue ;; esac
+    tsv="$SECURITY_CACHE/$month/vysledky.tsv"
+    [ -f "$tsv" ] || die "Bezpečnostné opravy $month nie sú stiahnuté – spustite: tools/etapa2/14-bezpecnost.sh stav $month"
+    while IFS=$'\t' read -r cve _level _comp _sev project sha path _status; do
+      [ -n "$path" ] && [ -n "$sha" ] || continue
+      if [ -f "$SECURITY_SKIP" ] && grep -qE "^($cve|${sha:0:12}[0-9a-f]*)([[:space:]]|$)" "$SECURITY_SKIP"; then continue; fi
+      f="$SECURITY_CACHE/$month/patches/$cve-${project//\//_}-${sha:0:12}.patch"
+      [ -s "$f" ] && security+=("$path"$'\t'"$f"$'\t'"$month $cve (${sha:0:12})")
+    done < "$tsv"
+  done < "$SECURITY_MONTHS"
+fi
+[ "${#patches[@]}" -gt 0 ] || [ "${#security[@]}" -gt 0 ] || { echo "Žiadne úpravy AOSP."; exit 0; }
+mapfile -t projects < <({ printf '%s\n' "${patches[@]}" | xargs -r -n1 dirname
+                           for e in ${security[@]+"${security[@]}"}; do printf '%s\n' "${e%%$'\t'*}"; done
+                         } | sed '/^$/d' | LC_ALL=C sort -u)
+
+# The patches of a project applied to its base in a temporary index (the working tree stays untouched): fills
+# plan_files/plan_labels/plan_trees. Security fixes that do not apply are skipped (sec_present: already in AOSP,
+# sec_conflict: have to be adapted); a LECH OS patch that does not apply fails with git's message.
+plan_project() {   # project dir, base commit; uses sec_files/sec_labels and files (LECH patches, relative)
+  local dir=$1 base=$2 index rc=0 i f
+  plan_files=(); plan_labels=(); plan_trees=()
   index=$(mktemp)
   GIT_INDEX_FILE="$index" git -C "$dir" read-tree "$base" || rc=1
-  for f in "$@"; do
+  for (( i = 0; rc == 0 && i < ${#sec_files[@]}; i++ )); do
+    f=${sec_files[$i]}
+    if GIT_INDEX_FILE="$index" git -C "$dir" apply --cached "$f" 2>/dev/null; then
+      plan_files+=("$f"); plan_labels+=("bezpečnosť ${sec_labels[$i]}")
+      plan_trees+=("$(GIT_INDEX_FILE="$index" git -C "$dir" write-tree)")
+    elif GIT_INDEX_FILE="$index" git -C "$dir" apply --cached --check -R "$f" 2>/dev/null; then
+      sec_present=$((sec_present + 1))
+    else
+      sec_conflict=$((sec_conflict + 1))
+      sec_conflicts+=("${dir#"$AOSP_DIR"/}: ${sec_labels[$i]}")
+    fi
+  done
+  for f in ${files[@]+"${files[@]}"}; do
     [ "$rc" -eq 0 ] || break
-    GIT_INDEX_FILE="$index" git -C "$dir" apply --cached "$f" || { rc=1; break; }
-    GIT_INDEX_FILE="$index" git -C "$dir" write-tree
+    GIT_INDEX_FILE="$index" git -C "$dir" apply --cached "$PATCH_DIR/$f" || { rc=1; break; }
+    plan_files+=("$PATCH_DIR/$f"); plan_labels+=("${dir#"$AOSP_DIR"/}: $(basename "$f" .patch)")
+    plan_trees+=("$(GIT_INDEX_FILE="$index" git -C "$dir" write-tree)")
   done
   rm -f -- "$index"
   return "$rc"
@@ -69,37 +108,44 @@ apply_one() {   # project dir, patch file, label
   applied=$((applied + 1))
 }
 
-echo "Úpravy AOSP (patches/): ${#patches[@]}"
-applied=0 present=0 missing=0
+echo "Úpravy AOSP (patches/): ${#patches[@]}, bezpečnostné opravy (bezpecnost/mesiace.txt): ${#security[@]}"
+applied=0 present=0 missing=0 sec_present=0 sec_conflict=0
+sec_conflicts=()
 for project in "${projects[@]}"; do
   dir="$AOSP_DIR/$project"
   mapfile -t files < <(printf '%s\n' "${patches[@]}" | awk -v p="$project/" 'index($0, p) == 1 && index(substr($0, length(p) + 1), "/") == 0')
+  sec_files=(); sec_labels=()
+  for e in ${security[@]+"${security[@]}"}; do
+    [ "${e%%$'\t'*}" = "$project" ] || continue
+    e=${e#*$'\t'}; sec_files+=("${e%%$'\t'*}"); sec_labels+=("${e#*$'\t'}")
+  done
   if ! git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
     # Projects of the Pixel device support (manifests/lech-pixel.xml) exist only after 12-priprav-pixel.sh.
     if grep -q "path=\"$project\"" "$PIXEL_MANIFEST" 2>/dev/null; then
-      for rel in "${files[@]}"; do printf '  bez Pixelu %s (projekt nie je stiahnutý)\n' "$project: $(basename "$rel" .patch)"; done
+      for rel in ${files[@]+"${files[@]}"}; do printf '  bez Pixelu %s (projekt nie je stiahnutý)\n' "$project: $(basename "$rel" .patch)"; done
       continue
     fi
+    [ "${#files[@]}" -gt 0 ] || continue   # only security fixes for a project LECH OS does not have
     die "Projekt $project v $AOSP_DIR nie je – úpravy ${files[*]} sa nedajú použiť."
   fi
 
   # LECH commits on top of the project; the project before them is plain AOSP (or the GrapheneOS revision).
   lech=$(git -C "$dir" log --format='%ce' -n 200 | awk -v e="$LECH_EMAIL" '$1 != e {exit} {n++} END {print n + 0}')
   base=$(git -C "$dir" rev-parse "HEAD~$lech")
-  paths=()
-  for rel in "${files[@]}"; do paths+=("$PATCH_DIR/$rel"); done
-  if ! trees_out=$(trees_after "$dir" "$base" "${paths[@]}" 2>&1); then
-    printf '%s\n' "$trees_out" | grep -v '^[0-9a-f]\{40\}$' | sed 's/^/    /'
+  plan_err=$(mktemp)
+  if ! plan_project "$dir" "$base" 2>"$plan_err"; then
+    sed 's/^/    /' "$plan_err"; rm -f -- "$plan_err"
     die "Úpravy v $project sa nedajú použiť – kód projektu sa zmenil. Úpravu treba prispôsobiť novej verzii (pošlite tento výpis)."
   fi
-  mapfile -t trees < <(printf '%s\n' "$trees_out" | grep '^[0-9a-f]\{40\}$')
+  rm -f -- "$plan_err"
+  trees=(${plan_trees[@]+"${plan_trees[@]}"})
   # Up to date when HEAD is the base plus the first $lech patches; otherwise the project is rebuilt from the base.
   have=$lech
   head_tree=$(git -C "$dir" rev-parse "HEAD^{tree}")
-  if [ "$lech" -gt "${#files[@]}" ] || { [ "$lech" -gt 0 ] && [ "${trees[$((lech - 1))]}" != "$head_tree" ]; }; then
+  if [ "$lech" -gt "${#plan_files[@]}" ] || { [ "$lech" -gt 0 ] && [ "${trees[$((lech - 1))]}" != "$head_tree" ]; }; then
     if [ "$CHECK_ONLY" -eq 1 ]; then
       printf '  iné      %s: v projekte sú iné úpravy LECH OS ako v patches/ (pri použití sa projekt obnoví)\n' "$project"
-      missing=$((missing + ${#files[@]}))
+      missing=$((missing + ${#plan_files[@]}))
       continue
     fi
     [ -z "$(git -C "$dir" status --porcelain --untracked-files=no)" ] || \
@@ -109,8 +155,8 @@ for project in "${projects[@]}"; do
     have=0
   fi
 
-  for (( i = 0; i < ${#files[@]}; i++ )); do
-    label="$project: $(basename "${files[$i]}" .patch)"
+  for (( i = 0; i < ${#plan_files[@]}; i++ )); do
+    label=${plan_labels[$i]}
     if [ "$i" -lt "$have" ]; then
       printf '  už je    %s\n' "$label"
       present=$((present + 1))
@@ -118,13 +164,17 @@ for project in "${projects[@]}"; do
       printf '  chýba    %s\n' "$label"
       missing=$((missing + 1))
     else
-      apply_one "$dir" "$PATCH_DIR/${files[$i]}" "$label"
+      apply_one "$dir" "${plan_files[$i]}" "$label"
     fi
   done
 done
 
 if [ "$CHECK_ONLY" -eq 1 ]; then
-  echo "Použitých: $present z ${#patches[@]}."
+  echo "Použitých: $present."
 else
   echo "Nové: $applied, už použité: $present."
+fi
+if [ "${#security[@]}" -gt 0 ]; then
+  echo "Bezpečnostné opravy: už v AOSP $sec_present, nedajú sa použiť (treba prispôsobiť) $sec_conflict."
+  for c in ${sec_conflicts[@]+"${sec_conflicts[@]}"}; do printf '  neprispôsobená  %s\n' "$c"; done
 fi

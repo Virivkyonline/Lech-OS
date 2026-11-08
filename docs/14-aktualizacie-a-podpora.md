@@ -95,4 +95,9 @@ Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro
    vydáva celé AOSP dvakrát ročne, mesačné opravy prichádzajú ako jednotlivé commity v AOSP. Stav opráv zistí
    `tools/etapa2/14-bezpecnost.sh stav 2026-07 … 2026-11`: pre každý bulletin stiahne commity z AOSP a overí, či už sú
    v strome, či sa dajú použiť, alebo či ich treba prispôsobiť; výsledok v `~/lech-work/bezpecnost/<mesiac>/stav.md`.
+   Prvý výsledok (8. 11. 2026): júl a august bez opráv pre AOSP; september 172 opráv (67 commitov sa dá použiť,
+   4 konflikty, 94 bez odkazu do AOSP – súčasti výrobcov čipov, 10 jadro); október 25 (19 sa dá použiť, 5 konfliktov);
+   **november: 0 commitov platformy v AOSP ani 6 dní po zverejnení** (bulletin sľubuje 48 h) – kritická
+   `CVE-2026-58868` sa zatiaľ nedá opraviť z AOSP. Výrobcovia telefónov dostávajú opravy mesiace pred AOSP
+   (GrapheneOS ich má ako partner); pre LECH OS je to riziko mesačného cyklu. Preberanie opráv: [bezpecnost/](../bezpecnost/README.md).
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.

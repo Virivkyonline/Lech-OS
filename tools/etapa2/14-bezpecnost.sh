@@ -56,6 +56,11 @@ cmd_stav() {
     fi
     json="$dir/bulletin.json"
     python3 -I "$SCRIPT_DIR/bulletin.py" "$dir/bulletin.html" > "$json" || die "Bulletin $month sa nedá spracovať."
+    if [ "$(python3 -I -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["fixes"]))' "$json")" = 0 ] && \
+       grep -qE 'CVE-20[0-9]{2}-[0-9]{4,}' "$dir/bulletin.html"; then
+      echo "  UPOZORNENIE: v bulletine sú čísla CVE, ale nenašla sa žiadna tabuľka opráv – zmenila sa stránka?"
+      echo "  Pošlite výpis: grep -o 'CVE-20[0-9]*-[0-9]*' $dir/bulletin.html | sort -u | head"
+    fi
     # One line per commit (fixes without an AOSP link get one empty line); checked with git, table by Python.
     : > "$dir/vysledky.tsv"
     python3 -I -c '

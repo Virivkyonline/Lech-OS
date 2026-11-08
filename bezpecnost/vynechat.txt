@@ -1,0 +1,2 @@
+# Bezpečnostné opravy, ktoré LECH OS zámerne nepreberá: CVE alebo začiatok commitu (12 znakov), za ním # dôvod.
+# Príklad:  CVE-2026-00000  # oprava pre funkciu, ktorú LECH OS nemá; zostava s ňou zlyhala
