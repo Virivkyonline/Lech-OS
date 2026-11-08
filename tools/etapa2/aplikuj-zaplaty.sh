@@ -53,7 +53,8 @@ if [ -f "$SECURITY_MONTHS" ]; then
     tsv="$SECURITY_CACHE/$month/vysledky.tsv"
     [ -f "$tsv" ] || die "Bezpečnostné opravy $month nie sú stiahnuté – spustite: tools/etapa2/14-bezpecnost.sh stav $month"
     while IFS=$'\t' read -r cve _level _comp _sev project sha path _status; do
-      [ -n "$path" ] && [ -n "$sha" ] || continue
+      # Empty fields are "-" (14-bezpecnost.sh): bash read would join adjacent tabs.
+      [ -n "$path" ] && [ "$path" != - ] && [ -n "$sha" ] && [ "$sha" != - ] || continue
       if [ -f "$SECURITY_SKIP" ] && grep -qE "^($cve|${sha:0:12}[0-9a-f]*)([[:space:]]|$)" "$SECURITY_SKIP"; then continue; fi
       # Adapted versions first: in the repository (bezpecnost/prisposobene/<path>/<CVE>.patch), then the one of
       # GrapheneOS found by 14-bezpecnost.sh stav, then the AOSP commit itself.

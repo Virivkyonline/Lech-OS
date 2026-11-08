@@ -123,15 +123,17 @@ cmd_stav() {
     fi
     # One line per commit (fixes without an AOSP link get one empty line); checked with git, table by Python.
     : > "$dir/vysledky.tsv"
+    # Tables: one field per tab, "-" for an empty field - bash read joins adjacent tabs (a tab is IFS whitespace),
+    # so an empty field would shift the next ones (8. 11. 2026: bug ids read as project names).
     python3 -I -c '
 import json, sys
 for f in json.load(open(sys.argv[1]))["fixes"]:
     for c in f["commits"] or [{"project": "", "sha": ""}]:
-        print("\t".join([f["cve"], f["patch_level"], f["component"], f["severity"], c["project"], c["sha"],
-                         " ".join(f.get("bugs", []))]))
+        row = [f["cve"], f["patch_level"], f["component"], f["severity"], c["project"], c["sha"], " ".join(f.get("bugs", []))]
+        print("\t".join(x or "-" for x in row))
 ' "$json" > "$dir/commity.tsv"
     # Fixes without an AOSP commit: their GrapheneOS commits by bug id (the index is built once per run).
-    if awk -F'\t' '$5 == "" && $7 != "" {f = 1} END {exit !f}' "$dir/commity.tsv"; then
+    if awk -F'\t' '$5 == "-" && $7 != "-" {f = 1} END {exit !f}' "$dir/commity.tsv"; then
       if [ ! -s "$OUT_BASE/grapheneos/bugs.tsv" ] || [ -z "${GOS_INDEXED:-}" ]; then
         echo "  hľadám opravy bez odkazu do AOSP v repozitároch GrapheneOS (prvýkrát niekoľko minút)…"
         grapheneos_bug_index "$OUT_BASE/grapheneos/bugs.tsv" || echo "  UPOZORNENIE: repozitáre GrapheneOS sa nepodarilo prečítať."
@@ -142,10 +144,15 @@ import sys
 index = {}
 for line in open(sys.argv[2], encoding="utf-8"):
     bug, aosp, path, repo, sha = line.rstrip("\n").split("\t")
-    index.setdefault(bug, []).append((aosp, sha))
+    index.setdefault(bug, set()).add((aosp, sha))
+# A security fix is 1 to a few commits; a bug id in more commits is a tracking bug of a feature (8. 11. 2026: one
+# bug id in 374 commits) and must not pull them in.
+MAX_COMMITS = 8
 for line in open(sys.argv[1], encoding="utf-8"):
     r = line.rstrip("\n").split("\t")
-    hits = [] if r[4] else sorted({h for b in r[6].split() for h in index.get(b, [])})
+    bugs = [] if r[6] == "-" else r[6].split()
+    hits = [] if r[4] != "-" else sorted({h for b in bugs if len(index.get(b, ())) <= MAX_COMMITS
+                                           for h in index.get(b, ())})
     if not hits:
         print("\t".join(r))
     for aosp, sha in hits:   # a GrapheneOS commit: marked with "gos:" before the commit
@@ -155,6 +162,7 @@ PYEOF3
     local n=0 total cve level comp sev project sha path status patch changeid gos cache _bugs
     total=$(wc -l < "$dir/commity.tsv")
     while IFS=$'\t' read -r cve level comp sev project sha _bugs; do
+      [ "$project" != - ] || project=""; [ "$sha" != - ] || sha=""; [ "$sev" != - ] || sev=""; [ "$comp" != - ] || comp=""
       n=$((n + 1))
       printf '\r  kontrolujem opravy: %d/%d ' "$n" "$total" >&2
       status=""; path=""
@@ -199,7 +207,8 @@ PYEOF3
           fi
         fi
       fi
-      printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$cve" "$level" "$comp" "$sev" "$project" "$sha" "$path" "$status" \
+      printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$cve" "${level:--}" "${comp:--}" "${sev:--}" "${project:--}" "${sha:--}" \
+        "${path:--}" "$status" \
         >> "$dir/vysledky.tsv"
     done < "$dir/commity.tsv"
     printf '\r%*s\r' 40 "" >&2
@@ -210,7 +219,7 @@ from datetime import datetime, date
 
 json_path, tsv, out, month, levels = sys.argv[1:6]
 data = json.load(open(json_path))
-rows = [l.rstrip("\n").split("\t") for l in open(tsv, encoding="utf-8") if l.strip()]
+rows = [["" if x == "-" else x for x in l.rstrip("\n").split("\t")] for l in open(tsv, encoding="utf-8") if l.strip()]
 published = data.get("published", "")
 days = ""
 try:
