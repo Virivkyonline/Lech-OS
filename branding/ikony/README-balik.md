@@ -1,4 +1,5 @@
-# Lech-OS – ikony aplikácií (Galéria, Prehliadač, Správy, Nastavenia, Telefón)
+# Lech-OS – ikony aplikácií
+Galéria, Prehliadač, Správy, Nastavenia, Telefón, Fotoaparát, Kontakty
 
 ## Čo je v balíku
 Pre každú aplikáciu je priečinok s tromi vrstvami adaptívnej ikony (PNG s priehľadnosťou, 1024 × 1024 px)
@@ -15,7 +16,8 @@ a s „klasickou“ jednoobrázkovou ikonou pre staršie launchery / Android < 8
 `mipmap-anydpi-v26/ic_<app>.xml` (adaptívna ikona s vrstvami background / foreground / monochrome)
 a `mipmap-{mdpi…xxxhdpi}/` s vrstvami v 108 dp (108/162/216/324/432 px) a klasickou ikonou v 48 dp (48/72/96/144/192 px).
 
-V manifeste potom stačí `android:icon="@mipmap/ic_galeria"` (resp. `ic_prehliadac`, `ic_spravy`, `ic_nastavenia`, `ic_telefon`).
+V manifeste potom stačí `android:icon="@mipmap/ic_galeria"` (resp. `ic_prehliadac`, `ic_spravy`, `ic_nastavenia`,
+`ic_telefon`, `ic_fotoaparat`, `ic_kontakty`).
 
 ## Ako vrstvy vznikli
 Vrstvy sú oddelené z pôvodných plochých návrhov (zdrojové obrázky sú v `branding/ikony/navrhy/`):
@@ -25,6 +27,8 @@ Vrstvy sú oddelené z pôvodných plochých návrhov (zdrojové obrázky sú v 
   preto priesvitné časti motívu (sklenené fotky, žiara) presne sedia na prechod pod nimi,
 - jednofarebné glyfy sú nakreslené nanovo ako vektory (SVG). Pozn.: SVG používajú `<mask>`, ktorý importér Android Studia
   nepodporuje – do appky použite PNG, SVG slúži na ďalšie úpravy.
+- Fotoaparát a Kontakty prišli v jednom obrázku (každá ikona ≈ 600 px), preto sú ich zdroje mierne zväčšené;
+  pre maximálnu ostrosť klasickej ikony sa oplatí vygenerovať ich znova samostatne v plnom rozlíšení.
 
 `nahlad_adaptivne_ikony.png` ukazuje všetky ikony tak, ako ich orežú rôzne launchery, aj tematický svetlý/tmavý režim.
 

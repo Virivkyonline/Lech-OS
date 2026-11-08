@@ -674,7 +674,22 @@ print("\n".join(u["headers"] + ["USER_AGENT=LECH-OS-updater-v0", "NETWORK_ID=0"]
     >> "$WORKDIR/pixel/nahratia.txt"
   echo
   [ "$ok" -eq 1 ] || die "Aktualizácia nie je v poriadku – pošlite tento výpis a $log."
+  refresh_launcher_icons
   echo "Aktualizácia OTA prebehla: LECH OS $after_version beží zo slotu $after_slot. Log: $log"
+}
+
+# The launcher (Launcher3) caches the app icons and does not render them again after a system update when the apps
+# themselves did not change - new LECH OS icons (resource overlays, branding/ikony) stayed invisible on the home
+# screen while Settings showed them (8. 11. 2026). Delete its icon cache (the home screen layout stays) and restart
+# it. Development builds only (adb root); for users the launcher has to do this itself (stage 3).
+refresh_launcher_icons() {
+  local home
+  home=$(adb_ shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME \
+         | tail -n 1 | cut -d/ -f1)
+  case "$home" in ""|*" "*|*:*) return 0 ;; esac
+  [ "$(adb_ shell id -u | head -n 1)" = 0 ] || { adb_ root >/dev/null; sleep 4; wait_for 60 adb_ready || return 0; }
+  adb_ shell "rm -f /data/user/0/$home/databases/app_icons.db*; am force-stop $home" >/dev/null && \
+    echo "Pamäť ikon plochy ($home) vymazaná – plocha načíta ikony znova."
 }
 boot_completed() { [ "$(prop sys.boot_completed)" = 1 ]; }
 
