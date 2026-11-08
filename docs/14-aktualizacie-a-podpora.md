@@ -90,4 +90,9 @@ Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro
    ([docs/11, časť 4l](11-etapa-2-cuttlefish.md#4l-aktualizácia-ota-na-pixeli-e2-08-na-telefóne-brána-1)).
 2. **Generálka mesačnej aktualizácie:** prevziať jeden skutočný bezpečnostný bulletin a zmerať, koľko dní trvá od
    zverejnenia po nainštalovanú aktualizáciu.
+   **Začatá 8. 11. 2026** s bulletinom za november 2026 (zverejnený 2. 11.; kritická `CVE-2026-58868` vo frameworku
+   aj pre Android 17). LECH OS je zostavený z AOSP `CP2A.260605` (úroveň zabezpečenia jún 2026) – Google od roku 2026
+   vydáva celé AOSP dvakrát ročne, mesačné opravy prichádzajú ako jednotlivé commity v AOSP. Stav opráv zistí
+   `tools/etapa2/14-bezpecnost.sh stav 2026-07 … 2026-11`: pre každý bulletin stiahne commity z AOSP a overí, či už sú
+   v strome, či sa dajú použiť, alebo či ich treba prispôsobiť; výsledok v `~/lech-work/bezpecnost/<mesiac>/stav.md`.
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.
