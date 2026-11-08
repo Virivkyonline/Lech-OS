@@ -6,7 +6,8 @@
 # A failed or interrupted build can be resumed by running the script again (the build is incremental).
 #
 # Usage: tools/etapa2/05-zostav-aosp.sh [--ulohy N] [--spustit]
-#   --ulohy N   parallel build jobs (default 8; more needs more RAM)
+#   --ulohy N   parallel build jobs (default: the processor threads, at most 1 per 2.5 GB of RAM, at least 8;
+#               more needs more RAM)
 #   --spustit   start the built phone afterwards
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work), LECH_CLOCK_RETRIES (default 5),
 #   LECH_PRODUCT (default aosp_cf_x86_64_only_phone), LECH_RELEASE (force a release config),
@@ -28,7 +29,12 @@ RERUN=${LECH_RERUN:-tools/etapa2/05-zostav-aosp.sh}
 # Other products (the Pixel GSI) keep their target apart: the audit and the nightly check start the phone
 # from the target in LECH_TARGET_FILE, which must stay the Cuttlefish one.
 TARGET_FILE=${LECH_TARGET_SAVE:-$LECH_TARGET_FILE}
-JOBS=8
+# Default jobs: one per processor thread, but at most one per 2.5 GB of RAM (Java and linker steps need 2-3 GB each),
+# and not below the 8 that worked on the first build notebook (15 GB RAM + swap). New notebook: 16 threads, 47 GB → 16.
+mem_gb=$(awk '/^MemTotal:/ {print int($2 / 1024 / 1024)}' /proc/meminfo 2>/dev/null)
+JOBS=$(( $(nproc 2>/dev/null || echo 8) ))
+[ "$JOBS" -le $(( ${mem_gb:-20} * 2 / 5 )) ] || JOBS=$(( ${mem_gb:-20} * 2 / 5 ))
+[ "$JOBS" -ge 8 ] || JOBS=8
 START=0
 MIN_FREE_GB=150     # one Cuttlefish build wrote 139 GB into out/ (first real build, 5. 11. 2026)
 
