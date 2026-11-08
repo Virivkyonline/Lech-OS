@@ -35,8 +35,10 @@ Obchodný model stojí na službách (LECH Cloud, AI servery), podpore, firemný
   Odporúčanie: lacnú predbežnú rešerš urobiť už pred verejným prototypom (etapa 8), pretože beta pod týmto názvom
   začne budovať verejné povedomie a neskoršie premenovanie je drahšie.
   Pri otvorenom kóde je ochranná známka hlavný nástroj, ako zabrániť, aby sa odnože vydávali za LECH OS.
-  **Stav 8. 11. 2026:** vlastník už má značky s prvkom LECH – *LECHSTAV*, *LECH MOTO*, *PLATINUM LECH SPA* (rozsah:
-  úrad, triedy a majiteľ sa doplnia z osvedčení). Platia len pre svoje triedy; pre LECH OS treba novú prihlášku,
+  **Stav 8. 11. 2026:** vlastník už má značky s prvkom LECH – *LECHSTAV*, *LECH MOTO*, *PLATINUM LECH SPA*.
+  *Lech-Moto*: slovná OZ ÚPV SR č. 264314 (prihláška 2970-2024 zo 17. 11. 2024, zapísaná 23. 4. 2025), triedy 12, 35,
+  39 (štvorkolky, motocykle, predaj a distribúcia), majiteľ Lechstav, s. r. o., Prešov, bez zástupcu. Ostatné sa doplnia.
+  Žiadna nepokrýva softvér. Platia len pre svoje triedy; pre LECH OS treba novú prihlášku,
   najmä triedy 9 (softvér, operačné systémy) a 42 (vývoj softvéru, IT služby), pre trh EÚ najlepšie ochranná známka
   EÚ (EUIPO). Rešerš zamerať aj na staršie známky „Lech“ v triedach 9 a 42 a na známe značky s dobrým menom
   (napr. pivo Lech), ktoré môžu namietať aj v iných triedach – posúdi patentový zástupca. Prihlášku podať skôr,
