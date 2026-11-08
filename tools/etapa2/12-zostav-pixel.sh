@@ -126,6 +126,16 @@ for img in boot.img vendor_boot.img system.img vendor.img vbmeta.img super_empty
   [ -f "$PRODUCT_OUT/$img" ] || die "Zostavenie skončilo, ale chýba $PRODUCT_OUT/$img."
 done
 
+# Verified boot (E2-12): vbmeta must carry the LECH OS AVB key and match every image (verify_image checks the key and
+# all hashes and hash trees) - a phone locked with the key starts nothing else.
+avbtool="$AOSP_DIR/out/host/linux-x86/bin/avbtool"
+echo "Overujem podpis overeného štartu (vbmeta, kľúč AVB LECH OS, všetky obrazy)…"
+if ! avb_out=$("$avbtool" verify_image --image "$PRODUCT_OUT/vbmeta.img" --key "$AOSP_DIR/vendor/lech-keys/test/avb.pem" 2>&1); then
+  printf '%s\n' "$avb_out" | tail -n 5
+  die "vbmeta nie je podpísaná kľúčom AVB LECH OS alebo nesedí s obrazmi – telefón so zamknutým bootloaderom by ju nespustil."
+fi
+avb_sha1=$("$avbtool" info_image --image "$PRODUCT_OUT/vbmeta.img" 2>/dev/null | sed -n 's/^Public key (sha1): *//p')
+
 echo
 echo "Balím obrazy pre fastboot do $OUT_DIR_IMG/lech-tokay-img.zip…"
 mkdir -p "$OUT_DIR_IMG" || die "Priečinok $OUT_DIR_IMG sa nedá vytvoriť."
@@ -144,6 +154,7 @@ version=${LECH_VERSION:-$(sed -n 's/^LECH_VERSION *[:?]= *//p' "$REPO_DIR/vendor
   echo "zostava: $(sed -n 's/^ro.system.build.fingerprint=//p' "$PRODUCT_OUT/system/build.prop" 2>/dev/null)"
   echo "vendor: $(sed -n 's/^ro.vendor.build.fingerprint=//p' "$PRODUCT_OUT/vendor/build.prop" 2>/dev/null)"
   echo "obrazy: ${present[*]}"
+  echo "overený štart: vbmeta podpísaná kľúčom AVB LECH OS (verejný kľúč sha1 $avb_sha1)"
   (cd "$OUT_DIR_IMG" && sha256sum lech-tokay-img.zip)
 } > "$OUT_DIR_IMG/info.txt"
 ls -lh "$OUT_DIR_IMG" | sed 1d

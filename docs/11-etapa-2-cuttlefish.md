@@ -634,6 +634,36 @@ len **dva súbory** – všetko ostatné vytvoria skripty znova:
 `android-latest-release` sa posúva a záplaty LECH OS by na novšom AOSP nemuseli sedieť); projekty Pixelu z
 `manifests/lech-pixel.xml` z neho vynechá, pridá ich `12-priprav-pixel.sh`.
 
+## 4k. Zamknutý bootloader s vlastným kľúčom (úloha E2-12)
+
+Doteraz bola `vbmeta` zostavy pre Pixel podpísaná **verejným testovacím kľúčom AOSP** (verejný kľúč sha1
+`2597c218…f011`, `avbtool info_image`) – jeho súkromnú časť má každý, zamknutie s ním by nič nechránilo. Od E2-12:
+
+- **Kľúč overeného štartu LECH OS** `~/lech-keys/test/avb.pem` (RSA 4096) a jeho verejná časť `avb_pkmd.bin` vzniknú
+  pri prvom `06-zostav-lech.sh` / `12-zostav-pixel.sh` (`07-vytvor-kluce.sh`, existujúce kľúče sa neprepisujú).
+  **Zálohujte ho** a na všetkých zostavovacích počítačoch majte ten istý (`tar` celého `~/lech-keys`, ako v časti 4j):
+  zamknutý telefón spustí len systém podpísaný týmto kľúčom; bez neho sa dá aktualizovať až po odomknutí (vymaže dáta).
+- `lech_tokay.mk` nastaví `BOARD_AVB_KEY_PATH` a `BOARD_AVB_ALGORITHM` (SHA256_RSA4096). `vbmeta` obsahuje hashe
+  `boot`, `init_boot`, `vendor_boot`, `vendor_kernel_boot`, `dtbo`, `pvmfw` a hash stromy `system`, `system_ext`,
+  `product`, `vendor`, `system_dlkm`, `vendor_dlkm` (žiadne reťazené oddiely).
+- `12-zostav-pixel.sh` po zostavení overí `avbtool verify_image --key avb.pem` (kľúč aj všetky obrazy) a odtlačok kľúča
+  zapíše do `info.txt`.
+
+Postup:
+
+```bash
+git pull && tools/etapa2/12-zostav-pixel.sh --ulohy 16   # nový kľúč AVB (záloha!), podpísaná zostava
+tools/etapa2/11-pixel.sh nahrat-uplne                    # s vymazaním dát (zamknutie ich aj tak vymaže)
+# v telefóne: Pre vývojárov → Ladenie cez USB zapnuté, Odomknutie OEM zapnuté
+tools/etapa2/11-pixel.sh zamknut
+```
+
+`zamknut` overí, že balík je podpísaný kľúčom LECH OS a že v telefóne beží presne on (`ro.boot.vbmeta.digest`) a že je
+zapnuté Odomknutie OEM; potom nahrá `avb_pkmd.bin` do oddielu `avb_custom_key` a zamkne bootloader (potvrdenie na
+telefóne, dáta sa vymažú). Pri každom štarte potom **žlté varovanie s ID kľúča** – vlastný systém so zamknutým
+bootloaderom (rovnako GrapheneOS); `kontrola` hlási `overený štart: yellow`. Nové zostavy sa odteraz nahrávajú ako
+podpísaná aktualizácia OTA. Odomknutie OEM ostáva zapnuté, kým nie je overené aj OTA.
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):
@@ -682,7 +712,7 @@ Výsledkom je automatický test, ktorý pri každom zostavení zlyhá, ak sa obj
 | E2-09 | CI | Nočné zostavenie, test bootu, sieťový audit a kontroly z `tools/` bežia automaticky | **Hotové 5. 11. 2026 (v0)** – `09-nocna-kontrola.sh` na notebooku, každú noc o 02:30 z Plánovača úloh Windows ([časť 4g](#4g-nočná-kontrola-úloha-e2-09)); prvý beh (ručne): všetkých 5 krokov OK. Ďalej: CI na serveri v EÚ, kontrola každej zmeny pred zlúčením |
 | E2-10 | Prvé kompatibilitné testy | 10 aplikácií z F-Droid sa nainštaluje a spustí | **Hotové 5. 11. 2026** – 10 z 10 (prehliadač, pošta, kalendár, MFA, VPN, heslá, komunikácia, mapy, súbory, médiá) bez služieb Google ([kompatibilita/README.md](../kompatibilita/README.md)) |
 | E2-11 | Pixel – Device Support Package | LECH OS nabootuje na Pixeli (2 kusy kúpiť po dokončení E2-02 až E2-06) | **E2-11a hotové 6. 11. 2026** – LECH OS ako GSI beží na Pixeli 9 (vendor Android 17 `CP3A.261005.005`): identita, kľúče LECH, NTP aj animácia overené (`11-pixel.sh kontrola`, [časť 4h](#4h-lech-os-na-pixeli-9-úloha-e2-11a)). Bez RKP servera Google (`init.lech.rc`); sieťový audit na telefóne: žiadne spojenie na Google (5. a 6. audit). Zostáva: SMS a VoLTE (IMS), verzia „Baklava“ namiesto 17; E2-11b (začaté 6. 11. 2026): úplná zostava s podporou zariadenia z GrapheneOS (adevtool, [časť 4i](#4i-úplná-zostava-lech-os-pre-pixel-9-úloha-e2-11b)) – **7. 11. 2026 beží úplný LECH OS** (Android 17, `cp2a`): hovory, SMS, mobilné dáta (4ka LTE), Wi-Fi; VoLTE pre 4ka vypnuté už v nastaveniach operátora od Google. Bluetooth a fotoaparát fungujú. Zostáva: sieťový audit úplnej zostavy, GPS; staré aplikácie AOSP Fotoaparát (Camera2) a Galéria (Gallery2) kreslia pod navigačné tlačidlá (vynútené zobrazenie od okraja po okraj od Androidu 15) – nahradiť modernými aplikáciami; eSIM zatiaľ nie je (aplikácie Google vylúčené) – eSIM bez Google cez OpenEUICC je úloha etapy 3 |
-| E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | – |
+| E2-12 | Pixel – zamknutý bootloader | Pixel bootuje LECH OS so zamknutým bootloaderom a vlastným AVB kľúčom | **Rozpracované 8. 11. 2026** – kľúč AVB LECH OS, podpis `vbmeta`, kontrola podpisu po zostavení a príkaz `11-pixel.sh zamknut` ([časť 4k](#4k-zamknutý-bootloader-s-vlastným-kľúčom-úloha-e2-12)); na telefóne zatiaľ neoverené |
 
 ### Záznam z prvého spustenia (4. 11. 2026)
 

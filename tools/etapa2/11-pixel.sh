@@ -23,6 +23,8 @@
 #   audit [--minuty N] [--dokoncit] [--vyhodnotit]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default
 #              15 min); --dokoncit finishes a started audit after the USB connection dropped,
 #              --vyhodnotit evaluates the last downloaded audit again (no phone needed)
+#   zamknut   lock the bootloader with the LECH OS verified boot key (E2-12) – ERASES ALL DATA; the phone must run
+#              the full LECH OS from the last 12-zostav-pixel.sh, signed with that key
 #   slot a|b   make a slot active and start it (when the phone fell back to the Google system in the other slot)
 #   spat       how to go back to the original Google system
 # Environment: LECH_WORK (default ~/lech-work), LECH_KEYS (default ~/lech-keys/test), LECH_PIXEL_DIR (images;
@@ -443,6 +445,77 @@ oddiely – postup v docs/11, časť 4i (záznam 39)."
   fi
 }
 
+# E2-12: lock the bootloader with the LECH OS verified boot key. The public part of the key (avb_pkmd.bin) goes to
+# the avb_custom_key partition; a locked bootloader then starts only systems whose vbmeta is signed with the key
+# and shows the yellow screen with its ID at every start. Locking erases all data. Before it the phone has to run
+# exactly the last full build (vbmeta digest of the phone = the one in the package): otherwise it might not start
+# when locked. OEM unlocking stays on, so the bootloader can be unlocked again (that erases the data too).
+cmd_zamknut() {
+  need_tools
+  local zip_dir zip=lech-tokay-img.zip pkmd="$KEYS/avb_pkmd.bin" avbtool tmp key_sha1 img_sha1 digest_zip digest_phone
+  local fp i out
+  avbtool=${AOSP_DIR:-$HOME/aosp}/out/host/linux-x86/bin/avbtool
+  [ -f "$pkmd" ] || die "Chýba verejný kľúč AVB $pkmd – vytvorí ho tools/etapa2/06-zostav-lech.sh --len-skopirovat."
+  [ -x "$avbtool" ] || die "Chýba avbtool ($avbtool) – najprv zostavte LECH OS pre Pixel: tools/etapa2/12-zostav-pixel.sh"
+  if [ "$WINDOWS" -eq 1 ]; then zip_dir=/mnt/c/lech/pixel-uplne; else zip_dir=${LECH_PIXEL_FULL_DIR:-$WORKDIR/pixel-uplne}; fi
+  [ -f "$zip_dir/$zip" ] || die "Chýba $zip_dir/$zip – najprv zostavte a nahrajte LECH OS: 12-zostav-pixel.sh, nahrat-uplne"
+  tmp=$(mktemp -d)
+  unzip -q -o "$zip_dir/$zip" vbmeta.img -d "$tmp" || { rm -rf "$tmp"; die "V $zip chýba vbmeta.img."; }
+  key_sha1=$(sha1sum "$pkmd" | cut -d' ' -f1)
+  img_sha1=$("$avbtool" info_image --image "$tmp/vbmeta.img" 2>/dev/null | sed -n 's/^Public key (sha1): *//p')
+  digest_zip=$("$avbtool" calculate_vbmeta_digest --image "$tmp/vbmeta.img" --hash_algorithm sha256 2>/dev/null)
+  rm -rf "$tmp"
+  [ -n "$img_sha1" ] && [ "$img_sha1" = "$key_sha1" ] || \
+    die "Zostava v $zip_dir nie je podpísaná kľúčom AVB LECH OS (vbmeta: ${img_sha1:-?}, kľúč: $key_sha1).
+Zostavte ju znova (12-zostav-pixel.sh) a nahrajte (nahrat-uplne)."
+
+  echo "Čakám na telefón v LECH OS cez adb (overím, že v ňom beží táto zostava)…"
+  adb_wait 120 || die "Telefón sa cez adb neozval – musí bežať LECH OS so zapnutým ladením cez USB."
+  digest_phone=$(prop ro.boot.vbmeta.digest)
+  [ -n "$digest_zip" ] && [ "$digest_phone" = "$digest_zip" ] || \
+    die "V telefóne nebeží zostava z $zip_dir (vbmeta telefónu: ${digest_phone:-?}, zostavy: ${digest_zip:-?}).
+Najprv ju nahrajte: tools/etapa2/11-pixel.sh nahrat-uplne"
+  [ "$(prop sys.oem_unlock_allowed)" = 1 ] || \
+    die "Zapnite v telefóne Nastavenia → Systém → Pre vývojárov → Odomknutie OEM – bez neho by sa bootloader už nedal odomknúť."
+
+  fp=$(sha256sum "$pkmd" | cut -d' ' -f1)
+  to_bootloader
+  ensure_bootloader
+  [ "$(fb_var unlocked)" = yes ] || die "Bootloader je už zamknutý (tools/etapa2/11-pixel.sh stav)."
+  confirm "Bootloader sa zamkne s kľúčom overeného štartu LECH OS
+  (odtlačok SHA-256: $fp).
+Zamknutie VYMAŽE VŠETKY DÁTA v telefóne. Na telefóne potom tlačidlami hlasitosti vyberte 'Lock the bootloader'
+a potvrďte tlačidlom Napájanie."
+  # fastboot.exe reads Windows paths: the public key goes next to the images (it is public).
+  mkdir -p "$PIXEL_DIR" && cp "$pkmd" "$PIXEL_DIR/avb_pkmd.bin" || die "Kľúč sa nedá skopírovať do $PIXEL_DIR."
+  fb erase avb_custom_key >/dev/null
+  if ! out=$(fb flash avb_custom_key avb_pkmd.bin); then
+    printf '%s\n' "$out" | tail -n 3
+    rm -f "$PIXEL_DIR/avb_pkmd.bin"
+    die "Kľúč sa do telefónu nenahral (avb_custom_key) – bootloader ostáva odomknutý."
+  fi
+  rm -f "$PIXEL_DIR/avb_pkmd.bin"
+  echo "Kľúč LECH OS je v telefóne (avb_custom_key). Zamykám – potvrďte to na telefóne (máte 2 minúty)…"
+  fb flashing lock >/dev/null
+  for (( i = 0; i < 120; i += 3 )); do
+    fastboot_ready && [ "$(fb_var unlocked)" = no ] && break
+    sleep 3
+  done
+  [ "$(fb_var unlocked)" = no ] || die "Zamknutie sa nepotvrdilo – bootloader je stále odomknutý (tools/etapa2/11-pixel.sh stav)."
+  fb reboot >/dev/null
+  cat <<EOF
+
+Bootloader je zamknutý s kľúčom LECH OS. Telefón štartuje:
+  - Pri každom štarte ukáže ŽLTÉ varovanie „Your device is loading a different operating system“ s ID kľúča –
+    to je vlastný systém so zamknutým bootloaderom (ako pri GrapheneOS). Odtlačok kľúča: $fp
+  - Dáta sú vymazané: prejdite úvodné nastavenie, zapnite ladenie cez USB a spustite: tools/etapa2/11-pixel.sh kontrola
+  - Nové zostavy sa odteraz nahrávajú len ako podpísaná aktualizácia (OTA), nie cez fastboot.
+  - Odomknutie OEM v Pre vývojárov nechajte zapnuté, kým nie je všetko overené.
+  - Ak by sa namiesto LECH OS objavilo červené varovanie, systém nesedí s kľúčom: bootloader do režimu Fastboot
+    a tools/etapa2/11-pixel.sh odomknut (vymaže dáta), potom nahrat-uplne.
+EOF
+}
+
 # Erase the data of the previous system. The Pixel 9's fastbootd refuses it ("Error DCK wipe failed",
 # 6. 11. 2026); the bootloader erases userdata and metadata itself.
 wipe_data() {
@@ -599,7 +672,11 @@ cmd_kontrola() {
       *) report CHYBA "$what" "$have, očakávaný kľúč LECH OS $want" ;;
     esac
   done
-  report INFO "overený štart" "$(prop ro.boot.verifiedbootstate) (orange = odomknutý bootloader, v E2-11a očakávané)"
+  case "$(prop ro.boot.verifiedbootstate)" in
+    yellow) report OK "overený štart" "yellow – zamknutý bootloader, vlastný kľúč (vbmeta: $(prop ro.boot.vbmeta.device_state))" ;;
+    orange) report INFO "overený štart" "orange – odomknutý bootloader (zamknutie: 11-pixel.sh zamknut, E2-12)" ;;
+    *) report INFO "overený štart" "$(prop ro.boot.verifiedbootstate) (vbmeta: $(prop ro.boot.vbmeta.device_state))" ;;
+  esac
   # After dm-verity found corruption (e.g. a boot from a half-flashed slot) the bootloader keeps the EIO mode and shows
   # "Your device is corrupt" at every boot, waiting for the power button; without a press the phone switches off.
   # The reboot reason "dm-verity enforcing" resets it (8. 11. 2026).
@@ -959,6 +1036,7 @@ case "${1:-}" in
   odomknut) cmd_odomknut ;;
   nahrat) cmd_nahrat ;;
   nahrat-uplne) shift; cmd_nahrat_uplne "$@" ;;
+  zamknut) cmd_zamknut ;;
   dokoncit) cmd_dokoncit ;;
   kontrola) cmd_kontrola ;;
   siet) cmd_siet ;;

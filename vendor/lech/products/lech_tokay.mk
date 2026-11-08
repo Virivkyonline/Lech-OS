@@ -28,6 +28,17 @@ TARGET_BOARD_KERNEL_HEADERS :=
 # so the system already compiled for the GSI is reused (patches/vendor/adevtool/0002). Release builds: false.
 LECH_PIXEL_GENERIC_CPU := true
 
+# Verified boot (E2-12): vbmeta - the hashes of boot, init_boot, vendor_boot, vendor_kernel_boot, dtbo, pvmfw and the
+# hash trees of system, system_ext, product, vendor, system_dlkm, vendor_dlkm - is signed with the LECH OS AVB key
+# instead of the public AOSP test key (external/avb/test/data/testkey_rsa4096.pem, public key sha1 2597c218...).
+# Its public part is flashed into the phone as avb_custom_key before the bootloader is locked
+# (tools/etapa2/11-pixel.sh zamknut). The key is created and copied by tools/etapa2/06-zostav-lech.sh.
+ifeq ($(wildcard vendor/lech-keys/test/avb.pem),)
+$(error LECH OS: chýba kľúč AVB vendor/lech-keys/test/avb.pem - spustite tools/etapa2/06-zostav-lech.sh --len-skopirovat)
+endif
+BOARD_AVB_ALGORITHM := SHA256_RSA4096
+BOARD_AVB_KEY_PATH := vendor/lech-keys/test/avb.pem
+
 # Mainline modules from source, so the LECH patches in packages/modules apply (as in lech_gsi_arm64.mk).
 # The release configuration is cp2a (tools/etapa2/12-zostav-pixel.sh): vendor API level 202604 of the stock
 # vendor files.

@@ -78,12 +78,18 @@ else
 fi
 
 # LECH OS test signing keys (E2-07): created once outside the repository, copied into the AOSP tree.
-if [ ! -f "$KEYS/platform.x509.pem" ]; then
-  echo "Testovacie kľúče LECH OS ešte nie sú – vytváram ich (raz, približne pol minúty)…"
+if [ ! -f "$KEYS/platform.x509.pem" ] || [ ! -f "$KEYS/avb.pem" ] || [ ! -f "$KEYS/avb_pkmd.bin" ]; then
+  new_avb=0; [ -f "$KEYS/avb.pem" ] || new_avb=1
+  echo "Chýbajú kľúče LECH OS v $KEYS – vytváram ich (raz, približne pol minúty)…"
   LECH_KEYS=$KEYS AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/07-vytvor-kluce.sh" >/dev/null || die "Kľúče sa nepodarilo vytvoriť."
+  if [ "$new_avb" -eq 1 ]; then
+    echo "  Nový kľúč overeného štartu (AVB, E2-12): $KEYS/avb.pem – ZÁLOHUJTE ho a na iné zostavovacie počítače"
+    echo "  kopírujte celý priečinok $KEYS (zamknutý telefón spustí len systém podpísaný týmto kľúčom)."
+    echo "  Odtlačok: $(sha256sum "$KEYS/avb_pkmd.bin" | cut -d' ' -f1)"
+  fi
 fi
 mkdir -p "$KEYS_DEST" && chmod 700 "$AOSP_DIR/vendor/lech-keys" "$KEYS_DEST"
-cp -p "$KEYS"/*.pk8 "$KEYS"/*.x509.pem "$KEYS_DEST/" || die "Kľúče sa nepodarilo skopírovať do $KEYS_DEST."
+cp -p "$KEYS"/*.pk8 "$KEYS"/*.x509.pem "$KEYS/avb.pem" "$KEYS_DEST/" || die "Kľúče sa nepodarilo skopírovať do $KEYS_DEST."
 # Soong modules for keys that apps reference by module name (PRODUCT_CERTIFICATE_OVERRIDES in common.mk).
 cat > "$KEYS_DEST/Android.bp" <<'EOF'
 // Written by tools/etapa2/06-zostav-lech.sh: LECH OS test keys as Soong modules (task E2-07).
