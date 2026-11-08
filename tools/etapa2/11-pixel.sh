@@ -370,6 +370,18 @@ cez Android Flash Tool (tools/etapa2/11-pixel.sh spat)."
   finish_flash "$slot"
 }
 
+# `fastboot update` must start in the bootloader: it flashes boot, dtbo… there and only then switches to fastbootd
+# for system, vendor… Started in fastbootd it fails at once (dtbo: 'No such file or directory', 8. 11. 2026); the
+# phone stays in fastbootd after an interrupted flash.
+ensure_bootloader() {
+  in_fastbootd || return 0
+  echo "Telefón je v režime fastbootd – prepínam ho do bootloadera…"
+  (cd "$PIXEL_DIR" 2>/dev/null || cd /; timeout 30 "${FASTBOOT[@]}" reboot bootloader) >/dev/null 2>&1
+  in_bootloader_wait 120 && return 0
+  die "Telefón sa do bootloadera neprepol. Na telefóne tlačidlami hlasitosti vyberte 'Reboot to bootloader',
+potvrďte tlačidlom Napájanie a spustite znova: tools/etapa2/11-pixel.sh nahrat-uplne"
+}
+
 # Full LECH OS for the Pixel 9 (E2-11b, 12-zostav-pixel.sh): all partitions with `fastboot update`, which flashes
 # the boot partitions in the bootloader and the dynamic ones (system, vendor…) in fastbootd.
 cmd_nahrat_uplne() {
@@ -386,6 +398,7 @@ cmd_nahrat_uplne() {
   [ -f "$zip_dir/info.txt" ] && sed -n '1,2p' "$zip_dir/info.txt"
   save_stock_info
   to_bootloader
+  ensure_bootloader
   product=$(fb_var product); unlocked=$(fb_var unlocked); slot=$(fb_var current-slot)
   echo "Telefón: $product, bootloader odomknutý: $unlocked, slot: $slot"
   [ "$unlocked" = yes ] || die "Bootloader je zamknutý – najprv: tools/etapa2/11-pixel.sh odomknut"
@@ -410,6 +423,7 @@ Pôvodný systém sa dá vrátiť cez Android Flash Tool (tools/etapa2/11-pixel.
       echo "Spojenie USB sa prerušilo (pokus $attempt z 3). Ak sa to opakuje: kábel priamo do notebooku, iný port USB."
       sleep 5
       wait_for 120 fastboot_ready || die "Telefón sa vo fastboot znova neukázal – pripojte kábel a spustite znova: tools/etapa2/11-pixel.sh nahrat-uplne"
+      ensure_bootloader
     else
       die "Obrazy sa nepodarilo nahrať (výpis vyššie)."
     fi
