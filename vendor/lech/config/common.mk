@@ -51,6 +51,20 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     LechFrameworksResOverlay \
 
+# Default wallpapers (branding/tapety): with the LECH OS logo on the home screen, without it on the lock screen (where
+# the clock is). WallpaperManager reads them from these properties instead of the AOSP default_wallpaper.
+PRODUCT_COPY_FILES += \
+    vendor/lech/tapety/lech_wallpaper.png:$(TARGET_COPY_OUT_PRODUCT)/media/lech_wallpaper.png \
+    vendor/lech/tapety/lech_lock_wallpaper.png:$(TARGET_COPY_OUT_PRODUCT)/media/lech_lock_wallpaper.png \
+
+PRODUCT_PRODUCT_PROPERTIES += \
+    ro.config.wallpaper=/product/media/lech_wallpaper.png \
+    ro.config.lock_wallpaper=/product/media/lech_lock_wallpaper.png \
+
+# Icon shape: rounded squares (vendor/lech/overlay/icon-shape).
+PRODUCT_PACKAGES += \
+    LechIconShapeOverlay \
+
 # LECH OS icons of the system apps (branding/ikony): overlays generated into vendor/lech/overlay/ikony by
 # tools/etapa2/12-zostav-pixel.sh (tools/etapa2/ikony_prekrytia.py); absent in builds that do not generate them.
 -include vendor/lech/overlay/ikony/ikony.mk

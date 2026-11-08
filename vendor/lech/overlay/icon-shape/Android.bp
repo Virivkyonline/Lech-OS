@@ -1,0 +1,17 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// Shape of the app icons: rounded squares (LECH OS design, branding/ikony) instead of the AOSP circles. A separate
+// overlay from LechFrameworksResOverlay, so that a resource the framework does not let a product overlay change
+// cannot affect the network settings there.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+runtime_resource_overlay {
+    name: "LechIconShapeOverlay",
+    product_specific: true,
+    sdk_version: "current",
+}

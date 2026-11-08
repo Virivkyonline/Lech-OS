@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2026 The LECH OS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Rounded square with 22 % corners (as the LECH OS home screen design), in the 100 x 100 viewport of
+         AdaptiveIconDrawable; the corners are quarter circles drawn as cubic curves (0.5523 x radius). -->
+    <string name="config_icon_mask" translatable="false">"M50,0 L78,0 C90.15,0 100,9.85 100,22 L100,78 C100,90.15 90.15,100 78,100 L22,100 C9.85,100 0,90.15 0,78 L0,22 C0,9.85 9.85,0 22,0 Z"</string>
+    <!-- Apps' round icons are made for circles; with the rounded square the normal icon fits better. -->
+    <bool name="config_useRoundIcon">false</bool>
+</resources>
