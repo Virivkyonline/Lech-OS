@@ -122,7 +122,7 @@ cmd_stav() {
       echo "  Pošlite výpis: grep -o 'CVE-20[0-9]*-[0-9]*' $dir/bulletin.html | sort -u | head"
     fi
     # One line per commit (fixes without an AOSP link get one empty line); checked with git, table by Python.
-    : > "$dir/vysledky.tsv"
+    : > "$dir/vysledky.tmp"   # moved to vysledky.tsv only when complete: an interrupted run keeps the old list
     # Tables: one field per tab, "-" for an empty field - bash read joins adjacent tabs (a tab is IFS whitespace),
     # so an empty field would shift the next ones (8. 11. 2026: bug ids read as project names).
     python3 -I -c '
@@ -209,8 +209,9 @@ PYEOF3
       fi
       printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$cve" "${level:--}" "${comp:--}" "${sev:--}" "${project:--}" "${sha:--}" \
         "${path:--}" "$status" \
-        >> "$dir/vysledky.tsv"
+        >> "$dir/vysledky.tmp"
     done < "$dir/commity.tsv"
+    mv -f "$dir/vysledky.tmp" "$dir/vysledky.tsv" || die "Zoznam opráv $month sa nedá uložiť."
     printf '\r%*s\r' 40 "" >&2
     python3 -I - "$json" "$dir/vysledky.tsv" "$dir/stav.md" "$month" "$(patch_levels)" <<'PYEOF'
 import json, sys
