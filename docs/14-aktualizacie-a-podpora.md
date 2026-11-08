@@ -100,4 +100,7 @@ Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro
    **november: 0 commitov platformy v AOSP ani 6 dní po zverejnení** (bulletin sľubuje 48 h) – kritická
    `CVE-2026-58868` sa zatiaľ nedá opraviť z AOSP. Výrobcovia telefónov dostávajú opravy mesiace pred AOSP
    (GrapheneOS ich má ako partner); pre LECH OS je to riziko mesačného cyklu. Preberanie opráv: [bezpecnost/](../bezpecnost/README.md).
+   Zostava 0.1.4-dev (8. 11. 2026) prevzala opravy zo septembra a októbra: **84 použitých**, 6 už v AOSP,
+   6 treba prispôsobiť (Bluetooth CVE-2026-55269, -58880, -49933; NFC CVE-2026-49879; framework CVE-2026-58834;
+   telefónia CVE-2026-55270).
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.
