@@ -79,6 +79,7 @@ mapfile -t projects < <({ printf '%s\n' "${patches[@]}" | xargs -r -n1 dirname
 # sec_conflict: have to be adapted); a LECH OS patch that does not apply fails with git's message.
 plan_project() {   # project dir, base commit; uses sec_files/sec_labels and files (LECH patches, relative)
   local dir=$1 base=$2 index rc=0 i f
+  local -a later=()
   plan_files=(); plan_labels=(); plan_trees=()
   index=$(mktemp)
   GIT_INDEX_FILE="$index" git -C "$dir" read-tree "$base" || rc=1
@@ -90,8 +91,7 @@ plan_project() {   # project dir, base commit; uses sec_files/sec_labels and fil
     elif GIT_INDEX_FILE="$index" git -C "$dir" apply --cached --check -R "$f" 2>/dev/null; then
       sec_present=$((sec_present + 1))
     else
-      sec_conflict=$((sec_conflict + 1))
-      sec_conflicts+=("${dir#"$AOSP_DIR"/}: ${sec_labels[$i]}")
+      later+=("$i")
     fi
   done
   for f in ${files[@]+"${files[@]}"}; do
@@ -99,6 +99,21 @@ plan_project() {   # project dir, base commit; uses sec_files/sec_labels and fil
     GIT_INDEX_FILE="$index" git -C "$dir" apply --cached "$PATCH_DIR/$f" || { rc=1; break; }
     plan_files+=("$PATCH_DIR/$f"); plan_labels+=("${dir#"$AOSP_DIR"/}: $(basename "$f" .patch)")
     plan_trees+=("$(GIT_INDEX_FILE="$index" git -C "$dir" write-tree)")
+  done
+  # Fixes that did not apply before the LECH OS patches, again after them: a fix in the version of GrapheneOS can
+  # need code that LECH OS took from GrapheneOS as a patch (8. 11. 2026: November fixes in frameworks/base).
+  for i in ${later[@]+"${later[@]}"}; do
+    [ "$rc" -eq 0 ] || break
+    f=${sec_files[$i]}
+    if GIT_INDEX_FILE="$index" git -C "$dir" apply --cached "$f" 2>/dev/null; then
+      plan_files+=("$f"); plan_labels+=("bezpečnosť ${sec_labels[$i]}, po úpravách LECH OS")
+      plan_trees+=("$(GIT_INDEX_FILE="$index" git -C "$dir" write-tree)")
+    elif GIT_INDEX_FILE="$index" git -C "$dir" apply --cached --check -R "$f" 2>/dev/null; then
+      sec_present=$((sec_present + 1))
+    else
+      sec_conflict=$((sec_conflict + 1))
+      sec_conflicts+=("${dir#"$AOSP_DIR"/}: ${sec_labels[$i]}")
+    fi
   done
   rm -f -- "$index"
   return "$rc"
