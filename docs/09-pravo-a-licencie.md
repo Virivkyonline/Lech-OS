@@ -35,6 +35,12 @@ Obchodný model stojí na službách (LECH Cloud, AI servery), podpore, firemný
   Odporúčanie: lacnú predbežnú rešerš urobiť už pred verejným prototypom (etapa 8), pretože beta pod týmto názvom
   začne budovať verejné povedomie a neskoršie premenovanie je drahšie.
   Pri otvorenom kóde je ochranná známka hlavný nástroj, ako zabrániť, aby sa odnože vydávali za LECH OS.
+  **Stav 8. 11. 2026:** vlastník už má značky s prvkom LECH – *LECHSTAV*, *LECH MOTO*, *PLATINUM LECH SPA* (rozsah:
+  úrad, triedy a majiteľ sa doplnia z osvedčení). Platia len pre svoje triedy; pre LECH OS treba novú prihlášku,
+  najmä triedy 9 (softvér, operačné systémy) a 42 (vývoj softvéru, IT služby), pre trh EÚ najlepšie ochranná známka
+  EÚ (EUIPO). Rešerš zamerať aj na staršie známky „Lech“ v triedach 9 a 42 a na známe značky s dobrým menom
+  (napr. pivo Lech), ktoré môžu namietať aj v iných triedach – posúdi patentový zástupca. Prihlášku podať skôr,
+  ako bude LECH OS verejne viditeľný (pred etapou 8).
 - Pripraviť pravidlá používania značky (trademark policy) – kedy smie komunita používať názov LECH.
 - Názvy iných projektov (napr. GrapheneOS) nepoužívať v produkte; pri prebratí kódu uviesť autorstvo podľa licencie.
 
