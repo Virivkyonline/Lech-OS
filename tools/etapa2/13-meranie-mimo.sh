@@ -152,21 +152,19 @@ cmd_vyhodnotit() {
   # pktmon can record a packet at more than one place of the adapter's stack: drop exact duplicates.
   editcap -d "$out/spojene.pcapng" "$out/zachytenie.pcapng" >/dev/null || die "Odstránenie duplikátov zlyhalo."
   rm -f "$out/spojene.pcapng"
-  # pktmon on the adapter of the Windows hotspot (Wi-Fi Direct, vwifimp.sys) writes 4 bytes before the Ethernet
-  # header of every frame: tshark then decodes nothing ("eth:data", shifted MAC addresses) and the report shows 0
-  # targets (9. 11. 2026). When most frames do not decode, the bytes before the header are cut off.
+  # pktmon on the adapter of the Windows hotspot (Wi-Fi Direct, vwifimp.sys) records IEEE 802.11 data frames but
+  # labels the file Ethernet: tshark decodes nothing and the report showed 0 targets (9. 11. 2026). When most frames
+  # do not decode, they are converted to Ethernet frames (wifi_na_ethernet.py).
   if [ "$(decoded_share "$out/zachytenie.pcapng")" -lt 50 ]; then
-    local chop fixed=0
-    for chop in 4 2 6 8; do
-      editcap -C "$chop" "$out/zachytenie.pcapng" "$out/orezane.pcapng" >/dev/null 2>&1 || continue
-      if [ "$(decoded_share "$out/orezane.pcapng")" -ge 50 ]; then
-        mv -f "$out/orezane.pcapng" "$out/zachytenie.pcapng"
-        echo "Záznam pktmon mal pred každým paketom $chop bajty navyše – odstránené ($(decoded_share "$out/zachytenie.pcapng") % paketov rozpoznaných)."
-        fixed=1; break
-      fi
-    done
-    rm -f "$out/orezane.pcapng"
-    [ "$fixed" -eq 1 ] || die "Pakety v zázname sa nedajú rozpoznať (ani po orezaní) – pošlite výpis: tshark -r $out/zachytenie.pcapng -c 5 -x"
+    editcap -F pcap "$out/zachytenie.pcapng" "$out/wifi.pcap" >/dev/null || die "Prevod záznamu na pcap zlyhal."
+    python3 -I "$SCRIPT_DIR/wifi_na_ethernet.py" "$out/wifi.pcap" "$out/ethernet.pcap" || die "Prevod rámcov 802.11 zlyhal."
+    if [ "$(decoded_share "$out/ethernet.pcap")" -ge 50 ]; then
+      mv -f "$out/ethernet.pcap" "$out/zachytenie.pcapng"
+      echo "Záznam obsahoval rámce Wi-Fi (802.11) – prevedené na Ethernet ($(decoded_share "$out/zachytenie.pcapng") % rozpoznaných)."
+    else
+      die "Pakety v zázname sa nedajú rozpoznať ani ako Wi-Fi – pošlite výpis: tshark -r $out/zachytenie.pcapng -c 5 -x"
+    fi
+    rm -f "$out/wifi.pcap" "$out/ethernet.pcap"
   fi
   cp "$WIN_DIR"/zaciatok.txt "$WIN_DIR"/koniec.txt "$out/" 2>/dev/null
   n=$(capinfos -c -M "$out/zachytenie.pcapng" 2>/dev/null | sed -n 's/^Number of packets: *//p')
