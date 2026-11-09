@@ -126,6 +126,15 @@ Notebook počas merania nesmie zaspať (nabíjačka, veko otvorené alebo „Ner
 EOF
 }
 
+# Percent of the first 500 frames that tshark decodes as IP, IPv6 or ARP.
+decoded_share() {   # pcap file
+  local total ok
+  total=$(tshark -r "$1" -c 500 -T fields -e frame.number 2>/dev/null | wc -l)
+  ok=$(tshark -r "$1" -c 500 -Y "ip || ipv6 || arp" -T fields -e frame.number 2>/dev/null | wc -l)
+  [ "$total" -gt 0 ] || { echo 0; return; }
+  echo $(( ok * 100 / total ))
+}
+
 cmd_vyhodnotit() {
   local net=$NET out files=() n
   while [ $# -gt 0 ]; do
@@ -143,6 +152,22 @@ cmd_vyhodnotit() {
   # pktmon can record a packet at more than one place of the adapter's stack: drop exact duplicates.
   editcap -d "$out/spojene.pcapng" "$out/zachytenie.pcapng" >/dev/null || die "Odstránenie duplikátov zlyhalo."
   rm -f "$out/spojene.pcapng"
+  # pktmon on the adapter of the Windows hotspot (Wi-Fi Direct, vwifimp.sys) writes 4 bytes before the Ethernet
+  # header of every frame: tshark then decodes nothing ("eth:data", shifted MAC addresses) and the report shows 0
+  # targets (9. 11. 2026). When most frames do not decode, the bytes before the header are cut off.
+  if [ "$(decoded_share "$out/zachytenie.pcapng")" -lt 50 ]; then
+    local chop fixed=0
+    for chop in 4 2 6 8; do
+      editcap -C "$chop" "$out/zachytenie.pcapng" "$out/orezane.pcapng" >/dev/null 2>&1 || continue
+      if [ "$(decoded_share "$out/orezane.pcapng")" -ge 50 ]; then
+        mv -f "$out/orezane.pcapng" "$out/zachytenie.pcapng"
+        echo "Záznam pktmon mal pred každým paketom $chop bajty navyše – odstránené ($(decoded_share "$out/zachytenie.pcapng") % paketov rozpoznaných)."
+        fixed=1; break
+      fi
+    done
+    rm -f "$out/orezane.pcapng"
+    [ "$fixed" -eq 1 ] || die "Pakety v zázname sa nedajú rozpoznať (ani po orezaní) – pošlite výpis: tshark -r $out/zachytenie.pcapng -c 5 -x"
+  fi
   cp "$WIN_DIR"/zaciatok.txt "$WIN_DIR"/koniec.txt "$out/" 2>/dev/null
   n=$(capinfos -c -M "$out/zachytenie.pcapng" 2>/dev/null | sed -n 's/^Number of packets: *//p')
   echo "Záznam: ${#files[@]} súbor(y), ${n:-?} paketov; telefón v sieti $net."
