@@ -740,6 +740,12 @@ drží pakety v pamäti a do súboru ich zapíše až pri zastavení – záznam
 ukazoval 1355 paketov z telefónu). Odteraz `start.ps1` vytvorí naplánovanú úlohu „LECH meranie“, ktorá každú hodinu
 uzavrie súbor a začne ďalší (`rotate.ps1`), a počas merania je Ubuntu vypnuté (`wsl --shutdown`).
 
+**Druhý pokus (8.–9. 11. 2026, 24,3 h) neplatí:** prístupový bod po páde Windows nezdieľal internet (zdieľanie
+pripojenia sa obnovilo až reštartom notebooku) a záznam mal len ohlasovanie siete. Pri vyhodnotení sa ukázalo, že
+`pktmon` na adaptéri prístupového bodu zapisuje rámce Wi-Fi 802.11 (dešifrované) označené ako Ethernet –
+`wifi_na_ethernet.py` ich prevedie. Kontrolný test s funkčným internetom (9. 11.) meranie potvrdil: zachytené
+vyhľadávanie v prehliadači (`www.google.com`, `play.google.com`…). Pred každým meraním preto kontrolný test.
+
 ## 5. Prvá úloha: zmapovať, kam volá čisté AOSP
 
 Skôr než začneme systém upravovať, zmeriame východiskový stav (princíp P1 v [docs/01](01-vizia-a-principy.md)):

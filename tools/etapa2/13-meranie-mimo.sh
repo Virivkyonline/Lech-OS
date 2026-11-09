@@ -114,7 +114,10 @@ Pripravené: C:\lech\meranie\start.ps1, rotate.ps1 (každú hodinu, naplánovan�
 Postup (prvý štart a 24 h nečinnosti, merané mimo telefónu):
   1. Windows: Nastavenia → Sieť a internet → Mobilný prístupový bod – zapnúť; Úsporu energie (vypnúť prístupový
      bod bez pripojených zariadení) VYPNÚŤ. Meno siete a heslo si poznačte.
-  2. PowerShell ako správca:  powershell -ExecutionPolicy Bypass -File C:\lech\meranie\start.ps1
+  2. Kontrola (9. 11. 2026 zdieľanie po páde Windows nefungovalo a 24 h meranie bolo slepé): telefón na Wi-Fi notebooku
+     musí načítať stránku. Krátky test: start.ps1, v telefóne otvoriť stránku, stop.ps1, vyhodnotit – stránka musí byť
+     v správe. Ak nie je internet: reštart notebooku, prístupový bod zdieľa pripojenie Wi-Fi.
+     PowerShell ako správca:  powershell -ExecutionPolicy Bypass -File C:\lech\meranie\start.ps1
   3. Telefón: vybrať SIM (všetka prevádzka pôjde cez Wi-Fi notebooku), obnoviť výrobné nastavenia
      (Nastavenia → Systém → Možnosti obnovenia → Vymazať všetky údaje). V sprievodcovi pripojiť len Wi-Fi notebooku,
      nič neinštalovať ani neprihlasovať. Potom nechať 24 h ležať na nabíjačke.
