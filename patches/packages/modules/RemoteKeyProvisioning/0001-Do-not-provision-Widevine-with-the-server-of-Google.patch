@@ -1,0 +1,74 @@
+From 8a3a0bcf315d11cde00b45cdf7b42ff47cb8db26 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Tue, 10 Nov 2026 20:00:03 +0000
+Subject: [PATCH] Do not provision Widevine with the server of Google
+
+LECH OS: the Widevine provisioning worker that rkpd starts at every boot
+(Provisioning 4.0 / Sigma devices such as the Pixel 9) sent the request of the
+DRM HAL to its default URL, https://www.googleapis.com/certificateprovisioning/
+... - the only connection to Google left in the 24 h measurement outside the
+phone after a factory reset (10. 11. 2026).
+
+The worker now provisions only through the provisioning server set for the
+system, remote_provisioning.hostname (as remote key provisioning), keeping the
+path of the default URL. LECH OS leaves the property empty, so nothing is
+provisioned; DRM content plays without hardware-backed Widevine until a LECH OS
+provisioning proxy exists.
+---
+ .../provisioner/WidevineProvisioner.java      | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/app/src/com/android/rkpdapp/provisioner/WidevineProvisioner.java b/app/src/com/android/rkpdapp/provisioner/WidevineProvisioner.java
+index 06821a1..334ca80 100644
+--- a/app/src/com/android/rkpdapp/provisioner/WidevineProvisioner.java
++++ b/app/src/com/android/rkpdapp/provisioner/WidevineProvisioner.java
+@@ -21,6 +21,7 @@ import android.media.DeniedByServerException;
+ import android.media.MediaDrm;
+ import android.media.UnsupportedSchemeException;
+ import android.os.Build;
++import android.os.SystemProperties;
+ import android.util.Log;
+ import androidx.annotation.NonNull;
+ import androidx.work.Worker;
+@@ -65,6 +66,13 @@ public class WidevineProvisioner extends Worker {
+ 
+     public static final UUID WIDEVINE_UUID = new UUID(0xEDEF8BA979D64ACEL, 0xA3C827DCD51D21EDL);
+ 
++    // LECH OS: Widevine certificates are provisioned only through the provisioning server set for the system
++    // (the same property as remote key provisioning, see Settings.getDefaultUrl), never directly with the server of
++    // Google in the default URL (www.googleapis.com). LECH OS leaves the property empty (vendor/lech init.lech.rc):
++    // no provisioning, so DRM content plays without hardware-backed Widevine (e.g. without HD in streaming apps)
++    // until a LECH OS provisioning proxy is set.
++    private static final String LECH_PROVISIONING_HOST_PROPERTY = "remote_provisioning.hostname";
++
+     public WidevineProvisioner(@NonNull Context context, @NonNull WorkerParameters params) {
+         super(context, params);
+     }
+@@ -93,6 +101,11 @@ public class WidevineProvisioner extends Worker {
+      */
+     @Override
+     public Result doWork() {
++        if (SystemProperties.get(LECH_PROVISIONING_HOST_PROPERTY).isEmpty()) {
++            Log.i(TAG, "LECH OS: no provisioning server set (" + LECH_PROVISIONING_HOST_PROPERTY
++                    + "), Widevine provisioning skipped.");
++            return Result.success();
++        }
+         if (isWidevineProvisioningNeeded()) {
+             Log.i(TAG, "Starting WV provisioning. Current attempt: " + getRunAttemptCount());
+             return provisionWidevine();
+@@ -189,7 +202,11 @@ public class WidevineProvisioner extends Worker {
+     }
+ 
+     private byte[] fetchWidevineCertificate(MediaDrm.ProvisionRequest req) throws IOException {
+-        return sendNetworkRequest(req.getDefaultUrl(), req.getData());
++        // LECH OS: the path of the default URL on the provisioning server set for the system (a proxy).
++        final URL defaultUrl = new URL(req.getDefaultUrl());
++        final String url = new URL("https", SystemProperties.get(LECH_PROVISIONING_HOST_PROPERTY),
++                defaultUrl.getFile()).toString();
++        return sendNetworkRequest(url, req.getData());
+     }
+ 
+     private byte[] sendNetworkRequest(String url, byte[] data) throws IOException {
+-- 
+2.43.0
+

@@ -28,6 +28,8 @@ tools/etapa2/aplikuj-zaplaty.sh --kontrola  # len vypíše, ktoré záplaty sú 
 | `vendor/adevtool` (GrapheneOS, E2-11b) | Aplikácie eSIM od Google (`com.google.android.euicc`, `com.google.euiccpixel`…) sa do modulu Pixelu nedostanú; produkt neohlasuje funkciu eSIM (`vendor/lech/config/sysconfig/lech-no-esim.xml`) | Pri každom štarte volali `lpa.live.esimdiscovery.com` (Google) a `lpa.ds.gsma.com`; po `pm disable-user` ich systém znova zapol. Fyzická SIM funguje ďalej, eSIM neskôr ako vedomá voľba |
 | `system/sepolicy` (z GrapheneOS, E2-11b) | Súbory `sepolicy_ext.cil` v priečinkoch politiky sa pridajú do politiky partícií (system_ext, product, vendor, odm, recovery) | adevtool do nich zapisuje pravidlá pôvodnej politiky Pixelu; AOSP by ich vynechal a vendor Pixelu by nemal svoje pravidlá SELinux. Produkty bez týchto súborov sa nemenia |
 
+| `packages/modules/RemoteKeyProvisioning` (E2-12, brána 1) | Widevine (DRM) sa zriaďuje len cez server nastavený pre systém (`remote_provisioning.hostname`, ako atestačné kľúče); LECH OS ho nechá prázdny → bez zriadenia | rkpd pri každom štarte posielal žiadosť ovládača DRM Pixelu na `www.googleapis.com` – jediné spojenie na Google v 24 h meraní mimo telefónu (10. 11. 2026). Dôsledok: obsah s DRM bez hardvérového Widevine (napr. bez HD v streamovacích aplikáciách), kým nebude proxy LECH OS |
+
 Záplaty pre projekty Pixelu ([manifests/lech-pixel.xml](../manifests/lech-pixel.xml)) sa preskočia, kým projekty
 nie sú stiahnuté (`tools/etapa2/12-priprav-pixel.sh`).
 
