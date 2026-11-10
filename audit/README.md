@@ -243,7 +243,7 @@ Telefón počas auditu ležal. **GPS už nikam nevolá** (záplaty `frameworks/b
 
 ## 15. meranie – 9.–10. 11. 2026, 24 h mimo telefónu (brána 1)
 
-Telefón (LECH OS 0.1.5-dev, zamknutý bootloader) po obnovení výrobných nastavení, bez SIM, len na Wi-Fi prístupovom
+Telefón (LECH OS 0.1.6-dev zo 9. 11., ešte bez opravy DRM; zamknutý bootloader) po obnovení výrobných nastavení, bez SIM, len na Wi-Fi prístupovom
 bode notebooku; záznam `pktmon` na notebooku 24 h (`tools/etapa2/13-meranie-mimo.sh`, 27 hodinových súborov, 5137
 rámcov Wi-Fi, z toho 4111 bez dát – úspora energie). Kontrolný test s prehliadačom pred meraním prevádzku zachytil.
 
@@ -252,4 +252,4 @@ rámcov Wi-Fi, z toho 4111 bez dát – úspora energie). Kontrolný test s preh
 | `europe.pool.ntp.org` | 0,7 s po pripojení | systém (čas) | povolené |
 | `www.googleapis.com` | 1,0 s po pripojení, 2× (DNS, TLS) | `com.android.rkpdapp` (UID 10176): zriadenie DRM Widevine pri štarte | **opravené** záplatou `packages/modules/RemoteKeyProvisioning` 0001 |
 
-Potom 24 h žiadne spojenie. Overenie opravy: prvý štart po obnovení výrobných nastavení s 0.1.6-dev.
+Potom 24 h žiadne spojenie. Overenie opravy: prvý štart po obnovení výrobných nastavení s 0.1.7-dev.
