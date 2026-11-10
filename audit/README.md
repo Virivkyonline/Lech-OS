@@ -252,4 +252,6 @@ rámcov Wi-Fi, z toho 4111 bez dát – úspora energie). Kontrolný test s preh
 | `europe.pool.ntp.org` | 0,7 s po pripojení | systém (čas) | povolené |
 | `www.googleapis.com` | 1,0 s po pripojení, 2× (DNS, TLS) | `com.android.rkpdapp` (UID 10176): zriadenie DRM Widevine pri štarte | **opravené** záplatou `packages/modules/RemoteKeyProvisioning` 0001 |
 
-Potom 24 h žiadne spojenie. Overenie opravy: prvý štart po obnovení výrobných nastavení s 0.1.7-dev.
+Potom 24 h žiadne spojenie. Oprava je v 0.1.7-dev (10. 11. 2026, OTA do zamknutého telefónu); log po štarte:
+`RkpdWidevine: LECH OS: no provisioning server set (remote_provisioning.hostname), Widevine provisioning skipped.`
+Overenie meraním mimo telefónu: prvý štart po obnovení výrobných nastavení s 0.1.7-dev (16. meranie).
