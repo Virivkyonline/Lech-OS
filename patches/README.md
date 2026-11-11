@@ -32,6 +32,8 @@ tools/etapa2/aplikuj-zaplaty.sh --kontrola  # len vypíše, ktoré záplaty sú 
 
 | `packages/modules/AdServices` (z GrapheneOS, E3-01) | Knižnicu `android.ext.adservices` smie použiť aj `external/vanadium` | Prehliadač a WebView Vanadium ju uvádzajú ako voliteľnú; bez tohto povolenia sa zostava zastaví (`not visible to this module`) |
 
+| `frameworks/libs/systemui` (0001 z GrapheneOS, 0002 LECH OS; E3-01) | Plocha obnoví pamäť ikon po každej aktualizácii systému (`Build.VERSION.INCREMENTAL`); ikony aplikácií, ktoré nepovoľujú prekrytie, berie z balíka `lech.os.ikony` (len predinštalovaného) | Po aktualizácii ostávali na ploche staré ikony (8. 11. 2026); prehliadač Vanadium nepovoľuje prekryť svoju ikonu, ikona LECH OS zmizla (11. 11. 2026) |
+
 Záplaty pre projekty Pixelu ([manifests/lech-pixel.xml](../manifests/lech-pixel.xml)) sa preskočia, kým projekty
 nie sú stiahnuté (`tools/etapa2/12-priprav-pixel.sh`).
 

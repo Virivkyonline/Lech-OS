@@ -1,0 +1,40 @@
+From 4293c1d00cd289a0ba478cc70024b36d0dde2816 Mon Sep 17 00:00:00 2001
+From: Daniel Micay <danielmicay@gmail.com>
+Date: Tue, 2 Nov 2021 14:44:13 -0400
+Subject: [PATCH 1/2] invalidate icon cache between OS releases
+
+Change-Id: If33a3d5ffa5b2c6cbb15e4a46a819a5dfb2efa1f
+---
+ iconloaderlib/src/com/android/launcher3/icons/IconProvider.java | 2 +-
+ .../src/com/android/launcher3/icons/PersistedItemState.kt       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/iconloaderlib/src/com/android/launcher3/icons/IconProvider.java b/iconloaderlib/src/com/android/launcher3/icons/IconProvider.java
+index c79bedd..f7ba474 100644
+--- a/iconloaderlib/src/com/android/launcher3/icons/IconProvider.java
++++ b/iconloaderlib/src/com/android/launcher3/icons/IconProvider.java
+@@ -268,7 +268,7 @@ public class IconProvider {
+     public void updateSystemState() {
+         mSystemState = mSystemState.withLocaleAndSdk(
+                 mContext.getResources().getConfiguration().getLocales().toLanguageTags(),
+-                Build.VERSION.SDK_INT);
++                Build.VERSION.INCREMENTAL);
+     }
+ 
+     /**
+diff --git a/iconloaderlib/src/com/android/launcher3/icons/PersistedItemState.kt b/iconloaderlib/src/com/android/launcher3/icons/PersistedItemState.kt
+index d4b92e2..60ec0bd 100644
+--- a/iconloaderlib/src/com/android/launcher3/icons/PersistedItemState.kt
++++ b/iconloaderlib/src/com/android/launcher3/icons/PersistedItemState.kt
+@@ -34,7 +34,7 @@ class PersistedItemState private constructor(private val values: Array<String>)
+         return values.contentEquals(other.values)
+     }
+ 
+-    fun withLocaleAndSdk(locale: String, sdk: Int) = copy(locale = locale, sdk = sdk.toString())
++    fun withLocaleAndSdk(locale: String, sdk: String) = copy(locale = locale, sdk = sdk)
+ 
+     fun withTheme(theme: String, isCircle: Boolean) =
+         copy(theme = theme, isCircle = isCircle.toString())
+-- 
+2.43.0
+

@@ -20,6 +20,10 @@ Aplikácie sú zatiaľ aplikácie AOSP (Gallery2, Messaging, Settings, Dialer, C
   poslednej zostavy (aapt2) zistí, ktoré zdroje sú ich ikonou na ploche (ikona aplikácie, okrúhla ikona, ikony
   aktivít so spúšťačom), a pre každú aplikáciu vytvorí prekrytie `LechIkona<Aplikácia>Overlay`, ktoré tieto zdroje
   nahradí adaptívnou ikonou LECH OS (pozadie, popredie, jednofarebná vrstva pre tematické ikony).
+- Aplikácia, ktorá prekrytie svojej ikony nepovoľuje (deklaruje `overlayable` bez nej – prehliadač Vanadium), dostane
+  ikonu v balíku ikon plochy `lech.os.ikony` (modul `LechIkony`, `mipmap/<balík s podčiarkovníkmi>`); plocha ho číta
+  podľa záplaty `patches/frameworks/libs/systemui` 0002. V zozname aplikácií v Nastaveniach má taká aplikácia
+  pôvodnú ikonu.
 - Zoznam aplikácií a ikon je v `ikony_prekrytia.py` (`APPS`). Novú ikonu pridať do `android-res/` s rovnakými
   názvami (`ic_<názov>_{background,foreground,monochrome}.png` v každej hustote) a do zoznamu.
 - Keď sa aplikácie AOSP nahradia modernými (etapa 3), dostanú ikonu priamo v svojich zdrojoch.
