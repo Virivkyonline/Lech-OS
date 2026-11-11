@@ -1,0 +1,42 @@
+From f238dd21f9b0d282567eb82f7ad5e96277a26aa8 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Wed, 11 Nov 2026 07:38:51 +0000
+Subject: [PATCH] Four columns with large icons by default on phones like the
+ Pixel 9
+
+LECH OS: the home screen design of LECH OS (branding/) has 4 columns with
+large icons. Launcher3 chose 5_by_5 with 56 dp icons on the Pixel 9 (small
+icons, 11. 11. 2026). A display option of 4_by_4 for phones of about 411 x 830
+dp with 66 dp icons is now closer to such phones than "Large Phone" of
+5_by_5, so a new phone starts with 4 columns. A grid chosen before stays; the
+user can still choose another one.
+---
+ res/xml/device_profiles.xml | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/res/xml/device_profiles.xml b/res/xml/device_profiles.xml
+index 934c93c..4100efe 100644
+--- a/res/xml/device_profiles.xml
++++ b/res/xml/device_profiles.xml
+@@ -113,6 +113,18 @@
+             launcher:allAppsCellHeight="104"
+             launcher:canBeDefault="true" />
+ 
++        <!-- LECH OS: phones of about 411 dp width such as the Pixel 9 get 4 columns with large icons by default, as
++             in the LECH OS home screen design (branding/). Closer to their size than "Large Phone" of 5_by_5. -->
++        <display-option
++            launcher:name="LECH OS Phone"
++            launcher:minWidthDps="411"
++            launcher:minHeightDps="830"
++            launcher:iconImageSize="66"
++            launcher:iconTextSize="14.4"
++            launcher:allAppsBorderSpace="16"
++            launcher:allAppsCellHeight="120"
++            launcher:canBeDefault="true" />
++
+     </grid-option>
+ 
+     <grid-option
+-- 
+2.43.0
+
