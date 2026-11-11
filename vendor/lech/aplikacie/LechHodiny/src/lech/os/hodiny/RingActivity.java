@@ -57,7 +57,7 @@ public class RingActivity extends Activity {
         root.addView(new android.view.View(this), Ui.lp(-1, 0, 1));
         if (!timer) {
             LinearLayout snooze = Ui.pillButton(this, R.drawable.ic_alarm, getString(R.string.snooze), v -> {
-                startService(new Intent(Ringer.ACTION_SNOOZE, null, this, Ringer.class));
+                Ringer.snooze(this);
                 finish();
             });
             LinearLayout.LayoutParams sl = Ui.margins(Ui.lp(-2, -2), this, 0, 0, 0, 18);

@@ -34,6 +34,8 @@ public class Ringer extends Service {
     private static final int NOTIFICATION = 10;
     private static final long MAX_RING = 10 * 60_000L;
 
+    /** The ringing service of this process, so that the ringing screen can stop it directly. */
+    private static Ringer current;
     private MediaPlayer player;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private int alarmId = -1;
@@ -44,8 +46,33 @@ public class Ringer extends Service {
         c.startForegroundService(i);
     }
 
+    /** Stops the ringing: directly in this process, otherwise through the service. */
     static void stop(Context c) {
-        c.startService(new Intent(ACTION_STOP, null, c, Ringer.class));
+        Ringer r = current;
+        if (r != null) {
+            r.stopRinging();
+            return;
+        }
+        try {
+            c.startService(new Intent(ACTION_STOP, null, c, Ringer.class));
+        } catch (Exception ignored) {
+            // Not running.
+        }
+    }
+
+    /** Snoozes the ringing alarm for ten minutes and stops the ringing. */
+    static void snooze(Context c) {
+        Ringer r = current;
+        if (r != null) {
+            if (r.alarmId >= 0) Alarms.snooze(r, r.alarmId, 10);
+            r.stopRinging();
+            return;
+        }
+        try {
+            c.startService(new Intent(ACTION_SNOOZE, null, c, Ringer.class));
+        } catch (Exception ignored) {
+            // Not running.
+        }
     }
 
     @Override
@@ -59,6 +86,7 @@ public class Ringer extends Service {
             stopRinging();
             return START_NOT_STICKY;
         }
+        current = this;
         boolean timer = i != null && i.getBooleanExtra(EXTRA_TIMER, false);
         String label = i == null ? null : i.getStringExtra(EXTRA_LABEL);
         alarmId = i == null ? -1 : i.getIntExtra(Alarms.EXTRA_ID, -1);
@@ -144,6 +172,7 @@ public class Ringer extends Service {
     }
 
     private void stopRinging() {
+        current = null;
         handler.removeCallbacksAndMessages(null);
         stopSound();
         try {
@@ -159,6 +188,12 @@ public class Ringer extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (current == this) current = null;
+        try {
+            getSystemService(VibratorManager.class).getDefaultVibrator().cancel();
+        } catch (Exception ignored) {
+            // No vibrator.
+        }
         handler.removeCallbacksAndMessages(null);
         stopSound();
     }
