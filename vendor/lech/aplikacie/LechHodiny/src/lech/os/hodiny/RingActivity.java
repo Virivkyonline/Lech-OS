@@ -31,6 +31,20 @@ public class RingActivity extends Activity {
         }
     };
 
+    /** Opens the ringing screen (allowed for alarm clocks; otherwise the full-screen notification shows it). */
+    static void show(Context c, boolean timer, String label) {
+        try {
+            c.startActivity(new Intent(c, RingActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .putExtra(Ringer.EXTRA_TIMER, timer).putExtra(Ringer.EXTRA_LABEL, label));
+        } catch (Exception ignored) {
+            // Background start not allowed.
+        }
+    }
+
+    static boolean ringing() {
+        return Ringer.isRinging();
+    }
+
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);

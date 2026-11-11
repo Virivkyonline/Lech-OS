@@ -208,7 +208,16 @@ public class MainActivity extends Activity {
                     }
                 });
         updateChips();
-        if (!granted()) requestPermissions(PERMISSIONS, REQ_PERMISSIONS);
+        askMissing();
+    }
+
+    /** Asks for each permission that is not granted yet (also those the first start should have granted). */
+    private void askMissing() {
+        List<String> missing = new ArrayList<>();
+        for (String p : PERMISSIONS) {
+            if (checkSelfPermission(p) != PackageManager.PERMISSION_GRANTED) missing.add(p);
+        }
+        if (!missing.isEmpty()) requestPermissions(missing.toArray(new String[0]), REQ_PERMISSIONS);
     }
 
     private boolean granted() {
@@ -278,7 +287,7 @@ public class MainActivity extends Activity {
                     // No settings screen.
                 }
             }
-            if (!granted()) requestPermissions(PERMISSIONS, REQ_PERMISSIONS);
+            askMissing();
             reload();
         }
     }

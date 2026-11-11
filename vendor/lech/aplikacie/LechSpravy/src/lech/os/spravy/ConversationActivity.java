@@ -114,6 +114,14 @@ public class ConversationActivity extends Activity {
             }
         });
         tr.addView(to, Ui.lp(0, -2, 1));
+        ImageView pick = Ui.icon(this, R.drawable.ic_person, Ui.GREEN, 26);
+        int pp = Ui.dp(this, 8);
+        pick.setPadding(pp, pp, pp, pp);
+        pick.setLayoutParams(Ui.lp(Ui.dp(this, 44), Ui.dp(this, 44)));
+        pick.setContentDescription(getString(R.string.nav_contacts));
+        Ui.clickable(pick, null);
+        pick.setOnClickListener(v -> pickContact());
+        tr.addView(pick);
         toRow.addView(tr, Ui.lp(-1, -2));
         suggestions = Ui.column(this);
         toRow.addView(suggestions, Ui.lp(-1, -2));
@@ -283,6 +291,45 @@ public class ConversationActivity extends Activity {
                 }
             });
         });
+    }
+
+    private static final int REQ_PICK = 7;
+
+    /** Chooses a phone number of a contact (the contacts app picker). */
+    private void pickContact() {
+        if (checkSelfPermission(android.Manifest.permission.READ_CONTACTS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {android.Manifest.permission.READ_CONTACTS}, 2);
+            return;
+        }
+        // All contacts with a number, as a simple list.
+        bg.execute(() -> {
+            List<String[]> all = new ArrayList<>();
+            try (Cursor cur = getContentResolver().query(Phone.CONTENT_URI, new String[] {Phone.DISPLAY_NAME_PRIMARY,
+                    Phone.NUMBER}, null, null, Phone.DISPLAY_NAME_PRIMARY + " COLLATE LOCALIZED ASC")) {
+                while (cur != null && cur.moveToNext()) all.add(new String[] {cur.getString(0), cur.getString(1)});
+            } catch (Exception ignored) {
+                // No contacts.
+            }
+            main.post(() -> {
+                String[] labels = new String[all.size()];
+                for (int k = 0; k < all.size(); k++) labels[k] = all.get(k)[0] + "\n" + all.get(k)[1];
+                new AlertDialog.Builder(this).setTitle(R.string.nav_contacts)
+                        .setItems(labels, (d, w) -> {
+                            to.setText(all.get(w)[0]);
+                            choose(all.get(w)[1]);
+                        })
+                        .setNegativeButton(R.string.cancel, null).show();
+            });
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (requestCode == 2 && results.length > 0 && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            pickContact();
+        }
     }
 
     private void choose(String number) {

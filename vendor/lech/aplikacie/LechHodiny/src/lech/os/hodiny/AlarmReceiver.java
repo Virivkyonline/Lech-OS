@@ -23,9 +23,11 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
             Alarms.rang(c, id);
             Ringer.start(c, false, al.label, id);
+            RingActivity.show(c, false, al.label);
         } else if (Alarms.ACTION_TIMER.equals(a)) {
             Alarms.resetTimer(c);
             Ringer.start(c, true, null, -1);
+            RingActivity.show(c, true, null);
         } else {
             Alarms.schedule(c);
         }

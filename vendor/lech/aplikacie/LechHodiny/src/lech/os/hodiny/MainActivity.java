@@ -249,6 +249,16 @@ public class MainActivity extends Activity {
         content.removeAllViews();
         timerText = null;
         stopwatchText = null;
+        if (Ringer.isRinging()) {
+            // While an alarm rings, the first thing in the app is the button that stops it.
+            LinearLayout stop = Ui.pillButton(this, R.drawable.ic_close, getString(R.string.dismiss), v -> {
+                Ringer.stop(this);
+                handler.postDelayed(this::render, 300);
+            });
+            LinearLayout.LayoutParams sl = Ui.margins(Ui.lp(-2, -2), this, 0, 12, 0, 4);
+            sl.gravity = Gravity.CENTER_HORIZONTAL;
+            content.addView(stop, sl);
+        }
         fab.setVisibility(tab == ALARM || tab == CLOCK ? View.VISIBLE : View.GONE);
         if (tab == ALARM || tab == CLOCK) {
             bigTime = Ui.text(this, "", 84, Ui.TEXT, false);

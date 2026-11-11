@@ -46,6 +46,10 @@ public class Ringer extends Service {
         c.startForegroundService(i);
     }
 
+    static boolean isRinging() {
+        return current != null;
+    }
+
     /** Stops the ringing: directly in this process, otherwise through the service. */
     static void stop(Context c) {
         Ringer r = current;
