@@ -196,21 +196,21 @@ public class MainActivity extends Activity {
         add(R.drawable.ic_set_bateria, R.string.battery, 0, false, Intent.ACTION_POWER_USAGE_SUMMARY,
                 Settings.ACTION_BATTERY_SAVER_SETTINGS);
         add(R.drawable.ic_set_system, R.string.system, R.string.system_sub, false,
-                "cmp:com.android.settings/com.android.settings.Settings$SystemDashboardActivity",
-                Settings.ACTION_SETTINGS);
+                "cmp:com.android.settings/com.android.settings.Settings$SystemDashboardActivity");
         add(R.drawable.ic_set_informacie, R.string.about, 0, false, Settings.ACTION_DEVICE_INFO_SETTINGS);
         add(R.drawable.ic_set_sukromie, R.string.security, R.string.security_sub, true,
                 "android.settings.SECURITY_PRIVACY_SETTINGS", Settings.ACTION_SECURITY_SETTINGS,
                 Settings.ACTION_PRIVACY_SETTINGS);
         add(R.drawable.ic_set_poloha, R.string.location, 0, false, Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        // "Passwords, passkeys & accounts" of Android 17 is Settings$AccountDashboardActivity. Its action
+        // android.settings.CREDENTIAL_PROVIDER needs package data and does not resolve without it, and
+        // Settings$PasswordsAndAccountsActivity does not exist: the item opened the whole Settings (11. 11. 2026).
         add(R.drawable.ic_set_hesla, R.string.passwords, R.string.passwords_sub, false,
-                "android.settings.CREDENTIAL_PROVIDER",
-                "cmp:com.android.settings/com.android.settings.Settings$PasswordsAndAccountsActivity",
-                Settings.ACTION_SETTINGS);
+                "cmp:com.android.settings/com.android.settings.Settings$AccountDashboardActivity");
         add(R.drawable.ic_set_ucty, R.string.accounts, R.string.accounts_sub, false, Settings.ACTION_SYNC_SETTINGS);
         add(R.drawable.ic_set_tiesen, R.string.emergency, R.string.emergency_sub, false,
                 "cmp:com.android.settings/com.android.settings.Settings$EmergencyDashboardActivity",
-                Settings.ACTION_SETTINGS);
+                "android.settings.EMERGENCY_SETTINGS");
         add(R.drawable.ic_set_dostupnost, R.string.accessibility, R.string.accessibility_sub, true,
                 Settings.ACTION_ACCESSIBILITY_SETTINGS);
     }
