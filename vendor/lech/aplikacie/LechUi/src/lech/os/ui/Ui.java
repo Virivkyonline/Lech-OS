@@ -396,8 +396,8 @@ public final class Ui {
                 new int[] {0xFF061626, 0x00061626}));
         m.addView(fadeBottom, new FrameLayout.LayoutParams(-1, dp(c, 24), Gravity.BOTTOM));
         h.mountains = m;
-        LinearLayout.LayoutParams mp = lp(-1, dp(c, 96));
-        mp.topMargin = -dp(c, 14);
+        LinearLayout.LayoutParams mp = lp(-1, dp(c, 84));
+        mp.topMargin = dp(c, 6);
         v.addView(m, mp);
         h.view = v;
         return h;

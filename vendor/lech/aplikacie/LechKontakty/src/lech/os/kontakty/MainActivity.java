@@ -297,8 +297,8 @@ public class MainActivity extends Activity {
                 new int[] {0xFF061626, 0x00061626}));
         m.addView(fadeBottom, new FrameLayout.LayoutParams(-1, Ui.dp(this, 24), Gravity.BOTTOM));
         mountains = m;
-        LinearLayout.LayoutParams mp = Ui.lp(-1, Ui.dp(this, 96));
-        mp.topMargin = -Ui.dp(this, 14);
+        LinearLayout.LayoutParams mp = Ui.lp(-1, Ui.dp(this, 84));
+        mp.topMargin = Ui.dp(this, 6);
         h.addView(m, mp);
         return h;
     }
