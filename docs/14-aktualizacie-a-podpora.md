@@ -110,6 +110,24 @@ Pred tým, než začneme pridávať funkcie, si celý cyklus vyskúšame naostro
    takéto opravy dodáva vo svojich „security preview“ vydaniach z opráv, ktoré Google vopred posiela partnerom –
    ich zdrojový kód nie je verejný. LECH OS ju dostane až so zverejnením v AOSP: konkrétny príklad, prečo je pre
    mesačný cyklus dôležitý prístup k opravám vopred (partnerstvo s Google alebo dohoda s GrapheneOS).
+   **Výsledok generálky (11. 11. 2026) – bulletin za november 2026 (zverejnený 2. 11.):**
+
+   | Opravy z bulletinu | Počet | V LECH OS 0.1.7-dev (v telefóne od 10. 11.) |
+   |--------------------|-------|---------------------------------------------|
+   | platforma, už v strome AOSP LECH OS (opravy zverejnené v AOSP skôr) | 105 | ✅ |
+   | platforma, zverejnené len v repozitároch GrapheneOS (AOSP ich ešte nemá) | 6 | ✅ 1, 5 treba prispôsobiť (framework CVE-2026-49935, -59021, -58814; MediaProvider -59022; tlač -58971) |
+   | platforma, konflikt aj vo verzii GrapheneOS | 7 | treba prispôsobiť |
+   | kritická CVE-2026-58868 (framework, vzdialené spustenie kódu) | 1 | ❌ zdrojový kód nie je verejný (ani AOSP, ani GrapheneOS) |
+   | jadro | 108 | predzostavené jadro GrapheneOS `2026110700` |
+   | súčasti výrobcov čipov (Qualcomm, Arm…) | 86 | čakajú na novembrový obraz Google pre Pixel 9 (adevtool ho 8. 11. ešte nepozná) |
+
+   **Zmerané oneskorenie: 8 dní** od zverejnenia bulletinu po aktualizáciu v telefóne pre opravy, ktoré boli verejne
+   dostupné a dali sa použiť (september a október: 84 + 6 prispôsobených, prevzaté 8. 11. pri prvej zostave pre Pixel).
+   Úplná úroveň zabezpečenia novembra dosiahnutá nie je – `ro.build.version.security_patch` ostáva 2026-06-05, kým
+   nebudú v zostave aj prispôsobené opravy, neverejná kritická oprava a firmvér Google. Závery: (1) práca je malá,
+   oneskorenie určuje dostupnosť zdrojového kódu; (2) prístup k opravám vopred (Google alebo GrapheneOS) je pre
+   produkčný LECH OS nutný – rozhodnúť do etapy 9; (3) prispôsobenie opráv, ktoré nesedia na strom, je stála úloha
+   (odhad 0,5–2 h na opravu).
 3. Odhad, koľko ľudí a času mesačný cyklus reálne potrebuje.
    **Prvý odhad z generálky (8. 11. 2026, Pixel 9, nový zostavovací notebook):**
 
