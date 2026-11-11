@@ -26,10 +26,9 @@ import sys
 from pathlib import Path
 
 # Module (APK directory) names that may hold the app, icon base name in branding/ikony/android-res, label.
-# Contacts and Gallery2 are replaced by the own apps LechKontakty and LechGaleria, which carry their icons.
+# Contacts, Gallery2 and Messaging are replaced by the own apps LechKontakty, LechGaleria and LechSpravy.
 APPS = [
     (("TrichromeChrome", "Browser2"), "ic_prehliadac", "Prehliadač"),
-    (("messaging", "Messaging"), "ic_spravy", "Správy"),
     (("Settings",), "ic_nastavenia", "Nastavenia"),
     (("Dialer",), "ic_telefon", "Telefón"),
     (("Camera2",), "ic_fotoaparat", "Fotoaparát"),

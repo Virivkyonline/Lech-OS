@@ -1,0 +1,34 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LECH Správy (SMS a MMS): the messaging app of LECH OS (stage 3) – conversations, SMS sending and receiving,
+// notifications with reply, blocked numbers, in the LECH OS design. It replaces the AOSP Messaging and is the
+// default SMS app (config_defaultSms, vendor/lech/overlay/frameworks-res). MMS: received ones that are already
+// stored are shown; downloading and sending MMS come later.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "LechSpravy",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    static_libs: ["LechUi"],
+    overrides: ["messaging"],
+    required: ["lech_spravy_default_permissions"],
+    dex_preopt: {
+        enabled: false,
+    },
+}
+
+// Runtime permissions granted to the app on the first start (DefaultPermissionGrantPolicy, preinstalled apps only).
+prebuilt_etc {
+    name: "lech_spravy_default_permissions",
+    product_specific: true,
+    sub_dir: "default-permissions",
+    src: "default-permissions-lech-spravy.xml",
+}

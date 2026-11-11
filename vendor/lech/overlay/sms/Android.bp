@@ -1,0 +1,16 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// The default SMS app of the Pixel build: LechSpravy (vendor/lech/aplikacie/LechSpravy) instead of the AOSP
+// Messaging, which it replaces. Only in products that install LechSpravy.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+runtime_resource_overlay {
+    name: "LechSmsOverlay",
+    product_specific: true,
+    sdk_version: "current",
+}

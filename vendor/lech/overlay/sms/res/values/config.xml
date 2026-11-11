@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default holder of the SMS role (frameworks/base core/res config.xml). -->
+    <string name="config_defaultSms" translatable="false">lech.os.spravy</string>
+</resources>
