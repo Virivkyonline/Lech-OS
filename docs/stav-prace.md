@@ -18,14 +18,13 @@
 
 ## Ďalšie kroky (poradie)
 
-1. **0.3.0-dev** (pripravené, používateľ zostavuje): vlastné aplikácie **LECH Kontakty** a **LECH Galéria**
-   podľa návrhov vlastníka (`vendor/lech/aplikacie`, README tam), nahrádzajú Contacts a Gallery2. Overiť v telefóne:
-   pridanie/úprava kontaktu s fotkou, obľúbené, skupiny, firmy, história, klávesnica a volanie; galéria – fotky,
-   albumy, videá, kôš, otočenie. Kompilácia overená mimo AOSP, vzhľad nie.
-   **0.3.1-dev**: pribudnú **LECH Súbory** a **LECH Nastavenia** (návrhy vlastníka). Na ploche budú dvakrát
-   „Súbory“ a „Nastavenia“ len do aktualizácie: `LechLauncherOverlay` skryje spúšťač Settings a DocumentsUI
-   (`filtered_components`, overené v zdrojoch), `LechDialerOverlay` preloží „Contacts“ v Telefóne (názov
-   `tab_title_contacts` neoverený – skontrolovať v telefóne).
+1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.3.1-dev
+   (Kontakty, Galéria, Súbory, Nastavenia). Pripravené na ďalšiu zostavu: **Telefón** (`PhoneActivity`
+   v LechKontakty), **SMS a MMS** (LechSpravy, predvolená pre SMS, nahrádza Messaging; MMS len zobrazenie
+   uložených), **Hodiny** (LechHodiny, nahrádza DeskClock). Vlastník posiela ďalšie návrhy; potom jedna zostava
+   a skúšanie všetkého naraz. Kompilácia overená mimo AOSP, správanie nie.
+   Otvorené: skryť spúšťač Dialer (zistiť názov komponentu), nové aplikácie dať na plochu, sťahovanie a
+   odosielanie MMS.
 2. Aplikácia Telefón (Dialer): tlačidlo „Contacts“ nie je preložené – prekrytie reťazca (názov reťazca zistiť
    v `packages/apps/Dialer`). Fotoaparát (Camera2): úvodné okno o polohe má tlačidlo pod navigačnou lištou.
 3. Plocha podľa návrhu: presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (úprava Launcher3).
