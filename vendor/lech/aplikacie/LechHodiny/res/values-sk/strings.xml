@@ -48,4 +48,5 @@
     <string name="hour_diff_ahead">o %1$s napred</string>
     <string name="hour_diff_behind">o %1$s pozadu</string>
     <string name="same_time">Rovnaký čas</string>
+    <string name="fullscreen_needed">Povoľte hodinám zobraziť zvoniaci budík na celej obrazovke.</string>
 </resources>

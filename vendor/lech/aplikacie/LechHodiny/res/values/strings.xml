@@ -48,4 +48,5 @@
     <string name="hour_diff_ahead">%1$s ahead</string>
     <string name="hour_diff_behind">%1$s behind</string>
     <string name="same_time">Same time</string>
+    <string name="fullscreen_needed">Allow the clock to show the ringing alarm on the whole screen.</string>
 </resources>

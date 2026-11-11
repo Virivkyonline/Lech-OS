@@ -157,11 +157,46 @@ public class MainActivity extends Activity {
         }
     }
 
+    private boolean askedAccess;
+
+    /** Notifications and the full-screen ringing screen need the user's consent (Android 14 and newer). */
+    private boolean askAccess() {
+        if (askedAccess) return false;
+        if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            askedAccess = true;
+            requestPermissions(new String[] {android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+            return true;
+        }
+        android.app.NotificationManager nm = getSystemService(android.app.NotificationManager.class);
+        if (!nm.canUseFullScreenIntent()) {
+            askedAccess = true;
+            Toast.makeText(this, R.string.fullscreen_needed, Toast.LENGTH_LONG).show();
+            try {
+                startActivity(new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+                        Uri.fromParts("package", getPackageName(), null)));
+            } catch (Exception ignored) {
+                // Not available.
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        askedAccess = false;
+        android.app.NotificationManager nm = getSystemService(android.app.NotificationManager.class);
+        if (!nm.canUseFullScreenIntent()) askAccess();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         render();
         handler.post(tick);
+        if (askAccess()) return;
         AlarmManager am = getSystemService(AlarmManager.class);
         if (!am.canScheduleExactAlarms() && !Alarms.load(this).isEmpty()) {
             Toast.makeText(this, R.string.exact_needed, Toast.LENGTH_LONG).show();
