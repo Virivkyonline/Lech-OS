@@ -324,7 +324,7 @@ tools/etapa2/06-zostav-lech.sh --ulohy 4      # pri nedostatku pamäte; po preru
   vlastný názov produktu; produkt LECH ich preberá. Ak nová verzia AOSP pridá ďalší, skript na to upozorní.
 - **Bez medzier vo verzii:** zostavovací systém z hodnôt vlastností medzery vypúšťa, preto `LECH-OS-0.1.0-dev`.
   Verzia sa mení na jednom mieste – vo [version.mk](../vendor/lech/config/version.mk).
-- **Animácia** sa vytvára skriptom `python3 tools/make_bootanimation.py` (vyžaduje `python3-pil`). Výsledný zip je
+- **Animácia** sa vytvára skriptom `python3 tools/make_bootanimation.py` (vyžaduje `python3-pil`; od 11. 11. 2026 logo z tapety `branding/logo`, kruhy a „YOUR SECURE PHONE“, 1080 × 1080 px). Výsledný zip je
   v repozitári, takže zostavenie ho nepotrebuje.
 - **Presné verzie AOSP:** skript uloží `repo manifest -r` do `~/lech-work/aosp-manifest.xml` – zoznam presných
   revízií všetkých projektov AOSP, na ktorých stojí táto zostava. Z neho vznikne `lech-manifest` a vlastné
