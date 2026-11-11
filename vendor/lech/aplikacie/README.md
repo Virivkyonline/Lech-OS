@@ -5,7 +5,7 @@
 | `LechUi` | spoločný vzhľad (tmavé sklo, neónovo zelená, hlavička s logom a horami), ikony Material | – |
 | `LechKontakty` (`lech.os.kontakty`) | kontakty (všetky, obľúbené, skupiny, firmy, hľadanie), detail, úprava s fotkou, história hovorov, klávesnica | AOSP Contacts |
 | `LechSubory` (`lech.os.subory`) | kategórie, úložiská, priečinky (mriežka/zoznam), hľadanie, kopírovať/presunúť/vymazať, premenovať, otvoriť, zdieľať; prístup ku všetkým súborom povolí používateľ raz | – (DocumentsUI ostáva ako systémový výber súborov) |
-| `LechNastavenia` (`lech.os.nastavenia`) | hlavné časti nastavení s hľadaním, úložisko a batéria naživo, podstránka Systém | – (Settings ostáva, otvárajú sa jeho obrazovky) |
+| `LechNastavenia` (`lech.os.nastavenia`) | hlavné časti nastavení s hľadaním, úložisko a batéria naživo, podstránka Systém; raz nastaví vzhľad celého systému – tmavý režim a zelenú LECH ako farbu Material You (`ThemeReceiver`, privilegovaná aplikácia) | – (Settings ostáva, otvárajú sa jeho obrazovky) |
 | `LechKontakty` – `PhoneActivity` | **Telefón**: rýchla voľba, kontakty, história, hlasová schránka, nedávne hovory, klávesnica (vlastná ikona) | – (Dialer ostáva pre obrazovku hovoru) |
 | `LechSpravy` (`lech.os.spravy`) | **SMS a MMS**: konverzácie, odosielanie a príjem SMS, upozornenia s odpoveďou, zablokované čísla; predvolená aplikácia pre SMS (`LechSmsOverlay`). MMS: uložené sa zobrazia, sťahovanie a odosielanie MMS neskôr | AOSP Messaging |
 | `LechHodiny` (`lech.os.hodiny`) | **Hodiny**: budíky (dni, názov, odloženie, zvonenie aj na zamknutej obrazovke), svetový čas, časovač, stopky s kolami | AOSP DeskClock |
