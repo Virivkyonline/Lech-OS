@@ -10,9 +10,11 @@
   device/google/caimito-kernels/6.1  GPL-2.0 (Linux)  prebuilt kernel of the Pixel 9 family
   packages/apps/CarrierConfig2       MIT     carrier settings (VoLTE, SMS over IMS) from the stock carrier data
   tools/arsclib         MIT     resource tool adevtool uses for the overlays
+  external/vanadium     GPL-2.0 (patches), BSD (Chromium)  prebuilt browser and WebView Vanadium (E3-01, ADR-0011)
 -->
 <manifest>
   <remote name="lech-grapheneos" fetch="https://github.com/GrapheneOS/" />
+  <remote name="lech-grapheneos-gitlab" fetch="https://gitlab.com/grapheneos/" />
 
   <project path="vendor/adevtool" name="adevtool" remote="lech-grapheneos"
            revision="e18930ac9a684e207e5e5f967d285787aa81e0b0" upstream="refs/heads/17" />
@@ -24,4 +26,7 @@
            revision="9d56beab5824252e6fcdd09c04726d276343b247" upstream="refs/heads/17" />
   <project path="tools/arsclib" name="platform_tools_arsclib" remote="lech-grapheneos"
            revision="e81e4e7a8e2af31804ad1f4fd100da01a2db9edf" upstream="refs/heads/17" />
+  <!-- Vanadium 157.0.8103.50.0 (10. 11. 2026); ~1.2 GB of APKs (arm64 and x86_64) -->
+  <project path="external/vanadium" name="platform_external_vanadium" remote="lech-grapheneos-gitlab" clone-depth="1"
+           revision="21895d2c134962ba10c4ef2dd894bc9c6437826f" upstream="refs/heads/17" />
 </manifest>

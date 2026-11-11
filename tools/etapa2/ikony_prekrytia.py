@@ -28,7 +28,7 @@ from pathlib import Path
 # Module (APK directory) names that may hold the app, icon base name in branding/ikony/android-res, label.
 APPS = [
     (("Gallery2",), "ic_galeria", "Galéria"),
-    (("Browser2",), "ic_prehliadac", "Prehliadač"),
+    (("TrichromeChrome", "Browser2"), "ic_prehliadac", "Prehliadač"),
     (("messaging", "Messaging"), "ic_spravy", "Správy"),
     (("Settings",), "ic_nastavenia", "Nastavenia"),
     (("Dialer",), "ic_telefon", "Telefón"),
@@ -48,7 +48,10 @@ def run(cmd: list[str]) -> str:
     return subprocess.run(cmd, check=True, capture_output=True, text=True).stdout
 
 
-def find_apk(product_out: Path, names: tuple[str, ...]) -> Path | None:
+def find_apk(product_out: Path, names: tuple[str, ...], extra: dict[str, Path]) -> Path | None:
+    for name in names:   # prebuilt APKs given on the command line (--apk): the icon comes with their first build
+        if name in extra and extra[name].is_file():
+            return extra[name]
     for part in PARTITIONS:
         for kind in ("priv-app", "app"):
             for name in names:
@@ -163,6 +166,8 @@ def main() -> int:
     ap.add_argument("--product-out", type=Path, required=True)
     ap.add_argument("--icons", type=Path, required=True, help="branding/ikony/android-res")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--apk", action="append", default=[], metavar="MODUL=CESTA",
+                    help="prebuilt APK of a module, used before the APKs of the last build")
     args = ap.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
@@ -172,7 +177,8 @@ def main() -> int:
         if not all((args.icons / f"mipmap-{d}" / f"{base}_{layer}.png").is_file() for d in DENSITIES for layer in LAYERS):
             print(f"  {label}: chýbajú vrstvy ikony {base} v {args.icons}")
             continue
-        apk = find_apk(args.product_out, apk_names)
+        apk = find_apk(args.product_out, apk_names,
+                       {k: Path(v) for k, _, v in (a.partition("=") for a in args.apk)})
         if not apk:
             print(f"  {label}: aplikácia ({'/'.join(apk_names)}) nie je v poslednej zostave – ikona s ďalšou zostavou")
             continue
@@ -202,6 +208,9 @@ def main() -> int:
                     skipped.append(value)
                     continue
                 rt = (m.group(1), m.group(2))
+            if "obfuscated" in rt[1]:   # release builds of Chromium collapse resource names: no overlay by name
+                skipped.append(f"{rt[0]}/{rt[1]} (názov zdroja je skrytý)")
+                continue
             if rt[0] not in ("mipmap", "drawable"):
                 skipped.append(f"{rt[0]}/{rt[1]}")
                 continue

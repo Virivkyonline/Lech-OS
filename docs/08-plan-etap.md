@@ -73,6 +73,15 @@ práce popri etape 3.
 | **Výstupy** | Vizuálna identita; launcher; úpravy SystemUI a nastavení; sprievodca prvým spustením s voľbami súkromia (bez konta, voľba vrstvy kompatibility); prístupnosť; lokalizácia EN, SK, CZ (vlna 1 podľa [ADR-0009](adr/0009-trh-eu.md)); moderné základné aplikácie namiesto starých z AOSP (prehliadač s blokovaním sledovačov, fotoaparát, galéria, SMS); **eSIM bez Google** – správca eSIM OpenEUICC overený na Pixeli 9 ([docs/03](03-nezavislost-od-google.md#náhrady-služieb-google)) |
 | **Hotové, keď** | Splnená **brána 2 – Použiteľný systém**: testovací používatelia bez technických znalostí nastavia a používajú telefón bez pomoci |
 
+**Postup etapy 3:**
+
+| Úloha | Stav |
+|-------|------|
+| E3-01 Prehliadač a WebView: Vanadium, vyhľadávač DuckDuckGo ([ADR-0011](adr/0011-prehliadac-vanadium.md)) | Rozpracované 11. 11. 2026 – zapojené do zostavy pre Pixel |
+| E3-02 Fotoaparát a Galéria namiesto Camera2 a Gallery2 | – |
+| E3-03 Plocha podľa návrhu (tapeta, tvar a ikony aplikácií hotové; dock, tlačidlo aplikácií) | Tapeta a ikony 9. 11. 2026 |
+| E3-04 eSIM bez Google (OpenEUICC) | – |
+
 ### Etapa 4 – Bezpečnostný systém a LECH Privacy Control
 
 | | |

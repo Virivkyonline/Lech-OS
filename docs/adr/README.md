@@ -24,6 +24,7 @@ zmení, vznikne nový ADR, ktorý pôvodný **nahrádza**, a pôvodný dostane s
 | [0008](0008-postupny-vyvoj-a-brany.md) | Postupný vývoj s bránami kvality | Prijaté |
 | [0009](0009-trh-eu.md) | Cieľový trh je celá EÚ | Prijaté |
 | [0010](0010-upravy-aosp-ako-zaplaty.md) | Úpravy kódu AOSP ako sada záplat v repozitári | Prijaté |
+| [0011](0011-prehliadac-vanadium.md) | Prehliadač a WebView – Vanadium od GrapheneOS | Prijaté |
 
 ## Šablóna
 

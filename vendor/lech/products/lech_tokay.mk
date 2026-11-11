@@ -49,6 +49,16 @@ MODULE_BUILD_FROM_SOURCE := true
 PRODUCT_COPY_FILES += \
     vendor/lech/config/sysconfig/lech-no-esim.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/sysconfig/lech-no-esim.xml \
 
+# Browser and WebView Vanadium of GrapheneOS (E3-01, ADR-0011; external/vanadium from manifests/lech-pixel.xml)
+# instead of the AOSP WebView of June 2026 and its test shell Browser2: LechVanadium overrides both, and
+# LechVanadiumOverlay makes Vanadium the WebView provider and the default browser (vendor/lech/vanadium).
+# Pixel 9 has no 32-bit apps: the arm64 variants.
+PRODUCT_PACKAGES += \
+    TrichromeWebView \
+    TrichromeChrome \
+    LechVanadium \
+    LechVanadiumOverlay \
+
 # Gate 1 test only: an update that does not start, to check the automatic return to the previous slot
 # (tools/etapa2/12-zostav-pixel.sh --chybna sets LECH_TEST_BROKEN_UPDATE; vendor/lech/config/init/init.lech-test-chybna.rc).
 ifeq ($(LECH_TEST_BROKEN_UPDATE),true)

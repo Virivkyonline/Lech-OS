@@ -1,0 +1,37 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// Browser and WebView Vanadium of GrapheneOS in LECH OS (task E3-01, docs/adr/0011-prehliadac-vanadium.md).
+// The prebuilt APKs come from external/vanadium (manifests/lech-pixel.xml, modules TrichromeWebView, TrichromeChrome
+// and VanadiumConfig); the product lists them in vendor/lech/products/lech_tokay.mk. Only modules of this tree are
+// named here, so products without external/vanadium (Cuttlefish, GSI) still build.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+// Replaces the AOSP WebView (webview, June 2026) and the WebView test shell Browser2 in the product: an app
+// without code whose only job is the overrides.
+android_app {
+    name: "LechVanadium",
+    product_specific: true,
+    sdk_version: "current",
+    manifest: "AndroidManifest.xml",
+    overrides: [
+        "webview",
+        "Browser2",
+    ],
+    dex_preopt: {
+        enabled: false,
+    },
+}
+
+// Vanadium as the WebView provider of the framework and as the default browser.
+runtime_resource_overlay {
+    name: "LechVanadiumOverlay",
+    product_specific: true,
+    sdk_version: "current",
+    manifest: "overlay/AndroidManifest.xml",
+    resource_dirs: ["overlay/res"],
+}

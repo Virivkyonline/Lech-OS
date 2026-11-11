@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2026 The LECH OS Project
+    SPDX-License-Identifier: Apache-2.0
+
+    No code, no activity: the module only replaces the AOSP WebView and Browser2 with Vanadium (Android.bp).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="lech.os.vanadium">
+    <application android:hasCode="false" android:label="LECH OS Vanadium" />
+</manifest>

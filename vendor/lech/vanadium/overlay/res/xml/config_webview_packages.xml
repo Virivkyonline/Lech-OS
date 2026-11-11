@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2026 The LECH OS Project
+    SPDX-License-Identifier: Apache-2.0
+
+    WebView providers of LECH OS: Vanadium (GrapheneOS). The AOSP WebView is not installed (LechVanadium overrides it).
+-->
+<webviewproviders>
+    <webviewprovider description="Vanadium" packageName="app.vanadium.webview" availableByDefault="true">
+    </webviewprovider>
+</webviewproviders>

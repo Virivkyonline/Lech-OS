@@ -15,9 +15,11 @@
 #      SELinux policy of the Pixel is computed against the AOSP platform policy (patches/vendor/adevtool/0003).
 # The new projects make the next build run the Soong analysis again (about 25 GB of RAM incl. swap).
 #
-# Usage: tools/etapa2/12-priprav-pixel.sh [--bez-generovania] [--len-generovat]
+# Usage: tools/etapa2/12-priprav-pixel.sh [--bez-generovania] [--len-generovat] [--len-projekty]
 #   --bez-generovania   steps 1–5 only
 #   --len-generovat     the LECH patches and step 6 only (e.g. again after a failure or after the patches changed)
+#   --len-projekty      step 2 only: download the projects of manifests/lech-pixel.xml (e.g. after a new project
+#                       was added to it, such as Vanadium; the vendor module stays as it is)
 # Environment: AOSP_DIR (default ~/aosp), LECH_WORK (default ~/lech-work)
 
 set -uo pipefail
@@ -39,11 +41,13 @@ die() { printf '\nCHYBA: %s\n' "$1" >&2; exit 1; }
 
 GENERATE=1
 PREPARE=1
+PROJECTS_ONLY=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --bez-generovania) GENERATE=0; shift ;;
     --len-generovat) PREPARE=0; shift ;;
-    -h|--help) sed -n '2,21p' "$0"; exit 0 ;;
+    --len-projekty) PROJECTS_ONLY=1; shift ;;
+    -h|--help) sed -n '2,23p' "$0"; exit 0 ;;
     *) die "Neznámy parameter: $1 (pomoc: --help)" ;;
   esac
 done
@@ -101,6 +105,10 @@ if [ "$PREPARE" -eq 1 ]; then
   [ -x "$REPO_BIN" ] || die "Chýba nástroj repo ($REPO_BIN)."
   mapfile -t projects < <(grep -oE 'path="[^"]+"' "$MANIFEST" | cut -d'"' -f2)
   (cd "$AOSP_DIR" && "$REPO_BIN" sync -c --no-tags --force-sync -j4 "${projects[@]}") || die "repo sync projektov GrapheneOS zlyhal."
+  if [ "$PROJECTS_ONLY" -eq 1 ]; then
+    echo "Hotovo – projekty GrapheneOS sú stiahnuté. Ďalej: tools/etapa2/12-zostav-pixel.sh"
+    exit 0
+  fi
 
   # 3. vendor/lech, the keys and the LECH patches (also vendor/adevtool) – as for every build; on a new build
   # computer vendor/lech is not in the tree yet, and step 5 builds with a LECH OS target.

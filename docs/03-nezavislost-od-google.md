@@ -26,7 +26,7 @@ LECH OS stavia **len na AOSP**. Všetko, čo pochádza z GMS, musíme nahradiť 
 | Predpovede satelitov (PSDS/XTRA) | Vlastný proxy | Nízka | Pixel 9 sťahoval z `1.ssiloc.com` (Samsung); **od 7. 11. 2026 vypnuté** – prvá poloha trvá dlhšie |
 | eSIM (správca profilov EuiccGoogle, vyhľadávanie profilov u Google) | **OpenEUICC** – otvorený správca eSIM (LPA, GPL); profil sa stiahne len zo servera operátora (SM-DP+) pri aktivácii QR kódom | Stredná | Štandard GSMA, Google nie je potrebný. Aplikácie eSIM od Google volali pri každom štarte `lpa.live.esimdiscovery.com`; **od 7. 11. 2026 vylúčené, LECH OS zatiaľ bez eSIM**. Úloha: OpenEUICC ako systémová aplikácia, overiť so zabudovaným čipom eSIM Pixelu 9; ak nepôjde, eSIM od Google len ako vedomá voľba používateľa. Bez prenosu eSIM cez Google |
 | Kontrola pripojenia, NTP čas | Vlastné servery | Nízka | AOSP predvolene volá servery Google |
-| WebView (Chrome) | Vlastná zostava Chromium WebView s úpravami súkromia | Vysoká | WebView treba aktualizovať tak často ako prehliadač |
+| WebView (Chrome) | Vlastná zostava Chromium WebView s úpravami súkromia | Vysoká | WebView treba aktualizovať tak často ako prehliadač. **Od etapy 3 (E3-01) Vanadium od GrapheneOS** – prehliadač aj WebView, vyhľadávač DuckDuckGo ([ADR-0011](adr/0011-prehliadac-vanadium.md)); vlastná zostava neskôr |
 | Play Protect | Skener aplikácií LECH Security | Stredná | Pozri [docs/05](05-lech-security.md) |
 | Google Asistent | **LECH AI** | Vysoká | Pozri [docs/04](04-lech-ai.md) |
 | Klávesnica a hlasové písanie | Open-source klávesnica + lokálny prevod reči na text | Stredná | Slovenčina je kritická |

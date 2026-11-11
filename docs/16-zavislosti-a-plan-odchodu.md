@@ -35,6 +35,7 @@ Tento dokument je register závislostí – pre každú uvádza, čo by sa stalo
 | Z13 | Zoznam logov Certificate Transparency | Google | Zoznam sa sťahuje zo servera Google | Kópia podpísaného zoznamu na serveri LECH; dovtedy sa nesťahuje | Sťahovanie vypnuté (E2-06) |
 | Z14 | Podpora zariadenia Pixel (adevtool, konfigurácia zariadenia, jadro, CarrierConfig2) | GrapheneOS (MIT, jadro GPL) | Zmena alebo koniec podpory Pixelu, nové verzie mimo nášho tempa | Pevné verzie v `manifests/lech-pixel.xml`, vlastné záplaty v `patches/vendor/adevtool`; licencia MIT dovoľuje vlastnú vetvu; druhá platforma (Fairphone, ADR-0005) | Na zavedenie (E2-11b) |
 | Z15 | Súbory vendora Pixelu (ovládače, firmvér, IMS) | Google | Súbory len z pôvodného obrazu Google (proprietárne), aktualizácie podľa Google | Prevzaté nástrojom adevtool z verejného obrazu `CP3A.261005.005`; pre predaj zariadení potrebná zmluva s výrobcom (cesta A+) | Vývoj (E2-11b) |
+| Z16 | Prehliadač a WebView Vanadium (zverejnené zostavy) | GrapheneOS (GPL-2.0, Chromium BSD) | Koniec zverejňovania zostáv, pomalé vydania | Pevná revízia v `manifests/lech-pixel.xml`; vlastná zostava Chromia so záplatami Vanadium ([ADR-0011](adr/0011-prehliadac-vanadium.md)) | Zavedené (E3-01) |
 
 ## Najbližšie kroky
 

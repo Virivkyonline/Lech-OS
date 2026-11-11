@@ -99,6 +99,7 @@ echo "Ikony LECH OS (branding/ikony) pre systémové aplikácie:"
 if [ -x "$AOSP_DIR/out/host/linux-x86/bin/aapt2" ]; then
   python3 -I "$SCRIPT_DIR/ikony_prekrytia.py" --aapt2 "$AOSP_DIR/out/host/linux-x86/bin/aapt2" \
     --product-out "$PRODUCT_OUT" --icons "$REPO_DIR/branding/ikony/android-res" \
+    --apk "TrichromeChrome=$AOSP_DIR/external/vanadium/prebuilt/arm64/VanadiumBrowser.apk" \
     --out "$AOSP_DIR/vendor/lech/overlay/ikony" || die "Prekrytia ikon sa nepodarilo vytvoriť."
 else
   echo "  (zatiaľ bez ikon – aapt2 ešte nie je zostavený; ikony prídu s ďalšou zostavou)"

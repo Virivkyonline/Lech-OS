@@ -12,7 +12,8 @@ Telefón, Fotoaparát, Kontakty**. Popis balíka a toho, ako vrstvy vznikli: [RE
 
 ## Ako sa dostanú do systému
 
-Aplikácie sú zatiaľ aplikácie AOSP (Gallery2, Browser2, Messaging, Settings, Dialer, Camera2, Contacts); ikonu im LECH OS mení
+Aplikácie sú zatiaľ aplikácie AOSP (Gallery2, Messaging, Settings, Dialer, Camera2, Contacts) a prehliadač Vanadium
+(TrichromeChrome, ADR-0011); ikonu im LECH OS mení
 **prekrytím zdrojov** (runtime resource overlay, oddiel product), bez zásahu do ich kódu:
 
 - `tools/etapa2/12-zostav-pixel.sh` pred zostavením spustí `tools/etapa2/ikony_prekrytia.py`: ten z aplikácií
