@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Camera</string>
+    <string name="mode_photo">PHOTO</string>
+    <string name="mode_video">VIDEO</string>
+    <string name="shutter">Take photo</string>
+    <string name="record">Record video</string>
+    <string name="stop">Stop recording</string>
+    <string name="switch_camera">Switch camera</string>
+    <string name="flash">Flash</string>
+    <string name="grid">Grid</string>
+    <string name="timer">Self-timer</string>
+    <string name="last_photo">Last photo</string>
+    <string name="permission_needed">The camera needs access to the camera and the microphone (for videos).</string>
+    <string name="permission_grant">Allow access</string>
+    <string name="saved">Saved</string>
+    <string name="save_failed">Could not save the photo.</string>
+    <string name="camera_error">The camera is not available.</string>
+    <string name="video_failed">Could not record the video.</string>
+    <string name="back">Back</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- LECH OS: the camera gets the camera and the microphone (videos) on the first start; no location. -->
+<exceptions>
+    <exception package="lech.os.fotoaparat">
+        <permission name="android.permission.CAMERA" fixed="false"/>
+        <permission name="android.permission.RECORD_AUDIO" fixed="false"/>
+    </exception>
+</exceptions>

@@ -1,0 +1,32 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LECH Fotoaparát: the camera of LECH OS (stage 3) – photos and videos with the Camera2 API (flash, zoom, wide lens,
+// grid, front camera), saved to DCIM/Camera without location, in the LECH OS design. It replaces the AOSP Camera2.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "LechFotoaparat",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    static_libs: ["LechUi"],
+    overrides: ["Camera2"],
+    required: ["lech_fotoaparat_default_permissions"],
+    dex_preopt: {
+        enabled: false,
+    },
+}
+
+// Runtime permissions granted to the app on the first start (DefaultPermissionGrantPolicy, preinstalled apps only).
+prebuilt_etc {
+    name: "lech_fotoaparat_default_permissions",
+    product_specific: true,
+    sub_dir: "default-permissions",
+    src: "default-permissions-lech-fotoaparat.xml",
+}

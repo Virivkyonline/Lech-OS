@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- LECH Fotoaparát (LECH OS): photos and videos. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="lech.os.fotoaparat">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-feature android:name="android.hardware.camera.any" android:required="true" />
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_fotoaparat"
+        android:roundIcon="@mipmap/ic_fotoaparat"
+        android:theme="@style/Theme.Lech.Camera"
+        android:supportsRtl="true"
+        android:allowBackup="false">
+
+        <activity
+            android:name=".CameraActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.media.action.STILL_IMAGE_CAMERA" />
+                <action android:name="android.media.action.STILL_IMAGE_CAMERA_SECURE" />
+                <action android:name="android.media.action.IMAGE_CAPTURE" />
+                <action android:name="android.media.action.VIDEO_CAMERA" />
+                <action android:name="android.media.action.VIDEO_CAPTURE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

@@ -21,7 +21,8 @@
 1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.3.1-dev
    (Kontakty, Galéria, Súbory, Nastavenia). Pripravené na ďalšiu zostavu: **Telefón** (`PhoneActivity`
    v LechKontakty), **SMS a MMS** (LechSpravy, predvolená pre SMS, nahrádza Messaging; MMS len zobrazenie
-   uložených), **Hodiny** (LechHodiny, nahrádza DeskClock). Vlastník posiela ďalšie návrhy; potom jedna zostava
+   uložených), **Hodiny** (LechHodiny, nahrádza DeskClock), **Kalendár** (LechKalendar, nahrádza Calendar),
+   **Fotoaparát** (LechFotoaparat, nahrádza Camera2; vlastný návrh vzhľadu). Vlastník posiela ďalšie návrhy; potom jedna zostava
    a skúšanie všetkého naraz. Kompilácia overená mimo AOSP, správanie nie.
    Otvorené: skryť spúšťač Dialer (zistiť názov komponentu), nové aplikácie dať na plochu, sťahovanie a
    odosielanie MMS.

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fotoaparát</string>
+    <string name="mode_photo">FOTO</string>
+    <string name="mode_video">VIDEO</string>
+    <string name="shutter">Odfotiť</string>
+    <string name="record">Nahrávať video</string>
+    <string name="stop">Zastaviť nahrávanie</string>
+    <string name="switch_camera">Prepnúť fotoaparát</string>
+    <string name="flash">Blesk</string>
+    <string name="grid">Mriežka</string>
+    <string name="timer">Samospúšť</string>
+    <string name="last_photo">Posledná fotka</string>
+    <string name="permission_needed">Fotoaparát potrebuje prístup ku kamere a mikrofónu (pre videá).</string>
+    <string name="permission_grant">Povoliť prístup</string>
+    <string name="saved">Uložené</string>
+    <string name="save_failed">Fotku sa nepodarilo uložiť.</string>
+    <string name="camera_error">Fotoaparát nie je k dispozícii.</string>
+    <string name="video_failed">Video sa nepodarilo nahrať.</string>
+    <string name="back">Späť</string>
+</resources>
