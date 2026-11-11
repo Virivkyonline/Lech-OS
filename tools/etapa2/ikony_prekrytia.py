@@ -34,6 +34,9 @@ APPS = [
     (("Dialer",), "ic_telefon", "Telefón"),
     (("Camera2",), "ic_fotoaparat", "Fotoaparát"),
     (("Contacts",), "ic_kontakty", "Kontakty"),
+    (("DocumentsUI",), "ic_subory", "Súbory"),
+    (("Calendar", "Etar"), "ic_kalendar", "Kalendár"),
+    (("DeskClock",), "ic_hodiny", "Hodiny"),
 ]
 PARTITIONS = ("system", "system_ext", "product")
 DENSITIES = ("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")

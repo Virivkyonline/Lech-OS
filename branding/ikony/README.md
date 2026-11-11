@@ -1,12 +1,12 @@
 # Ikony aplikácií LECH OS
 
 Ikony systémových aplikácií LECH OS (vlastník projektu, 8. 11. 2026): **Galéria, Prehliadač, Správy, Nastavenia,
-Telefón, Fotoaparát, Kontakty**. Popis balíka a toho, ako vrstvy vznikli: [README-balik.md](README-balik.md); náhľad všetkých tvarov
+Telefón, Fotoaparát, Kontakty, Súbory, Kalendár, Hodiny**. Popis balíka a toho, ako vrstvy vznikli: [README-balik.md](README-balik.md); náhľad všetkých tvarov
 (kruh, zaoblený štvorec, squircle, tematické ikony): [nahlad_adaptivne_ikony.png](nahlad_adaptivne_ikony.png).
 
 | Priečinok | Obsah |
 |-----------|-------|
-| `galeria/`, `prehliadac/`, `spravy/`, `nastavenia/`, `telefon/`, `fotoaparat/`, `kontakty/` | zdroje 1024 × 1024 px: pozadie, popredie, jednofarebná vrstva (PNG, SVG), klasická ikona |
+| `galeria/`, `prehliadac/`, `spravy/`, `nastavenia/`, `telefon/`, `fotoaparat/`, `kontakty/`, `subory/`, `kalendar/`, `hodiny/` | zdroje 1024 × 1024 px: pozadie, popredie, jednofarebná vrstva (PNG, SVG), klasická ikona |
 | `android-res/` | vrstvy pre Android po hustotách (108 dp: 108–432 px) – z nich sa robí systém |
 | `navrhy/` | pôvodné ploché návrhy |
 

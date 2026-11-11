@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><g transform="translate(512 512) scale(0.88) translate(-512 -512)">
+<defs>
+  <mask id="flap">
+    <rect width="1024" height="1024" fill="white"/>
+    <rect x="212" y="492" width="600" height="400" rx="56" fill="black" stroke="black" stroke-width="28"/>
+  </mask>
+</defs>
+<g mask="url(#flap)">
+  <path d="M 232 390 Q 232 342 280 342 L 432 342 Q 462 342 477 364 L 507 412 Q 522 432 552 432
+           L 744 432 Q 792 432 792 480 L 792 742 L 232 742 Z" fill="#FFFFFF"/>
+</g>
+<rect x="232" y="512" width="560" height="230" rx="48" fill="#FFFFFF"/></g></svg>

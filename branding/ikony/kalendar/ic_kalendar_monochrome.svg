@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><g transform="translate(512 512) scale(0.92) translate(-512 -512)">
+<defs>
+  <mask id="cal">
+    <rect width="1024" height="1024" fill="white"/>
+    <rect x="242" y="402" width="540" height="22" fill="black"/>
+    <rect x="372" y="222" width="44" height="150" rx="22" fill="black" stroke="black" stroke-width="24"/>
+    <rect x="608" y="222" width="44" height="150" rx="22" fill="black" stroke="black" stroke-width="24"/>
+    <text x="512.0" y="627" font-family="DejaVu Sans" font-weight="bold" font-size="210" text-anchor="middle" fill="black">31</text>
+    <rect x="312" y="662" width="64" height="40" rx="10" fill="black"/>
+    <rect x="402" y="662" width="64" height="40" rx="10" fill="black"/>
+    <rect x="492" y="662" width="64" height="40" rx="10" fill="black"/>
+    <rect x="582" y="662" width="64" height="40" rx="10" fill="black"/>
+  </mask>
+</defs>
+<rect x="252" y="282" width="520" height="480" rx="56" fill="#FFFFFF" mask="url(#cal)"/>
+<rect x="372" y="222" width="44" height="150" rx="22" fill="#FFFFFF"/>
+<rect x="608" y="222" width="44" height="150" rx="22" fill="#FFFFFF"/></g></svg>
