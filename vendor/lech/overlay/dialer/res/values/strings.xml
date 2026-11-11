@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The default (English) value is required next to the Slovak one; the same text as in the Dialer. -->
+    <string name="tab_title_contacts">Contacts</string>
+</resources>

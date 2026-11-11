@@ -1,0 +1,15 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// Dialer: Slovak texts that the AOSP Dialer lacks (the "Contacts" tab of the bottom bar stayed in English).
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+runtime_resource_overlay {
+    name: "LechDialerOverlay",
+    product_specific: true,
+    sdk_version: "current",
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Components the launcher does not show (packages/apps/Launcher3 AppFilter). -->
+    <string-array name="filtered_components">
+        <item>com.android.settings/com.android.settings.Settings</item>
+        <item>com.android.documentsui/com.android.documentsui.LauncherActivity</item>
+    </string-array>
+</resources>
