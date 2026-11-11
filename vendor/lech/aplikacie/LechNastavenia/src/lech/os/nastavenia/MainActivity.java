@@ -83,7 +83,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        ThemeReceiver.apply(this);
         define();
         LinearLayout root = Ui.column(this);
         root.setBackground(Ui.background());

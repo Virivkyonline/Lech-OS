@@ -16,18 +16,7 @@ android_app {
     srcs: ["src/**/*.java"],
     resource_dirs: ["res"],
     static_libs: ["LechUi"],
-    // Privileged: sets the dark theme and the LECH colours of the system once (ThemeReceiver).
-    privileged: true,
-    required: ["privapp_permissions_lech_nastavenia"],
     dex_preopt: {
         enabled: false,
     },
-}
-
-// Privileged permissions of LechNastavenia (the theme of the system, ThemeReceiver).
-prebuilt_etc {
-    name: "privapp_permissions_lech_nastavenia",
-    product_specific: true,
-    sub_dir: "permissions",
-    src: "privapp-permissions-lech-nastavenia.xml",
 }
