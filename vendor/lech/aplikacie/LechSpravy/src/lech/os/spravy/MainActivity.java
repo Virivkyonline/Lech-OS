@@ -177,11 +177,17 @@ public class MainActivity extends Activity {
         });
         Ui.setNav(messages, true);
         Ui.navItem(nav, R.drawable.ic_group, getString(R.string.nav_contacts), v -> {
-            Intent i = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_CONTACTS);
+            // LECH Kontakty first; another contacts app through the app category as a fallback.
             try {
-                startActivity(i);
-            } catch (Exception ignored) {
-                // No contacts app.
+                startActivity(new Intent(Intent.ACTION_MAIN).setClassName("lech.os.kontakty",
+                        "lech.os.kontakty.MainActivity").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (Exception e) {
+                try {
+                    startActivity(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_CONTACTS)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                } catch (Exception ignored) {
+                    // No contacts app.
+                }
             }
         });
         Ui.navItem(nav, R.drawable.ic_settings, getString(R.string.nav_settings), this::showSettings);
