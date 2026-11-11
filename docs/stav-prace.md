@@ -1,11 +1,13 @@
-# Stav práce (11. 11. 2026)
+# Stav práce (11. 11. 2026, 22:00)
 
 ## Hotové
 
 - **Etapa 2 a brána 1 – Overený základ: splnená** ([docs/08](08-plan-etap.md)): LECH OS na Pixeli 9 so zamknutým
   bootloaderom a vlastným kľúčom, 3 OTA aktualizácie s návratom po chybnej, generálka mesačnej aktualizácie,
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
-- Telefón: posledná overená zostava **0.2.2-dev** (plocha, animácia pri štarte, „Prehliadač“, bez „Search“). Bezpečnostné opravy september–november
+- **Telefón: LECH OS 0.4.6-dev** (zostava 11. 11. 21:28, OTA do slotu _a). Ďalšia zostava musí mať vyššiu verziu
+  (**0.4.7-dev**). Položka Nastavenia → Heslá v 0.4.6-dev otvára celé Nastavenia – oprava v repozitári od 21:54
+  (`Settings$AccountDashboardActivity`), príde s 0.4.7-dev. Bezpečnostné opravy september–november
   (okrem neverejných) v zostave.
 
 ## Rozpracované – etapa 3 (vlastné grafické prostredie)
@@ -18,7 +20,7 @@
 
 ## Ďalšie kroky (poradie)
 
-1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.3.1-dev
+1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.4.6-dev
    (Kontakty, Galéria, Súbory, Nastavenia). Pripravené na ďalšiu zostavu: **Telefón** (`PhoneActivity`
    v LechKontakty), **SMS a MMS** (LechSpravy, predvolená pre SMS, nahrádza Messaging; MMS len zobrazenie
    uložených), **Hodiny** (LechHodiny, nahrádza DeskClock), **Kalendár** (LechKalendar, nahrádza Calendar),

@@ -20,6 +20,12 @@ a bezpečnosť. Vízia a plán: `docs/01` až `docs/16`, rozhodnutia `docs/adr/`
 - Odporúčanie namiesto zoznamu možností; nehádať – ak niečo nie je overené, povedať to. Nepredlžovať čakanie
   zbytočnými testami; šetriť kredit (neopakovať veľké výpisy, nečítať zbytočne súbory).
 - Pred dlhým meraním alebo testom overiť predpoklady (napr. internet cez prístupový bod).
+- **Po každej zostave a aktualizácii telefónu hneď aktualizovať `docs/stav-prace.md`** (verzia v telefóne, čo je
+  v nej, čo čaká na ďalšiu zostavu) a pushnúť. Ďalší príkaz na zostavu vždy s verziou vyššou, než je v telefóne.
+- **Nehádať názvy aktivít, akcií a zdrojov Androidu.** Overiť ich v zdrojovom kóde Androidu 17 (napr. manifest
+  Settings: `https://raw.githubusercontent.com/GrapheneOS/platform_packages_apps_Settings/17/AndroidManifest.xml`)
+  alebo v telefóne (`adb … shell cmd package resolve-activity …`). Žiadne tiché náhrady (napr. celé Nastavenia):
+  keď cieľ chýba, ukázať hlásenie. (11. 11. 2026: položka Heslá otvárala celé Nastavenia.)
 
 ## Repozitár a postup
 
