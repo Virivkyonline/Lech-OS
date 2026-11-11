@@ -176,14 +176,17 @@ public class MainActivity extends Activity {
         return e;
     }
 
-    /** The list of the Android settings (the same items, order and groups), with the LECH OS icons. */
+    /**
+     * The list of the Android settings (the same items, order and groups), with the LECH OS icons. Screens are the
+     * activities of the Settings manifest of Android 17 (GrapheneOS platform_packages_apps_Settings, branch 17).
+     */
     private void define() {
         add(R.drawable.ic_set_siet, R.string.network, R.string.network_sub, false,
-                Settings.ACTION_WIRELESS_SETTINGS, Settings.ACTION_WIFI_SETTINGS);
+                "cmp:com.android.settings/com.android.settings.Settings$NetworkDashboardActivity", Settings.ACTION_WIRELESS_SETTINGS, Settings.ACTION_WIFI_SETTINGS);
         add(R.drawable.ic_set_pripojene_zariadenia, R.string.devices, R.string.devices_sub, false,
-                "android.settings.CONNECTED_DEVICES_SETTINGS", Settings.ACTION_BLUETOOTH_SETTINGS);
+                "cmp:com.android.settings/com.android.settings.Settings$ConnectedDeviceDashboardActivity", Settings.ACTION_BLUETOOTH_SETTINGS);
         add(R.drawable.ic_set_aplikacie, R.string.apps, R.string.apps_sub, true,
-                "android.settings.APPS_SETTINGS", Settings.ACTION_APPLICATION_SETTINGS);
+                "cmp:com.android.settings/com.android.settings.Settings$AppDashboardActivity", Settings.ACTION_APPLICATION_SETTINGS);
         add(R.drawable.ic_set_upozornenia, R.string.notifications, R.string.notifications_sub, false,
                 "android.settings.NOTIFICATION_SETTINGS");
         add(R.drawable.ic_set_zvuk, R.string.sound, R.string.sound_sub, false, Settings.ACTION_SOUND_SETTINGS);
@@ -207,7 +210,8 @@ public class MainActivity extends Activity {
         // Settings$PasswordsAndAccountsActivity does not exist: the item opened the whole Settings (11. 11. 2026).
         add(R.drawable.ic_set_hesla, R.string.passwords, R.string.passwords_sub, false,
                 "cmp:com.android.settings/com.android.settings.Settings$AccountDashboardActivity");
-        add(R.drawable.ic_set_ucty, R.string.accounts, R.string.accounts_sub, false, Settings.ACTION_SYNC_SETTINGS);
+        add(R.drawable.ic_set_ucty, R.string.accounts, R.string.accounts_sub, false,
+                "cmp:com.android.settings/com.android.settings.Settings$AccountsAndBackupDashboardActivity", Settings.ACTION_SYNC_SETTINGS);
         add(R.drawable.ic_set_tiesen, R.string.emergency, R.string.emergency_sub, false,
                 "cmp:com.android.settings/com.android.settings.Settings$EmergencyDashboardActivity",
                 "android.settings.EMERGENCY_SETTINGS");
