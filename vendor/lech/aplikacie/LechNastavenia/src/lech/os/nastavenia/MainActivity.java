@@ -181,39 +181,28 @@ public class MainActivity extends Activity {
      * activities of the Settings manifest of Android 17 (GrapheneOS platform_packages_apps_Settings, branch 17).
      */
     private void define() {
-        add(R.drawable.ic_set_siet, R.string.network, R.string.network_sub, false,
-                "cmp:com.android.settings/com.android.settings.Settings$NetworkDashboardActivity", Settings.ACTION_WIRELESS_SETTINGS, Settings.ACTION_WIFI_SETTINGS);
-        add(R.drawable.ic_set_pripojene_zariadenia, R.string.devices, R.string.devices_sub, false,
-                "cmp:com.android.settings/com.android.settings.Settings$ConnectedDeviceDashboardActivity", Settings.ACTION_BLUETOOTH_SETTINGS);
-        add(R.drawable.ic_set_aplikacie, R.string.apps, R.string.apps_sub, true,
-                "cmp:com.android.settings/com.android.settings.Settings$AppDashboardActivity", Settings.ACTION_APPLICATION_SETTINGS);
+        add(R.drawable.ic_set_siet, R.string.network, R.string.network_sub, false, "cmp:com.android.settings/com.android.settings.Settings$NetworkDashboardActivity");
+        add(R.drawable.ic_set_pripojene_zariadenia, R.string.devices, R.string.devices_sub, false, "cmp:com.android.settings/com.android.settings.Settings$ConnectedDeviceDashboardActivity");
+        add(R.drawable.ic_set_aplikacie, R.string.apps, R.string.apps_sub, true, "cmp:com.android.settings/com.android.settings.Settings$AppDashboardActivity");
         add(R.drawable.ic_set_upozornenia, R.string.notifications, R.string.notifications_sub, false,
                 "android.settings.NOTIFICATION_SETTINGS");
         add(R.drawable.ic_set_zvuk, R.string.sound, R.string.sound_sub, false, Settings.ACTION_SOUND_SETTINGS);
-        add(R.drawable.ic_set_rezimy, R.string.modes, R.string.modes_sub, false, "android.settings.MODES_SETTINGS",
-                "android.settings.ZEN_MODE_SETTINGS", Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS);
+        // Settings$ModesSettingsActivity (the list of modes) answers ZEN_MODE_SETTINGS.
+        add(R.drawable.ic_set_rezimy, R.string.modes, R.string.modes_sub, false, "android.settings.ZEN_MODE_SETTINGS");
         add(R.drawable.ic_set_obrazovka, R.string.display, R.string.display_sub, false, Settings.ACTION_DISPLAY_SETTINGS);
         add(R.drawable.ic_set_tapeta, R.string.wallpaper, R.string.wallpaper_sub, false,
-                "android.settings.WALLPAPER_SETTINGS", Intent.ACTION_SET_WALLPAPER);
+                "android.settings.WALLPAPER_SETTINGS");
         add(R.drawable.ic_set_ulozisko, R.string.storage, 0, true, Settings.ACTION_INTERNAL_STORAGE_SETTINGS);
-        add(R.drawable.ic_set_bateria, R.string.battery, 0, false, Intent.ACTION_POWER_USAGE_SUMMARY,
-                Settings.ACTION_BATTERY_SAVER_SETTINGS);
-        add(R.drawable.ic_set_system, R.string.system, R.string.system_sub, false,
-                "cmp:com.android.settings/com.android.settings.Settings$SystemDashboardActivity");
+        add(R.drawable.ic_set_bateria, R.string.battery, 0, false, Intent.ACTION_POWER_USAGE_SUMMARY);
+        add(R.drawable.ic_set_system, R.string.system, R.string.system_sub, false, "cmp:com.android.settings/com.android.settings.Settings$SystemDashboardActivity");
         add(R.drawable.ic_set_informacie, R.string.about, 0, false, Settings.ACTION_DEVICE_INFO_SETTINGS);
         add(R.drawable.ic_set_sukromie, R.string.security, R.string.security_sub, true,
-                "android.settings.SECURITY_PRIVACY_SETTINGS", Settings.ACTION_SECURITY_SETTINGS,
-                Settings.ACTION_PRIVACY_SETTINGS);
+                Settings.ACTION_SECURITY_SETTINGS);
         add(R.drawable.ic_set_poloha, R.string.location, 0, false, Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        // "Passwords, passkeys & accounts" of Android 17 is Settings$AccountDashboardActivity. Its action
-        // android.settings.CREDENTIAL_PROVIDER needs package data and does not resolve without it, and
-        // Settings$PasswordsAndAccountsActivity does not exist: the item opened the whole Settings (11. 11. 2026).
-        add(R.drawable.ic_set_hesla, R.string.passwords, R.string.passwords_sub, false,
-                "cmp:com.android.settings/com.android.settings.Settings$AccountDashboardActivity");
-        add(R.drawable.ic_set_ucty, R.string.accounts, R.string.accounts_sub, false,
-                "cmp:com.android.settings/com.android.settings.Settings$AccountsAndBackupDashboardActivity", Settings.ACTION_SYNC_SETTINGS);
+        // "Passwords, passkeys & accounts" of Android 17 is Settings$AccountDashboardActivity.
+        add(R.drawable.ic_set_hesla, R.string.passwords, R.string.passwords_sub, false, "cmp:com.android.settings/com.android.settings.Settings$AccountDashboardActivity");
+        add(R.drawable.ic_set_ucty, R.string.accounts, R.string.accounts_sub, false, "cmp:com.android.settings/com.android.settings.Settings$AccountsAndBackupDashboardActivity");
         add(R.drawable.ic_set_tiesen, R.string.emergency, R.string.emergency_sub, false,
-                "cmp:com.android.settings/com.android.settings.Settings$EmergencyDashboardActivity",
                 "android.settings.EMERGENCY_SETTINGS");
         add(R.drawable.ic_set_dostupnost, R.string.accessibility, R.string.accessibility_sub, true,
                 Settings.ACTION_ACCESSIBILITY_SETTINGS);
@@ -297,12 +286,10 @@ public class MainActivity extends Activity {
             s.subtitle = text;
             View r = row(s);
             r.setOnClickListener(v -> {
+                // The settings search of SettingsIntelligence (APP_SEARCH_SETTINGS); without it a message.
                 Intent i = new Intent("android.settings.APP_SEARCH_SETTINGS");
-                if (!tryStart(i)) {
-                    i = new Intent("com.android.settings.action.SETTINGS_SEARCH");
-                    i.putExtra(android.app.SearchManager.QUERY, text);
-                    if (!tryStart(i)) tryStart(new Intent(Settings.ACTION_SETTINGS));
-                }
+                i.putExtra(android.app.SearchManager.QUERY, text);
+                if (!tryStart(i)) Toast.makeText(this, R.string.no_screen, Toast.LENGTH_SHORT).show();
             });
             listView.addView(r);
             return;

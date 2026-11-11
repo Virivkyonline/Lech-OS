@@ -7,7 +7,10 @@
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
 - **Telefón: LECH OS 0.4.6-dev** (zostava 11. 11. 21:28, OTA do slotu _a). Ďalšia zostava musí mať vyššiu verziu
   (**0.4.7-dev**). Položka Nastavenia → Heslá v 0.4.6-dev otvára celé Nastavenia – oprava v repozitári od 21:54
-  (`Settings$AccountDashboardActivity`), príde s 0.4.7-dev. Bezpečnostné opravy september–november
+  (`Settings$AccountDashboardActivity`), príde s 0.4.7-dev. **Čaká na 0.4.7-dev** aj: Nastavenia – každá
+  z 18 položiek má jeden overený cieľ (Sieť, Pripojené zariadenia, Aplikácie, Systém, Heslá, Účty a zálohovanie cez
+  dashboard aktivity Settings; Režimy cez ZEN_MODE_SETTINGS → `Settings$ModesSettingsActivity`), žiadne tiché náhrady,
+  hľadanie bez náhrady na celé Nastavenia. Bezpečnostné opravy september–november
   (okrem neverejných) v zostave.
 
 ## Rozpracované – etapa 3 (vlastné grafické prostredie)
@@ -35,6 +38,14 @@
 5. E3-04 eSIM bez Google (OpenEUICC). Aplikácie E-mail a Počasie (ikony v návrhu plochy).
 6. Popri tom: 12 novembrových bezpečnostných opráv na prispôsobenie, neverejná CVE-2026-58868, červené „Your device
    is corrupt“ pri chybnom slote, server LECH OS (E2-08b), ochranná známka LECH OS (triedy 9, 42; firma sa vyberie).
+
+## Overenie cieľov obrazoviek (11. 11. 2026)
+
+Ciele intentov vlastných aplikácií overené v manifestoch vetvy 17 GrapheneOS: Settings (všetky akcie a aktivity
+Nastavení, ALL_FILES, APP_NOTIFICATION, REQUEST_SCHEDULE_EXACT_ALARM, MANAGE_APP_USE_FULL_SCREEN_INTENT),
+SettingsIntelligence (`APP_SEARCH_SETTINGS`), PermissionController (`MANAGE_DEFAULT_APPS_SETTINGS`, REQUEST_ROLE),
+Telephony (`android.telecom.action.SHOW_CALL_SETTINGS` – tlačidlo Nastavenia v Telefóne), MediaProvider
+(`PICK_IMAGES` – výber fotky kontaktu). Chybné boli len položky Nastavení (opravené vyššie).
 
 ## Poznámky
 
