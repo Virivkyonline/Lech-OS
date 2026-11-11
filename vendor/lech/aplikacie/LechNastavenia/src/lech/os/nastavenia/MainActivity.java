@@ -168,32 +168,32 @@ public class MainActivity extends Activity {
     }
 
     private void define() {
-        entries.add(new Entry(R.drawable.ic_wifi, 0xFF42A5F5, 0xFF0D47A1, R.string.network, R.string.network_sub, false,
+        entries.add(new Entry(R.drawable.ic_set_siet, 0, 0, R.string.network, R.string.network_sub, false,
                 Settings.ACTION_WIRELESS_SETTINGS, Settings.ACTION_WIFI_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_bluetooth, 0xFF448AFF, 0xFF1A237E, R.string.devices, R.string.devices_sub,
+        entries.add(new Entry(R.drawable.ic_set_pripojene_zariadenia, 0, 0, R.string.devices, R.string.devices_sub,
                 false, "android.settings.CONNECTED_DEVICES_SETTINGS", Settings.ACTION_BLUETOOTH_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_apps, 0xFF9575CD, 0xFF4527A0, R.string.apps, R.string.apps_sub, false,
+        entries.add(new Entry(R.drawable.ic_set_aplikacie, 0, 0, R.string.apps, R.string.apps_sub, false,
                 "android.settings.APPS_SETTINGS", Settings.ACTION_APPLICATION_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_bell, 0xFFF06292, 0xFF880E4F, R.string.notifications,
+        entries.add(new Entry(R.drawable.ic_set_upozornenia, 0, 0, R.string.notifications,
                 R.string.notifications_sub, false, "android.settings.NOTIFICATION_SETTINGS",
                 Settings.ACTION_APP_NOTIFICATION_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_volume, 0xFFFFB74D, 0xFFE65100, R.string.sound, R.string.sound_sub, false,
+        entries.add(new Entry(R.drawable.ic_set_zvuk, 0, 0, R.string.sound, R.string.sound_sub, false,
                 Settings.ACTION_SOUND_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_dnd, 0xFF7C4DFF, 0xFF311B92, R.string.modes, R.string.modes_sub, false,
+        entries.add(new Entry(R.drawable.ic_set_rezimy, 0, 0, R.string.modes, R.string.modes_sub, false,
                 "android.settings.MODES_SETTINGS", "android.settings.ZEN_MODE_SETTINGS",
                 Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_sun, 0xFFFFD54F, 0xFFB28704, R.string.display, R.string.display_sub, false,
+        entries.add(new Entry(R.drawable.ic_set_obrazovka, 0, 0, R.string.display, R.string.display_sub, false,
                 Settings.ACTION_DISPLAY_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_photo, 0xFF81C784, 0xFF1B5E20, R.string.wallpaper, R.string.wallpaper_sub,
+        entries.add(new Entry(R.drawable.ic_set_tapeta, 0, 0, R.string.wallpaper, R.string.wallpaper_sub,
                 false, "android.settings.WALLPAPER_SETTINGS", Intent.ACTION_SET_WALLPAPER));
-        entries.add(new Entry(R.drawable.ic_storage, 0xFF4DD0E1, 0xFF006064, R.string.storage, 0, false,
+        entries.add(new Entry(R.drawable.ic_set_ulozisko, 0, 0, R.string.storage, 0, false,
                 Settings.ACTION_INTERNAL_STORAGE_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_battery, 0xFF66BB6A, 0xFF1B5E20, R.string.battery, 0, false,
+        entries.add(new Entry(R.drawable.ic_set_bateria, 0, 0, R.string.battery, 0, false,
                 Intent.ACTION_POWER_USAGE_SUMMARY, Settings.ACTION_BATTERY_SAVER_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_shield, 0xFF4FC3F7, 0xFF01579B, R.string.security, R.string.security_sub,
+        entries.add(new Entry(R.drawable.ic_set_sukromie, 0, 0, R.string.security, R.string.security_sub,
                 false, "android.settings.SECURITY_PRIVACY_SETTINGS", Settings.ACTION_SECURITY_SETTINGS,
                 Settings.ACTION_PRIVACY_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_sync, 0xFFBA68C8, 0xFF4A148C, R.string.system, R.string.system_sub, true));
+        entries.add(new Entry(R.drawable.ic_set_system, 0, 0, R.string.system, R.string.system_sub, true));
 
         systemEntries.add(new Entry(R.drawable.ic_language, 0xFF4FC3F7, 0xFF01579B, R.string.languages,
                 R.string.languages_sub, false, "android.settings.LANGUAGE_SETTINGS", Settings.ACTION_LOCALE_SETTINGS));
@@ -322,15 +322,15 @@ public class MainActivity extends Activity {
         bg.setCornerRadius(Ui.dp(this, 30));
         bg.setStroke(Ui.dp(this, 1.2f), 0xAA3FA36A);
         Ui.clickable(r, bg);
-        FrameLayout tile = new FrameLayout(this);
-        GradientDrawable tb = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[] {e.top, e.bottom});
-        tb.setCornerRadius(Ui.dp(this, 16));
-        tb.setStroke(Ui.dp(this, 1), 0x66FFFFFF);
-        tile.setBackground(tb);
-        tile.addView(Ui.icon(this, e.icon, Ui.TEXT, 30), new FrameLayout.LayoutParams(Ui.dp(this, 30),
-                Ui.dp(this, 30), Gravity.CENTER));
-        tile.setElevation(Ui.dp(this, 3));
-        r.addView(tile, Ui.lp(Ui.dp(this, 54), Ui.dp(this, 54)));
+        if (e.top == 0 && e.bottom == 0) {
+            // A finished icon of the LECH OS design (branding/ikony/nastavenia).
+            ImageView pic = new ImageView(this);
+            pic.setImageResource(e.icon);
+            pic.setElevation(Ui.dp(this, 3));
+            r.addView(pic, Ui.lp(Ui.dp(this, 56), Ui.dp(this, 56)));
+        } else {
+            r.addView(Rows.tile(this, e.icon, e.top, e.bottom), Ui.lp(Ui.dp(this, 54), Ui.dp(this, 54)));
+        }
         LinearLayout t = Ui.column(this);
         t.setPadding(Ui.dp(this, 16), 0, Ui.dp(this, 8), 0);
         t.addView(Ui.text(this, getString(e.title), 18, Ui.TEXT, true));
@@ -353,7 +353,8 @@ public class MainActivity extends Activity {
                 : e.title == R.string.display ? SubActivity.DISPLAY : e.title == R.string.battery ? SubActivity.BATTERY
                 : null;
         if (sub != null) {
-            startActivity(new Intent(this, SubActivity.class).putExtra(SubActivity.EXTRA_PAGE, sub));
+            startActivity(new Intent(this, SubActivity.class).putExtra(SubActivity.EXTRA_PAGE, sub)
+                    .putExtra(SubActivity.EXTRA_ICON, e.icon));
             return;
         }
         if (e.system) {

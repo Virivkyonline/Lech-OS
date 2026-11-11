@@ -32,7 +32,17 @@ final class Rows {
         bg.setCornerRadius(Ui.dp(c, 30));
         bg.setStroke(Ui.dp(c, 1.2f), 0xAA3FA36A);
         Ui.clickable(r, bg);
-        if (icon != 0) r.addView(tile(c, icon, top, bottom), Ui.lp(Ui.dp(c, 54), Ui.dp(c, 54)));
+        if (icon != 0 && top == 0 && bottom == 0) {
+            // A finished icon of the LECH OS design (branding/ikony/nastavenia).
+            android.widget.ImageView pic = new android.widget.ImageView(c);
+            pic.setImageResource(icon);
+            pic.setElevation(Ui.dp(c, 3));
+            FrameLayout box = new FrameLayout(c);
+            box.addView(pic, Ui.match());
+            r.addView(box, Ui.lp(Ui.dp(c, 56), Ui.dp(c, 56)));
+        } else if (icon != 0) {
+            r.addView(tile(c, icon, top, bottom), Ui.lp(Ui.dp(c, 54), Ui.dp(c, 54)));
+        }
         LinearLayout t = Ui.column(c);
         t.setPadding(Ui.dp(c, icon != 0 ? 16 : 8), 0, Ui.dp(c, 8), 0);
         t.addView(Ui.text(c, title, 18, Ui.TEXT, true));

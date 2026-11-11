@@ -36,6 +36,7 @@ import java.util.Locale;
  */
 public class SubActivity extends Activity {
     static final String EXTRA_PAGE = "page";
+    static final String EXTRA_ICON = "icon";
     static final String NETWORK = "network";
     static final String SOUND = "sound";
     static final String DISPLAY = "display";
@@ -59,7 +60,7 @@ public class SubActivity extends Activity {
         if (page == null) page = NETWORK;
         LinearLayout root = Ui.column(this);
         root.setBackground(Ui.background());
-        Ui.Header h = Ui.header(this, R.mipmap.ic_nastavenia);
+        Ui.Header h = Ui.header(this, getIntent().getIntExtra(EXTRA_ICON, R.mipmap.ic_nastavenia));
         Ui.headerButton(h, R.drawable.ic_back, false, getString(R.string.back), v -> finish());
         int title;
         int subtitle;
@@ -146,7 +147,7 @@ public class SubActivity extends Activity {
         boolean onCell = nc != null && nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
         boolean wifiOn = wifi.isWifiEnabled();
 
-        LinearLayout w = Rows.row(this, R.drawable.ic_wifi, 0xFF42A5F5, 0xFF0D47A1, getString(R.string.wifi),
+        LinearLayout w = Rows.row(this, R.drawable.ic_set_siet, 0, 0, getString(R.string.wifi),
                 getString(!wifiOn ? R.string.off : onWifi ? R.string.wifi_connected : R.string.wifi_on));
         Rows.toggle(w, wifiOn, (b, on) -> {
             @SuppressWarnings("deprecation")
@@ -172,7 +173,7 @@ public class SubActivity extends Activity {
         boolean airplane = Settings.Global.getInt(getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
         openRow(R.drawable.ic_send, 0xFFBA68C8, 0xFF4A148C, R.string.airplane,
                 getString(airplane ? R.string.on : R.string.off), Settings.ACTION_AIRPLANE_MODE_SETTINGS);
-        openRow(R.drawable.ic_shield, 0xFF4FC3F7, 0xFF01579B, R.string.vpn, getString(R.string.vpn_sub),
+        openRow(R.drawable.ic_set_sukromie, 0, 0, R.string.vpn, getString(R.string.vpn_sub),
                 Settings.ACTION_VPN_SETTINGS);
         more(R.string.more_network, R.string.more_network_sub, Settings.ACTION_WIRELESS_SETTINGS);
     }
@@ -196,7 +197,7 @@ public class SubActivity extends Activity {
                 }
                 build();
             }));
-        volume(am, AudioManager.STREAM_RING, R.drawable.ic_bell, 0xFFFFB74D, 0xFFE65100, R.string.vol_ring);
+        volume(am, AudioManager.STREAM_RING, R.drawable.ic_set_zvuk, 0, 0, R.string.vol_ring);
         volume(am, AudioManager.STREAM_MUSIC, R.drawable.ic_music, 0xFFCE93D8, 0xFF6A1B9A, R.string.vol_media);
         volume(am, AudioManager.STREAM_ALARM, R.drawable.ic_alarm, 0xFF66BB6A, 0xFF1B5E20, R.string.vol_alarm);
         volume(am, AudioManager.STREAM_VOICE_CALL, R.drawable.ic_call, 0xFF42A5F5, 0xFF0D47A1, R.string.vol_call);
@@ -270,7 +271,7 @@ public class SubActivity extends Activity {
 
     private void display() {
         int brightness = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, 128);
-        LinearLayout b = Rows.row(this, R.drawable.ic_sun, 0xFFFFD54F, 0xFFB28704, getString(R.string.brightness),
+        LinearLayout b = Rows.row(this, R.drawable.ic_set_obrazovka, 0, 0, getString(R.string.brightness),
                 percent(brightness, 255));
         Rows.slider(b, 255, brightness, new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -372,7 +373,7 @@ public class SubActivity extends Activity {
         } else {
             status = getString(R.string.not_charging);
         }
-        LinearLayout big = Rows.row(this, R.drawable.ic_battery, charging ? 0xFF9CFF3A : 0xFF66BB6A, 0xFF1B5E20,
+        LinearLayout big = Rows.row(this, R.drawable.ic_set_bateria, 0, 0,
                 level + " %", status);
         ((android.widget.TextView) ((LinearLayout) big.getChildAt(1)).getChildAt(0)).setTextSize(30);
         list.addView(big);
