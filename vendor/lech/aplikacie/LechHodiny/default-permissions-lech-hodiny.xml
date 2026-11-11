@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- LECH OS: the clock may show its alarm notifications from the first start. -->
+<exceptions>
+    <exception package="lech.os.hodiny">
+        <permission name="android.permission.POST_NOTIFICATIONS" fixed="false"/>
+    </exception>
+</exceptions>

@@ -1,0 +1,32 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LECH Hodiny: the clock of LECH OS (stage 3) – alarms, world clock, timer and stopwatch in the LECH OS design.
+// It replaces the AOSP DeskClock.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "LechHodiny",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    static_libs: ["LechUi"],
+    overrides: ["DeskClock"],
+    required: ["lech_hodiny_default_permissions"],
+    dex_preopt: {
+        enabled: false,
+    },
+}
+
+// Runtime permissions granted to the app on the first start (DefaultPermissionGrantPolicy, preinstalled apps only).
+prebuilt_etc {
+    name: "lech_hodiny_default_permissions",
+    product_specific: true,
+    sub_dir: "default-permissions",
+    src: "default-permissions-lech-hodiny.xml",
+}
