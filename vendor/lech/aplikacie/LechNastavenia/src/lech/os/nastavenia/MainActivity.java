@@ -19,6 +19,7 @@ import android.os.StatFs;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.Formatter;
 import android.view.Gravity;
@@ -69,6 +70,7 @@ public class MainActivity extends Activity {
         }
 
         final int subtitleRes;
+        boolean gap;
     }
 
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -167,48 +169,50 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void define() {
-        entries.add(new Entry(R.drawable.ic_set_siet, 0, 0, R.string.network, R.string.network_sub, false,
-                Settings.ACTION_WIRELESS_SETTINGS, Settings.ACTION_WIFI_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_pripojene_zariadenia, 0, 0, R.string.devices, R.string.devices_sub,
-                false, "android.settings.CONNECTED_DEVICES_SETTINGS", Settings.ACTION_BLUETOOTH_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_aplikacie, 0, 0, R.string.apps, R.string.apps_sub, false,
-                "android.settings.APPS_SETTINGS", Settings.ACTION_APPLICATION_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_upozornenia, 0, 0, R.string.notifications,
-                R.string.notifications_sub, false, "android.settings.NOTIFICATION_SETTINGS",
-                Settings.ACTION_APP_NOTIFICATION_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_zvuk, 0, 0, R.string.sound, R.string.sound_sub, false,
-                Settings.ACTION_SOUND_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_rezimy, 0, 0, R.string.modes, R.string.modes_sub, false,
-                "android.settings.MODES_SETTINGS", "android.settings.ZEN_MODE_SETTINGS",
-                Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_obrazovka, 0, 0, R.string.display, R.string.display_sub, false,
-                Settings.ACTION_DISPLAY_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_tapeta, 0, 0, R.string.wallpaper, R.string.wallpaper_sub,
-                false, "android.settings.WALLPAPER_SETTINGS", Intent.ACTION_SET_WALLPAPER));
-        entries.add(new Entry(R.drawable.ic_set_ulozisko, 0, 0, R.string.storage, 0, false,
-                Settings.ACTION_INTERNAL_STORAGE_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_bateria, 0, 0, R.string.battery, 0, false,
-                Intent.ACTION_POWER_USAGE_SUMMARY, Settings.ACTION_BATTERY_SAVER_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_sukromie, 0, 0, R.string.security, R.string.security_sub,
-                false, "android.settings.SECURITY_PRIVACY_SETTINGS", Settings.ACTION_SECURITY_SETTINGS,
-                Settings.ACTION_PRIVACY_SETTINGS));
-        entries.add(new Entry(R.drawable.ic_set_system, 0, 0, R.string.system, R.string.system_sub, true));
+    private Entry add(int icon, int title, int subtitle, boolean gap, String... actions) {
+        Entry e = new Entry(icon, 0, 0, title, subtitle, false, actions);
+        e.gap = gap;
+        entries.add(e);
+        return e;
+    }
 
-        systemEntries.add(new Entry(R.drawable.ic_language, 0xFF4FC3F7, 0xFF01579B, R.string.languages,
-                R.string.languages_sub, false, "android.settings.LANGUAGE_SETTINGS", Settings.ACTION_LOCALE_SETTINGS));
-        systemEntries.add(new Entry(R.drawable.ic_history, 0xFF81C784, 0xFF1B5E20, R.string.date_time,
-                R.string.date_time_sub, false, Settings.ACTION_DATE_SETTINGS));
-        systemEntries.add(new Entry(R.drawable.ic_accessibility, 0xFF64B5F6, 0xFF0D47A1, R.string.accessibility,
-                R.string.accessibility_sub, false, Settings.ACTION_ACCESSIBILITY_SETTINGS));
-        systemEntries.add(new Entry(R.drawable.ic_restore, 0xFFFFB74D, 0xFFE65100, R.string.reset, R.string.reset_sub,
-                false, "android.settings.RESET_DASHBOARD", "android.settings.SYSTEM_SETTINGS"));
-        systemEntries.add(new Entry(R.drawable.ic_info, 0xFFBA68C8, 0xFF4A148C, R.string.about, 0, false,
-                Settings.ACTION_DEVICE_INFO_SETTINGS));
-        systemEntries.add(new Entry(R.drawable.ic_keyboard, 0xFF90A4AE, 0xFF37474F, R.string.developer,
-                R.string.developer_sub, false, Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));
-        systemEntries.add(new Entry(R.drawable.ic_apps, 0xFF7BE41E, 0xFF1E6A06, R.string.all_settings,
-                R.string.all_settings_sub, false, Settings.ACTION_SETTINGS));
+    /** The list of the Android settings (the same items, order and groups), with the LECH OS icons. */
+    private void define() {
+        add(R.drawable.ic_set_siet, R.string.network, R.string.network_sub, false,
+                Settings.ACTION_WIRELESS_SETTINGS, Settings.ACTION_WIFI_SETTINGS);
+        add(R.drawable.ic_set_pripojene_zariadenia, R.string.devices, R.string.devices_sub, false,
+                "android.settings.CONNECTED_DEVICES_SETTINGS", Settings.ACTION_BLUETOOTH_SETTINGS);
+        add(R.drawable.ic_set_aplikacie, R.string.apps, R.string.apps_sub, true,
+                "android.settings.APPS_SETTINGS", Settings.ACTION_APPLICATION_SETTINGS);
+        add(R.drawable.ic_set_upozornenia, R.string.notifications, R.string.notifications_sub, false,
+                "android.settings.NOTIFICATION_SETTINGS");
+        add(R.drawable.ic_set_zvuk, R.string.sound, R.string.sound_sub, false, Settings.ACTION_SOUND_SETTINGS);
+        add(R.drawable.ic_set_rezimy, R.string.modes, R.string.modes_sub, false, "android.settings.MODES_SETTINGS",
+                "android.settings.ZEN_MODE_SETTINGS", Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS);
+        add(R.drawable.ic_set_obrazovka, R.string.display, R.string.display_sub, false, Settings.ACTION_DISPLAY_SETTINGS);
+        add(R.drawable.ic_set_tapeta, R.string.wallpaper, R.string.wallpaper_sub, false,
+                "android.settings.WALLPAPER_SETTINGS", Intent.ACTION_SET_WALLPAPER);
+        add(R.drawable.ic_set_ulozisko, R.string.storage, 0, true, Settings.ACTION_INTERNAL_STORAGE_SETTINGS);
+        add(R.drawable.ic_set_bateria, R.string.battery, 0, false, Intent.ACTION_POWER_USAGE_SUMMARY,
+                Settings.ACTION_BATTERY_SAVER_SETTINGS);
+        add(R.drawable.ic_set_system, R.string.system, R.string.system_sub, false,
+                "cmp:com.android.settings/com.android.settings.Settings$SystemDashboardActivity",
+                Settings.ACTION_SETTINGS);
+        add(R.drawable.ic_set_informacie, R.string.about, 0, false, Settings.ACTION_DEVICE_INFO_SETTINGS);
+        add(R.drawable.ic_set_sukromie, R.string.security, R.string.security_sub, true,
+                "android.settings.SECURITY_PRIVACY_SETTINGS", Settings.ACTION_SECURITY_SETTINGS,
+                Settings.ACTION_PRIVACY_SETTINGS);
+        add(R.drawable.ic_set_poloha, R.string.location, 0, false, Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        add(R.drawable.ic_set_hesla, R.string.passwords, R.string.passwords_sub, false,
+                "android.settings.CREDENTIAL_PROVIDER",
+                "cmp:com.android.settings/com.android.settings.Settings$PasswordsAndAccountsActivity",
+                Settings.ACTION_SETTINGS);
+        add(R.drawable.ic_set_ucty, R.string.accounts, R.string.accounts_sub, false, Settings.ACTION_SYNC_SETTINGS);
+        add(R.drawable.ic_set_tiesen, R.string.emergency, R.string.emergency_sub, false,
+                "cmp:com.android.settings/com.android.settings.Settings$EmergencyDashboardActivity",
+                Settings.ACTION_SETTINGS);
+        add(R.drawable.ic_set_dostupnost, R.string.accessibility, R.string.accessibility_sub, true,
+                Settings.ACTION_ACCESSIBILITY_SETTINGS);
     }
 
     /** Values that change: storage use, battery level and the LECH OS version. */
@@ -216,29 +220,35 @@ public class MainActivity extends Activity {
         for (Entry e : entries) {
             if (e.subtitleRes != 0) e.subtitle = getString(e.subtitleRes);
         }
-        for (Entry e : systemEntries) {
-            if (e.subtitleRes != 0) e.subtitle = getString(e.subtitleRes);
+        for (Entry e : entries) {
+            if (e.title == R.string.storage) {
+                try {
+                    StatFs st = new StatFs(Environment.getDataDirectory().getPath());
+                    long total = st.getTotalBytes();
+                    long free = st.getAvailableBytes();
+                    e.subtitle = getString(R.string.storage_sub, (int) ((total - free) * 100 / Math.max(1, total)),
+                            Formatter.formatShortFileSize(this, free));
+                } catch (Exception ignored) {
+                    e.subtitle = "";
+                }
+            } else if (e.title == R.string.battery) {
+                Intent b = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                if (b != null) {
+                    int level = b.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) * 100
+                            / Math.max(1, b.getIntExtra(BatteryManager.EXTRA_SCALE, 100));
+                    int status = b.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                    e.subtitle = status == BatteryManager.BATTERY_STATUS_FULL ? getString(R.string.battery_full)
+                            : status == BatteryManager.BATTERY_STATUS_CHARGING
+                            ? level + " % · " + getString(R.string.battery_charging) : level + " %";
+                }
+            } else if (e.title == R.string.about) {
+                String name = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
+                e.subtitle = TextUtils.isEmpty(name) ? android.os.Build.MODEL : name;
+            } else if (e.title == R.string.location) {
+                boolean on = getSystemService(android.location.LocationManager.class).isLocationEnabled();
+                e.subtitle = getString(on ? R.string.on : R.string.off);
+            }
         }
-        try {
-            StatFs st = new StatFs(Environment.getDataDirectory().getPath());
-            long total = st.getTotalBytes();
-            long used = total - st.getAvailableBytes();
-            entries.get(8).subtitle = getString(R.string.storage_sub, (int) (used * 100 / Math.max(1, total)),
-                    Formatter.formatShortFileSize(this, used), Formatter.formatShortFileSize(this, total));
-        } catch (Exception ignored) {
-            entries.get(8).subtitle = "";
-        }
-        Intent b = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        if (b != null) {
-            int level = b.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = b.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
-            int status = b.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            boolean charging = status == BatteryManager.BATTERY_STATUS_CHARGING
-                    || status == BatteryManager.BATTERY_STATUS_FULL;
-            entries.get(9).subtitle = getString(R.string.battery_sub, level * 100 / Math.max(1, scale),
-                    getString(charging ? R.string.battery_charging : R.string.battery_not_charging));
-        }
-        systemEntries.get(4).subtitle = getString(R.string.about_sub, lechVersion());
     }
 
     private static String lechVersion() {
@@ -310,7 +320,11 @@ public class MainActivity extends Activity {
         } else {
             header.title.setText(R.string.app_name);
             header.subtitle.setText(R.string.subtitle);
-            for (Entry e : entries) listView.addView(row(e));
+            for (Entry e : entries) {
+                View v = row(e);
+                if (e.gap) ((LinearLayout.LayoutParams) v.getLayoutParams()).topMargin = Ui.dp(this, 14);
+                listView.addView(v);
+            }
         }
     }
 
@@ -356,7 +370,9 @@ public class MainActivity extends Activity {
             return;
         }
         for (String a : e.actions) {
-            if (tryStart(new Intent(a))) return;
+            Intent i = a.startsWith("cmp:") ? new Intent().setComponent(
+                    android.content.ComponentName.unflattenFromString(a.substring(4))) : new Intent(a);
+            if (tryStart(i)) return;
         }
         Toast.makeText(this, R.string.no_screen, Toast.LENGTH_SHORT).show();
     }
