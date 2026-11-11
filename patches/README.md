@@ -30,6 +30,8 @@ tools/etapa2/aplikuj-zaplaty.sh --kontrola  # len vypíše, ktoré záplaty sú 
 
 | `packages/modules/RemoteKeyProvisioning` (E2-12, brána 1) | Widevine (DRM) sa zriaďuje len cez server nastavený pre systém (`remote_provisioning.hostname`, ako atestačné kľúče); LECH OS ho nechá prázdny → bez zriadenia | rkpd pri každom štarte posielal žiadosť ovládača DRM Pixelu na `www.googleapis.com` – jediné spojenie na Google v 24 h meraní mimo telefónu (10. 11. 2026). Dôsledok: obsah s DRM bez hardvérového Widevine (napr. bez HD v streamovacích aplikáciách), kým nebude proxy LECH OS |
 
+| `packages/modules/AdServices` (z GrapheneOS, E3-01) | Knižnicu `android.ext.adservices` smie použiť aj `external/vanadium` | Prehliadač a WebView Vanadium ju uvádzajú ako voliteľnú; bez tohto povolenia sa zostava zastaví (`not visible to this module`) |
+
 Záplaty pre projekty Pixelu ([manifests/lech-pixel.xml](../manifests/lech-pixel.xml)) sa preskočia, kým projekty
 nie sú stiahnuté (`tools/etapa2/12-priprav-pixel.sh`).
 

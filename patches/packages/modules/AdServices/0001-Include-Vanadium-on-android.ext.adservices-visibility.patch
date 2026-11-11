@@ -1,0 +1,26 @@
+From c20fb142c4908a6d8f8f5d2e82ea7a25f3cafdd4 Mon Sep 17 00:00:00 2001
+From: quh4gko8 <88831734+quh4gko8@users.noreply.github.com>
+Date: Thu, 2 Jul 2026 15:51:12 +0000
+Subject: [PATCH] [tmp] Include Vanadium on android.ext.adservices visibility
+ for dexpreopt
+
+Change-Id: Ic02272557203d4d9044cf069d9da0f5bd5054f2b
+---
+ adservices/framework/Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/adservices/framework/Android.bp b/adservices/framework/Android.bp
+index 5421a43..4239b26 100644
+--- a/adservices/framework/Android.bp
++++ b/adservices/framework/Android.bp
+@@ -100,6 +100,7 @@ java_library {
+     visibility: [
+         "//device/google:__subpackages__",
+         "//external/chromium-webview:__subpackages__",
++        "//external/vanadium:__subpackages__",
+         "//packages/modules/AdServices:__subpackages__",
+         "//packages/modules/ExtServices:__subpackages__",
+         "//vendor:__subpackages__",
+-- 
+2.43.0
+
