@@ -122,7 +122,8 @@ final class Alarms {
     /** Schedules the nearest enabled alarm (one alarm clock at a time, as the system shows it). */
     static void schedule(Context c) {
         AlarmManager am = c.getSystemService(AlarmManager.class);
-        long now = System.currentTimeMillis();
+        // Never the minute that has just rung again (an alarm may fire a moment before its exact time).
+        long now = Math.max(System.currentTimeMillis(), prefs(c).getLong("lastRing", 0) + 61_000L);
         Alarm best = null;
         long bestAt = Long.MAX_VALUE;
         for (Alarm a : load(c)) {
@@ -151,6 +152,7 @@ final class Alarms {
 
     /** After an alarm rang: a one-time alarm turns off, a snooze ends; the next one is scheduled. */
     static void rang(Context c, int id) {
+        prefs(c).edit().putLong("lastRing", System.currentTimeMillis()).commit();
         List<Alarm> list = load(c);
         Alarm a = find(list, id);
         if (a != null) {
