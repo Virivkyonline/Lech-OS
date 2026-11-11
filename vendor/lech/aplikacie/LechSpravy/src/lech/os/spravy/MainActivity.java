@@ -216,6 +216,8 @@ public class MainActivity extends Activity {
     }
 
     static boolean isDefault(Activity a) {
+        RoleManager rm = a.getSystemService(RoleManager.class);
+        if (rm != null && rm.isRoleAvailable(RoleManager.ROLE_SMS) && rm.isRoleHeld(RoleManager.ROLE_SMS)) return true;
         return a.getPackageName().equals(Telephony.Sms.getDefaultSmsPackage(a));
     }
 
@@ -223,6 +225,13 @@ public class MainActivity extends Activity {
         RoleManager rm = getSystemService(RoleManager.class);
         if (rm != null && rm.isRoleAvailable(RoleManager.ROLE_SMS)) {
             startActivityForResult(rm.createRequestRoleIntent(RoleManager.ROLE_SMS), REQ_ROLE);
+        } else {
+            // The role screen is not available: the default apps page of the settings.
+            try {
+                startActivity(new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS));
+            } catch (Exception ignored) {
+                // No settings screen.
+            }
         }
     }
 
@@ -261,6 +270,14 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_ROLE) {
+            if (!isDefault(this)) {
+                // Not granted from the dialog: the default apps page, where the user picks the SMS app.
+                try {
+                    startActivity(new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS));
+                } catch (Exception ignored) {
+                    // No settings screen.
+                }
+            }
             if (!granted()) requestPermissions(PERMISSIONS, REQ_PERMISSIONS);
             reload();
         }
