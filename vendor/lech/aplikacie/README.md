@@ -9,6 +9,7 @@
 | `LechKontakty` – `PhoneActivity` | **Telefón**: rýchla voľba, kontakty, história, hlasová schránka, nedávne hovory, klávesnica (vlastná ikona) | – (Dialer ostáva pre obrazovku hovoru) |
 | `LechSpravy` (`lech.os.spravy`) | **SMS a MMS**: konverzácie, odosielanie a príjem SMS, upozornenia s odpoveďou, zablokované čísla; predvolená aplikácia pre SMS (`LechSmsOverlay`). MMS: uložené sa zobrazia, sťahovanie a odosielanie MMS neskôr | AOSP Messaging |
 | `LechHodiny` (`lech.os.hodiny`) | **Hodiny**: budíky (dni, názov, odloženie, zvonenie aj na zamknutej obrazovke), svetový čas, časovač, stopky s kolami | AOSP DeskClock |
+| `LechKalendar` (`lech.os.kalendar`) | **Kalendár**: mesiac (bodky udalostí), týždeň, deň, agenda; udalosti s miestom, pripomienkou, opakovaním a farbou v poskytovateľovi kalendára (miestny kalendár „LECH OS“, nič sa nesynchronizuje); upozornenia pripomienok; úlohy | AOSP Calendar |
 | `LechGaleria` (`lech.os.galeria`) | fotky po dňoch, albumy, videá, obľúbené, kôš, prehliadač s priblížením, otočenie (uloží kópiu), zdieľanie | AOSP Gallery2 |
 
 - Java, len verejné API Androidu (`sdk_version: "current"`), bez knižníc AndroidX – zostavujú sa s produktom

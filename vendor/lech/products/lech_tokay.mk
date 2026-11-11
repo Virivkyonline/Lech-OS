@@ -63,7 +63,8 @@ PRODUCT_PACKAGES += \
 # Contacts, LechGaleria the AOSP Gallery2 (both by overrides in their Android.bp). LechSubory and LechNastavenia
 # sit beside DocumentsUI and Settings, which stay as the system file picker and the settings screens; their
 # launcher entries are hidden (vendor/lech/overlay/launcher). LechDialerOverlay: Slovak texts the Dialer lacks.
-# LechSpravy replaces the AOSP Messaging and is the default SMS app (LechSmsOverlay); LechHodiny the DeskClock.
+# LechSpravy replaces the AOSP Messaging and is the default SMS app (LechSmsOverlay); LechHodiny the DeskClock,
+# LechKalendar the AOSP Calendar.
 PRODUCT_PACKAGES += \
     LechKontakty \
     LechGaleria \
@@ -71,6 +72,7 @@ PRODUCT_PACKAGES += \
     LechNastavenia \
     LechSpravy \
     LechHodiny \
+    LechKalendar \
     LechSmsOverlay \
     LechLauncherOverlay \
     LechDialerOverlay \
