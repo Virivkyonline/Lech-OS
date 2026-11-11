@@ -18,16 +18,14 @@
 
 ## Ďalšie kroky (poradie)
 
-1. Výsledok 0.2.0-dev: plocha 4 stĺpce, ikony Súbory/Kalendár/Hodiny (Kalendár: AOSP možno nemá aplikáciu →
-   pridať napr. Etar), ikona prehliadača.
-2. **Názov „Vanadium“ → „Prehliadač“** na ploche: Vanadium nepovoľuje prekrytie zdrojov; riešenie – rozšíriť
-   záplatu `frameworks/libs/systemui` 0002 aj o názvy (`LauncherActivityCachingLogic.getLabel` v iconloaderlib,
-   reťazec `string/<balík>` v `lech.os.ikony`, generátor `tools/etapa2/ikony_prekrytia.py`).
-3. Používateľ spomenul „Search“ na ploche – nevie, čo to je; požiadať o fotku (pravdepodobne vyhľadávanie aplikácií).
-4. Plocha podľa návrhu: presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (úprava Launcher3).
-5. E3-02 Fotoaparát a Galéria (Camera2/Gallery2 kreslia pod navigačné tlačidlá) – vybrať moderné otvorené aplikácie.
-6. E3-04 eSIM bez Google (OpenEUICC). Aplikácie E-mail a Počasie (ikony v návrhu plochy).
-7. Popri tom: 12 novembrových bezpečnostných opráv na prispôsobenie, neverejná CVE-2026-58868, červené „Your device
+1. **0.2.2-dev** (pripravené, používateľ zostavuje): názov „Vanadium“ → „Prehliadač“ (záplata
+   `frameworks/libs/systemui` 0003, tabuľka v `LauncherActivityCachingLogic`) a bez aplikácie „Search“
+   (QuickSearchBox v `overrides` modulu `LechVanadium`; balík z telefónu neoverený – adb ho vtedy nevidel). Overiť
+   na ploche po `pm clear com.android.launcher3`.
+2. Plocha podľa návrhu: presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (úprava Launcher3).
+3. E3-02 Fotoaparát a Galéria (Camera2/Gallery2 kreslia pod navigačné tlačidlá) – vybrať moderné otvorené aplikácie.
+4. E3-04 eSIM bez Google (OpenEUICC). Aplikácie E-mail a Počasie (ikony v návrhu plochy).
+5. Popri tom: 12 novembrových bezpečnostných opráv na prispôsobenie, neverejná CVE-2026-58868, červené „Your device
    is corrupt“ pri chybnom slote, server LECH OS (E2-08b), ochranná známka LECH OS (triedy 9, 42; firma sa vyberie).
 
 ## Poznámky

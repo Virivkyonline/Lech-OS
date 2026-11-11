@@ -12,7 +12,8 @@ package {
 }
 
 // Replaces the AOSP WebView (webview, June 2026) and the WebView test shell Browser2 in the product: an app
-// without code whose only job is the overrides.
+// without code whose only job is the overrides. It also leaves out QuickSearchBox ("Search" on the home screen,
+// 11. 11. 2026): apps are found by the search field of the home screen, the web by the browser.
 android_app {
     name: "LechVanadium",
     product_specific: true,
@@ -21,6 +22,7 @@ android_app {
     overrides: [
         "webview",
         "Browser2",
+        "QuickSearchBox",
     ],
     dex_preopt: {
         enabled: false,
