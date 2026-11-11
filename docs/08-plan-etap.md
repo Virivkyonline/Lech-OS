@@ -55,6 +55,15 @@ Postup a zoznam úloh: [docs/11 – štart na Cuttlefish](11-etapa-2-cuttlefish.
 | **Výstupy** | Zostavovacia infraštruktúra a CI; manifest a forky; Device Support Package pre Pixel; vlastné podpisové kľúče; server aktualizácií v0; odstránenie spojení na Google; laboratórne meranie sieťovej prevádzky mimo telefónu; generálka mesačnej aktualizácie ([docs/14](14-aktualizacie-a-podpora.md#overenie-v-etape-2)); prvé kompatibilitné testy |
 | **Hotové, keď** | Splnená **brána 1 – Overený základ** ([ADR-0008](adr/0008-postupny-vyvoj-a-brany.md#rozhodnutie)) |
 
+**Stav brány 1 (11. 11. 2026):**
+
+| Podmienka | Stav |
+|-----------|------|
+| LECH OS na Pixeli so zamknutým bootloaderom a vlastným kľúčom | ✅ 8. 11. 2026 (E2-12) |
+| 3 OTA aktualizácie vrátane automatického návratu po chybnej | ✅ 8. 11. 2026 – otvorené: červené „Your device is corrupt“ pri pokusoch o štart chybného slotu ([docs/11](11-etapa-2-cuttlefish.md), časť 4l) |
+| Generálka mesačnej aktualizácie so zmeraným oneskorením | rozpracované – opravy september až november prevzaté, výsledok v [docs/14](14-aktualizacie-a-podpora.md#overenie-v-etape-2) |
+| 0 neznámych spojení pri prvom spustení a počas 24 h nečinnosti (meranie mimo telefónu) | ✅ 11. 11. 2026 ([audit/README.md](../audit/README.md), 15. a 16. meranie) |
+
 ### Etapa 3 – Vlastné grafické prostredie
 
 | | |

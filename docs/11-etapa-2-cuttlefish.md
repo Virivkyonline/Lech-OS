@@ -1055,6 +1055,11 @@ Prvé spustenie na skutočnom počítači (notebook, Windows 11, Ubuntu 24.04 vo
     0.1.0-dev → 0.1.1-dev → 0.1.2-dev → skúšobná chybná 0.1.3-chybna (automatický návrat na 0.1.2-dev) → 0.1.3-dev,
     všetko do telefónu so zamknutým bootloaderom zo servera v0. Pri chybnom slote červené „Your device is corrupt“
     pri každom pokuse (otvorené).
+43. **Meranie mimo telefónu (8.–11. 11. 2026, [časť 4m](#4m-meranie-mimo-telefónu-brána-1)):** prvý pokus stratil pád
+    Windows (`vfpext.sys`), druhý bol slepý (prístupový bod bez internetu; `pktmon` zapisuje rámce Wi-Fi 802.11 –
+    `wifi_na_ethernet.py`). Tretí, 24 h: len NTP a `www.googleapis.com` – zriadenie DRM Widevine v `rkpdapp` pri štarte
+    → záplata `packages/modules/RemoteKeyProvisioning` 0001 (0.1.7-dev). Štvrté, prvý štart s 0.1.7-dev: len
+    `europe.pool.ntp.org`, **0 neznámych** – podmienka brány 1 splnená ([audit/README.md](../audit/README.md), 15. a 16.).
 
 Nástroje Cuttlefish na hostiteľovi sa pri štarte pokúšajú kontaktovať `metadata.google.internal` (zisťujú, či bežia
 v cloude Google). Mimo Google Cloud to zlyhá bez vplyvu na štart; do auditu virtuálneho telefónu to nepatrí,

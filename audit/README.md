@@ -255,3 +255,16 @@ rámcov Wi-Fi, z toho 4111 bez dát – úspora energie). Kontrolný test s preh
 Potom 24 h žiadne spojenie. Oprava je v 0.1.7-dev (10. 11. 2026, OTA do zamknutého telefónu); log po štarte:
 `RkpdWidevine: LECH OS: no provisioning server set (remote_provisioning.hostname), Widevine provisioning skipped.`
 Overenie meraním mimo telefónu: prvý štart po obnovení výrobných nastavení s 0.1.7-dev (16. meranie).
+
+## 16. meranie – 10.–11. 11. 2026, prvý štart s opravou DRM (brána 1)
+
+LECH OS 0.1.7-dev (bez zriadenia Widevine so serverom Google), zamknutý bootloader; meranie mimo telefónu spustené
+pred obnovením výrobných nastavení, telefón bez SIM len na Wi-Fi prístupovom bode notebooku, približne 8 h
+(8 hodinových súborov, 1481 rámcov Wi-Fi, z toho 1004 bez dát).
+
+| Doména | Kedy | Stav |
+|--------|------|------|
+| `europe.pool.ntp.org` | pri pripojení k Wi-Fi | povolené |
+
+**0 neznámych spojení.** Spolu s 15. meraním (24 h nečinnosti bez ďalšieho spojenia) je splnená podmienka brány 1
+„0 neznámych spojení pri prvom spustení a počas 24 h nečinnosti, overené meraním mimo telefónu“ (ADR-0008).
