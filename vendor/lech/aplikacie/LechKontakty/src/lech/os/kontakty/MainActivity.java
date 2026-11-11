@@ -54,6 +54,8 @@ public class MainActivity extends Activity {
     private static final int TAB_CONTACTS = 0;
     private static final int TAB_HISTORY = 1;
     private static final int TAB_DIALPAD = 2;
+    private static final int TAB_PHONE = 3;
+    private static final int NAV_SETTINGS = -1;
     private static final int CHIP_ALL = 0;
     private static final int CHIP_FAVORITES = 1;
     private static final int CHIP_GROUPS = 2;
@@ -68,6 +70,14 @@ public class MainActivity extends Activity {
     private int generation;
 
     private int tab = TAB_CONTACTS;
+    /** The phone app (PhoneActivity): phone home, its navigation and header. */
+    private boolean phone;
+    private View addButton;
+    private LinearLayout phonePage;
+    private EditText phoneSearch;
+    private TextView phoneHeading;
+    private View phoneShowAll;
+    private LinearLayout phoneList;
     private int chip = CHIP_ALL;
     private Repo.Bucket openGroup;
     private String openCompany;
@@ -110,8 +120,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        phone = this instanceof PhoneActivity;
+        tab = home();
         if (state != null) {
-            tab = state.getInt(STATE_TAB, TAB_CONTACTS);
+            tab = state.getInt(STATE_TAB, home());
             chip = state.getInt(STATE_CHIP, CHIP_ALL);
         }
         LinearLayout root = Ui.column(this);
@@ -125,6 +137,8 @@ public class MainActivity extends Activity {
         pages.addView(contactsPage, Ui.match());
         pages.addView(historyPage, Ui.match());
         pages.addView(dialpadPage, Ui.match());
+        phonePage = buildPhonePage();
+        pages.addView(phonePage, Ui.match());
         permissionView = buildPermissionView();
         pages.addView(permissionView, Ui.match());
         root.addView(buildNavigation(), Ui.margins(Ui.lp(-1, -2), this, 14, 4, 14, 10));
@@ -141,6 +155,10 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handleIntent(intent);
+    }
+
+    private int home() {
+        return phone ? TAB_PHONE : TAB_CONTACTS;
     }
 
     private void handleIntent(Intent i) {
@@ -208,8 +226,10 @@ public class MainActivity extends Activity {
             reload();
         } else if (tab == TAB_CONTACTS && search.getText().length() > 0) {
             search.setText("");
-        } else if (tab != TAB_CONTACTS) {
-            selectTab(TAB_CONTACTS);
+        } else if (tab == TAB_PHONE && phoneSearch.getText().length() > 0) {
+            phoneSearch.setText("");
+        } else if (tab != home()) {
+            selectTab(home());
         } else {
             finish();
         }
@@ -233,7 +253,7 @@ public class MainActivity extends Activity {
         FrameLayout iconBox = new FrameLayout(this);
         iconBox.setBackground(Ui.shape(this, 0x33000000, 0x667BE41E, 1.5f, 22));
         headerIcon = new ImageView(this);
-        headerIcon.setImageResource(R.mipmap.ic_kontakty);
+        headerIcon.setImageResource(this instanceof PhoneActivity ? R.mipmap.ic_telefon : R.mipmap.ic_kontakty);
         int p = Ui.dp(this, 3);
         iconBox.setPadding(p, p, p, p);
         iconBox.addView(headerIcon, Ui.match());
@@ -255,6 +275,7 @@ public class MainActivity extends Activity {
                 v -> focusSearch()));
         View add = Ui.roundButton(this, R.drawable.ic_add, true, 46, getString(R.string.add_contact),
                 v -> addContact(null));
+        addButton = add;
         buttons.addView(add, Ui.margins(Ui.lp(Ui.dp(this, 46), Ui.dp(this, 46)), this, 10, 0, 10, 0));
         buttons.addView(Ui.roundButton(this, R.drawable.ic_more, false, 46, getString(R.string.more),
                 this::showMenu));
@@ -481,6 +502,89 @@ public class MainActivity extends Activity {
         startActivity(i);
     }
 
+    // ---- Phone home (PhoneActivity) ----
+
+    private LinearLayout buildPhonePage() {
+        LinearLayout page = Ui.column(this);
+        LinearLayout tiles = Ui.row(this);
+        tiles.setPadding(Ui.dp(this, 14), 0, Ui.dp(this, 14), 0);
+        phoneTile(tiles, R.drawable.ic_star_border, R.string.tile_speed_dial, () -> {
+            chip = CHIP_FAVORITES;
+            selectTab(TAB_CONTACTS);
+        });
+        phoneTile(tiles, R.drawable.ic_person, R.string.tab_contacts, () -> {
+            chip = CHIP_ALL;
+            selectTab(TAB_CONTACTS);
+        });
+        phoneTile(tiles, R.drawable.ic_history, R.string.tab_history, () -> selectTab(TAB_HISTORY));
+        phoneTile(tiles, R.drawable.ic_voicemail, R.string.tile_voicemail, () -> Actions.voicemail(this));
+        page.addView(tiles, Ui.lp(-1, -2));
+
+        LinearLayout box = Ui.row(this);
+        box.setBackground(Ui.shape(this, 0xCC08202B, 0xFF9CFF3A, 2f, 30));
+        box.setPadding(Ui.dp(this, 18), 0, Ui.dp(this, 10), 0);
+        box.addView(Ui.icon(this, R.drawable.ic_search, Ui.TEXT, 24));
+        phoneSearch = new EditText(this);
+        phoneSearch.setHint(R.string.phone_search_hint);
+        phoneSearch.setBackground(null);
+        phoneSearch.setSingleLine(true);
+        phoneSearch.setTextColor(Ui.TEXT);
+        phoneSearch.setHintTextColor(Ui.TEXT_2);
+        phoneSearch.setTextSize(16);
+        phoneSearch.setPadding(Ui.dp(this, 14), Ui.dp(this, 15), Ui.dp(this, 8), Ui.dp(this, 15));
+        phoneSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) { }
+            @Override public void onTextChanged(CharSequence s, int a, int b, int c) { }
+            @Override public void afterTextChanged(Editable s) {
+                reload();
+            }
+        });
+        box.addView(phoneSearch, Ui.lp(0, -2, 1));
+        page.addView(box, Ui.margins(Ui.lp(-1, -2), this, 16, 14, 16, 4));
+
+        LinearLayout head = Ui.row(this);
+        head.setPadding(Ui.dp(this, 22), Ui.dp(this, 12), Ui.dp(this, 14), Ui.dp(this, 6));
+        phoneHeading = Ui.text(this, getString(R.string.recent_calls), 21, Ui.TEXT, true);
+        head.addView(phoneHeading, Ui.lp(0, -2, 1));
+        LinearLayout all = Ui.row(this);
+        Ui.clickable(all, null);
+        all.setPadding(Ui.dp(this, 8), Ui.dp(this, 4), 0, Ui.dp(this, 4));
+        all.addView(Ui.text(this, getString(R.string.show_all), 15, Ui.TEXT_2, false));
+        all.addView(Ui.icon(this, R.drawable.ic_chevron_right, Ui.TEXT_2, 22));
+        all.setOnClickListener(v -> selectTab(TAB_HISTORY));
+        phoneShowAll = all;
+        head.addView(all);
+        page.addView(head, Ui.lp(-1, -2));
+
+        android.widget.ScrollView sc = new android.widget.ScrollView(this);
+        phoneList = Ui.column(this);
+        sc.addView(phoneList, Ui.lp(-1, -2));
+        page.addView(sc, Ui.lp(-1, 0, 1));
+
+        LinearLayout dial = Ui.pillButton(this, R.drawable.ic_dialpad, getString(R.string.dial_number),
+                v -> selectTab(TAB_DIALPAD));
+        LinearLayout.LayoutParams dl = Ui.margins(Ui.lp(-2, -2), this, 0, 10, 0, 6);
+        dl.gravity = Gravity.CENTER_HORIZONTAL;
+        page.addView(dial, dl);
+        return page;
+    }
+
+    private void phoneTile(LinearLayout row, int icon, int label, Runnable r) {
+        LinearLayout t = Ui.column(this);
+        t.setGravity(Gravity.CENTER);
+        t.setPadding(Ui.dp(this, 4), Ui.dp(this, 12), Ui.dp(this, 4), Ui.dp(this, 10));
+        Ui.clickable(t, Ui.shape(this, 0xCC0A2A33, 0xAA5FC21A, 1.5f, 20));
+        t.addView(Ui.icon(this, icon, Ui.TEXT, 32));
+        TextView l = Ui.text(this, getString(label), 14, Ui.TEXT, true);
+        l.setGravity(Gravity.CENTER);
+        l.setMaxLines(2);
+        t.addView(l, Ui.margins(Ui.lp(-1, -2), this, 0, 6, 0, 0));
+        t.setOnClickListener(v -> r.run());
+        LinearLayout.LayoutParams lp = Ui.lp(0, Ui.dp(this, 96), 1);
+        if (row.getChildCount() > 0) lp.leftMargin = Ui.dp(this, 8);
+        row.addView(t, lp);
+    }
+
     // ---- History page ----
 
     private LinearLayout buildHistoryPage() {
@@ -671,9 +775,16 @@ public class MainActivity extends Activity {
         GradientDrawable bg = Ui.shape(this, 0xE60A2330, 0x9946A06E, 1.2f, 30);
         nav.setBackground(bg);
         nav.setPadding(Ui.dp(this, 6), Ui.dp(this, 8), Ui.dp(this, 6), Ui.dp(this, 8));
-        addNav(nav, TAB_CONTACTS, R.drawable.ic_person, R.string.tab_contacts);
-        addNav(nav, TAB_HISTORY, R.drawable.ic_history, R.string.tab_history);
-        addNav(nav, TAB_DIALPAD, R.drawable.ic_dialpad, R.string.tab_dialpad);
+        if (phone) {
+            addNav(nav, TAB_PHONE, R.drawable.ic_call, R.string.nav_phone);
+            addNav(nav, TAB_CONTACTS, R.drawable.ic_person, R.string.tab_contacts);
+            addNav(nav, TAB_HISTORY, R.drawable.ic_history, R.string.nav_history);
+            addNav(nav, NAV_SETTINGS, R.drawable.ic_settings, R.string.nav_settings);
+        } else {
+            addNav(nav, TAB_CONTACTS, R.drawable.ic_person, R.string.tab_contacts);
+            addNav(nav, TAB_HISTORY, R.drawable.ic_history, R.string.tab_history);
+            addNav(nav, TAB_DIALPAD, R.drawable.ic_dialpad, R.string.tab_dialpad);
+        }
         return nav;
     }
 
@@ -687,7 +798,14 @@ public class MainActivity extends Activity {
         t.setGravity(Gravity.CENTER);
         t.setSingleLine(true);
         item.addView(t);
-        item.setOnClickListener(v -> selectTab(which));
+        item.setTag(which);
+        item.setOnClickListener(v -> {
+            if (which == NAV_SETTINGS) {
+                Actions.start(this, new Intent(android.telecom.TelecomManager.ACTION_SHOW_CALL_SETTINGS));
+            } else {
+                selectTab(which);
+            }
+        });
         nav.addView(item, Ui.lp(0, -2, 1));
         navItems.add(item);
     }
@@ -696,13 +814,12 @@ public class MainActivity extends Activity {
         tab = which;
         for (int k = 0; k < navItems.size(); k++) {
             LinearLayout item = navItems.get(k);
-            int color = k == which ? Ui.GREEN : Ui.TEXT;
-            ((ImageView) item.getChildAt(0)).setImageTintList(android.content.res.ColorStateList.valueOf(color));
-            TextView t = (TextView) item.getChildAt(1);
-            t.setTextColor(color);
-            t.setTypeface(null, k == which ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+            Ui.setNav(item, ((Integer) item.getTag()) == which);
         }
-        if (which == TAB_CONTACTS) {
+        if (which == TAB_PHONE) {
+            title.setText(R.string.phone_name);
+            subtitle.setText(R.string.phone_subtitle);
+        } else if (which == TAB_CONTACTS) {
             title.setText(R.string.app_name);
             subtitle.setText(R.string.subtitle_contacts);
         } else if (which == TAB_HISTORY) {
@@ -713,9 +830,13 @@ public class MainActivity extends Activity {
             subtitle.setText(R.string.subtitle_dialpad);
         }
         headerButtons.setVisibility(which == TAB_DIALPAD ? View.GONE : View.VISIBLE);
+        addButton.setVisibility(which == TAB_PHONE || which == TAB_HISTORY ? View.GONE : View.VISIBLE);
         mountains.setVisibility(which == TAB_DIALPAD ? View.GONE : View.VISIBLE);
         if (which != TAB_CONTACTS) {
             getSystemService(InputMethodManager.class).hideSoftInputFromWindow(search.getWindowToken(), 0);
+        }
+        if (which != TAB_PHONE && phoneSearch != null) {
+            getSystemService(InputMethodManager.class).hideSoftInputFromWindow(phoneSearch.getWindowToken(), 0);
         }
         updateChips();
         updatePages();
@@ -728,6 +849,7 @@ public class MainActivity extends Activity {
         contactsPage.setVisibility(allowed && tab == TAB_CONTACTS ? View.VISIBLE : View.GONE);
         historyPage.setVisibility(allowed && tab == TAB_HISTORY ? View.VISIBLE : View.GONE);
         dialpadPage.setVisibility(tab == TAB_DIALPAD ? View.VISIBLE : View.GONE);
+        phonePage.setVisibility(allowed && tab == TAB_PHONE ? View.VISIBLE : View.GONE);
         if (tab == TAB_DIALPAD) permissionView.setVisibility(View.GONE);
     }
 
@@ -760,11 +882,20 @@ public class MainActivity extends Activity {
         final Repo.Bucket group = openGroup;
         final String company = openCompany;
         final boolean calls = Actions.granted(this, android.Manifest.permission.READ_CALL_LOG);
+        final String phoneQuery = phoneSearch == null ? "" : phoneSearch.getText().toString().trim();
         bg.execute(() -> {
             List<Object> rows = new ArrayList<>();
             int empty = 0;
             try {
-                if (t == TAB_HISTORY) {
+                if (t == TAB_PHONE) {
+                    if (!phoneQuery.isEmpty()) {
+                        rows.addAll(Repo.contacts(this, phoneQuery, Repo.MODE_ALL, -1, null));
+                        empty = R.string.empty_search;
+                    } else if (calls) {
+                        rows.addAll(Repo.calls(this, 6));
+                        empty = R.string.empty_history;
+                    }
+                } else if (t == TAB_HISTORY) {
                     if (calls) rows.addAll(Repo.calls(this, 500));
                 } else if (t == TAB_CONTACTS) {
                     if (!filter.isEmpty()) {
@@ -835,6 +966,23 @@ public class MainActivity extends Activity {
     }
 
     private void show(int t, List<Object> rows, int emptyText) {
+        if (t == TAB_PHONE) {
+            boolean searching = phoneSearch.getText().toString().trim().length() > 0;
+            phoneHeading.setText(searching ? R.string.results : R.string.recent_calls);
+            phoneShowAll.setVisibility(searching ? View.GONE : View.VISIBLE);
+            phoneList.removeAllViews();
+            for (Object o : rows) {
+                View v = o instanceof Repo.Call ? callRow((Repo.Call) o) : contactRow((Repo.Item) o);
+                phoneList.addView(v, Ui.lp(-1, -2));
+            }
+            if (rows.isEmpty() && emptyText != 0) {
+                TextView e = Ui.text(this, getString(emptyText), 16, Ui.TEXT_3, false);
+                e.setGravity(Gravity.CENTER);
+                e.setPadding(0, Ui.dp(this, 20), 0, Ui.dp(this, 20));
+                phoneList.addView(e, Ui.lp(-1, -2));
+            }
+            return;
+        }
         if (t == TAB_HISTORY) {
             historyAdapter.set(rows);
             historyEmpty.setVisibility(rows.isEmpty() ? View.VISIBLE : View.GONE);
@@ -1075,6 +1223,10 @@ public class MainActivity extends Activity {
         meta.addView(m);
         t.addView(meta);
         r.addView(t, Ui.lp(0, -2, 1));
+        if (k.duration > 0) {
+            r.addView(Ui.text(this, android.text.format.DateUtils.formatElapsedTime(k.duration), 14, Ui.TEXT_2,
+                    false));
+        }
         if (!hidden) {
             View call = Ui.roundButton(this, R.drawable.ic_call, true, 40, getString(R.string.call),
                     v -> Actions.call(this, k.number));

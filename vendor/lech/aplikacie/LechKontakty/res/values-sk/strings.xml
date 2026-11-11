@@ -86,4 +86,17 @@
     <string name="more">Ďalšie</string>
     <string name="search">Hľadať</string>
     <string name="delete_digit">Zmazať</string>
+    <string name="phone_name">Telefón</string>
+    <string name="phone_subtitle">Hovory • Kontakty • Správa</string>
+    <string name="tile_speed_dial">Rýchla voľba</string>
+    <string name="tile_voicemail">Hlasová schránka</string>
+    <string name="recent_calls">Nedávne hovory</string>
+    <string name="show_all">Zobraziť všetko</string>
+    <string name="results">Výsledky</string>
+    <string name="dial_number">Vytočiť číslo</string>
+    <string name="nav_phone">Telefón</string>
+    <string name="nav_history">História</string>
+    <string name="nav_settings">Nastavenia</string>
+    <string name="phone_search_hint">Hľadať v kontaktoch alebo číslach</string>
+    <string name="voicemail_failed">Číslo hlasovej schránky nie je nastavené.</string>
 </resources>

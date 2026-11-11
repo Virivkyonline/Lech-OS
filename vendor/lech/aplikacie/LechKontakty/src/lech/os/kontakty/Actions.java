@@ -58,6 +58,19 @@ final class Actions {
         }
     }
 
+    /** Calls the voicemail of the SIM. */
+    static void voicemail(Activity a) {
+        try {
+            if (granted(a, Manifest.permission.CALL_PHONE)) {
+                a.getSystemService(TelecomManager.class).placeCall(Uri.fromParts("voicemail", "", null), new Bundle());
+            } else {
+                a.startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("voicemail", "", null)));
+            }
+        } catch (Exception e) {
+            Toast.makeText(a, R.string.voicemail_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     static void message(Activity a, String number) {
         start(a, new Intent(Intent.ACTION_SENDTO, Uri.fromParts("smsto", number, null)));
     }

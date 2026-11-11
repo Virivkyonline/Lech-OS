@@ -52,6 +52,22 @@
             </intent-filter>
         </activity>
 
+        <!-- LECH Telefón: the phone home with its own launcher icon and task. -->
+        <activity
+            android:name=".PhoneActivity"
+            android:exported="true"
+            android:label="@string/phone_name"
+            android:icon="@mipmap/ic_telefon"
+            android:roundIcon="@mipmap/ic_telefon"
+            android:taskAffinity="lech.os.telefon"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".ContactActivity"
             android:exported="true">
