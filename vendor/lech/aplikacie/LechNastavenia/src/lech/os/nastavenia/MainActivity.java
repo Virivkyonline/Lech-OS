@@ -349,14 +349,6 @@ public class MainActivity extends Activity {
     }
 
     private void open(Entry e) {
-        String sub = e.title == R.string.network ? SubActivity.NETWORK : e.title == R.string.sound ? SubActivity.SOUND
-                : e.title == R.string.display ? SubActivity.DISPLAY : e.title == R.string.battery ? SubActivity.BATTERY
-                : null;
-        if (sub != null) {
-            startActivity(new Intent(this, SubActivity.class).putExtra(SubActivity.EXTRA_PAGE, sub)
-                    .putExtra(SubActivity.EXTRA_ICON, e.icon));
-            return;
-        }
         if (e.system) {
             inSystem = true;
             render();
