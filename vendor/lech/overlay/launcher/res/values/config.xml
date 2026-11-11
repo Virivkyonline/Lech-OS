@@ -4,5 +4,7 @@
     <string-array name="filtered_components">
         <item>com.android.settings/com.android.settings.Settings</item>
         <item>com.android.documentsui/com.android.documentsui.LauncherActivity</item>
+        <!-- The Dialer stays for the in-call screen; its launcher entry is replaced by LECH Telefón. -->
+        <item>com.android.dialer/com.android.dialer.main.impl.MainActivity</item>
     </string-array>
 </resources>

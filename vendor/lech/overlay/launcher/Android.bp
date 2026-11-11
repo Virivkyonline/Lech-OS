@@ -2,7 +2,7 @@
 // Copyright (C) 2026 The LECH OS Project
 // SPDX-License-Identifier: Apache-2.0
 //
-// Launcher3: hides the launcher entries of the AOSP Settings and DocumentsUI. Their places on the home screen take
+// Launcher3: hides the launcher entries of the AOSP Settings, DocumentsUI and Dialer. Their places on the home screen take
 // the own apps LechNastavenia and LechSubory; Settings and DocumentsUI stay in the system (settings screens, the
 // file picker of other apps). Launcher3 AppFilter reads the components from array/filtered_components.
 
