@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Galéria</string>
+    <string name="subtitle">Fotky a videá</string>
+    <string name="chip_photos">Fotky</string>
+    <string name="chip_albums">Albumy</string>
+    <string name="chip_videos">Videá</string>
+    <string name="chip_favorites">Obľúbené</string>
+    <string name="nav_gallery">Galéria</string>
+    <string name="nav_share">Zdieľať</string>
+    <string name="nav_edit">Upraviť</string>
+    <string name="nav_trash">Kôš</string>
+    <string name="nav_more">Viac</string>
+    <string name="today">Dnes</string>
+    <string name="yesterday">Včera</string>
+    <string name="items" formatted="false">Položky: %d</string>
+    <string name="search_hint">Hľadať albumy a súbory</string>
+    <string name="search">Hľadať</string>
+    <string name="camera">Fotoaparát</string>
+    <string name="more">Ďalšie</string>
+    <string name="back">Späť</string>
+    <string name="empty_photos">Zatiaľ žiadne fotky ani videá</string>
+    <string name="empty_photos_text">Fotky, ktoré odfotíte fotoaparátom, sa zobrazia tu.</string>
+    <string name="empty_albums">Žiadne albumy</string>
+    <string name="empty_videos">Žiadne videá</string>
+    <string name="empty_favorites">Žiadne obľúbené. Fotku označíte hviezdičkou.</string>
+    <string name="empty_trash">Kôš je prázdny</string>
+    <string name="empty_search">Nič sa nenašlo</string>
+    <string name="trash_title">Kôš</string>
+    <string name="trash_info">Položky v koši sa po 30 dňoch odstránia.</string>
+    <string name="permission_needed">Galéria potrebuje prístup k fotkám a videám.</string>
+    <string name="permission_grant">Povoliť prístup</string>
+    <string name="select_first">Fotku vyberiete podržaním prsta.</string>
+    <string name="select_one">Na úpravu vyberte jednu fotku.</string>
+    <string name="selected" formatted="false">Vybrané: %d</string>
+    <string name="select_all">Vybrať všetko</string>
+    <string name="cancel_selection">Zrušiť výber</string>
+    <string name="add_favorite">Pridať k obľúbeným</string>
+    <string name="remove_favorite">Odobrať z obľúbených</string>
+    <string name="restore">Obnoviť</string>
+    <string name="delete_forever">Odstrániť navždy</string>
+    <string name="empty_trash_action">Vyprázdniť kôš</string>
+    <string name="move_to_trash">Presunúť do koša</string>
+    <string name="rotate">Otočiť</string>
+    <string name="save_copy">Uložiť kópiu</string>
+    <string name="saved">Uložené ako kópia</string>
+    <string name="save_failed">Nepodarilo sa uložiť</string>
+    <string name="edit_video">Upraviť sa dajú len fotky.</string>
+    <string name="details">Podrobnosti</string>
+    <string name="file_name">Názov</string>
+    <string name="file_date">Dátum</string>
+    <string name="file_size">Veľkosť</string>
+    <string name="file_resolution">Rozlíšenie</string>
+    <string name="file_album">Album</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Zrušiť</string>
+    <string name="no_app">Na túto akciu nie je aplikácia.</string>
+    <string name="cannot_open">Súbor sa nedá otvoriť.</string>
+    <string name="sort_newest">Najnovšie navrchu</string>
+    <string name="sort_oldest">Najstaršie navrchu</string>
+    <string name="play">Prehrať</string>
+</resources>

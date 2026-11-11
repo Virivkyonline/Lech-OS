@@ -1,0 +1,33 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LECH Galéria: the gallery of LECH OS (stage 3, task E3-02) – photos by day, albums, videos, favourites, the
+// trash, a viewer with zoom and a simple edit (rotate, saved as a copy), in the LECH OS design. It replaces the
+// AOSP Gallery2. Only the media store of the device is read; nothing leaves the phone unless the user shares it.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "LechGaleria",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    static_libs: ["LechUi"],
+    overrides: ["Gallery2"],
+    required: ["lech_galeria_default_permissions"],
+    dex_preopt: {
+        enabled: false,
+    },
+}
+
+// Runtime permissions granted to the app on the first start (DefaultPermissionGrantPolicy, preinstalled apps only).
+prebuilt_etc {
+    name: "lech_galeria_default_permissions",
+    product_specific: true,
+    sub_dir: "default-permissions",
+    src: "default-permissions-lech-galeria.xml",
+}

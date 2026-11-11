@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gallery</string>
+    <string name="subtitle">Photos and videos</string>
+    <string name="chip_photos">Photos</string>
+    <string name="chip_albums">Albums</string>
+    <string name="chip_videos">Videos</string>
+    <string name="chip_favorites">Favourites</string>
+    <string name="nav_gallery">Gallery</string>
+    <string name="nav_share">Share</string>
+    <string name="nav_edit">Edit</string>
+    <string name="nav_trash">Trash</string>
+    <string name="nav_more">More</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="items" formatted="false">%d items</string>
+    <string name="search_hint">Search albums and files</string>
+    <string name="search">Search</string>
+    <string name="camera">Camera</string>
+    <string name="more">More</string>
+    <string name="back">Back</string>
+    <string name="empty_photos">No photos or videos yet</string>
+    <string name="empty_photos_text">Photos you take with the camera appear here.</string>
+    <string name="empty_albums">No albums</string>
+    <string name="empty_videos">No videos</string>
+    <string name="empty_favorites">No favourites. Mark a photo with the star.</string>
+    <string name="empty_trash">The trash is empty</string>
+    <string name="empty_search">Nothing found</string>
+    <string name="trash_title">Trash</string>
+    <string name="trash_info">Items in the trash are deleted after 30 days.</string>
+    <string name="permission_needed">The gallery needs access to photos and videos.</string>
+    <string name="permission_grant">Allow access</string>
+    <string name="select_first">Hold a finger on a photo to select it.</string>
+    <string name="select_one">Select one photo to edit.</string>
+    <string name="selected" formatted="false">Selected: %d</string>
+    <string name="select_all">Select all</string>
+    <string name="cancel_selection">Cancel selection</string>
+    <string name="add_favorite">Add to favourites</string>
+    <string name="remove_favorite">Remove from favourites</string>
+    <string name="restore">Restore</string>
+    <string name="delete_forever">Delete forever</string>
+    <string name="empty_trash_action">Empty trash</string>
+    <string name="move_to_trash">Move to trash</string>
+    <string name="rotate">Rotate</string>
+    <string name="save_copy">Save copy</string>
+    <string name="saved">Saved as a copy</string>
+    <string name="save_failed">Could not save</string>
+    <string name="edit_video">Only photos can be edited.</string>
+    <string name="details">Details</string>
+    <string name="file_name">Name</string>
+    <string name="file_date">Date</string>
+    <string name="file_size">Size</string>
+    <string name="file_resolution">Resolution</string>
+    <string name="file_album">Album</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_app">No app for this action.</string>
+    <string name="cannot_open">The file cannot be opened.</string>
+    <string name="sort_newest">Newest first</string>
+    <string name="sort_oldest">Oldest first</string>
+    <string name="play">Play</string>
+</resources>

@@ -1,0 +1,19 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LechUi: the look of the LECH OS apps (dark glass, neon green, the header with the mountains) shared by
+// LechKontakty and LechGaleria – colours, shapes, view builders and Material icons (Apache License 2.0).
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_library {
+    name: "LechUi",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    manifest: "AndroidManifest.xml",
+}

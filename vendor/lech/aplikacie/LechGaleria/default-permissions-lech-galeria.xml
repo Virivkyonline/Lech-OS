@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- LECH OS: the gallery gets access to photos and videos on the first start, the user can revoke it in Settings. -->
+<exceptions>
+    <exception package="lech.os.galeria">
+        <permission name="android.permission.READ_MEDIA_IMAGES" fixed="false"/>
+        <permission name="android.permission.READ_MEDIA_VIDEO" fixed="false"/>
+    </exception>
+</exceptions>

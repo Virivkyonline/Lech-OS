@@ -1,0 +1,16 @@
+# Vlastné aplikácie LECH OS (etapa 3)
+
+| Modul | Čo je | Nahrádza |
+|-------|-------|----------|
+| `LechUi` | spoločný vzhľad (tmavé sklo, neónovo zelená, hlavička s logom a horami), ikony Material | – |
+| `LechKontakty` (`lech.os.kontakty`) | kontakty (všetky, obľúbené, skupiny, firmy, hľadanie), detail, úprava s fotkou, história hovorov, klávesnica | AOSP Contacts |
+| `LechGaleria` (`lech.os.galeria`) | fotky po dňoch, albumy, videá, obľúbené, kôš, prehliadač s priblížením, otočenie (uloží kópiu), zdieľanie | AOSP Gallery2 |
+
+- Java, len verejné API Androidu (`sdk_version: "current"`), bez knižníc AndroidX – zostavujú sa s produktom
+  (`vendor/lech/products/lech_tokay.mk`).
+- Kontakty sa ukladajú len do zariadenia (lokálny účet), nič sa nesynchronizuje. Volanie ide cez Telecom;
+  obrazovku hovoru zatiaľ kreslí aplikácia Telefón (Dialer).
+- Povolenia dostanú aplikácie pri prvom štarte (`default-permissions-*.xml`), používateľ ich môže v Nastaveniach odobrať.
+- Galéria mení médiá (kôš, obnovenie, obľúbené, odstránenie) cez potvrdzovacie okná systému (`MediaStore.create*Request`).
+- Návrhy obrazoviek od vlastníka projektu (11. 11. 2026); obrázok hôr v hlavičke je vyrezaný z návrhu.
+- Kontrola kompilácie mimo AOSP (aapt2, javac, d8 zo SDK) prešla; správanie treba overiť v telefóne.

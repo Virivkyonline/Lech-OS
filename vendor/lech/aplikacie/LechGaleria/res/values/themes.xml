@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Lech" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/lech_bg</item>
+        <item name="android:colorAccent">@color/lech_green</item>
+        <item name="android:colorPrimary">@color/lech_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:textColorPrimary">#FFFFFFFF</item>
+        <item name="android:textColorHint">#FF7F93A3</item>
+    </style>
+    <style name="Theme.Lech.Viewer">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+    <color name="lech_bg">#FF041320</color>
+    <color name="lech_green">#FF7BE41E</color>
+</resources>
