@@ -1,0 +1,23 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LECH Súbory: the file manager of LECH OS (stage 3) – categories, storage, folders, search, copy / move /
+// delete, rename, open and share, in the LECH OS design. The system file picker (DocumentsUI) stays: other apps
+// use it to open and save documents; only its launcher entry is replaced.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "LechSubory",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    static_libs: ["LechUi"],
+    dex_preopt: {
+        enabled: false,
+    },
+}

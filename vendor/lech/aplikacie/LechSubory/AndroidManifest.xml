@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- LECH Súbory (LECH OS): the file manager. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="lech.os.subory">
+
+    <!-- All files of the shared storage; the user allows it once (Settings, special app access). -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_subory"
+        android:roundIcon="@mipmap/ic_subory"
+        android:theme="@style/Theme.Lech"
+        android:supportsRtl="true"
+        android:allowBackup="false">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.APP_FILES" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name=".FilesProvider"
+            android:authorities="lech.os.subory.files"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+    </application>
+</manifest>

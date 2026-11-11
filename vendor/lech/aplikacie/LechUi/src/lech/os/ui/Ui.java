@@ -276,6 +276,22 @@ public final class Ui {
         return out;
     }
 
+    /** A bitmap cropped to a square with rounded corners. */
+    public static Bitmap roundCorners(Bitmap src, int radiusPx) {
+        int side = Math.min(src.getWidth(), src.getHeight());
+        Bitmap out = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888);
+        Canvas cv = new Canvas(out);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        android.graphics.BitmapShader sh = new android.graphics.BitmapShader(src,
+                android.graphics.Shader.TileMode.CLAMP, android.graphics.Shader.TileMode.CLAMP);
+        android.graphics.Matrix m = new android.graphics.Matrix();
+        m.setTranslate(-(src.getWidth() - side) / 2f, -(src.getHeight() - side) / 2f);
+        sh.setLocalMatrix(m);
+        p.setShader(sh);
+        cv.drawRoundRect(0, 0, side, side, radiusPx, radiusPx, p);
+        return out;
+    }
+
     private static Bitmap initials(Context c, String name, int px) {
         Bitmap out = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(out);

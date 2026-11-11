@@ -60,10 +60,13 @@ PRODUCT_PACKAGES += \
     LechVanadiumOverlay \
 
 # Own apps of LECH OS in the LECH OS design (stage 3, vendor/lech/aplikacie): LechKontakty replaces the AOSP
-# Contacts, LechGaleria the AOSP Gallery2 (both by overrides in their Android.bp).
+# Contacts, LechGaleria the AOSP Gallery2 (both by overrides in their Android.bp). LechSubory and LechNastavenia
+# sit beside DocumentsUI and Settings, which stay as the system file picker and the settings screens.
 PRODUCT_PACKAGES += \
     LechKontakty \
     LechGaleria \
+    LechSubory \
+    LechNastavenia \
 
 # Gate 1 test only: an update that does not start, to check the automatic return to the previous slot
 # (tools/etapa2/12-zostav-pixel.sh --chybna sets LECH_TEST_BROKEN_UPDATE; vendor/lech/config/init/init.lech-test-chybna.rc).

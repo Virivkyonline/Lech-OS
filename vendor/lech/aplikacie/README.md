@@ -4,6 +4,8 @@
 |-------|-------|----------|
 | `LechUi` | spoločný vzhľad (tmavé sklo, neónovo zelená, hlavička s logom a horami), ikony Material | – |
 | `LechKontakty` (`lech.os.kontakty`) | kontakty (všetky, obľúbené, skupiny, firmy, hľadanie), detail, úprava s fotkou, história hovorov, klávesnica | AOSP Contacts |
+| `LechSubory` (`lech.os.subory`) | kategórie, úložiská, priečinky (mriežka/zoznam), hľadanie, kopírovať/presunúť/vymazať, premenovať, otvoriť, zdieľať; prístup ku všetkým súborom povolí používateľ raz | – (DocumentsUI ostáva ako systémový výber súborov) |
+| `LechNastavenia` (`lech.os.nastavenia`) | hlavné časti nastavení s hľadaním, úložisko a batéria naživo, podstránka Systém | – (Settings ostáva, otvárajú sa jeho obrazovky) |
 | `LechGaleria` (`lech.os.galeria`) | fotky po dňoch, albumy, videá, obľúbené, kôš, prehliadač s priblížením, otočenie (uloží kópiu), zdieľanie | AOSP Gallery2 |
 
 - Java, len verejné API Androidu (`sdk_version: "current"`), bez knižníc AndroidX – zostavujú sa s produktom

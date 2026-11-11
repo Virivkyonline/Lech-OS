@@ -22,6 +22,9 @@
    podľa návrhov vlastníka (`vendor/lech/aplikacie`, README tam), nahrádzajú Contacts a Gallery2. Overiť v telefóne:
    pridanie/úprava kontaktu s fotkou, obľúbené, skupiny, firmy, história, klávesnica a volanie; galéria – fotky,
    albumy, videá, kôš, otočenie. Kompilácia overená mimo AOSP, vzhľad nie.
+   **0.3.1-dev**: pribudnú **LECH Súbory** a **LECH Nastavenia** (návrhy vlastníka). Na ploche budú dvakrát
+   „Súbory“ a „Nastavenia“ (DocumentsUI a Settings ostávajú) – skryť ich spúšťač prekrytím Launcher3
+   (`filtered_components`, overiť názov v zdrojoch).
 2. Aplikácia Telefón (Dialer): tlačidlo „Contacts“ nie je preložené – prekrytie reťazca (názov reťazca zistiť
    v `packages/apps/Dialer`). Fotoaparát (Camera2): úvodné okno o polohe má tlačidlo pod navigačnou lištou.
 3. Plocha podľa návrhu: presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (úprava Launcher3).

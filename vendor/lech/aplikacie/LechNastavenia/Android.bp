@@ -1,0 +1,22 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LECH Nastavenia: the settings of LECH OS in the LECH OS design (stage 3). The main sections open the matching
+// screens of the Android settings (Settings), which stay in the system and keep doing the work.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "LechNastavenia",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    static_libs: ["LechUi"],
+    dex_preopt: {
+        enabled: false,
+    },
+}
