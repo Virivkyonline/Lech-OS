@@ -212,6 +212,9 @@ def main() -> int:
     if args.out.exists():
         shutil.rmtree(args.out)
     modules = []
+    # The output is $AOSP_DIR/vendor/lech/tretie: the AOSP tree, for the license kinds Soong defines.
+    out_parents = args.out.resolve().parents
+    aosp = out_parents[2] if len(out_parents) > 2 else args.out
     index = None
     for app in APPS:
         print(f"  {app['label']}:")
@@ -263,7 +266,7 @@ def main() -> int:
             "}\n\n"
             "license {\n"
             f"    name: \"{app['module']}_license\",\n"
-            f"    license_kinds: [\"{license_kind(app, args.out.resolve().parents[2])}\"],\n"
+            f"    license_kinds: [\"{license_kind(app, aosp)}\"],\n"
             "}\n\n"
             "android_app_import {\n"
             f"    name: \"{app['module']}\",\n"
