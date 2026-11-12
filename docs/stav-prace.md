@@ -91,6 +91,8 @@ Telephony (`android.telecom.action.SHOW_CALL_SETTINGS` – tlačidlo Nastavenia 
 
 ## Poznámky
 
+- 12. 11. 2026: upozornenie „Pripojené k nešifrovanej sieti“ (4KA SK) – vlastník zapol ochranu pred 2G; odporučený
+  PIN namiesto „Potiahnutie“ (stav nepotvrdený).
 - Na notebooku je **ToDesk** (vzdialené ovládanie) so zapnutým prístupom – odporučené odinštalovať alebo vypnúť.
 - Starý notebook: AOSP zmazané (388 GB), zostáva zmenšiť disk WSL (`C:\lech\zmensi-disk-wsl.ps1` v PowerShell ako
   správca, Ubuntu zatvorené) – stav nepotvrdený.
