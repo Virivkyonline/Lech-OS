@@ -5,9 +5,10 @@
 - **Etapa 2 a brána 1 – Overený základ: splnená** ([docs/08](08-plan-etap.md)): LECH OS na Pixeli 9 so zamknutým
   bootloaderom a vlastným kľúčom, 3 OTA aktualizácie s návratom po chybnej, generálka mesačnej aktualizácie,
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
-- **Telefón: LECH OS 0.5.3-dev** (12. 11. ~13:00): F-Droid v systéme (overený), Kalkulačka a PDF s ikonami vlastníka.
-  Ďalšia zostava musí mať vyššiu verziu (**0.5.4-dev**). **Čaká na 0.5.4-dev:** mená systémových súčastí
-  v zozname aplikácií Nastavení (`frameworks/base` 0011: Nastavenia systému, Výber súborov, Zobrazovač PDF, Plocha).
+- **Telefón: LECH OS 0.5.4-dev** (12. 11. 2026 ~16:20, OTA do slotu _a, overený štart yellow): navyše mená
+  systémových súčastí (`frameworks/base` 0011). Vlastník: „všetko ide“ (mená, Kalkulačka, PDF, SIM, menu, Prehliadač);
+  **QR vo Fotoaparáte – neskôr**; F-Droid sa otvoril, **automatické aktualizácie v jeho Nastaveniach ešte nepozreté**.
+  Ďalšia zostava musí mať vyššiu verziu (**0.5.5-dev**).
 - **V 0.5.0-dev až 0.5.2-dev (12. 11.), overiť v telefóne:**
   - **Vlastné číslo zostavy** `lech.<verzia>` (`tools/etapa2/05-zostav-aosp.sh`, BUILD_NUMBER). Doteraz mali všetky
     zostavy rovnaký odtlačok (`eng.<používateľ>`), telefón si po aktualizácii nechal starý rozbor systémových aplikácií
@@ -56,10 +57,8 @@
 Čo chýba oproti bežnému Androidu: [docs/17](17-chyba-oproti-androidu.md). Každá zostava: verzia vyššia než v telefóne,
 po aktualizácii hneď zapísať sem.
 
-1. **Zostava 0.5.4-dev** (mená systémových súčastí, `frameworks/base` 0011) a skúška v telefóne: mená v Nastavenia →
-   Aplikácie; F-Droid – Nastavenia, či inštaluje aktualizácie sám (ak nie, zapnúť predvolene); Kalkulačka (3 karty);
-   PDF (povolenie súborov, otvorenie v Zobrazovači PDF); QR vo Fotoaparáte; Zámka SIM karty; horné menu po
-   Upraviť → Resetovať; Predvolené aplikácie → Prehliadač. Opraviť, čo nesedí.
+1. **0.5.4-dev v telefóne (hotové 12. 11.).** Zostáva: QR vo Fotoaparáte; F-Droid – Nastavenia, či inštaluje
+   aktualizácie sám (ak nie, zapnúť predvolene v ďalšej zostave).
 2. **Kontakty: import a export .vcf** – zadané vláknu „LECH OS – pokračovanie (etapa 3)“
    (session_013B5DEdokH9dxeZDJMiVh7g) 12. 11.; skontrolovať `git log`, či je hotové, inak dokončiť.
 3. **Wi-Fi sa občas odpojí** (sieť Tina29, potom sa pripojí sama): čaká sa na výpis po odpojení
