@@ -51,25 +51,28 @@
 | E3-03 Plocha: tapeta, tvar ikon, 10 ikon (`branding/ikony`), 4 stĺpce s ikonami 66 dp (`patches/packages/apps/Launcher3`) | v zostave **0.2.0-dev** (používateľ zostavuje); po aktualizácii `adb … shell pm clear com.android.launcher3` |
 | Nová animácia pri štarte (logo z tapety, kruhy, „YOUR SECURE PHONE“, `tools/make_bootanimation.py`, logo `branding/logo`) | zip v `vendor/lech/bootanimation`, v telefóne od 0.2.1-dev, schválená |
 
-## Ďalšie kroky (poradie)
+## Ďalšie kroky (poradie, 12. 11. 2026 večer)
 
-Čo chýba oproti bežnému Androidu a odporúčané poradie: [docs/17](17-chyba-oproti-androidu.md).
+Čo chýba oproti bežnému Androidu: [docs/17](17-chyba-oproti-androidu.md). Každá zostava: verzia vyššia než v telefóne,
+po aktualizácii hneď zapísať sem.
 
-1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.5.3-dev
-   (Kontakty, Galéria, Súbory, Nastavenia). Pripravené na ďalšiu zostavu: **Telefón** (`PhoneActivity`
-   v LechKontakty), **SMS a MMS** (LechSpravy, predvolená pre SMS, nahrádza Messaging; MMS len zobrazenie
-   uložených), **Hodiny** (LechHodiny, nahrádza DeskClock), **Kalendár** (LechKalendar, nahrádza Calendar),
-   **Fotoaparát** (LechFotoaparat, nahrádza Camera2; vlastný návrh vzhľadu). Vlastník posiela ďalšie návrhy; potom jedna zostava
-   a skúšanie všetkého naraz. Kompilácia overená mimo AOSP, správanie nie.
-   Otvorené: skryť spúšťač Dialer (zistiť názov komponentu), nové aplikácie dať na plochu, sťahovanie a
-   odosielanie MMS.
-2. Aplikácia Telefón (Dialer): tlačidlo „Contacts“ nie je preložené – prekrytie reťazca (názov reťazca zistiť
-   v `packages/apps/Dialer`). Fotoaparát (Camera2): úvodné okno o polohe má tlačidlo pod navigačnou lištou.
-3. Plocha podľa návrhu: presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (úprava Launcher3).
-4. E3-02 Fotoaparát (Camera2 kreslí pod navigačné tlačidlá) – vlastný alebo moderný otvorený.
-5. E3-04 eSIM bez Google (OpenEUICC). Aplikácie E-mail a Počasie (ikony v návrhu plochy).
-6. Popri tom: 12 novembrových bezpečnostných opráv na prispôsobenie, neverejná CVE-2026-58868, červené „Your device
-   is corrupt“ pri chybnom slote, server LECH OS (E2-08b), ochranná známka LECH OS (triedy 9, 42; firma sa vyberie).
+1. **Zostava 0.5.4-dev** (mená systémových súčastí, `frameworks/base` 0011) a skúška v telefóne: mená v Nastavenia →
+   Aplikácie; F-Droid – Nastavenia, či inštaluje aktualizácie sám (ak nie, zapnúť predvolene); Kalkulačka (3 karty);
+   PDF (povolenie súborov, otvorenie v Zobrazovači PDF); QR vo Fotoaparáte; Zámka SIM karty; horné menu po
+   Upraviť → Resetovať; Predvolené aplikácie → Prehliadač. Opraviť, čo nesedí.
+2. **Kontakty: import a export .vcf** – zadané vláknu „LECH OS – pokračovanie (etapa 3)“
+   (session_013B5DEdokH9dxeZDJMiVh7g) 12. 11.; skontrolovať `git log`, či je hotové, inak dokončiť.
+3. **Wi-Fi sa občas odpojí** (sieť Tina29, potom sa pripojí sama): čaká sa na výpis po odpojení
+   (`adb … shell "dumpsys wifi | grep -iE 'disconnect|reason' | tail -25"`).
+4. **Klávesnica HeliBoard so slovenským slovníkom** a **Mapy Organic Maps** priamo v systéme – rovnako ako F-Droid
+   (`tools/etapa2/tretie_aplikacie.py`: zdroj a certifikát vydavateľa overiť z oficiálneho zdroja, nehádať).
+5. **Plocha podľa návrhu:** presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (Launcher3).
+6. **Server LECH OS (E2-08b):** overenie internetu (prihlásenie do hotelovej Wi-Fi), pomocné dáta A-GPS, push (ntfy).
+7. **Banky:** krok 1 z `docs/13` – vyskúšať bankové aplikácie (cez Aurora Store / F-Droid).
+8. Meranie spojení po pridaní F-Droid (`tools/etapa2/13-meranie-mimo.sh`, s kontrolným testom internetu).
+9. Popri tom: novembrové bezpečnostné opravy na prispôsobenie, neverejná CVE-2026-58868, červené „Your device is
+   corrupt“ pri chybnom slote, eSIM (OpenEUICC), E-mail a Počasie, Telefón (Dialer): nepreložené „Contacts“,
+   ochranná známka LECH OS (triedy 9, 42).
 
 ## Overenie cieľov obrazoviek (11. 11. 2026)
 
