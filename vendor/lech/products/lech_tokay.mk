@@ -59,10 +59,9 @@ PRODUCT_PACKAGES += \
     LechVanadium \
     LechVanadiumOverlay \
 
-# Calculator (ExactCalculator, Apache-2.0, with its own crcalc) and the PDF viewer of GrapheneOS (PdfViewerGOS, MIT,
-# prebuilt signed by GrapheneOS): both from manifests/lech-pixel.xml, docs/17-chyba-oproti-androidu.md.
+# PDF viewer of GrapheneOS (PdfViewerGOS, MIT, prebuilt signed by GrapheneOS, manifests/lech-pixel.xml): renders the
+# PDF files LECH PDF opens (docs/17-chyba-oproti-androidu.md). The calculator is LechKalkulacka (own app).
 PRODUCT_PACKAGES += \
-    ExactCalculator \
     PdfViewerGOS \
 
 # App store F-Droid (owner, 12. 11. 2026): downloaded and verified (publisher's certificate) before every build by
@@ -74,7 +73,7 @@ PRODUCT_PACKAGES += \
 # sit beside DocumentsUI and Settings, which stay as the system file picker and the settings screens; their
 # launcher entries are hidden (vendor/lech/overlay/launcher). LechDialerOverlay: Slovak texts the Dialer lacks.
 # LechSpravy replaces the AOSP Messaging and is the default SMS app (LechSmsOverlay); LechHodiny the DeskClock,
-# LechKalendar the AOSP Calendar, LechFotoaparat the AOSP Camera2. LechPdf is the PDF library; PDF files open in the
+# LechKalendar the AOSP Calendar, LechFotoaparat the AOSP Camera2. LechKalkulacka replaces the AOSP calculator (ExactCalculator). LechPdf is the PDF library; PDF files open in the
 # PDF viewer of GrapheneOS (PdfViewerGOS, sandboxed WebView), whose launcher entry is hidden.
 PRODUCT_PACKAGES += \
     LechKontakty \
@@ -86,6 +85,7 @@ PRODUCT_PACKAGES += \
     LechKalendar \
     LechFotoaparat \
     LechPdf \
+    LechKalkulacka \
     LechSmsOverlay \
     LechLauncherOverlay \
     LechDialerOverlay \

@@ -563,7 +563,6 @@ Google od Androidu 16 nezverejňuje stromy zariadení Pixel. Podporu zariadenia 
 | `device/google/caimito-kernels/6.1` (GPL) | GrapheneOS | predzostavené jadro rodiny Pixel 9 |
 | `packages/apps/CarrierConfig2` (MIT) | GrapheneOS | nastavenia operátorov z dát Google (VoLTE, SMS cez IMS) |
 | `tools/arsclib` (MIT) | GrapheneOS | nástroj na zdroje, ktorý adevtool používa pri prekrytiach |
-| `packages/apps/ExactCalculator` (Apache-2.0) | GrapheneOS (aplikácia AOSP) | Kalkulačka – AOSP 17 ju už nemá, GrapheneOS ju udržiava aj s knižnicou `crcalc` |
 | `external/PdfViewer` (MIT) | GrapheneOS | Prehliadač PDF (podpísaný GrapheneOS, kreslí cez WebView Vanadium, bez siete) |
 
 Verzie sú pevné v [manifests/lech-pixel.xml](../manifests/lech-pixel.xml). Úpravy LECH OS v

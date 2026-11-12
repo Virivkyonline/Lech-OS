@@ -1,0 +1,24 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LECH Kalkulačka: the calculator of LECH OS (stage 3) – basic and scientific calculator with history and offline
+// unit conversion in the LECH OS design. It replaces the ExactCalculator. The engine test (test/) is plain Java and
+// is not part of the app.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "LechKalkulacka",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    static_libs: ["LechUi"],
+    overrides: ["ExactCalculator"],
+    dex_preopt: {
+        enabled: false,
+    },
+}

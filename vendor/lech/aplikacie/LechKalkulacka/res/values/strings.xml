@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calculator</string>
+    <string name="subtitle">Quick • Scientific • Conversions</string>
+    <string name="tab_basic">Basic</string>
+    <string name="tab_scientific">Scientific</string>
+    <string name="tab_convert">Convert</string>
+    <string name="more">More options</string>
+    <string name="history">History</string>
+    <string name="history_empty">No calculations yet.</string>
+    <string name="history_hint">Tap to use the result, touch and hold to use the whole calculation.</string>
+    <string name="clear_history">Clear history</string>
+    <string name="close">Close</string>
+    <string name="copy">Copy result</string>
+    <string name="err_div_zero">Cannot divide by zero</string>
+    <string name="err_domain">Not defined</string>
+    <string name="err_overflow">Number too large</string>
+    <string name="err_syntax">Incomplete calculation</string>
+    <string name="backspace">Delete</string>
+    <string name="clear">Clear</string>
+    <string name="plus_minus">Change sign</string>
+    <string name="swap">Swap units</string>
+    <string name="deg_rad">Degrees or radians</string>
+    <string name="choose_unit">Choose unit</string>
+    <string name="cat_length">Length</string>
+    <string name="cat_mass">Mass</string>
+    <string name="cat_area">Area</string>
+    <string name="cat_volume">Volume</string>
+    <string name="cat_temperature">Temperature</string>
+    <string name="cat_speed">Speed</string>
+    <string name="cat_time">Time</string>
+    <string name="cat_data">Data</string>
+
+    <!-- Units as "name|symbol", in the order of Units.java. -->
+    <string-array name="units_length">
+        <item>Millimeter|mm</item>
+        <item>Centimeter|cm</item>
+        <item>Decimeter|dm</item>
+        <item>Meter|m</item>
+        <item>Kilometer|km</item>
+        <item>Inch|in</item>
+        <item>Foot|ft</item>
+        <item>Yard|yd</item>
+        <item>Mile|mi</item>
+        <item>Nautical mile|nmi</item>
+    </string-array>
+    <string-array name="units_mass">
+        <item>Milligram|mg</item>
+        <item>Gram|g</item>
+        <item>Decagram|dag</item>
+        <item>Kilogram|kg</item>
+        <item>Tonne|t</item>
+        <item>Ounce|oz</item>
+        <item>Pound|lb</item>
+    </string-array>
+    <string-array name="units_area">
+        <item>Square millimeter|mm²</item>
+        <item>Square centimeter|cm²</item>
+        <item>Square decimeter|dm²</item>
+        <item>Square meter|m²</item>
+        <item>Are|a</item>
+        <item>Hectare|ha</item>
+        <item>Square kilometer|km²</item>
+        <item>Square inch|in²</item>
+        <item>Square foot|ft²</item>
+        <item>Square yard|yd²</item>
+        <item>Acre|ac</item>
+        <item>Square mile|mi²</item>
+    </string-array>
+    <string-array name="units_volume">
+        <item>Milliliter|ml</item>
+        <item>Centiliter|cl</item>
+        <item>Deciliter|dl</item>
+        <item>Liter|l</item>
+        <item>Hectoliter|hl</item>
+        <item>Cubic centimeter|cm³</item>
+        <item>Cubic meter|m³</item>
+        <item>Fluid ounce (US)|fl oz</item>
+        <item>Pint (US)|pt</item>
+        <item>Gallon (US)|gal US</item>
+        <item>Gallon (UK)|gal UK</item>
+    </string-array>
+    <string-array name="units_temperature">
+        <item>Degree Celsius|°C</item>
+        <item>Degree Fahrenheit|°F</item>
+        <item>Kelvin|K</item>
+    </string-array>
+    <string-array name="units_speed">
+        <item>Meter per second|m/s</item>
+        <item>Kilometer per hour|km/h</item>
+        <item>Mile per hour|mph</item>
+        <item>Knot|kn</item>
+        <item>Foot per second|ft/s</item>
+    </string-array>
+    <string-array name="units_time">
+        <item>Millisecond|ms</item>
+        <item>Second|s</item>
+        <item>Minute|min</item>
+        <item>Hour|h</item>
+        <item>Day|d</item>
+        <item>Week|wk</item>
+        <item>Year (365 days)|yr</item>
+    </string-array>
+    <string-array name="units_data">
+        <item>Bit|bit</item>
+        <item>Byte|B</item>
+        <item>Kilobyte|kB</item>
+        <item>Megabyte|MB</item>
+        <item>Gigabyte|GB</item>
+        <item>Terabyte|TB</item>
+        <item>Kibibyte|KiB</item>
+        <item>Mebibyte|MiB</item>
+        <item>Gibibyte|GiB</item>
+        <item>Tebibyte|TiB</item>
+    </string-array>
+</resources>
