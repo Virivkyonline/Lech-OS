@@ -5,16 +5,14 @@
 - **Etapa 2 a brána 1 – Overený základ: splnená** ([docs/08](08-plan-etap.md)): LECH OS na Pixeli 9 so zamknutým
   bootloaderom a vlastným kľúčom, 3 OTA aktualizácie s návratom po chybnej, generálka mesačnej aktualizácie,
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
-- **Telefón: LECH OS 0.4.7-dev** (slot _b, zostava spred 12. 11. 07:02 – bez opráv nižšie; 12. 11. 07:23 odmietnutá
-  druhá zostava 0.4.7-dev, lebo rovnakú verziu telefón už má). Ďalšia zostava musí mať vyššiu verziu (**0.4.8-dev**).
-  V 0.4.7-dev: Nastavenia – každá z 18 položiek má jeden overený cieľ (aj Heslá → `Settings$AccountDashboardActivity`),
-  žiadne tiché náhrady. Pre chybu s odtlačkom (nižšie) sa zmeny manifestov už nainštalovaných aplikácií v telefóne
-  neprejavili – preskúšať v 0.4.8-dev. Bezpečnostné opravy september–november (okrem neverejných) v zostave.
-- **Čaká na 0.4.8-dev (12. 11.):**
+- **Telefón: LECH OS 0.5.0-dev** (slot _a, zostava 12. 11. 08:55, OTA z 0.4.9-dev o 10:17). Ďalšia zostava musí mať
+  vyššiu verziu (**0.5.1-dev**). Telefón na overenie zmien nižšie (okrem F-Droid: či je v 0.5.0-dev, závisí od času
+  `git pull` – commit F-Droid o 08:49; overiť v zozname aplikácií).
+- **V 0.5.0-dev (12. 11.), overiť v telefóne:**
   - **Vlastné číslo zostavy** `lech.<verzia>` (`tools/etapa2/05-zostav-aosp.sh`, BUILD_NUMBER). Doteraz mali všetky
     zostavy rovnaký odtlačok (`eng.<používateľ>`), telefón si po aktualizácii nechal starý rozbor systémových aplikácií
     a plocha staré názvy: ikona Nastavení sa volá „Režim v lietadle“ (starý odkaz na text prvej verzie LECH Nastavení).
-    Prvý štart 0.4.8-dev potrvá dlhšie (systém aplikácie načíta nanovo); potom má byť názov „Nastavenia“.
+    Prvý štart 0.5.0-dev trval dlhšie (systém aplikácie načíta nanovo); potom má byť názov „Nastavenia“.
   - **Horné menu (rýchle nastavenia)** – prekrytie `LechSystemUIOverlay` (`vendor/lech/overlay/systemui`): 14 dlaždíc
     rovnakej veľkosti, dve v riadku (Wi-Fi, Mobilné dáta, Bluetooth, Baterka, Režim v lietadle, Otáčanie, Šetrič
     batérie, Režimy, Hotspot, Poloha, Mikrofón, Fotoaparát, Tmavý motív, Nahrávanie obrazovky), bez Peňaženky, Prenosu
@@ -51,7 +49,7 @@
 
 Čo chýba oproti bežnému Androidu a odporúčané poradie: [docs/17](17-chyba-oproti-androidu.md).
 
-1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.4.7-dev
+1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.5.0-dev
    (Kontakty, Galéria, Súbory, Nastavenia). Pripravené na ďalšiu zostavu: **Telefón** (`PhoneActivity`
    v LechKontakty), **SMS a MMS** (LechSpravy, predvolená pre SMS, nahrádza Messaging; MMS len zobrazenie
    uložených), **Hodiny** (LechHodiny, nahrádza DeskClock), **Kalendár** (LechKalendar, nahrádza Calendar),
