@@ -32,6 +32,8 @@ APPS = [
     (("Settings",), "ic_nastavenia", "Nastavenia"),
     (("Dialer",), "ic_telefon", "Telefón"),
     (("DocumentsUI",), "ic_subory", "Súbory"),
+    (("ExactCalculator",), "ic_kalkulacka", "Kalkulačka"),
+    (("PdfViewerGOS",), "ic_pdf", "PDF"),
 ]
 PARTITIONS = ("system", "system_ext", "product")
 DENSITIES = ("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")
