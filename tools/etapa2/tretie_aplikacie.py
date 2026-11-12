@@ -142,8 +142,13 @@ def fdroid_index(cache: Path):
     jar = cache / "fdroid-index-v1.jar"
     if not download(f"{FDROID_REPO}/index-v1.jar", jar):
         return None
+    # The repo signs index-v1.jar with SHA1withRSA, which current JDKs treat as unsigned ("signed with a weak
+    # algorithm that is now disabled", LECHSPA 12. 11. 2026). For this one check SHA-1 is allowed again; the APKs
+    # themselves are then checked by their SHA-256 from the index and their own (v2+) signature with apksigner.
+    security = cache / "fdroid-index-java.security"
+    security.write_text("jdk.jar.disabledAlgorithms=MD2, MD5, RSA keySize < 1024, DSA keySize < 1024\n")
     try:
-        verify = subprocess.run([tool("jarsigner"), "-verify", str(jar)], capture_output=True, text=True,
+        verify = subprocess.run([tool("jarsigner"), f"-J-Djava.security.properties={security}", "-verify", str(jar)], capture_output=True, text=True,
                                 timeout=300, env=ENV)
         printed = subprocess.run([tool("keytool"), "-printcert", "-jarfile", str(jar)], capture_output=True,
                                  text=True, timeout=120, env=ENV)
