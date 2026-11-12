@@ -65,6 +65,10 @@ PRODUCT_PACKAGES += \
     ExactCalculator \
     PdfViewerGOS \
 
+# App store F-Droid (owner, 12. 11. 2026): downloaded and verified (publisher's certificate) before every build by
+# tools/etapa2/tretie_aplikacie.py into vendor/lech/tretie; absent when no verified copy exists.
+-include vendor/lech/tretie/tretie.mk
+
 # Own apps of LECH OS in the LECH OS design (stage 3, vendor/lech/aplikacie): LechKontakty replaces the AOSP
 # Contacts, LechGaleria the AOSP Gallery2 (both by overrides in their Android.bp). LechSubory and LechNastavenia
 # sit beside DocumentsUI and Settings, which stay as the system file picker and the settings screens; their

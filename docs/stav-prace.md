@@ -33,6 +33,11 @@
   - **Prehliadač bez slova Vanadium** v Nastaveniach (zoznam aplikácií, Predvolené aplikácie), v dialógoch povolení a
     upozorneniach: záplata `frameworks/base` 0010 (názov „Prehliadač“ a ikona LECH OS). Súčasť systému sa volá
     „Prehliadač – súčasť systému“. V samotnej aplikácii (jej menu) ostáva Vanadium.
+  - **F-Droid v systéme** (vlastník: zákazník nemá nič sťahovať ručne): pred každou zostavou ho
+    `tools/etapa2/tretie_aplikacie.py` stiahne z f-droid.org, overí balík a certifikát podpisu (SHA-256 zverejnený
+    F-Droid v `ClientWhitelist.java` jeho Privileged Extension) a vloží ako `LechFDroid` (podpis vydavateľa, takže
+    sa aktualizuje sám). Bez internetu sa použije posledná overená kópia v `~/lech-work/tretie`. F-Droid sa sám
+    pripája na f-droid.org (aktualizácia katalógu) – pri ďalšom meraní spojení počítať s ním.
 
 ## Rozpracované – etapa 3 (vlastné grafické prostredie)
 

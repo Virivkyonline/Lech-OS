@@ -105,6 +105,17 @@ else
   echo "  (zatiaľ bez ikon – aapt2 ešte nie je zostavený; ikony prídu s ďalšou zostavou)"
 fi
 
+# Third-party apps in the system (F-Droid): downloaded from the publisher, package and signing certificate verified
+# (tools/etapa2/tretie_aplikacie.py); vendor/lech/products/lech_tokay.mk includes the generated tretie.mk.
+echo "Aplikácie tretích strán (overený podpis vydavateľa):"
+host_bin="$AOSP_DIR/out/host/linux-x86/bin"
+if [ -x "$host_bin/aapt2" ] && [ -x "$host_bin/apksigner" ]; then
+  python3 -I "$SCRIPT_DIR/tretie_aplikacie.py" --aapt2 "$host_bin/aapt2" --apksigner "$host_bin/apksigner" \
+    --cache "$WORKDIR/tretie" --out "$AOSP_DIR/vendor/lech/tretie" || die "Aplikácie tretích strán sa nepodarilo pripraviť."
+else
+  echo "  (zatiaľ bez nich – aapt2 a apksigner ešte nie sú zostavené)"
+fi
+
 # The vendor module records the adevtool revision it was generated with (only a warning in the build, --noVerify).
 # A different revision means the LECH patches of adevtool changed: generate the module again first.
 gen_rev=$(sed -n 's/^ifneq (\$(shell git -C [^ ]* rev-parse HEAD),\([0-9a-f]\{40\}\))$/\1/p' \

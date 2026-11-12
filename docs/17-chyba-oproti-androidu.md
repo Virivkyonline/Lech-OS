@@ -33,7 +33,8 @@ núdzové informácie, výber tapety (ThemePicker).
 
 ## Odporúčaný postup
 
-1. **Hneď, málo práce:** Kalkulačka, Prehliadač PDF, F-Droid (obchod), Organic Maps (mapy).
+1. **Hneď, málo práce:** Kalkulačka, Prehliadač PDF, F-Droid (obchod) – v zostave od 12. 11. (`docs/stav-prace.md`);
+   Organic Maps (mapy) a klávesnica HeliBoard cez F-Droid, neskôr priamo v systéme rovnakým postupom ako F-Droid.
 2. **LechKontakty:** import a export .vcf skôr, než niekto prenesie kontakty.
 3. **Server LECH (E2-08b):** jeden server vyrieši riadky 6 a 7 (overenie internetu, A-GPS) a môže niesť aj ntfy (push).
 4. **Písanie a hlas po slovensky:** HeliBoard so slovníkom, hlas RHVoice – pred prvým cudzím používateľom.
