@@ -36,6 +36,7 @@ tools/etapa2/aplikuj-zaplaty.sh --kontrola  # len vypíše, ktoré záplaty sú 
 | `frameworks/libs/systemui` (0001 z GrapheneOS, 0002–0003 LECH OS; E3-01) | Plocha obnoví pamäť ikon po každej aktualizácii systému (`Build.VERSION.INCREMENTAL`); ikony aplikácií, ktoré nepovoľujú prekrytie, berie z balíka `lech.os.ikony` (len predinštalovaného); ich názvy (Vanadium → „Prehliadač“/„Browser“) z tabuľky v `LauncherActivityCachingLogic` | Po aktualizácii ostávali na ploche staré ikony (8. 11. 2026); prehliadač Vanadium nepovoľuje prekryť svoju ikonu, ikona LECH OS zmizla a názov ostal „Vanadium“ (11. 11. 2026) |
 
 | `packages/apps/Launcher3` (E3-03) | Nová voľba mriežky 4 × 4 pre telefóny ~411 dp (Pixel 9) s ikonami 66 dp – predvolená | Návrh plochy LECH OS má 4 stĺpce s veľkými ikonami; Launcher3 volil 5 × 5 s ikonami 56 dp |
+| `packages/apps/Launcher3` (0002, E3) | Zoznam aplikácií neukazuje Settings, DocumentsUI, Dialer a prehliadač PDF GrapheneOS (`filtered_components` priamo v `res/values/config.xml`) | Nahrádzajú ich vlastné aplikácie LECH OS; prekrytie `LechLauncherOverlay` v telefóne nefungovalo (Súbory, Nastavenia a PDF Viewer boli dvakrát, 12. 11. 2026) – odstránené |
 
 Záplaty pre projekty Pixelu ([manifests/lech-pixel.xml](../manifests/lech-pixel.xml)) sa preskočia, kým projekty
 nie sú stiahnuté (`tools/etapa2/12-priprav-pixel.sh`).

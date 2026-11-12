@@ -71,10 +71,10 @@ PRODUCT_PACKAGES += \
 # Own apps of LECH OS in the LECH OS design (stage 3, vendor/lech/aplikacie): LechKontakty replaces the AOSP
 # Contacts, LechGaleria the AOSP Gallery2 (both by overrides in their Android.bp). LechSubory and LechNastavenia
 # sit beside DocumentsUI and Settings, which stay as the system file picker and the settings screens; their
-# launcher entries are hidden (vendor/lech/overlay/launcher). LechDialerOverlay: Slovak texts the Dialer lacks.
+# launcher entries are hidden (patches/packages/apps/Launcher3 0002). LechDialerOverlay: Slovak texts the Dialer lacks.
 # LechSpravy replaces the AOSP Messaging and is the default SMS app (LechSmsOverlay); LechHodiny the DeskClock,
 # LechKalendar the AOSP Calendar, LechFotoaparat the AOSP Camera2. LechKalkulacka replaces the AOSP calculator (ExactCalculator). LechPdf is the PDF library; PDF files open in the
-# PDF viewer of GrapheneOS (PdfViewerGOS, sandboxed WebView), whose launcher entry is hidden.
+# PDF viewer of GrapheneOS (PdfViewerGOS, sandboxed WebView), whose launcher entry is hidden (Launcher3 0002).
 PRODUCT_PACKAGES += \
     LechKontakty \
     LechGaleria \
@@ -87,7 +87,6 @@ PRODUCT_PACKAGES += \
     LechPdf \
     LechKalkulacka \
     LechSmsOverlay \
-    LechLauncherOverlay \
     LechDialerOverlay \
 
 # Gate 1 test only: an update that does not start, to check the automatic return to the previous slot
