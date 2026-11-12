@@ -12,6 +12,16 @@ Apps (owner, 12. 11. 2026: customers must not download the app store by hand):
   F-Droid (org.fdroid.fdroid, GPL-3.0-or-later) - the app store. Certificate SHA-256 as published by F-Droid in the
   client whitelist of its Privileged Extension (gitlab.com/fdroid/privileged-extension, ClientWhitelist.java:
   "certificate SHA-256 of https://f-droid.org/F-Droid.apk").
+  HeliBoard (helium314.keyboard, GPL-3.0-only) - the keyboard. Reproducible build: the APK in the F-Droid repo carries
+  the developer's signature, SHA-256 as allowed in F-Droid's metadata (gitlab.com/fdroid/fdroiddata,
+  metadata/helium314.keyboard.yml, AllowedAPKSigningKeys).
+  Organic Maps (app.organicmaps, Apache-2.0) - offline maps. Built and signed by F-Droid; the expected certificate is
+  the "signer" of the APK in the F-Droid index.
+
+Apps with "fdroid_index" come from the main F-Droid repo: index-v1.jar is downloaded and accepted only when its JAR
+signature (jarsigner) is valid and made by the repo key, whose SHA-256 is the repo fingerprint 43238d51... (the same
+key signs F-Droid.apk). From the index: the suggested version, the APK name, its SHA-256 and the signer. Because the
+system copy has the same signature as the repo, the F-Droid client then keeps these apps updated.
 
 Usage: tretie_aplikacie.py --aapt2 PATH --apksigner PATH --zipalign PATH --cache DIR --out DIR [--java-home DIR]
   --java-home   JDK for apksigner (a Java program; outside the build environment java is not on PATH):
@@ -19,6 +29,8 @@ Usage: tretie_aplikacie.py --aapt2 PATH --apksigner PATH --zipalign PATH --cache
 """
 
 import argparse
+import hashlib
+import json
 import os
 import re
 import shutil
@@ -39,7 +51,27 @@ APPS = [
         "cert_sha256": "43238d512c1e5eb2d6569f4a3afbf5523418b82e0a3ed1552770abb9a9c9ccab",
         "license_kind": "SPDX-license-identifier-GPL-3.0-or-later",
     },
+    {
+        "module": "LechHeliBoard",
+        "label": "HeliBoard",
+        "file": "HeliBoard.apk",
+        "fdroid_index": True,
+        "package": "helium314.keyboard",
+        "cert_sha256": "5ec0a5313aa43558ee75b20b58ccd8194cdbf066df94a43ba288d933d60b86ce",
+        "license_kind": ["SPDX-license-identifier-GPL-3.0-only", "SPDX-license-identifier-GPL-3.0"],
+    },
+    {
+        "module": "LechOrganicMaps",
+        "label": "Organic Maps",
+        "file": "OrganicMaps.apk",
+        "fdroid_index": True,
+        "package": "app.organicmaps",
+        "license_kind": "SPDX-license-identifier-Apache-2.0",
+    },
 ]
+
+FDROID_REPO = "https://f-droid.org/repo"
+FDROID_REPO_CERT_SHA256 = "43238d512c1e5eb2d6569f4a3afbf5523418b82e0a3ed1552770abb9a9c9ccab"
 
 
 ENV = dict(os.environ)
@@ -72,7 +104,7 @@ def download(url: str, dest: Path) -> bool:
         return False
 
 
-def check(apk: Path, app: dict, aapt2: str, apksigner: str):
+def check(apk: Path, app: dict, aapt2: str, apksigner: str, cert: str):
     """Returns (ok, version text)."""
     try:
         badging = subprocess.run([aapt2, "dump", "badging", str(apk)], capture_output=True, text=True,
@@ -92,10 +124,75 @@ def check(apk: Path, app: dict, aapt2: str, apksigner: str):
             print(f"      {line}")
         return False, ""
     digests = set(re.findall(r"certificate SHA-256 digest: ([0-9a-f]{64})", certs.stdout))
-    if digests != {app["cert_sha256"]}:
+    if digests != {cert}:
         print(f"    podpis nie je od vydavateľa (certifikát {', '.join(sorted(digests)) or '?'})")
         return False, ""
     return True, f"{m.group(3)} ({m.group(2)})"
+
+
+def tool(name: str) -> str:
+    java_home = ENV.get("JAVA_HOME")
+    if java_home and (Path(java_home) / "bin" / name).exists():
+        return str(Path(java_home) / "bin" / name)
+    return shutil.which(name, path=ENV.get("PATH")) or name
+
+
+def fdroid_index(cache: Path):
+    """Downloads index-v1.jar of the F-Droid repo, verifies its signature, returns the parsed index or None."""
+    jar = cache / "fdroid-index-v1.jar"
+    if not download(f"{FDROID_REPO}/index-v1.jar", jar):
+        return None
+    try:
+        verify = subprocess.run([tool("jarsigner"), "-verify", str(jar)], capture_output=True, text=True,
+                                timeout=300, env=ENV)
+        printed = subprocess.run([tool("keytool"), "-printcert", "-jarfile", str(jar)], capture_output=True,
+                                 text=True, timeout=120, env=ENV)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        print(f"    index F-Droid sa nepodarilo overiť ({e})")
+        return None
+    signers = {d.replace(":", "").lower() for d in re.findall(r"SHA256:\s*([0-9A-Fa-f:]{95})", printed.stdout)}
+    if verify.returncode != 0 or "jar verified." not in verify.stdout or signers != {FDROID_REPO_CERT_SHA256}:
+        print(f"    index F-Droid NEMÁ platný podpis repozitára (podpisy: {', '.join(sorted(signers)) or '?'})")
+        return None
+    with zipfile.ZipFile(jar) as zf:
+        if "index-v1.json" not in zf.read("META-INF/MANIFEST.MF").decode("utf-8", "replace"):
+            print("    index-v1.json nie je v podpísanom zozname súborov")
+            return None
+        return json.loads(zf.read("index-v1.json"))
+
+
+def fdroid_pick(index: dict, app: dict):
+    """The suggested arm64 build of the app with the expected signer: (url, sha256 of the file, signer) or None."""
+    suggested = next((a.get("suggestedVersionCode") for a in index.get("apps", [])
+                      if a.get("packageName") == app["package"]), None)
+    candidates = [p for p in index.get("packages", {}).get(app["package"], [])
+                  if p.get("signer") and p.get("hashType") == "sha256"
+                  and (not p.get("nativecode") or "arm64-v8a" in p["nativecode"])
+                  and (not app.get("cert_sha256") or p["signer"] == app["cert_sha256"])]
+    if not candidates:
+        print("    v indexe F-Droid nie je vhodná verzia (arm64, očakávaný podpis)")
+        return None
+    best = [p for p in candidates if str(p.get("versionCode")) == str(suggested)] or candidates
+    best = max(best, key=lambda p: int(p.get("versionCode", 0)))
+    return f"{FDROID_REPO}/{best['apkName']}", best["hash"].lower(), best["signer"].lower()
+
+
+def license_kind(app: dict, aosp: Path) -> str:
+    """The first of the app's license kinds that Soong defines (build/soong/licenses/Android.bp)."""
+    kinds = app["license_kind"] if isinstance(app["license_kind"], list) else [app["license_kind"]]
+    try:
+        defined = (aosp / "build/soong/licenses/Android.bp").read_text()
+    except OSError:
+        return kinds[0]
+    return next((k for k in kinds if f'"{k}"' in defined), kinds[-1])
+
+
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
 
 
 def main() -> int:
@@ -115,22 +212,38 @@ def main() -> int:
     if args.out.exists():
         shutil.rmtree(args.out)
     modules = []
+    index = None
     for app in APPS:
         print(f"  {app['label']}:")
         cached = args.cache / app["file"]
-        with tempfile.TemporaryDirectory(dir=args.cache) as tmpdir:
-            fresh = Path(tmpdir) / app["file"]
-            if download(app["url"], fresh):
-                ok, version = check(fresh, app, args.aapt2, args.apksigner)
-                if ok:
-                    os.replace(fresh, cached)
-                    print(f"    stiahnutá a overená verzia {version}")
-                else:
-                    print("    stiahnutý súbor sa NEPOUŽIJE")
+        # The certificate the cached copy was verified against (for apps from the F-Droid index it comes from the
+        # verified index, so it is stored beside the copy for builds without internet).
+        cert_file = args.cache / (app["file"] + ".cert")
+        url, file_hash, cert = app.get("url"), None, app.get("cert_sha256")
+        if app.get("fdroid_index"):
+            if index is None:
+                index = fdroid_index(args.cache) or {}
+            picked = fdroid_pick(index, app) if index else None
+            url, file_hash, cert = picked if picked else (None, None, None)
+        if url:
+            with tempfile.TemporaryDirectory(dir=args.cache) as tmpdir:
+                fresh = Path(tmpdir) / app["file"]
+                if download(url, fresh):
+                    if file_hash and sha256(fresh) != file_hash:
+                        print("    súbor nesedí s kontrolným súčtom v indexe F-Droid – NEPOUŽIJE sa")
+                    else:
+                        ok, version = check(fresh, app, args.aapt2, args.apksigner, cert)
+                        if ok:
+                            os.replace(fresh, cached)
+                            cert_file.write_text(cert + "\n")
+                            print(f"    stiahnutá a overená verzia {version}")
+                        else:
+                            print("    stiahnutý súbor sa NEPOUŽIJE")
         if not cached.exists():
             print(f"    {app['label']} v tejto zostave nebude (žiadna overená kópia)")
             continue
-        ok, version = check(cached, app, args.aapt2, args.apksigner)
+        cert = app.get("cert_sha256") or (cert_file.read_text().strip() if cert_file.exists() else "")
+        ok, version = check(cached, app, args.aapt2, args.apksigner, cert)
         if not ok:
             print(f"    {app['label']} v tejto zostave nebude (kópia v {cached} neprešla kontrolou)")
             continue
@@ -144,13 +257,13 @@ def main() -> int:
         skip_checks = preprocess_issues(dest / app["file"], args.zipalign)
         (dest / "Android.bp").write_text(
             f"// {app['label']} {version}, generated by tools/etapa2/tretie_aplikacie.py - do not edit.\n"
-            f"// Downloaded from {app['url']}, signing certificate SHA-256 {app['cert_sha256']}.\n\n"
+            f"// Downloaded from {url or app.get('url') or FDROID_REPO}, signing certificate SHA-256 {cert}.\n\n"
             "package {\n"
             f"    default_applicable_licenses: [\"{app['module']}_license\"],\n"
             "}\n\n"
             "license {\n"
             f"    name: \"{app['module']}_license\",\n"
-            f"    license_kinds: [\"{app['license_kind']}\"],\n"
+            f"    license_kinds: [\"{license_kind(app, args.out.resolve().parents[2])}\"],\n"
             "}\n\n"
             "android_app_import {\n"
             f"    name: \"{app['module']}\",\n"

@@ -8,7 +8,11 @@
 - **Telefón: LECH OS 0.5.4-dev** (12. 11. 2026 ~16:20, OTA do slotu _a, overený štart yellow): navyše mená
   systémových súčastí (`frameworks/base` 0011). Vlastník: „všetko ide“ (mená, Kalkulačka, PDF, SIM, menu, Prehliadač);
   **QR vo Fotoaparáte – neskôr**; F-Droid sa otvoril, automatické aktualizácie **overené – zapnuté predvolene** (kontrola len na Wi-Fi, inštalácia denne na Wi-Fi).
-  Ďalšia zostava musí mať vyššiu verziu (**0.5.5-dev**).
+  Ďalšia zostava musí mať vyššiu verziu (**0.5.5-dev**). **Čaká na 0.5.5-dev:** HeliBoard a Organic Maps v systéme
+  (`tools/etapa2/tretie_aplikacie.py`: z repozitára F-Droid cez podpísaný index-v1.jar overený kľúčom repozitára
+  43238d51…; HeliBoard navyše s podpisom vývojára 5ec0a5… z fdroiddata AllowedAPKSigningKeys; F-Droid ich potom
+  aktualizuje sám). Overiť: obe v zozname aplikácií, HeliBoard zapnúť ako klávesnicu; slovenský slovník HeliBoard
+  (je v APK, alebo treba pridať súbor slovníka?) – zistiť v telefóne, nehádať.
 - **V 0.5.0-dev až 0.5.2-dev (12. 11.), overiť v telefóne:**
   - **Vlastné číslo zostavy** `lech.<verzia>` (`tools/etapa2/05-zostav-aosp.sh`, BUILD_NUMBER). Doteraz mali všetky
     zostavy rovnaký odtlačok (`eng.<používateľ>`), telefón si po aktualizácii nechal starý rozbor systémových aplikácií
@@ -63,8 +67,8 @@ po aktualizácii hneď zapísať sem.
    (session_013B5DEdokH9dxeZDJMiVh7g) 12. 11.; skontrolovať `git log`, či je hotové, inak dokončiť.
 3. **Wi-Fi sa občas odpojí** (sieť Tina29, potom sa pripojí sama): čaká sa na výpis po odpojení
    (`adb … shell "dumpsys wifi | grep -iE 'disconnect|reason' | tail -25"`).
-4. **Klávesnica HeliBoard so slovenským slovníkom** a **Mapy Organic Maps** priamo v systéme – rovnako ako F-Droid
-   (`tools/etapa2/tretie_aplikacie.py`: zdroj a certifikát vydavateľa overiť z oficiálneho zdroja, nehádať).
+4. **HeliBoard a Organic Maps** – v skripte hotové (12. 11.), prídu v 0.5.5-dev; potom slovenský slovník a
+   prípadne HeliBoard ako predvolená klávesnica.
 5. **Plocha podľa návrhu:** presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (Launcher3).
 6. **Server LECH OS (E2-08b):** overenie internetu (prihlásenie do hotelovej Wi-Fi), pomocné dáta A-GPS, push (ntfy).
 7. **Banky:** krok 1 z `docs/13` – vyskúšať bankové aplikácie (cez Aurora Store / F-Droid).
