@@ -11,7 +11,10 @@
   knižnice zbalené, Android ich systémovým aplikáciám nerozbaľuje, `android_app_import` to nevie). Po
   `adb install -r ~/lech-work/tretie/OrganicMaps.apk` (bežná aplikácia v /data) **funguje**. Preto je od 0.5.7-dev
   zo systému vyradená (kópia v /data zostane); nový telefón ju nainštaluje z Obchodu – neskôr zvážiť inštaláciu pri
-  prvom štarte. Overiť ešte: Obchod – názov a ikona na ploche; HeliBoard ako klávesnica, slovenský slovník.
+  prvom štarte. HeliBoard zapnutý a funguje (slovenčina, rozloženie QWERTY). **Slovenský slovník
+  v HeliBoard nie je** (Slovníky: len interné en, bn, bg, fr, el, nl, hu, de, pt …) – ručné pridanie zo súboru
+  (codeberg.org/Helium314/aosp-dictionaries) vlastník odmieta („kto má ťukať“): **úloha – slovenský slovník priamo
+  v systéme**, bez ťukania; zistiť spôsob (zdroj slovníka overiť, nehádať). Overiť ešte: Obchod – názov a ikona.
   Ďalšia zostava musí mať vyššiu verziu (**0.5.7-dev**). **Čaká na 0.5.7-dev:** Organic Maps mimo systému, názov
   **„Mapy“** (`frameworks/base` 0011, `frameworks/libs/systemui` 0003); ikona Máp (`ic_mapy`) čaká na obrázok od
   vlastníka (ZIP ako pri Obchode).
