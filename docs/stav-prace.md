@@ -28,6 +28,11 @@
     spýta na uloženie siete, heslo sa nezobrazuje), telefón → Zavolať, e-mail → Napísať (zatiaľ niet e-mailovej
     aplikácie), text → Kopírovať. Nie pri videu, pre iné aplikácie ani na zamknutej obrazovke. Kompilácia overená
     mimo AOSP (aapt2, javac, d8 zo SDK 37), dekódovanie overené testom v Jave; v telefóne neoverené.
+  - **Kalkulačka a Prehliadač PDF** od GrapheneOS (`ExactCalculator`, `PdfViewerGOS`; nové projekty
+    v `manifests/lech-pixel.xml` – pred zostavou `tools/etapa2/12-priprav-pixel.sh --len-projekty`).
+  - **Prehliadač bez slova Vanadium** v Nastaveniach (zoznam aplikácií, Predvolené aplikácie), v dialógoch povolení a
+    upozorneniach: záplata `frameworks/base` 0010 (názov „Prehliadač“ a ikona LECH OS). Súčasť systému sa volá
+    „Prehliadač – súčasť systému“. V samotnej aplikácii (jej menu) ostáva Vanadium.
 
 ## Rozpracované – etapa 3 (vlastné grafické prostredie)
 

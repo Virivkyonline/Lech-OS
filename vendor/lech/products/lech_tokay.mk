@@ -59,6 +59,12 @@ PRODUCT_PACKAGES += \
     LechVanadium \
     LechVanadiumOverlay \
 
+# Calculator (ExactCalculator, Apache-2.0, with its own crcalc) and the PDF viewer of GrapheneOS (PdfViewerGOS, MIT,
+# prebuilt signed by GrapheneOS): both from manifests/lech-pixel.xml, docs/17-chyba-oproti-androidu.md.
+PRODUCT_PACKAGES += \
+    ExactCalculator \
+    PdfViewerGOS \
+
 # Own apps of LECH OS in the LECH OS design (stage 3, vendor/lech/aplikacie): LechKontakty replaces the AOSP
 # Contacts, LechGaleria the AOSP Gallery2 (both by overrides in their Android.bp). LechSubory and LechNastavenia
 # sit beside DocumentsUI and Settings, which stay as the system file picker and the settings screens; their

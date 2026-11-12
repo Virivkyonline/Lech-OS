@@ -1,0 +1,138 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Thu, 12 Nov 2026 09:00:00 +0100
+Subject: [PATCH] Show LECH OS names and icons for prebuilt apps
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+LECH OS shows the browser Vanadium of GrapheneOS as "Prehliadač" with
+the LECH OS icon. The home screen already does (frameworks/libs/systemui
+0002, 0003), but Settings (app list, app info, default apps), permission
+dialogs and notifications showed "Vanadium" with its own icon (owner,
+12. 11. 2026). The app is signed by GrapheneOS and declares overlayable
+resources without its name and icon, so a resource overlay cannot
+change them (idmap2 rejects resources outside <overlayable>).
+
+PackageItemInfo.loadUnsafeLabel replaces exactly the app name
+"Vanadium" of app.vanadium.browser (activities and share targets keep
+their labels), and ApplicationPackageManager.loadUnbadgedItemIcon
+takes the app icon from the preinstalled icon package lech.os.ikony
+(mipmap/app_vanadium_browser), like the launcher. Apps that cannot see
+the icon package keep the original icon.
+---
+ .../app/ApplicationPackageManager.java        |  6 +-
+ .../java/android/content/pm/LechAppNames.java | 69 +++++++++++++++++++
+ .../android/content/pm/PackageItemInfo.java   |  3 +-
+ 3 files changed, 76 insertions(+), 2 deletions(-)
+ create mode 100644 core/java/android/content/pm/LechAppNames.java
+
+diff --git a/core/java/android/app/ApplicationPackageManager.java b/core/java/android/app/ApplicationPackageManager.java
+index f0dda5e..e17c91b 100644
+--- a/core/java/android/app/ApplicationPackageManager.java
++++ b/core/java/android/app/ApplicationPackageManager.java
+@@ -3618,7 +3618,11 @@ public class ApplicationPackageManager extends PackageManager {
+             return UserIcons.getDefaultUserIcon(
+                     mContext.getResources(), targetUserId, /* light= */ false);
+         }
+-        Drawable dr = null;
++        // LECH OS: the LECH OS icon of a prebuilt app (LechAppNames).
++        Drawable dr = android.content.pm.LechAppNames.icon(this, itemInfo, appInfo);
++        if (dr != null) {
++            return dr;
++        }
+         if (itemInfo.packageName != null) {
+             if (itemInfo.isArchived) {
+                 dr = getArchivedAppIcon(itemInfo.packageName);
+diff --git a/core/java/android/content/pm/LechAppNames.java b/core/java/android/content/pm/LechAppNames.java
+new file mode 100644
+index 0000000..c1fd896
+--- /dev/null
++++ b/core/java/android/content/pm/LechAppNames.java
+@@ -0,0 +1,69 @@
++/*
++ * Copyright (C) 2026 The LECH OS Project
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++package android.content.pm;
++
++import android.annotation.NonNull;
++import android.annotation.Nullable;
++import android.content.res.Resources;
++import android.graphics.drawable.Drawable;
++import android.os.LocaleList;
++
++import java.util.Locale;
++
++/**
++ * LECH OS: the names and icons of LECH OS for prebuilt apps whose own resources LECH OS cannot change. Such an app is
++ * signed by its publisher and declares {@code <overlayable>} resources without its name and icon, so a resource
++ * overlay cannot reach them. Today the browser Vanadium of GrapheneOS: "Prehliadač" ("Browser" in other languages)
++ * and the LECH OS icon of the preinstalled icon package lech.os.ikony (module LechIkony, mipmap/&lt;package with
++ * underscores&gt;), as on the home screen (frameworks/libs/systemui patches 0002 and 0003). Shown wherever Android
++ * shows the app: app list and app info in Settings, default apps, permission dialogs, notifications.
++ *
++ * @hide
++ */
++public final class LechAppNames {
++    private static final String BROWSER = "app.vanadium.browser";
++    /** Only this name is replaced: activities and share targets of the app keep their own labels. */
++    private static final String BROWSER_NAME = "Vanadium";
++    private static final String ICONS_PACKAGE = "lech.os.ikony";
++
++    private LechAppNames() {
++    }
++
++    /** The LECH OS name for the label of a package item, or the label itself. */
++    @NonNull
++    public static CharSequence label(@Nullable String packageName, @NonNull CharSequence label) {
++        if (!BROWSER.equals(packageName) || !BROWSER_NAME.contentEquals(label)) {
++            return label;
++        }
++        LocaleList locales = Resources.getSystem().getConfiguration().getLocales();
++        Locale locale = locales.isEmpty() ? null : locales.get(0);
++        return locale != null && "sk".equals(locale.getLanguage()) ? "Prehliadač" : "Browser";
++    }
++
++    /**
++     * The LECH OS icon for the app icon of a package item, or null (then the app's own icon is used). Only a
++     * preinstalled icon package is used, and only for the icon of the application itself.
++     */
++    @Nullable
++    public static Drawable icon(@NonNull PackageManager pm, @NonNull PackageItemInfo item,
++            @Nullable ApplicationInfo app) {
++        if (!BROWSER.equals(item.packageName) || app == null || item.icon == 0 || item.icon != app.icon) {
++            return null;
++        }
++        try {
++            ApplicationInfo icons = pm.getApplicationInfo(ICONS_PACKAGE, 0);
++            if ((icons.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
++                return null;
++            }
++            Resources res = pm.getResourcesForApplication(icons);
++            int id = res.getIdentifier(BROWSER.replace('.', '_'), "mipmap", ICONS_PACKAGE);
++            return id == 0 ? null : res.getDrawable(id, null);
++        } catch (PackageManager.NameNotFoundException | RuntimeException e) {
++            // No icon package in this build or not visible to this app: the app's own icon.
++            return null;
++        }
++    }
++}
+diff --git a/core/java/android/content/pm/PackageItemInfo.java b/core/java/android/content/pm/PackageItemInfo.java
+index 126d6de..b5a5778 100644
+--- a/core/java/android/content/pm/PackageItemInfo.java
++++ b/core/java/android/content/pm/PackageItemInfo.java
+@@ -236,7 +236,8 @@ public class PackageItemInfo {
+         if (labelRes != 0) {
+             CharSequence label = pm.getText(packageName, labelRes, getApplicationInfo());
+             if (label != null) {
+-                return label.toString().trim();
++                // LECH OS: the LECH OS name of a prebuilt app (LechAppNames).
++                return LechAppNames.label(packageName, label.toString().trim());
+             }
+         }
+         if (name != null) {
+-- 
+2.43.0
+

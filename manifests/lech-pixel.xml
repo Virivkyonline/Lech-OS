@@ -11,6 +11,8 @@
   packages/apps/CarrierConfig2       MIT     carrier settings (VoLTE, SMS over IMS) from the stock carrier data
   tools/arsclib         MIT     resource tool adevtool uses for the overlays
   external/vanadium     GPL-2.0 (patches), BSD (Chromium)  prebuilt browser and WebView Vanadium (E3-01, ADR-0011)
+  packages/apps/ExactCalculator      Apache-2.0  Calculator (AOSP app kept by GrapheneOS; AOSP 17 no longer has it)
+  external/PdfViewer    MIT     prebuilt PDF viewer of GrapheneOS (renders in the Vanadium WebView, no network)
 -->
 <manifest>
   <remote name="lech-grapheneos" fetch="https://github.com/GrapheneOS/" />
@@ -29,4 +31,9 @@
   <!-- Vanadium 157.0.8103.50.0 (10. 11. 2026); ~1.2 GB of APKs (arm64 and x86_64) -->
   <project path="external/vanadium" name="platform_external_vanadium" remote="lech-grapheneos-gitlab" clone-depth="1"
            revision="21895d2c134962ba10c4ef2dd894bc9c6437826f" upstream="refs/heads/17" />
+  <!-- Calculator and PDF viewer (owner, 12. 11. 2026: docs/17-chyba-oproti-androidu.md) -->
+  <project path="packages/apps/ExactCalculator" name="platform_packages_apps_ExactCalculator" remote="lech-grapheneos"
+           clone-depth="1" revision="15cd49cc3c6ee83329b4f76ac5b261f201eaf7bc" upstream="refs/heads/17" />
+  <project path="external/PdfViewer" name="platform_external_PdfViewer" remote="lech-grapheneos" clone-depth="1"
+           revision="20956d0128962a35414280b1a7dc4ab6527f2e4d" upstream="refs/heads/17" />
 </manifest>
