@@ -13,6 +13,9 @@
   43238d51…; HeliBoard navyše s podpisom vývojára 5ec0a5… z fdroiddata AllowedAPKSigningKeys; F-Droid ich potom
   aktualizuje sám). Overiť: obe v zozname aplikácií, HeliBoard zapnúť ako klávesnicu; slovenský slovník HeliBoard
   (je v APK, alebo treba pridať súbor slovníka?) – zistiť v telefóne, nehádať.
+- **Čaká na 0.5.6-dev:** F-Droid sa volá **„Obchod aplikácií“** (plocha: `frameworks/libs/systemui` 0003, Nastavenia:
+  `frameworks/base` 0011). **Ikona obchodu v štýle LECH** – čaká na obrázok od vlastníka (ako Kalkulačka/PDF), potom
+  do `branding/ikony` a balíka `lech.os.ikony` (mipmap `org_fdroid_fdroid`, `tools/etapa2/ikony_prekrytia.py`).
 - **V 0.5.0-dev až 0.5.2-dev (12. 11.), overiť v telefóne:**
   - **Vlastné číslo zostavy** `lech.<verzia>` (`tools/etapa2/05-zostav-aosp.sh`, BUILD_NUMBER). Doteraz mali všetky
     zostavy rovnaký odtlačok (`eng.<používateľ>`), telefón si po aktualizácii nechal starý rozbor systémových aplikácií

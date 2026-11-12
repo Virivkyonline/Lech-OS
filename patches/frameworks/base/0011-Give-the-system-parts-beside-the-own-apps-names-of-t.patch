@@ -18,7 +18,7 @@ ComponentInfo labels, and the screens keep their titles.
 ---
  .../java/android/content/pm/LechAppNames.java | 38 +++++++++++++++++--
  .../android/content/pm/PackageItemInfo.java   |  3 +-
- 2 files changed, 36 insertions(+), 5 deletions(-)
+ 2 files changed, 37 insertions(+), 5 deletions(-)
 
 diff --git a/core/java/android/content/pm/LechAppNames.java b/core/java/android/content/pm/LechAppNames.java
 index c1fd896..b18d4f4 100644
@@ -31,12 +31,12 @@ index c1fd896..b18d4f4 100644
 + * <p>System parts that stay beside the own apps of LECH OS get names of their own in the app lists, so that two apps
 + * are never called the same (owner, 12. 11. 2026): Settings ("Nastavenia systému", the screens LECH Nastavenia opens),
 + * DocumentsUI ("Výber súborov", the system file picker), the GrapheneOS PDF viewer ("Zobrazovač PDF", renders the files
-+ * of LECH PDF) and Launcher3 ("Plocha"). Only the application name changes; screens and activities keep their titles.
++ * of LECH PDF) and Launcher3 ("Plocha"); F-Droid is "Obchod aplikácií". Only the application name changes; screens and activities keep their titles.
 + *
   * @hide
   */
  public final class LechAppNames {
-@@ -28,19 +33,44 @@ public final class LechAppNames {
+@@ -28,19 +33,45 @@ public final class LechAppNames {
      /** Only this name is replaced: activities and share targets of the app keep their own labels. */
      private static final String BROWSER_NAME = "Vanadium";
      private static final String ICONS_PACKAGE = "lech.os.ikony";
@@ -46,6 +46,7 @@ index c1fd896..b18d4f4 100644
 +        {"com.android.documentsui", "Výber súborov", "File picker"},
 +        {"app.grapheneos.pdfviewer", "Zobrazovač PDF", "PDF renderer"},
 +        {"com.android.launcher3", "Plocha", "Home screen"},
++        {"org.fdroid.fdroid", "Obchod aplikácií", "App store"},
 +    };
  
      private LechAppNames() {
