@@ -34,6 +34,11 @@ APPS = [
     (("DocumentsUI",), "ic_subory", "Súbory"),
     (("PdfViewerGOS",), "ic_pdf", "PDF"),
 ]
+# Third-party apps preinstalled from their publisher (tools/etapa2/tretie_aplikacie.py): their APK keeps the
+# publisher's signature, so the icon always comes from lech.os.ikony: package, icon base name, label.
+ICON_PACKAGE_APPS = [
+    ("org.fdroid.fdroid", "ic_obchod", "Obchod aplikácií"),
+]
 PARTITIONS = ("system", "system_ext", "product")
 DENSITIES = ("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")
 LAYERS = ("background", "foreground", "monochrome")
@@ -275,6 +280,12 @@ def main() -> int:
         note = f"; vynechané: {', '.join(skipped)}" if skipped else ""
         print(f"  {label}: {package} – {', '.join(f'@{t}/{n}' for t, n in targets)}{note}")
 
+    for package, base, label in ICON_PACKAGE_APPS:
+        if all((args.icons / f"mipmap-{d}" / f"{base}_{layer}.png").is_file() for d in DENSITIES for layer in LAYERS):
+            icon_package.append((package, base, label))
+            print(f"  {label}: {package} – ikona v balíku ikon plochy")
+        else:
+            print(f"  {label}: chýbajú vrstvy ikony {base} v {args.icons}")
     if icon_package:
         write_icon_package(args.out, icon_package, args.icons)
         modules.append("LechIkony")
