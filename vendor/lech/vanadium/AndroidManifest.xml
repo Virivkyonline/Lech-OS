@@ -7,5 +7,5 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="lech.os.vanadium">
-    <application android:hasCode="false" android:label="LECH OS Vanadium" />
+    <application android:hasCode="false" android:label="Prehliadač – súčasť systému" />
 </manifest>

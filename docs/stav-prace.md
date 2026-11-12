@@ -39,6 +39,8 @@
 
 ## Ďalšie kroky (poradie)
 
+Čo chýba oproti bežnému Androidu a odporúčané poradie: [docs/17](17-chyba-oproti-androidu.md).
+
 1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.4.7-dev
    (Kontakty, Galéria, Súbory, Nastavenia). Pripravené na ďalšiu zostavu: **Telefón** (`PhoneActivity`
    v LechKontakty), **SMS a MMS** (LechSpravy, predvolená pre SMS, nahrádza Messaging; MMS len zobrazenie
