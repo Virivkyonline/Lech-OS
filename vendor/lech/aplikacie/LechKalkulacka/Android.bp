@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // LECH Kalkulačka: the calculator of LECH OS (stage 3) – basic and scientific calculator with history and offline
-// unit conversion in the LECH OS design. It replaces the ExactCalculator. The engine test (test/) is plain Java and
+// unit conversion in the LECH OS design. It replaces the AOSP calculator (ExactCalculator is no longer in the product, so nothing to override). The engine test (test/) is plain Java and
 // is not part of the app.
 
 package {
@@ -17,7 +17,6 @@ android_app {
     srcs: ["src/**/*.java"],
     resource_dirs: ["res"],
     static_libs: ["LechUi"],
-    overrides: ["ExactCalculator"],
     dex_preopt: {
         enabled: false,
     },
