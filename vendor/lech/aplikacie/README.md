@@ -12,6 +12,7 @@
 | `LechKalendar` (`lech.os.kalendar`) | **Kalendár**: mesiac (bodky udalostí), týždeň, deň, agenda; udalosti s miestom, pripomienkou, opakovaním a farbou v poskytovateľovi kalendára (miestny kalendár „LECH OS“, nič sa nesynchronizuje); upozornenia pripomienok; úlohy | AOSP Calendar |
 | `LechFotoaparat` (`lech.os.fotoaparat`) | **Fotoaparát** (vzhľad navrhnutý podľa štýlu LECH OS): fotky a videá cez Camera2, blesk, priblíženie aj širokouhlý objektív, mriežka, predná kamera; ukladá do DCIM/Camera bez polohy; odpovedá na IMAGE_CAPTURE iných aplikácií | AOSP Camera2 |
 | `LechGaleria` (`lech.os.galeria`) | fotky po dňoch, albumy, videá, obľúbené, kôš, prehliadač s priblížením, otočenie (uloží kópiu), zdieľanie | AOSP Gallery2 |
+| `LechPdf` (`lech.os.pdf`) | **PDF** (návrh vlastníka 12. 11. 2026): všetky PDF v telefóne (prístup ku všetkým súborom povolí používateľ raz), nedávne, obľúbené, hľadanie, otvorenie súboru cez +, tlač, zdieľanie. PDF sa otvára v prehliadači PDF od GrapheneOS (`app.grapheneos.pdfviewer`, kreslí cez pdf.js v izolovanom WebView – bezpečnejšie než čítať cudzie PDF vo vlastnom procese); ten nemá ikonu na ploche | – (PdfViewerGOS ostáva ako prehliadač) |
 
 - Java, len verejné API Androidu (`sdk_version: "current"`), bez knižníc AndroidX – zostavujú sa s produktom
   (`vendor/lech/products/lech_tokay.mk`).

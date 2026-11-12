@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PDF</string>
+    <string name="header_title" translatable="false">PDF Viewer</string>
+    <string name="subtitle">View • Read • Manage</string>
+    <string name="tab_files">Files</string>
+    <string name="tab_recent">Recent</string>
+    <string name="tab_favorites">Favourites</string>
+    <string name="nav_files">Files</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_bookmarks">Bookmarks</string>
+    <string name="nav_tools">Tools</string>
+    <string name="more">More</string>
+    <string name="open">Open</string>
+    <string name="share">Share</string>
+    <string name="print">Print</string>
+    <string name="add_favorite">Add to favourites</string>
+    <string name="remove_favorite">Remove from favourites</string>
+    <string name="remove_recent">Remove from recent</string>
+    <string name="clear_recent">Clear recent</string>
+    <string name="refresh">Refresh</string>
+    <string name="all_files_access">Access to all files</string>
+    <string name="open_pdf">Open a PDF</string>
+    <string name="search_hint">Search PDF files</string>
+    <string name="no_viewer">The PDF viewer is not in the system</string>
+    <string name="cannot_read">The file cannot be opened.</string>
+    <string name="cannot_share">No app can share this file.</string>
+    <string name="cannot_print">Printing is not available.</string>
+    <string name="empty_files_title">No PDF files</string>
+    <string name="empty_files_text">Tap + to open a PDF from the device.</string>
+    <string name="empty_recent_title">No recent PDF files</string>
+    <string name="empty_recent_text">PDF files you open will appear here.</string>
+    <string name="empty_favorites_title">No favourites</string>
+    <string name="empty_favorites_text">Tap the star next to a file.</string>
+    <string name="empty_search">Nothing found</string>
+    <string name="access_title">Access to files</string>
+    <string name="access_text">To find all PDF files in the device, allow the app access to all files in the next screen.</string>
+    <string name="access_grant">Allow access</string>
+    <string name="tools_open">Open a PDF from the device</string>
+    <string name="tools_open_sub">System file picker</string>
+    <string name="tools_print">Print</string>
+    <string name="tools_print_sub">Send a PDF file to a printer</string>
+    <string name="tools_share">Share</string>
+    <string name="tools_share_sub">Send a PDF file to another app</string>
+    <string name="tools_info">PDF files open in the secure PDF viewer of the system (pdf.js in an isolated WebView). This app does not read their content.</string>
+    <string name="choose_pdf">Choose a PDF file</string>
+    <string name="choose_device">From the device…</string>
+    <string name="bookmarks_title">Bookmarks</string>
+    <string name="bookmarks_text">Favourite PDF files by folder</string>
+    <string name="group_picked">Opened from the device</string>
+    <string name="internal">Internal storage</string>
+    <string name="no_picker">The system file picker is not available.</string>
+    <string name="cancel">Cancel</string>
+</resources>

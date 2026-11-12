@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- LECH PDF (LECH OS): the PDF library. PDF files open in the system PDF viewer (app.grapheneos.pdfviewer);
+     this app deliberately registers no ACTION_VIEW filter for PDF files. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="lech.os.pdf">
+
+    <!-- Finding every PDF file of the shared storage; the user allows it once (Settings, special app access). -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_pdf"
+        android:roundIcon="@mipmap/ic_pdf"
+        android:theme="@style/Theme.Lech"
+        android:supportsRtl="true"
+        android:allowBackup="false">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Hands single PDF files of the shared storage to the PDF viewer, the print spooler and share targets
+             as read-only content:// URIs with a temporary grant. Not exported. -->
+        <provider
+            android:name=".PdfProvider"
+            android:authorities="lech.os.pdf.files"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+    </application>
+</manifest>

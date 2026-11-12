@@ -74,7 +74,8 @@ PRODUCT_PACKAGES += \
 # sit beside DocumentsUI and Settings, which stay as the system file picker and the settings screens; their
 # launcher entries are hidden (vendor/lech/overlay/launcher). LechDialerOverlay: Slovak texts the Dialer lacks.
 # LechSpravy replaces the AOSP Messaging and is the default SMS app (LechSmsOverlay); LechHodiny the DeskClock,
-# LechKalendar the AOSP Calendar, LechFotoaparat the AOSP Camera2.
+# LechKalendar the AOSP Calendar, LechFotoaparat the AOSP Camera2. LechPdf is the PDF library; PDF files open in the
+# PDF viewer of GrapheneOS (PdfViewerGOS, sandboxed WebView), whose launcher entry is hidden.
 PRODUCT_PACKAGES += \
     LechKontakty \
     LechGaleria \
@@ -84,6 +85,7 @@ PRODUCT_PACKAGES += \
     LechHodiny \
     LechKalendar \
     LechFotoaparat \
+    LechPdf \
     LechSmsOverlay \
     LechLauncherOverlay \
     LechDialerOverlay \

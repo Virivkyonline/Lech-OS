@@ -1,0 +1,24 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// LECH PDF: the PDF library of LECH OS (stage 3) – all PDF files of the shared storage, recent and favourite
+// documents, search, print and share, in the LECH OS design. It does not render PDF files itself: they open in
+// the GrapheneOS PDF Viewer of the system (PdfViewerGOS, pdf.js in the sandboxed WebView), which also stays the
+// handler of ACTION_VIEW application/pdf for all other apps.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+android_app {
+    name: "LechPdf",
+    product_specific: true,
+    sdk_version: "current",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    static_libs: ["LechUi"],
+    dex_preopt: {
+        enabled: false,
+    },
+}
