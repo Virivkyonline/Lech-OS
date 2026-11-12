@@ -26,6 +26,16 @@ WORKDIR=${LECH_WORK:-$HOME/lech-work}
 PRODUCT=${LECH_PRODUCT:-aosp_cf_x86_64_only_phone}
 VARIANT=${LECH_VARIANT:-userdebug}
 RERUN=${LECH_RERUN:-tools/etapa2/05-zostav-aosp.sh}
+# A build number of its own for every LECH OS version (ro.build.version.incremental, part of ro.build.fingerprint).
+# Without BUILD_NUMBER, Soong uses "eng.<user>" for every build, so all LECH OS builds had the same fingerprint: after an
+# update PackageManager kept its parser cache of the system apps (/data/system/package_cache, kept while the
+# fingerprint is unchanged) and the launcher its icon and label cache (Build.VERSION.INCREMENTAL,
+# patches/frameworks/libs/systemui 0001). A system app then read its new resources with the resource IDs of an old
+# version: on 11. 11. 2026 LECH Nastavenia was named "Režim v lietadle" on the home screen (0.4.6-dev).
+if [ -z "${BUILD_NUMBER:-}" ]; then
+  lech_version=${LECH_VERSION:-$(sed -n 's/^LECH_VERSION *[:?]= *//p' "$SCRIPT_DIR/../../vendor/lech/config/version.mk")}
+  export BUILD_NUMBER="lech.${lech_version:-0}"
+fi
 # Other products (the Pixel GSI) keep their target apart: the audit and the nightly check start the phone
 # from the target in LECH_TARGET_FILE, which must stay the Cuttlefish one.
 TARGET_FILE=${LECH_TARGET_SAVE:-$LECH_TARGET_FILE}

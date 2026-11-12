@@ -109,7 +109,7 @@ cvd create --host_path="$ANDROID_HOST_OUT" --product_path="$IMAGES_A" ${start_ar
 ADB=$(lech_adb) || die "adb sa nenašiel."
 timeout 180 "$ADB" wait-for-device || die "Telefón sa cez adb neozval."
 prop() { "$ADB" shell getprop "$1" 2>/dev/null | tr -d '\r'; }
-# The build number is the same for local builds (eng.<user>); the build time tells the builds apart.
+# The build number is lech.<version> (05-zostav-aosp.sh); the build time also tells two builds of one version apart.
 before_version=$(prop ro.lech.version); before_slot=$(prop ro.boot.slot_suffix); before_build=$(prop ro.build.date.utc)
 echo "Telefón beží: LECH OS $before_version, slot ${before_slot:-?}, zostavené $(date -d "@${before_build:-0}" '+%d. %m. %Y %H:%M')"
 [ "$before_version" = "$(cat "$IMAGES_A/lech-version.txt" 2>/dev/null)" ] || echo "UPOZORNENIE: telefón nemá verziu A z uložených obrazov."

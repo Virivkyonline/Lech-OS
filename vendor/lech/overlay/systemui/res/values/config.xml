@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2026 The LECH OS Project
+    SPDX-License-Identifier: Apache-2.0
+
+    Quick Settings tiles of LECH OS, two per row, each with its icon and name: Wi-Fi | Mobile data, Bluetooth |
+    Flashlight, Airplane mode | Auto-rotate, Battery saver | Modes, Hotspot | Location, Microphone access |
+    Camera access, Dark theme | Screen record. The defaults apply to a new user; on a phone in use they apply after
+    Edit → Reset in the panel (the tiles and their sizes are stored per user).
+-->
+<resources>
+    <!-- Wi-Fi and mobile data as separate tiles (Android 17, flag qs_split_internet_tile). -->
+    <string name="quick_settings_tiles_default_split" translatable="false">wifi,cell,bt,flashlight,airplane,rotation,battery,dnd,hotspot,location,mictoggle,cameratoggle,dark,screenrecord</string>
+
+    <!-- The same tiles with the combined Internet tile (without the split). -->
+    <string name="quick_settings_tiles_default" translatable="false">internet,bt,flashlight,airplane,rotation,battery,dnd,hotspot,location,mictoggle,cameratoggle,dark,screenrecord</string>
+
+    <!-- Every tile large (icon and name): one size makes an even grid. -->
+    <string-array name="quick_settings_large_tiles_default_split" translatable="false">
+        <item>wifi</item>
+        <item>cell</item>
+        <item>internet</item>
+        <item>bt</item>
+        <item>flashlight</item>
+        <item>airplane</item>
+        <item>rotation</item>
+        <item>battery</item>
+        <item>dnd</item>
+        <item>hotspot</item>
+        <item>location</item>
+        <item>mictoggle</item>
+        <item>cameratoggle</item>
+        <item>dark</item>
+        <item>screenrecord</item>
+    </string-array>
+</resources>

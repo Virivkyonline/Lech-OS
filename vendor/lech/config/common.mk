@@ -65,6 +65,10 @@ PRODUCT_PRODUCT_PROPERTIES += \
 PRODUCT_PACKAGES += \
     LechIconShapeOverlay \
 
+# Quick Settings: an even grid of tiles without the ones that need Google (vendor/lech/overlay/systemui).
+PRODUCT_PACKAGES += \
+    LechSystemUIOverlay \
+
 # LECH OS icons of the system apps (branding/ikony): overlays generated into vendor/lech/overlay/ikony by
 # tools/etapa2/12-zostav-pixel.sh (tools/etapa2/ikony_prekrytia.py); absent in builds that do not generate them.
 -include vendor/lech/overlay/ikony/ikony.mk

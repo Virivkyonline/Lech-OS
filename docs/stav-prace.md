@@ -1,4 +1,4 @@
-# Stav práce (11. 11. 2026, 22:00)
+# Stav práce (12. 11. 2026)
 
 ## Hotové
 
@@ -12,6 +12,15 @@
   dashboard aktivity Settings; Režimy cez ZEN_MODE_SETTINGS → `Settings$ModesSettingsActivity`), žiadne tiché náhrady,
   hľadanie bez náhrady na celé Nastavenia. Bezpečnostné opravy september–november
   (okrem neverejných) v zostave.
+- **Čaká na 0.4.7-dev (12. 11.):**
+  - **Vlastné číslo zostavy** `lech.<verzia>` (`tools/etapa2/05-zostav-aosp.sh`, BUILD_NUMBER). Doteraz mali všetky
+    zostavy rovnaký odtlačok (`eng.<používateľ>`), telefón si po aktualizácii nechal starý rozbor systémových aplikácií
+    a plocha staré názvy: ikona Nastavení sa volá „Režim v lietadle“ (starý odkaz na text prvej verzie LECH Nastavení).
+    Prvý štart 0.4.7-dev potrvá dlhšie (systém aplikácie načíta nanovo); potom má byť názov „Nastavenia“.
+  - **Horné menu (rýchle nastavenia)** – prekrytie `LechSystemUIOverlay` (`vendor/lech/overlay/systemui`): 14 dlaždíc
+    rovnakej veľkosti, dve v riadku (Wi-Fi, Mobilné dáta, Bluetooth, Baterka, Režim v lietadle, Otáčanie, Šetrič
+    batérie, Režimy, Hotspot, Poloha, Mikrofón, Fotoaparát, Tmavý motív, Nahrávanie obrazovky), bez Peňaženky, Prenosu
+    a Ovládania zariadení. V telefóne sa prejaví až po: stiahnuť menu → ceruzka (Upraviť) → Resetovať.
 
 ## Rozpracované – etapa 3 (vlastné grafické prostredie)
 

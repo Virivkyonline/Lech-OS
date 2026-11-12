@@ -1,0 +1,18 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// Quick Settings of LECH OS (the panel pulled down from the top): a tidy grid of tiles that all have the same size
+// (icon and name), without the tiles that need Google services (Wallet, Cast) or have nothing to show (device
+// controls, alarm). Resource names verified in packages/SystemUI of Android 17 (res/values/config.xml,
+// QSHost.getDefaultSpecs, DefaultLargeTilesRepository).
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+runtime_resource_overlay {
+    name: "LechSystemUIOverlay",
+    product_specific: true,
+    sdk_version: "current",
+}
