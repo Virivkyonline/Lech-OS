@@ -7,7 +7,7 @@
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
 - **Telefón: LECH OS 0.5.4-dev** (12. 11. 2026 ~16:20, OTA do slotu _a, overený štart yellow): navyše mená
   systémových súčastí (`frameworks/base` 0011). Vlastník: „všetko ide“ (mená, Kalkulačka, PDF, SIM, menu, Prehliadač);
-  **QR vo Fotoaparáte – neskôr**; F-Droid sa otvoril, **automatické aktualizácie v jeho Nastaveniach ešte nepozreté**.
+  **QR vo Fotoaparáte – neskôr**; F-Droid sa otvoril, automatické aktualizácie **overené – zapnuté predvolene** (kontrola len na Wi-Fi, inštalácia denne na Wi-Fi).
   Ďalšia zostava musí mať vyššiu verziu (**0.5.5-dev**).
 - **V 0.5.0-dev až 0.5.2-dev (12. 11.), overiť v telefóne:**
   - **Vlastné číslo zostavy** `lech.<verzia>` (`tools/etapa2/05-zostav-aosp.sh`, BUILD_NUMBER). Doteraz mali všetky
@@ -57,8 +57,8 @@
 Čo chýba oproti bežnému Androidu: [docs/17](17-chyba-oproti-androidu.md). Každá zostava: verzia vyššia než v telefóne,
 po aktualizácii hneď zapísať sem.
 
-1. **0.5.4-dev v telefóne (hotové 12. 11.).** Zostáva: QR vo Fotoaparáte; F-Droid – Nastavenia, či inštaluje
-   aktualizácie sám (ak nie, zapnúť predvolene v ďalšej zostave).
+1. **0.5.4-dev v telefóne (hotové 12. 11.).** Zostáva: QR vo Fotoaparáte. F-Droid aktualizuje sám
+   (overené, nič netreba meniť).
 2. **Kontakty: import a export .vcf** – zadané vláknu „LECH OS – pokračovanie (etapa 3)“
    (session_013B5DEdokH9dxeZDJMiVh7g) 12. 11.; skontrolovať `git log`, či je hotové, inak dokončiť.
 3. **Wi-Fi sa občas odpojí** (sieť Tina29, potom sa pripojí sama): čaká sa na výpis po odpojení
