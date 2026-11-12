@@ -109,14 +109,14 @@ fi
 # (tools/etapa2/tretie_aplikacie.py); vendor/lech/products/lech_tokay.mk includes the generated tretie.mk.
 echo "Aplikácie tretích strán (overený podpis vydavateľa):"
 host_bin="$AOSP_DIR/out/host/linux-x86/bin"
-if [ -x "$host_bin/aapt2" ] && [ -x "$host_bin/apksigner" ]; then
+if [ -x "$host_bin/aapt2" ] && [ -x "$host_bin/apksigner" ] && [ -x "$host_bin/zipalign" ]; then
   # apksigner is a Java program: the JDK of the AOSP tree (java is not on PATH outside the build environment).
   jdk=$(ls -d "$AOSP_DIR"/prebuilts/jdk/jdk*/linux-x86 2>/dev/null | sort -V | tail -n 1)
   python3 -I "$SCRIPT_DIR/tretie_aplikacie.py" --aapt2 "$host_bin/aapt2" --apksigner "$host_bin/apksigner" \
-    ${jdk:+--java-home "$jdk"} --cache "$WORKDIR/tretie" --out "$AOSP_DIR/vendor/lech/tretie" \
+    --zipalign "$host_bin/zipalign" ${jdk:+--java-home "$jdk"} --cache "$WORKDIR/tretie" --out "$AOSP_DIR/vendor/lech/tretie" \
     || die "Aplikácie tretích strán sa nepodarilo pripraviť."
 else
-  echo "  (zatiaľ bez nich – aapt2 a apksigner ešte nie sú zostavené)"
+  echo "  (zatiaľ bez nich – aapt2, apksigner a zipalign ešte nie sú zostavené)"
 fi
 
 # The vendor module records the adevtool revision it was generated with (only a warning in the build, --noVerify).
