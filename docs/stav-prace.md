@@ -5,18 +5,16 @@
 - **Etapa 2 a brána 1 – Overený základ: splnená** ([docs/08](08-plan-etap.md)): LECH OS na Pixeli 9 so zamknutým
   bootloaderom a vlastným kľúčom, 3 OTA aktualizácie s návratom po chybnej, generálka mesačnej aktualizácie,
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
-- **Telefón: LECH OS 0.5.5-dev** (12. 11. 2026 ~17:10, OTA do slotu _b). HeliBoard a Organic Maps sa do nej
-  **nedostali**: index F-Droid je podpísaný SHA1withRSA a JDK ho berie ako nepodpísaný (opravené – SHA-1 povolené len
-  pre túto kontrolu jarsigner, APK sa ďalej overujú SHA-256 z indexu a vlastným podpisom). Predtým 0.5.4-dev:
-  mená systémových súčastí, „všetko ide“; QR vo Fotoaparáte – neskôr; F-Droid aktualizuje sám (overené).
-  Ďalšia zostava musí mať vyššiu verziu (**0.5.6-dev**). **Čaká na 0.5.6-dev:** HeliBoard a Organic Maps v systéme
-  (`tools/etapa2/tretie_aplikacie.py`: z repozitára F-Droid cez podpísaný index-v1.jar overený kľúčom repozitára
-  43238d51…; HeliBoard navyše s podpisom vývojára 5ec0a5… z fdroiddata AllowedAPKSigningKeys; F-Droid ich potom
-  aktualizuje sám). Overiť: obe v zozname aplikácií, HeliBoard zapnúť ako klávesnicu; slovenský slovník HeliBoard
-  (je v APK, alebo treba pridať súbor slovníka?) – zistiť v telefóne, nehádať.
-- **Tiež v 0.5.6-dev:** F-Droid sa volá **„Obchod aplikácií“** (plocha: `frameworks/libs/systemui` 0003, Nastavenia:
-  `frameworks/base` 0011). **Ikona obchodu v štýle LECH** od vlastníka (`branding/ikony/obchod`, `ic_obchod`) cez balík `lech.os.ikony`
-  (mipmap `org_fdroid_fdroid`, `tools/etapa2/ikony_prekrytia.py` ICON_PACKAGE_APPS).
+- **Telefón: LECH OS 0.5.6-dev** (12. 11. 2026 ~19:45, OTA do slotu _a; zostava len s `--ulohy 4`, s viac úlohami
+  došla pamäť pri `services.jar`). V nej: HeliBoard 4.2 a Organic Maps z overeného indexu F-Droid, Obchod aplikácií
+  (názov + ikona vlastníka). **Organic Maps v systéme padala** („liborganicmaps.so not found“: APK z F-Droid má
+  knižnice zbalené, Android ich systémovým aplikáciám nerozbaľuje, `android_app_import` to nevie). Po
+  `adb install -r ~/lech-work/tretie/OrganicMaps.apk` (bežná aplikácia v /data) **funguje**. Preto je od 0.5.7-dev
+  zo systému vyradená (kópia v /data zostane); nový telefón ju nainštaluje z Obchodu – neskôr zvážiť inštaláciu pri
+  prvom štarte. Overiť ešte: Obchod – názov a ikona na ploche; HeliBoard ako klávesnica, slovenský slovník.
+  Ďalšia zostava musí mať vyššiu verziu (**0.5.7-dev**). **Čaká na 0.5.7-dev:** Organic Maps mimo systému, názov
+  **„Mapy“** (`frameworks/base` 0011, `frameworks/libs/systemui` 0003); ikona Máp (`ic_mapy`) čaká na obrázok od
+  vlastníka (ZIP ako pri Obchode).
 - **V 0.5.0-dev až 0.5.2-dev (12. 11.), overiť v telefóne:**
   - **Vlastné číslo zostavy** `lech.<verzia>` (`tools/etapa2/05-zostav-aosp.sh`, BUILD_NUMBER). Doteraz mali všetky
     zostavy rovnaký odtlačok (`eng.<používateľ>`), telefón si po aktualizácii nechal starý rozbor systémových aplikácií
@@ -92,7 +90,7 @@ Telephony (`android.telecom.action.SHOW_CALL_SETTINGS` – tlačidlo Nastavenia 
 ## Poznámky
 
 - 12. 11. 2026: upozornenie „Pripojené k nešifrovanej sieti“ (4KA SK) – vlastník zapol ochranu pred 2G; odporučený
-  PIN namiesto „Potiahnutie“ (stav nepotvrdený).
+  PIN namiesto „Potiahnutie“ – **PIN nastavený**.
 - Na notebooku je **ToDesk** (vzdialené ovládanie) so zapnutým prístupom – odporučené odinštalovať alebo vypnúť.
 - Starý notebook: AOSP zmazané (388 GB), zostáva zmenšiť disk WSL (`C:\lech\zmensi-disk-wsl.ps1` v PowerShell ako
   správca, Ubuntu zatvorené) – stav nepotvrdený.

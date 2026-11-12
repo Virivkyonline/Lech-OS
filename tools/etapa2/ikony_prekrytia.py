@@ -38,6 +38,7 @@ APPS = [
 # publisher's signature, so the icon always comes from lech.os.ikony: package, icon base name, label.
 ICON_PACKAGE_APPS = [
     ("org.fdroid.fdroid", "ic_obchod", "Obchod aplikácií"),
+    ("app.organicmaps", "ic_mapy", "Mapy"),   # installed from the app store, not part of the system
 ]
 PARTITIONS = ("system", "system_ext", "product")
 DENSITIES = ("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")

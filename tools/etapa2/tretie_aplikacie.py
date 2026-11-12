@@ -15,8 +15,9 @@ Apps (owner, 12. 11. 2026: customers must not download the app store by hand):
   HeliBoard (helium314.keyboard, GPL-3.0-only) - the keyboard. Reproducible build: the APK in the F-Droid repo carries
   the developer's signature, SHA-256 as allowed in F-Droid's metadata (gitlab.com/fdroid/fdroiddata,
   metadata/helium314.keyboard.yml, AllowedAPKSigningKeys).
-  Organic Maps (app.organicmaps, Apache-2.0) - offline maps. Built and signed by F-Droid; the expected certificate is
-  the "signer" of the APK in the F-Droid index.
+  Organic Maps (app.organicmaps) is NOT in the system: its F-Droid APK stores liborganicmaps.so compressed, Android
+  does not extract native libraries of system apps and android_app_import has no way to extract them, so the app
+  crashed ("liborganicmaps.so not found", Pixel 9, 0.5.6-dev). Installed as a normal app it works (adb install -r).
 
 Apps with "fdroid_index" come from the main F-Droid repo: index-v1.jar is downloaded and accepted only when its JAR
 signature (jarsigner) is valid and made by the repo key, whose SHA-256 is the repo fingerprint 43238d51... (the same
@@ -59,14 +60,6 @@ APPS = [
         "package": "helium314.keyboard",
         "cert_sha256": "5ec0a5313aa43558ee75b20b58ccd8194cdbf066df94a43ba288d933d60b86ce",
         "license_kind": ["SPDX-license-identifier-GPL-3.0-only", "SPDX-license-identifier-GPL-3.0"],
-    },
-    {
-        "module": "LechOrganicMaps",
-        "label": "Organic Maps",
-        "file": "OrganicMaps.apk",
-        "fdroid_index": True,
-        "package": "app.organicmaps",
-        "license_kind": "SPDX-license-identifier-Apache-2.0",
     },
 ]
 

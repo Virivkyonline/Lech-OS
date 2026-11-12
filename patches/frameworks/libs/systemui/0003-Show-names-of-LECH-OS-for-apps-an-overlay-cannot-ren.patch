@@ -16,7 +16,7 @@ LauncherActivityCachingLogic: "Prehliadač" when the device language is
 Slovak, "Browser" otherwise. Other apps keep their own names.
 ---
  .../icons/cache/LauncherActivityCachingLogic.kt       | 11 ++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt b/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt
 index 054f190..f89c669 100644
@@ -30,7 +30,7 @@ index 054f190..f89c669 100644
  
  object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
      const val TAG = "LauncherActivityCachingLogic"
-@@ -33,7 +34,18 @@ object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
+@@ -33,7 +34,19 @@ object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
  
      override fun getUser(info: LauncherActivityInfo): UserHandle = info.user
  
@@ -41,6 +41,7 @@ index 054f190..f89c669 100644
 +    private val LECH_LABELS = mapOf(
 +        "app.vanadium.browser" to ("Prehliadač" to "Browser"),
 +        "org.fdroid.fdroid" to ("Obchod aplikácií" to "App store"),
++        "app.organicmaps" to ("Mapy" to "Maps"),
 +    )
 +
 +    override fun getLabel(info: LauncherActivityInfo): CharSequence? =
