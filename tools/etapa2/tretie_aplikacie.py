@@ -13,7 +13,9 @@ Apps (owner, 12. 11. 2026: customers must not download the app store by hand):
   client whitelist of its Privileged Extension (gitlab.com/fdroid/privileged-extension, ClientWhitelist.java:
   "certificate SHA-256 of https://f-droid.org/F-Droid.apk").
 
-Usage: tretie_aplikacie.py --aapt2 PATH --apksigner PATH --cache DIR --out DIR
+Usage: tretie_aplikacie.py --aapt2 PATH --apksigner PATH --cache DIR --out DIR [--java-home DIR]
+  --java-home   JDK for apksigner (a Java program; outside the build environment java is not on PATH):
+                12-zostav-pixel.sh passes the JDK of the AOSP tree (prebuilts/jdk/jdk*/linux-x86)
 """
 
 import argparse
@@ -39,6 +41,9 @@ APPS = [
 ]
 
 
+ENV = dict(os.environ)
+
+
 def download(url: str, dest: Path) -> bool:
     tmp = dest.with_suffix(".part")
     try:
@@ -59,7 +64,7 @@ def check(apk: Path, app: dict, aapt2: str, apksigner: str):
         badging = subprocess.run([aapt2, "dump", "badging", str(apk)], capture_output=True, text=True,
                                  timeout=120).stdout
         certs = subprocess.run([apksigner, "verify", "--print-certs", str(apk)], capture_output=True, text=True,
-                               timeout=120)
+                               timeout=120, env=ENV)
     except (OSError, subprocess.TimeoutExpired) as e:
         print(f"    kontrola zlyhala ({e})")
         return False, ""
@@ -68,7 +73,9 @@ def check(apk: Path, app: dict, aapt2: str, apksigner: str):
         print(f"    nie je to balík {app['package']}")
         return False, ""
     if certs.returncode != 0:
-        print("    podpis APK nie je platný")
+        print("    podpis APK sa nepodarilo overiť (apksigner):")
+        for line in (certs.stderr or certs.stdout).strip().splitlines()[:5]:
+            print(f"      {line}")
         return False, ""
     digests = set(re.findall(r"certificate SHA-256 digest: ([0-9a-f]{64})", certs.stdout))
     if digests != {app["cert_sha256"]}:
@@ -83,7 +90,11 @@ def main() -> int:
     parser.add_argument("--apksigner", required=True)
     parser.add_argument("--cache", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--java-home", type=Path)
     args = parser.parse_args()
+    if args.java_home:
+        ENV["JAVA_HOME"] = str(args.java_home)
+        ENV["PATH"] = f"{args.java_home / 'bin'}{os.pathsep}{ENV.get('PATH', '')}"
 
     args.cache.mkdir(parents=True, exist_ok=True)
     if args.out.exists():

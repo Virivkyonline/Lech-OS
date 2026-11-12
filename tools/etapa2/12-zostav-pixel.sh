@@ -110,8 +110,11 @@ fi
 echo "Aplikácie tretích strán (overený podpis vydavateľa):"
 host_bin="$AOSP_DIR/out/host/linux-x86/bin"
 if [ -x "$host_bin/aapt2" ] && [ -x "$host_bin/apksigner" ]; then
+  # apksigner is a Java program: the JDK of the AOSP tree (java is not on PATH outside the build environment).
+  jdk=$(ls -d "$AOSP_DIR"/prebuilts/jdk/jdk*/linux-x86 2>/dev/null | sort -V | tail -n 1)
   python3 -I "$SCRIPT_DIR/tretie_aplikacie.py" --aapt2 "$host_bin/aapt2" --apksigner "$host_bin/apksigner" \
-    --cache "$WORKDIR/tretie" --out "$AOSP_DIR/vendor/lech/tretie" || die "Aplikácie tretích strán sa nepodarilo pripraviť."
+    ${jdk:+--java-home "$jdk"} --cache "$WORKDIR/tretie" --out "$AOSP_DIR/vendor/lech/tretie" \
+    || die "Aplikácie tretích strán sa nepodarilo pripraviť."
 else
   echo "  (zatiaľ bez nich – aapt2 a apksigner ešte nie sú zostavené)"
 fi
