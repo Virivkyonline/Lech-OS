@@ -18,4 +18,19 @@
     <string name="camera_error">Fotoaparát nie je k dispozícii.</string>
     <string name="video_failed">Video sa nepodarilo nahrať.</string>
     <string name="back">Späť</string>
+    <string name="qr_code">QR kód</string>
+    <string name="qr_link">QR kód · odkaz</string>
+    <string name="qr_wifi">QR kód · sieť Wi-Fi</string>
+    <string name="qr_phone">QR kód · telefónne číslo</string>
+    <string name="qr_mail">QR kód · e-mail</string>
+    <string name="qr_text">QR kód · text</string>
+    <string name="qr_open">Otvoriť</string>
+    <string name="qr_connect">Pripojiť</string>
+    <string name="qr_call">Zavolať</string>
+    <string name="qr_write">Napísať</string>
+    <string name="qr_copy">Kopírovať</string>
+    <string name="qr_copy_password">Kopírovať heslo</string>
+    <string name="qr_close">Zavrieť</string>
+    <string name="qr_no_app">Žiadna aplikácia to nevie otvoriť.</string>
+    <string name="qr_wifi_manual">Túto sieť treba pridať ručne v nastaveniach Wi-Fi.</string>
 </resources>

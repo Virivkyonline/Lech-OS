@@ -8,6 +8,9 @@ package lech.os.fotoaparat;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -37,14 +40,18 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
+import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Range;
 import android.util.Size;
 import android.view.Gravity;
@@ -71,6 +78,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The camera of LECH OS: photos and videos with the Camera2 API, flash, zoom (also the wide lens below 1×), grid,
@@ -128,6 +137,56 @@ public class CameraActivity extends Activity {
     private TextView recTime;
     private LinearLayout permissionView;
     private OrientationEventListener orientation;
+    private boolean secureCamera;
+
+    // QR codes (owner, 12. 11. 2026: "QR kód nejde"): the preview is read a few times a second and decoded with ZXing on
+    // the phone (QrCodes); a found code is offered in a banner: open the link, join the Wi-Fi network, call, write an
+    // e-mail or copy the text. Only in photo mode, not while recording, not for other apps and not on the lock screen.
+    private static final int REQ_WIFI = 2;
+    private static final long QR_INTERVAL_MS = 400;
+    private static final long QR_HIDE_MS = 5000;
+    private final ExecutorService qrWorker = Executors.newSingleThreadExecutor();
+    private boolean qrRunning;
+    private boolean qrBusy;
+    private Bitmap qrFrame;
+    private int[] qrPixels;
+    private QrCodes.Code qrCode;
+    private String qrDismissed;
+    private LinearLayout qrBanner;
+    private TextView qrTitle;
+    private TextView qrText;
+    private TextView qrPrimary;
+    private TextView qrSecondary;
+    private final Runnable qrHide = this::hideQr;
+
+    private final Runnable qrTick = new Runnable() {
+        @Override
+        public void run() {
+            if (!qrRunning) return;
+            main.postDelayed(this, QR_INTERVAL_MS);
+            if (qrBusy || session == null || videoMode || recording || capturing || captureIntent || secureCamera
+                    || !texture.isAvailable() || texture.getWidth() == 0) {
+                return;
+            }
+            final int w = Math.min(720, texture.getWidth());
+            final int h = Math.max(1, Math.round((float) w * texture.getHeight() / texture.getWidth()));
+            if (qrFrame == null || qrFrame.getWidth() != w || qrFrame.getHeight() != h) {
+                qrFrame = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                qrPixels = new int[w * h];
+            }
+            if (texture.getBitmap(qrFrame) == null) return;
+            final int[] px = qrPixels;
+            qrFrame.getPixels(px, 0, w, 0, 0, w, h);
+            qrBusy = true;
+            qrWorker.execute(() -> {
+                String text = QrCodes.decode(px, w, h);
+                main.post(() -> {
+                    qrBusy = false;
+                    if (text != null && qrRunning) showQr(text);
+                });
+            });
+        }
+    };
 
     private final Runnable recTick = new Runnable() {
         @Override
@@ -147,6 +206,7 @@ public class CameraActivity extends Activity {
         captureIntent = MediaStore.ACTION_IMAGE_CAPTURE.equals(action);
         captureOutput = getIntent().getParcelableExtra(MediaStore.EXTRA_OUTPUT, Uri.class);
         boolean secure = MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE.equals(action);
+        secureCamera = secure;
         if (secure) setShowWhenLocked(true);
         if (MediaStore.ACTION_VIDEO_CAPTURE.equals(action) || MediaStore.INTENT_ACTION_VIDEO_CAMERA.equals(action)) {
             videoMode = true;
@@ -244,6 +304,41 @@ public class CameraActivity extends Activity {
         bottomBar = bottom;
         root.addView(bottom, new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM));
 
+        qrBanner = Ui.column(this);
+        qrBanner.setBackground(Ui.shape(this, 0xE6061424, Ui.GREEN, 1.5f, 20));
+        qrBanner.setPadding(Ui.dp(this, 16), Ui.dp(this, 10), Ui.dp(this, 10), Ui.dp(this, 14));
+        qrBanner.setElevation(Ui.dp(this, 8));
+        LinearLayout qrHead = Ui.row(this);
+        qrHead.setGravity(Gravity.CENTER_VERTICAL);
+        qrTitle = Ui.text(this, "", 13, Ui.GREEN, true);
+        qrTitle.setLetterSpacing(0.06f);
+        qrHead.addView(qrTitle, Ui.lp(0, -2, 1));
+        TextView qrClose = Ui.text(this, "\u2715", 20, Ui.TEXT_2, false);
+        qrClose.setPadding(Ui.dp(this, 14), Ui.dp(this, 4), Ui.dp(this, 8), Ui.dp(this, 4));
+        qrClose.setContentDescription(getString(R.string.qr_close));
+        qrClose.setOnClickListener(v -> {
+            if (qrCode != null) qrDismissed = qrCode.raw;
+            hideQr();
+        });
+        qrHead.addView(qrClose);
+        qrBanner.addView(qrHead);
+        qrText = Ui.text(this, "", 16, Ui.TEXT, false);
+        qrText.setMaxLines(3);
+        qrText.setEllipsize(TextUtils.TruncateAt.END);
+        qrBanner.addView(qrText, Ui.margins(Ui.lp(-1, -2), this, 0, 2, 6, 12));
+        LinearLayout qrButtons = Ui.row(this);
+        qrPrimary = qrButton(true, v -> qrPrimaryAction());
+        qrSecondary = qrButton(false, v -> qrSecondaryAction());
+        qrButtons.addView(qrPrimary);
+        qrButtons.addView(qrSecondary, Ui.margins(Ui.lp(-2, -2), this, 10, 0, 0, 0));
+        qrBanner.addView(qrButtons);
+        qrBanner.setVisibility(View.GONE);
+        FrameLayout.LayoutParams ql = new FrameLayout.LayoutParams(-1, -2, Gravity.TOP);
+        ql.leftMargin = Ui.dp(this, 16);
+        ql.rightMargin = Ui.dp(this, 16);
+        ql.topMargin = Ui.dp(this, 70);
+        root.addView(qrBanner, ql);
+
         permissionView = Ui.column(this);
         permissionView.setGravity(Gravity.CENTER);
         permissionView.setBackgroundColor(0xFF000000);
@@ -266,6 +361,9 @@ public class CameraActivity extends Activity {
             FrameLayout.LayoutParams r2 = (FrameLayout.LayoutParams) recTime.getLayoutParams();
             r2.topMargin = i.top + Ui.dp(this, 70);
             recTime.setLayoutParams(r2);
+            FrameLayout.LayoutParams q2 = (FrameLayout.LayoutParams) qrBanner.getLayoutParams();
+            q2.topMargin = i.top + Ui.dp(this, 70);
+            qrBanner.setLayoutParams(q2);
             return WindowInsets.CONSUMED;
         });
         getWindow().setDecorFitsSystemWindows(false);
@@ -307,6 +405,9 @@ public class CameraActivity extends Activity {
         thread = new HandlerThread("camera");
         thread.start();
         cam = new Handler(thread.getLooper());
+        qrRunning = true;
+        main.removeCallbacks(qrTick);
+        main.postDelayed(qrTick, QR_INTERVAL_MS);
         if (texture.isAvailable()) {
             open();
         } else {
@@ -325,6 +426,9 @@ public class CameraActivity extends Activity {
 
     @Override
     protected void onPause() {
+        qrRunning = false;
+        main.removeCallbacks(qrTick);
+        hideQr();
         if (recording) stopRecording();
         close();
         if (thread != null) {
@@ -334,6 +438,12 @@ public class CameraActivity extends Activity {
         }
         orientation.disable();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        qrWorker.shutdownNow();
+        super.onDestroy();
     }
 
     private boolean hasPermissions() {
@@ -805,6 +915,7 @@ public class CameraActivity extends Activity {
     }
 
     private void updateMode() {
+        if (videoMode) hideQr();
         photoMode.setTextColor(videoMode ? Ui.TEXT_2 : Ui.ON_GREEN);
         photoMode.setBackground(videoMode ? null : Ui.greenGlow(this, 16));
         videoModeText.setTextColor(videoMode ? Ui.ON_GREEN : Ui.TEXT_2);
@@ -827,6 +938,147 @@ public class CameraActivity extends Activity {
         shutterInner.setBackground(inner);
         shutter.setContentDescription(getString(videoMode ? (recording ? R.string.stop : R.string.record)
                 : R.string.shutter));
+    }
+
+    // ---- QR codes ----
+
+    private TextView qrButton(boolean primary, View.OnClickListener l) {
+        TextView b = Ui.text(this, "", 15, primary ? Ui.ON_GREEN : Ui.TEXT, true);
+        b.setBackground(primary ? Ui.greenGlow(this, 16) : Ui.shape(this, 0x33FFFFFF, 0x88FFFFFF, 1, 16));
+        b.setPadding(Ui.dp(this, 18), Ui.dp(this, 9), Ui.dp(this, 18), Ui.dp(this, 9));
+        b.setOnClickListener(l);
+        return b;
+    }
+
+    private void showQr(String text) {
+        if (text.equals(qrDismissed)) return;
+        qrDismissed = null;
+        main.removeCallbacks(qrHide);
+        main.postDelayed(qrHide, QR_HIDE_MS);
+        QrCodes.Code c = QrCodes.parse(text);
+        if (qrCode != null && qrCode.raw.equals(c.raw) && qrBanner.getVisibility() == View.VISIBLE) return;
+        qrCode = c;
+        int title;
+        int primary;
+        CharSequence shown;
+        switch (c.type) {
+            case QrCodes.LINK:
+                title = R.string.qr_link;
+                primary = R.string.qr_open;
+                shown = c.raw;
+                break;
+            case QrCodes.WIFI:
+                // The network name only, never the password.
+                title = R.string.qr_wifi;
+                primary = R.string.qr_connect;
+                shown = c.ssid;
+                break;
+            case QrCodes.PHONE:
+                title = R.string.qr_phone;
+                primary = R.string.qr_call;
+                shown = c.raw.substring(4);
+                break;
+            case QrCodes.MAIL:
+                title = R.string.qr_mail;
+                primary = R.string.qr_write;
+                shown = c.raw.substring(7);
+                break;
+            default:
+                title = R.string.qr_text;
+                primary = R.string.qr_copy;
+                shown = c.raw;
+                break;
+        }
+        qrTitle.setText(title);
+        qrText.setText(shown);
+        qrPrimary.setText(primary);
+        boolean second = c.type == QrCodes.WIFI ? !c.password.isEmpty() : c.type != QrCodes.TEXT;
+        qrSecondary.setText(c.type == QrCodes.WIFI ? R.string.qr_copy_password : R.string.qr_copy);
+        qrSecondary.setVisibility(second ? View.VISIBLE : View.GONE);
+        qrBanner.setVisibility(View.VISIBLE);
+    }
+
+    private void hideQr() {
+        main.removeCallbacks(qrHide);
+        if (qrBanner != null) qrBanner.setVisibility(View.GONE);
+        qrCode = null;
+    }
+
+    private void qrPrimaryAction() {
+        QrCodes.Code c = qrCode;
+        if (c == null) return;
+        try {
+            switch (c.type) {
+                case QrCodes.LINK:
+                    startActivity(new Intent(Intent.ACTION_VIEW).setDataAndNormalize(Uri.parse(c.raw))
+                            .addCategory(Intent.CATEGORY_BROWSABLE));
+                    break;
+                case QrCodes.PHONE:
+                    startActivity(new Intent(Intent.ACTION_DIAL).setDataAndNormalize(Uri.parse(c.raw)));
+                    break;
+                case QrCodes.MAIL:
+                    startActivity(new Intent(Intent.ACTION_SENDTO).setDataAndNormalize(Uri.parse(c.raw)));
+                    break;
+                case QrCodes.WIFI:
+                    joinWifi(c);
+                    break;
+                default:
+                    copy(c.raw, false);
+                    qrDismissed = c.raw;
+                    hideQr();
+                    break;
+            }
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.qr_no_app, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void qrSecondaryAction() {
+        QrCodes.Code c = qrCode;
+        if (c == null) return;
+        if (c.type == QrCodes.WIFI) {
+            copy(c.password, true);
+        } else {
+            copy(c.raw, false);
+        }
+        qrDismissed = c.raw;
+        hideQr();
+    }
+
+    /** Settings.ACTION_WIFI_ADD_NETWORKS: Android asks the owner to save the network (Settings AddAppNetworksActivity). */
+    private void joinWifi(QrCodes.Code c) {
+        String security = c.security.toUpperCase(Locale.ROOT);
+        try {
+            WifiNetworkSuggestion.Builder b = new WifiNetworkSuggestion.Builder().setSsid(c.ssid);
+            if (security.equals("WEP")) {
+                throw new IllegalArgumentException("WEP networks cannot be suggested");
+            } else if (security.equals("SAE")) {
+                b.setWpa3Passphrase(c.password);
+            } else if (security.equals("NOPASS") || (security.isEmpty() && c.password.isEmpty())) {
+                // An open network: no passphrase.
+            } else {
+                b.setWpa2Passphrase(c.password);
+            }
+            if (c.hidden) b.setIsHiddenSsid(true);
+            ArrayList<WifiNetworkSuggestion> networks = new ArrayList<>();
+            networks.add(b.build());
+            startActivityForResult(new Intent(Settings.ACTION_WIFI_ADD_NETWORKS)
+                    .putParcelableArrayListExtra(Settings.EXTRA_WIFI_NETWORK_LIST, networks), REQ_WIFI);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // WEP, or a name or password Android does not accept: the network is added by hand in the Wi-Fi settings.
+            if (!c.password.isEmpty()) copy(c.password, true);
+            Toast.makeText(this, R.string.qr_wifi_manual, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void copy(String text, boolean sensitive) {
+        ClipData clip = ClipData.newPlainText(getString(R.string.qr_code), text);
+        if (sensitive) {
+            PersistableBundle extras = new PersistableBundle();
+            extras.putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true);
+            clip.getDescription().setExtras(extras);
+        }
+        getSystemService(ClipboardManager.class).setPrimaryClip(clip);
     }
 
     private void cycleFlash() {

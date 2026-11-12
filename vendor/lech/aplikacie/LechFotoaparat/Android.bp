@@ -15,7 +15,10 @@ android_app {
     sdk_version: "current",
     srcs: ["src/**/*.java"],
     resource_dirs: ["res"],
-    static_libs: ["LechUi"],
+    static_libs: [
+        "LechUi",
+        "lech-zxing-core", // QR codes in the preview (vendor/lech/kniznice/zxing)
+    ],
     overrides: ["Camera2"],
     required: ["lech_fotoaparat_default_permissions"],
     dex_preopt: {

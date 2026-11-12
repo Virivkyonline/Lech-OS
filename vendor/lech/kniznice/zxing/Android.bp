@@ -1,0 +1,24 @@
+//
+// Copyright (C) 2026 The LECH OS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// ZXing core 3.5.3 (https://github.com/zxing/zxing, Apache-2.0): QR code decoding in LECH Fotoaparat.
+// The jar is the release from Maven Central (com.google.zxing:core:3.5.3), see README.md for its checksums.
+// A prebuilt with sdk_version, so that apps built against the public SDK (sdk_version: "current") can link it.
+
+package {
+    default_applicable_licenses: ["lech_zxing_license"],
+}
+
+license {
+    name: "lech_zxing_license",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-Apache-2.0"],
+    license_text: ["LICENSE"],
+}
+
+java_import {
+    name: "lech-zxing-core",
+    jars: ["core-3.5.3.jar"],
+    sdk_version: "current",
+}

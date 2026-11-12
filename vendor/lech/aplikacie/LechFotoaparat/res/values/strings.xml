@@ -18,4 +18,19 @@
     <string name="camera_error">The camera is not available.</string>
     <string name="video_failed">Could not record the video.</string>
     <string name="back">Back</string>
+    <string name="qr_code">QR code</string>
+    <string name="qr_link">QR code · link</string>
+    <string name="qr_wifi">QR code · Wi-Fi network</string>
+    <string name="qr_phone">QR code · phone number</string>
+    <string name="qr_mail">QR code · e-mail</string>
+    <string name="qr_text">QR code · text</string>
+    <string name="qr_open">Open</string>
+    <string name="qr_connect">Connect</string>
+    <string name="qr_call">Call</string>
+    <string name="qr_write">Write</string>
+    <string name="qr_copy">Copy</string>
+    <string name="qr_copy_password">Copy password</string>
+    <string name="qr_close">Close</string>
+    <string name="qr_no_app">No app can open this.</string>
+    <string name="qr_wifi_manual">Add this network by hand in the Wi-Fi settings.</string>
 </resources>
