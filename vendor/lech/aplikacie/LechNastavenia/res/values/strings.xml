@@ -6,6 +6,8 @@
     <string name="voice_search">Voice search</string>
     <string name="network">Network and internet</string>
     <string name="network_sub">Mobile data, Wi-Fi, hotspot</string>
+    <string name="sim">SIM card lock</string>
+    <string name="sim_sub">SIM PIN</string>
     <string name="devices">Connected devices</string>
     <string name="devices_sub">Bluetooth, pairing</string>
     <string name="apps">Apps</string>

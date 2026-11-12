@@ -182,6 +182,9 @@ public class MainActivity extends Activity {
      */
     private void define() {
         add(R.drawable.ic_set_siet, R.string.network, R.string.network_sub, false, "cmp:com.android.settings/com.android.settings.Settings$NetworkDashboardActivity");
+        // SIM card lock (SIM PIN): Settings$IccLockSettingsActivity (exported, fragment IccLockSettings). In Android it is
+        // under Security & privacy > More security & privacy, where the owner did not find it (12. 11. 2026).
+        add(R.drawable.ic_set_sim, R.string.sim, R.string.sim_sub, false, "cmp:com.android.settings/com.android.settings.Settings$IccLockSettingsActivity");
         add(R.drawable.ic_set_pripojene_zariadenia, R.string.devices, R.string.devices_sub, false, "cmp:com.android.settings/com.android.settings.Settings$ConnectedDeviceDashboardActivity");
         add(R.drawable.ic_set_aplikacie, R.string.apps, R.string.apps_sub, true, "cmp:com.android.settings/com.android.settings.Settings$AppDashboardActivity");
         add(R.drawable.ic_set_upozornenia, R.string.notifications, R.string.notifications_sub, false,

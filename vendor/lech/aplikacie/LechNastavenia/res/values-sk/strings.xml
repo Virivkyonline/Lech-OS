@@ -6,6 +6,8 @@
     <string name="voice_search">Hlasové hľadanie</string>
     <string name="network">Sieť a internet</string>
     <string name="network_sub">Mobilné dáta, Wi-Fi, hotspot</string>
+    <string name="sim">Zámka SIM karty</string>
+    <string name="sim_sub">PIN kód SIM karty</string>
     <string name="devices">Pripojené zariadenia</string>
     <string name="devices_sub">Bluetooth, párovanie</string>
     <string name="apps">Aplikácie</string>
