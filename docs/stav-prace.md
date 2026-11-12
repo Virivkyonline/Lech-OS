@@ -5,8 +5,9 @@
 - **Etapa 2 a brána 1 – Overený základ: splnená** ([docs/08](08-plan-etap.md)): LECH OS na Pixeli 9 so zamknutým
   bootloaderom a vlastným kľúčom, 3 OTA aktualizácie s návratom po chybnej, generálka mesačnej aktualizácie,
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
-- **Telefón: LECH OS 0.5.2-dev** (12. 11., cez 0.5.1-dev). Ďalšia zostava musí mať vyššiu verziu (**0.5.3-dev**).
-  Na overenie v telefóne: všetko nižšie vrátane F-Droid, vlastnej Kalkulačky a PDF.
+- **Telefón: LECH OS 0.5.3-dev** (12. 11. ~13:00): F-Droid v systéme (overený), Kalkulačka a PDF s ikonami vlastníka.
+  Ďalšia zostava musí mať vyššiu verziu (**0.5.4-dev**). **Čaká na 0.5.4-dev:** mená systémových súčastí
+  v zozname aplikácií Nastavení (`frameworks/base` 0011: Nastavenia systému, Výber súborov, Zobrazovač PDF, Plocha).
 - **V 0.5.0-dev až 0.5.2-dev (12. 11.), overiť v telefóne:**
   - **Vlastné číslo zostavy** `lech.<verzia>` (`tools/etapa2/05-zostav-aosp.sh`, BUILD_NUMBER). Doteraz mali všetky
     zostavy rovnaký odtlačok (`eng.<používateľ>`), telefón si po aktualizácii nechal starý rozbor systémových aplikácií
@@ -27,8 +28,8 @@
     mimo AOSP (aapt2, javac, d8 zo SDK 37), dekódovanie overené testom v Jave; v telefóne neoverené.
   - **Dvojité ikony v zozname aplikácií** (Súbory, Nastavenia, PDF Viewer v 0.5.2-dev): skrytie cez prekrytie
     `LechLauncherOverlay` nefungovalo, zoznam je teraz priamo v Launcher3 (`patches/packages/apps/Launcher3` 0002),
-    prekrytie odstránené – **čaká na 0.5.3-dev**.
-  - **F-Droid v 0.5.2-dev nie je** – príčina sa zisťuje (výpis kroku `tools/etapa2/tretie_aplikacie.py`).
+    prekrytie odstránené – v 0.5.3-dev (overiť zoznam aplikácií na ploche).
+  - **F-Droid** chýbal v 0.5.1/0.5.2-dev (apksigner bez Javy, potom Soong vyžadoval `preprocessed`) – v 0.5.3-dev je.
   - **Vlastná Kalkulačka a PDF podľa návrhov vlastníka** (12. 11., v 0.5.2-dev): `LechKalkulacka` (nahrádza
     ExactCalculator, ten je zo zostavy aj z `manifests/lech-pixel.xml` preč) a `LechPdf` (knižnica PDF; PDF otvára
     prehliadač GrapheneOS `PdfViewerGOS`, jeho ikona na ploche je skrytá). Ikony vlastníka (`branding/ikony`
@@ -54,7 +55,7 @@
 
 Čo chýba oproti bežnému Androidu a odporúčané poradie: [docs/17](17-chyba-oproti-androidu.md).
 
-1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.5.2-dev
+1. **Vlastné aplikácie podľa návrhov vlastníka** (`vendor/lech/aplikacie`, README tam) – v telefóne je 0.5.3-dev
    (Kontakty, Galéria, Súbory, Nastavenia). Pripravené na ďalšiu zostavu: **Telefón** (`PhoneActivity`
    v LechKontakty), **SMS a MMS** (LechSpravy, predvolená pre SMS, nahrádza Messaging; MMS len zobrazenie
    uložených), **Hodiny** (LechHodiny, nahrádza DeskClock), **Kalendár** (LechKalendar, nahrádza Calendar),
