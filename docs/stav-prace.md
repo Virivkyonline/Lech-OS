@@ -14,7 +14,10 @@
   prvom štarte. HeliBoard zapnutý a funguje (slovenčina, rozloženie QWERTY). **Slovenský slovník
   v HeliBoard nie je** (Slovníky: len interné en, bn, bg, fr, el, nl, hu, de, pt …) – ručné pridanie zo súboru
   (codeberg.org/Helium314/aosp-dictionaries) vlastník odmieta („kto má ťukať“): **úloha – slovenský slovník priamo
-  v systéme**, bez ťukania; zistiť spôsob (zdroj slovníka overiť, nehádať). Overiť ešte: Obchod – názov a ikona.
+  v systéme**, bez ťukania; zistiť spôsob (zdroj slovníka overiť, nehádať). Vlastník
+  (12. 11.): zložitosť skryť, v klávesnici len **jeden prepínač prediktívneho textu**. Návrh: vlastná zostava
+  „LECH Klávesnica“ zo zdrojov HeliBoard (GPL-3.0) so slovenským slovníkom a zjednodušenými nastaveniami, aktualizácie
+  cez OTA LECH OS (nie F-Droid) – väčšia úloha, zatiaľ nezačatá. Overiť ešte: Obchod – názov a ikona.
   Ďalšia zostava musí mať vyššiu verziu (**0.5.7-dev**). **Čaká na 0.5.7-dev:** Organic Maps mimo systému, názov
   **„Mapy“** (`frameworks/base` 0011, `frameworks/libs/systemui` 0003); ikona Máp (`ic_mapy`) čaká na obrázok od
   vlastníka (ZIP ako pri Obchode).
