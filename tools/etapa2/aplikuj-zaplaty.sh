@@ -27,6 +27,12 @@ SECURITY_MONTHS="$REPO_DIR/bezpecnost/mesiace.txt"
 SECURITY_SKIP="$REPO_DIR/bezpecnost/vynechat.txt"
 SECURITY_CACHE="${LECH_WORK:-$HOME/lech-work}/bezpecnost"
 AOSP_DIR=${AOSP_DIR:-$HOME/aosp}
+# LECH OS on GrapheneOS (ADR-0012, tools/etapa2/gos.sh): its own reduced patch set; the security fixes of the
+# bulletins are part of the pinned GrapheneOS release.
+if [ "${LECH_BASE:-}" = gos ]; then
+  PATCH_DIR="$REPO_DIR/patches-gos"
+  SECURITY_MONTHS=/nonexistent
+fi
 LECH_EMAIL=dev@lech-os.invalid
 CHECK_ONLY=0
 

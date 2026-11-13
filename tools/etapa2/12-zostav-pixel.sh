@@ -33,7 +33,8 @@ PRODUCT=lech_tokay
 DEVICE=tokay
 PRODUCT_OUT="$AOSP_DIR/out/target/product/$DEVICE"
 if lech_in_wsl && [ -d /mnt/c ]; then OUT_DIR_IMG=${LECH_PIXEL_FULL_DIR:-/mnt/c/lech/pixel-uplne}; else OUT_DIR_IMG=${LECH_PIXEL_FULL_DIR:-$WORKDIR/pixel-uplne}; fi
-RELEASE=${LECH_PIXEL_RELEASE:-cp2a}
+GOS=0; [ "${LECH_BASE:-}" = gos ] && GOS=1   # tree of GrapheneOS (ADR-0012)
+if [ "$GOS" -eq 1 ]; then RELEASE=${LECH_PIXEL_RELEASE:-cur}; else RELEASE=${LECH_PIXEL_RELEASE:-cp2a}; fi
 VENDOR_API_LEVEL=202604   # of the stock vendor files (Android 17, CP3A.261005.005)
 MIN_FREE_FIRST_GB=60   # estimate: Pixel modules and images next to the GSI build (same ARMv8-A target)
 MIN_FREE_GB=30
@@ -71,7 +72,7 @@ TEST_RC=product/etc/init/init.lech-test-chybna.rc
 [ -f "$AOSP_DIR/build/release/release_configs/$RELEASE.textproto" ] || \
   die "V build/release chýba konfigurácia vydania $RELEASE (sú: $(ls "$AOSP_DIR/build/release/release_configs" 2>/dev/null | sed 's/\.textproto$//' | tr '\n' ' '))."
 api=$(sed -n 's/.*string_value: *"\([0-9]*\)".*/\1/p' "$AOSP_DIR/build/release/flag_values/$RELEASE/RELEASE_BOARD_API_LEVEL.textproto" 2>/dev/null)
-[ -z "$api" ] || [ "$api" = "$VENDOR_API_LEVEL" ] || \
+[ "$GOS" -eq 1 ] || [ -z "$api" ] || [ "$api" = "$VENDOR_API_LEVEL" ] || \
   die "Konfigurácia vydania $RELEASE má úroveň API vendora $api, súbory vendora Pixelu majú $VENDOR_API_LEVEL."
 
 if [ -z "${LECH_BUILD_LOCK_HELD:-}" ]; then
@@ -157,13 +158,15 @@ if [ "${mem_gb:-0}" -lt 25 ]; then
 fi
 
 # Also in the environment: the board configuration reads it (patches/vendor/adevtool/0002).
-export LECH_PIXEL_GENERIC_CPU=true
+[ "$GOS" -eq 1 ] || export LECH_PIXEL_GENERIC_CPU=true
 export LECH_PRODUCT=$PRODUCT LECH_RELEASE=$RELEASE LECH_RELEASE_ONLY=1 LECH_TARGET_SAVE="$WORKDIR/lunch-target-pixel" \
   LECH_RERUN=tools/etapa2/12-zostav-pixel.sh
 
 # Type and attribute declarations of a platform policy (what the generated Pixel policy depends on).
 cil_names() { grep -oE '^\((type|typeattribute) [^ )]+\)' "$1" 2>/dev/null | LC_ALL=C sort; }
 
+# In the GrapheneOS tree the Pixel policy is generated against the policy of GrapheneOS (vendor/state): no step 1.
+if [ "$GOS" -eq 0 ]; then
 echo
 echo "1/2 Platformová politika SELinux vydania $RELEASE (plat_sepolicy.cil) – prvýkrát s analýzou zostavy…"
 LECH_M_TARGETS=plat_sepolicy.cil "$SCRIPT_DIR/05-zostav-aosp.sh" ${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"} || exit $?
@@ -172,6 +175,8 @@ plat_cil="$PRODUCT_OUT/system/etc/selinux/plat_sepolicy.cil"
 if [ -z "$(cil_names "$plat_cil")" ] || ! cmp -s <(cil_names "$plat_cil") <(cil_names "$WORKDIR/pixel-plat_sepolicy.cil"); then
   echo "Podpora Pixelu bola vytvorená s inou platformovou politikou SELinux – vytváram ju znova pre vydanie $RELEASE…"
   LECH_PLAT_CIL="$plat_cil" "$SCRIPT_DIR/12-priprav-pixel.sh" --len-generovat || exit 1
+fi
+
 fi
 
 echo

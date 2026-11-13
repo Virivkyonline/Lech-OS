@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Thu, 12 Nov 2026 12:00:00 +0100
+Subject: [PATCH] Hide the launcher entries replaced by the own apps of LECH OS
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+LECH Nastavenia, LECH Súbory, LECH Telefón and LECH PDF replace the
+launcher entries of Settings, DocumentsUI, the Dialer and the GrapheneOS
+PDF viewer; the apps themselves stay for their system roles. The list
+was in a resource overlay (LechLauncherOverlay), but the all-apps list
+still showed Súbory, Nastavenia and PDF Viewer twice (12. 11. 2026).
+The overlay had no effect, probably because Launcher3QuickStep is built
+with shrink_resources (resource names need not survive for an overlay).
+The list is now in the launcher's own config.xml, which AppFilter reads.
+---
+ res/values/config.xml | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/res/values/config.xml b/res/values/config.xml
+index 2211b9c..942ba71 100644
+--- a/res/values/config.xml
++++ b/res/values/config.xml
+@@ -133,5 +133,14 @@
+     </array>
+ 
+-    <string-array name="filtered_components" ></string-array>
++    <!-- LECH OS: launcher entries replaced by the own apps of LECH OS (vendor/lech/aplikacie). The apps stay: Settings
++         and DocumentsUI provide the settings screens and the system file picker, the Dialer the in-call screen and
++         the GrapheneOS PDF viewer renders the PDF files LECH PDF opens. In the source: a resource overlay of this
++         array had no effect on the phone (Launcher3QuickStep is built with shrink_resources). -->
++    <string-array name="filtered_components" translatable="false">
++        <item>com.android.settings/com.android.settings.Settings</item>
++        <item>com.android.documentsui/com.android.documentsui.LauncherActivity</item>
++        <item>com.android.dialer/com.android.dialer.main.impl.MainActivity</item>
++        <item>app.grapheneos.pdfviewer/app.grapheneos.pdfviewer.PdfViewer</item>
++    </string-array>
+     <string-array name="default_featured_widget_apps" translatable="false">
+     </string-array>
+-- 
+2.43.0
+

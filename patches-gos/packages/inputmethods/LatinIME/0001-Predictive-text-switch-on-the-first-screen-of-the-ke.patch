@@ -1,0 +1,65 @@
+From b38be29a17610864911b89c78d8b608e94460025 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Fri, 13 Nov 2026 07:00:00 +0000
+Subject: [PATCH] Predictive text switch on the first screen of the keyboard
+ settings
+
+LECH OS: word suggestions must be simple to turn on and off (owner, 13. 11.
+2026). The keyboard settings hid them in Text correction -> Show
+suggestions. The first screen now starts with one switch "Prediktivny
+text" ("Predictive text") bound to the same preference show_suggestions
+(Settings.PREF_SHOW_SUGGESTIONS, default on), so both places stay in step.
+The Slovak dictionary main_sk.dict is added by tools/etapa2/12-zostav-pixel.sh.
+---
+ java/res/values-sk/lech_strings.xml | 6 ++++++
+ java/res/values/lech_strings.xml    | 6 ++++++
+ java/res/xml/prefs.xml              | 7 +++++++
+ 3 files changed, 19 insertions(+)
+ create mode 100644 java/res/values-sk/lech_strings.xml
+ create mode 100644 java/res/values/lech_strings.xml
+
+diff --git a/java/res/values-sk/lech_strings.xml b/java/res/values-sk/lech_strings.xml
+new file mode 100644
+index 0000000..7ff628c
+--- /dev/null
++++ b/java/res/values-sk/lech_strings.xml
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: the predictive text switch on the first settings screen. -->
++<resources>
++    <string name="lech_predictive_text">Prediktívny text</string>
++    <string name="lech_predictive_text_summary">Navrhovať slová počas písania</string>
++</resources>
+diff --git a/java/res/values/lech_strings.xml b/java/res/values/lech_strings.xml
+new file mode 100644
+index 0000000..eb3095a
+--- /dev/null
++++ b/java/res/values/lech_strings.xml
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: the predictive text switch on the first settings screen. -->
++<resources>
++    <string name="lech_predictive_text">Predictive text</string>
++    <string name="lech_predictive_text_summary">Suggest words while typing</string>
++</resources>
+diff --git a/java/res/xml/prefs.xml b/java/res/xml/prefs.xml
+index 55b9b10..edd0486 100644
+--- a/java/res/xml/prefs.xml
++++ b/java/res/xml/prefs.xml
+@@ -18,6 +18,13 @@
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:latin="http://schemas.android.com/apk/res/com.android.inputmethod.latin"
+     android:key="english_ime_settings">
++    <!-- LECH OS: one switch for word suggestions on the first screen (same preference as in Text correction). -->
++    <SwitchPreference
++        android:key="show_suggestions"
++        android:title="@string/lech_predictive_text"
++        android:summary="@string/lech_predictive_text_summary"
++        android:defaultValue="true"
++        android:persistent="true" />
+     <PreferenceScreen
+         android:fragment="com.android.inputmethod.latin.settings.PreferencesSettingsFragment"
+         android:title="@string/settings_screen_preferences"
+-- 
+2.43.0
+

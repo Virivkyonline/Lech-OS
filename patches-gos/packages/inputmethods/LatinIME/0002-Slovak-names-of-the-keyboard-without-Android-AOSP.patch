@@ -1,0 +1,34 @@
+From e1f58254e5b5573d3a692388363cf8a5180fb969 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Fri, 13 Nov 2026 09:30:00 +0000
+Subject: [PATCH] Slovak names of the keyboard without "Android (AOSP)"
+
+LECH OS: the Slovak translation still called the keyboard "Klavesnica
+Android (AOSP)" while the English name is already "Keyboard" (owner, Pixel 9,
+13. 11. 2026). The keyboard, its settings and the spell checker are now
+"Klavesnica", "Nastavenia klavesnice", "Kontrola pravopisu" and "Nastavenia
+kontroly pravopisu".
+---
+ java/res/values-sk/strings-appname.xml | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/java/res/values-sk/strings-appname.xml b/java/res/values-sk/strings-appname.xml
+index af2651d..1e0e0db 100644
+--- a/java/res/values-sk/strings-appname.xml
++++ b/java/res/values-sk/strings-appname.xml
+@@ -20,8 +20,8 @@
+ 
+ <resources xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+-    <string name="english_ime_name" msgid="4475547506953371028">"Klávesnica Android (AOSP)"</string>
+-    <string name="spell_checker_service_name" msgid="7417621022652876777">"Kontrola pravopisu (AOSP)"</string>
+-    <string name="english_ime_settings" msgid="1497566567404939275">"Nastavenia klávesnice Android (AOSP)"</string>
+-    <string name="android_spell_checker_settings" msgid="2821003654878860820">"Nastavenia kontroly pravopisu Android (AOSP)"</string>
++    <string name="english_ime_name" msgid="4475547506953371028">"Klávesnica"</string>
++    <string name="spell_checker_service_name" msgid="7417621022652876777">"Kontrola pravopisu"</string>
++    <string name="english_ime_settings" msgid="1497566567404939275">"Nastavenia klávesnice"</string>
++    <string name="android_spell_checker_settings" msgid="2821003654878860820">"Nastavenia kontroly pravopisu"</string>
+ </resources>
+-- 
+2.43.0
+

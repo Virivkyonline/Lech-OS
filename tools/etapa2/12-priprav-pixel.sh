@@ -53,6 +53,7 @@ while [ $# -gt 0 ]; do
 done
 
 [ -f "$AOSP_DIR/build/envsetup.sh" ] || die "V $AOSP_DIR nie sú zdrojové kódy AOSP – najprv tools/etapa2/04-stiahni-aosp.sh."
+GOS=0; [ "${LECH_BASE:-}" = gos ] && GOS=1   # tree of GrapheneOS (ADR-0012): the projects are already in it
 [ -f "$MANIFEST" ] || die "Chýba $MANIFEST – aktualizujte repozitár (git pull)."
 [ "$(id -u)" -ne 0 ] || die "Spúšťajte ako bežný používateľ, nie root (adevtool pod rootom nefunguje)."
 
@@ -98,6 +99,7 @@ ensure_node
 
 if [ "$PREPARE" -eq 1 ]; then
   # 2. GrapheneOS projects (pinned revisions) into the AOSP tree.
+  if [ "$GOS" -eq 0 ]; then
   echo "2/6 Projekty GrapheneOS pre Pixel (manifests/lech-pixel.xml)…"
   mkdir -p "$AOSP_DIR/.repo/local_manifests"
   cp "$MANIFEST" "$AOSP_DIR/.repo/local_manifests/lech-pixel.xml"
@@ -108,6 +110,7 @@ if [ "$PREPARE" -eq 1 ]; then
   if [ "$PROJECTS_ONLY" -eq 1 ]; then
     echo "Hotovo – projekty GrapheneOS sú stiahnuté. Ďalej: tools/etapa2/12-zostav-pixel.sh"
     exit 0
+  fi
   fi
 
   # 3. vendor/lech, the keys and the LECH patches (also vendor/adevtool) – as for every build; on a new build
@@ -120,6 +123,8 @@ if [ "$PREPARE" -eq 1 ]; then
   (cd "$AOSP_DIR" && yarn install --cwd vendor/adevtool --frozen-lockfile --silent) || die "yarn install pre adevtool zlyhal."
 
   # 5. Host tools in the normal out/ (target of the Pixel GSI: its Soong analysis is the most recent one).
+  # In the GrapheneOS tree adevtool builds its tools itself (out_adevtool_deps), as GrapheneOS does.
+  if [ "$GOS" -eq 0 ]; then
   target=$(cat "$WORKDIR/lunch-target-gsi" 2>/dev/null || echo lech_gsi_arm64-trunk_staging-userdebug)
   echo "5/6 Nástroje pre adevtool (${HOST_TOOLS[*]}), cieľ $target – nové projekty spustia analýzu zostavy…"
   log="$WORKDIR/pixel-nastroje-$(date +%Y%m%d-%H%M%S).log"
@@ -138,6 +143,7 @@ if [ "$PREPARE" -eq 1 ]; then
   # adevtool takes its tools from out_adevtool_deps/host/linux-x86/bin (ADEVTOOL_SKIP_DEP_BUILD=1 below).
   ln -sfn ../out/host "$AOSP_DIR/out_adevtool_deps/host"
   echo "    hotovo (log: $log)"
+  fi
 fi
 
 [ "$GENERATE" -eq 1 ] || { echo "Hotovo bez generovania. Ďalej: tools/etapa2/12-priprav-pixel.sh --len-generovat"; exit 0; }
@@ -152,6 +158,18 @@ fi
 # Platform SELinux policy of the AOSP build (LECH_PLAT_CIL, set by 12-zostav-pixel.sh with the policy of the Pixel
 # build itself; otherwise step 5 or any earlier build, the newest one). The policy of the Pixel is computed against
 # it, not against the GrapheneOS one in vendor/state; 12-zostav-pixel.sh compares it with its own release.
+if [ "$GOS" -eq 1 ]; then
+  echo "6/6 adevtool generate-all -d $DEVICE (GrapheneOS: najprv si zostaví vlastné nástroje, potom stiahne obraz Google)…"
+  log="$WORKDIR/pixel-adevtool-$(date +%Y%m%d-%H%M%S).log"
+  (
+    cd "$AOSP_DIR" || exit 1
+    set +u
+    # shellcheck disable=SC1091
+    source build/envsetup.sh >/dev/null
+    export ANDROID_BUILD_TOP="$AOSP_DIR"
+    vendor/adevtool/bin/run generate-all -d "$DEVICE"
+  ) 2>&1 | tee "$log"
+else
 plat_cil=${LECH_PLAT_CIL:-$(ls -t "$AOSP_DIR/out_adevtool_deps/plat_sepolicy.cil" \
   "$AOSP_DIR"/out/target/product/*/system/etc/selinux/plat_sepolicy.cil 2>/dev/null | head -n 1)}
 [ -f "$plat_cil" ] || die "Chýba platformová politika SELinux zostavy AOSP (plat_sepolicy.cil) – spustite skript bez --len-generovat."
@@ -167,10 +185,11 @@ log="$WORKDIR/pixel-adevtool-$(date +%Y%m%d-%H%M%S).log"
   # --noVerify: the LECH patches change generated files, so they differ from the GrapheneOS reference list.
   vendor/adevtool/bin/run generate-all -d "$DEVICE" --noVerify
 ) 2>&1 | tee "$log"
+fi
 status=${PIPESTATUS[0]}
 [ "$status" -eq 0 ] || die "adevtool zlyhal – log: $log (pošlite koniec výpisu)."
 [ -f "$AOSP_DIR/vendor/google_devices/$DEVICE/$DEVICE.mk" ] || die "adevtool skončil, ale chýba vendor/google_devices/$DEVICE/$DEVICE.mk."
-cp "$plat_cil" "$WORKDIR/pixel-plat_sepolicy.cil"   # the platform policy this module was generated against
+[ "$GOS" -eq 1 ] || cp "$plat_cil" "$WORKDIR/pixel-plat_sepolicy.cil"   # the platform policy this module was generated against
 echo
 echo "Hotovo: $AOSP_DIR/vendor/google_devices/$DEVICE ($(du -sh "$AOSP_DIR/vendor/google_devices/$DEVICE" | cut -f1))."
 echo "Ďalší krok: zostavenie LECH OS pre Pixel 9 (tools/etapa2/12-zostav-pixel.sh)."

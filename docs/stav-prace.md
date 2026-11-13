@@ -93,9 +93,13 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
 
 1. **Stiahnuť strom GrapheneOS** – `tools/etapa2/15-grapheneos-strom.sh` (značku vydania zapísať do
    `manifests/grapheneos-tag`). Spustené 13. 11. ~11:10, vydanie **2026110800** (pripnuté v `manifests/grapheneos-tag`), sťahuje sa do `~/gos`.
-2. Triedenie záplat: ktoré odpadnú (už sú v GrapheneOS), ktoré treba nasadiť znova (`aplikuj-zaplaty.sh --kontrola`
-   s `AOSP_DIR=~/gos`); `manifests/lech-pixel.xml` sa v novom strome nepoužije (projekty sú v manifeste GrapheneOS).
-3. Produkt `lech_tokay` nad GrapheneOS, kľúče LECH OS, prvá zostava a čistá inštalácia na Pixel 9.
+2. **Triedenie záplat – hotové 13. 11.** (`16-triedenie-zaplat.sh`): z 40 je 18 už v GrapheneOS, 13 sadne, 8 konflikt,
+   1 chýba projekt. Sada pre nový základ: `patches-gos/` (8 záplat: názvy/ikony, plocha, klávesnica) – prehľad
+   `patches-gos/README.md`. Skripty majú režim `LECH_BASE=gos` cez obal `tools/etapa2/gos.sh` (strom `~/gos`, pracovný
+   priečinok `~/lech-work-gos`, obrazy `/mnt/c/lech/pixel-gos`). **Neskúšané na skutočnom strome.**
+3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
+   `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
+   z 0.5.9-dev (pri zlyhaní štartu sa telefón vráti do starého slotu), inak čistá inštalácia.
 4. Vypnúť/presmerovať spojenia na servery GrapheneOS, sieťový audit, preskúšanie telefónu, zóna Google + Fio.
 
 ## Ďalšie kroky (poradie, 13. 11. 2026)

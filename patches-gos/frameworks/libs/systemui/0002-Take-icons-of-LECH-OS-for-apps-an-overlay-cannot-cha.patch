@@ -1,0 +1,103 @@
+From a495e9c684b6b137a15d6378a514bf4d359d37f0 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Wed, 11 Nov 2026 07:28:37 +0000
+Subject: [PATCH 2/2] Take icons of LECH OS for apps an overlay cannot change
+
+LECH OS: the system apps get their LECH OS icons through resource overlays
+(tools/etapa2/ikony_prekrytia.py). The browser Vanadium is a prebuilt app
+that declares overlayable resources without its launcher icon, so no overlay
+may replace that icon (Pixel 9, 11. 11. 2026: the LECH icon of the browser
+disappeared when Vanadium replaced Browser2).
+
+The icon provider of the launcher now first looks for the package's icon in
+the preinstalled resource package lech.os.ikony (mipmap/<package name with
+underscores>, e.g. mipmap/app_vanadium_browser) and only then loads the
+app's own icon. The icon package is used only when it is a system app.
+---
+ .../android/launcher3/icons/IconProvider.java | 49 +++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/iconloaderlib/src/com/android/launcher3/icons/IconProvider.java b/iconloaderlib/src/com/android/launcher3/icons/IconProvider.java
+index f7ba474..0fffd0e 100644
+--- a/iconloaderlib/src/com/android/launcher3/icons/IconProvider.java
++++ b/iconloaderlib/src/com/android/launcher3/icons/IconProvider.java
+@@ -45,6 +45,7 @@ import com.android.launcher3.icons.cache.CachingLogic;
+ import com.android.launcher3.util.ComponentKey;
+ 
+ import java.util.Calendar;
++import java.util.Locale;
+ import java.util.Objects;
+ 
+ /**
+@@ -58,6 +59,14 @@ public class IconProvider {
+ 
+     private static final String ICON_METADATA_KEY_PREFIX = ".dynamic_icons";
+ 
++    // LECH OS: icons of LECH OS for apps whose own launcher icon a resource overlay cannot replace (prebuilt apps
++    // that declare overlayable resources, such as the browser Vanadium). The preinstalled resource package
++    // lech.os.ikony holds one adaptive icon per app, named after its package: mipmap/app_vanadium_browser.
++    private static final String LECH_ICONS_PACKAGE = "lech.os.ikony";
++    private final Object mLechIconsLock = new Object();
++    private Resources mLechIcons;
++    private boolean mLechIconsLoaded;
++
+     protected final Context mContext;
+     private final ComponentName mCalendar;
+     private final ComponentName mClock;
+@@ -136,6 +145,9 @@ public class IconProvider {
+         } else if (mClock != null && mClock.getPackageName().equals(packageName)) {
+             icon = ClockDrawableWrapper.forPackage(mContext, mClock.getPackageName(), iconDpi);
+         }
++        if (icon == null) {
++            icon = loadLechIcon(packageName, iconDpi);
++        }
+         if (icon == null) {
+             icon = loadPackageIconWithFallback(info, appInfo, iconDpi);
+             if (ATLEAST_T && icon instanceof AdaptiveIconDrawable && td != null) {
+@@ -149,6 +161,43 @@ public class IconProvider {
+         return icon;
+     }
+ 
++    /**
++     * LECH OS: the icon of the package from the LECH OS icon package, or null. Only a preinstalled (system) icon
++     * package is used, so an installed app with the same name cannot change the icons of other apps.
++     */
++    @Nullable
++    private Drawable loadLechIcon(String packageName, int iconDpi) {
++        Resources icons;
++        synchronized (mLechIconsLock) {
++            if (!mLechIconsLoaded) {
++                mLechIconsLoaded = true;
++                try {
++                    PackageManager pm = mContext.getPackageManager();
++                    ApplicationInfo ai = pm.getApplicationInfo(LECH_ICONS_PACKAGE, 0);
++                    if ((ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
++                        mLechIcons = pm.getResourcesForApplication(ai);
++                    }
++                } catch (NameNotFoundException e) {
++                    // Not in this build.
++                }
++            }
++            icons = mLechIcons;
++        }
++        if (icons == null) {
++            return null;
++        }
++        String name = packageName.toLowerCase(Locale.ROOT).replace('.', '_');
++        int id = icons.getIdentifier(name, "mipmap", LECH_ICONS_PACKAGE);
++        if (id == ID_NULL) {
++            return null;
++        }
++        try {
++            return icons.getDrawableForDensity(id, iconDpi, null);
++        } catch (Resources.NotFoundException e) {
++            return null;
++        }
++    }
++
+     protected ThemeData getThemeDataForPackage(String packageName) {
+         return null;
+     }
+-- 
+2.43.0
+

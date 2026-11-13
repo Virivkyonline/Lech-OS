@@ -1,0 +1,56 @@
+From ff5cf09351556e4f308c190dcfa7c56fdc01554f Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Wed, 11 Nov 2026 12:32:20 +0000
+Subject: [PATCH 3/3] Show names of LECH OS for apps an overlay cannot rename
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+LECH OS: the system apps get their LECH OS names through resource overlays
+(tools/etapa2/ikony_prekrytia.py). The browser Vanadium is a prebuilt app
+that declares overlayable resources without its name, so no overlay may
+replace it and the home screen showed "Vanadium" (Pixel 9, 11. 11. 2026).
+
+The launcher now takes the name of such apps from a small table in
+LauncherActivityCachingLogic: "Prehliadač" when the device language is
+Slovak, "Browser" otherwise. Other apps keep their own names.
+---
+ .../icons/cache/LauncherActivityCachingLogic.kt       | 11 ++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt b/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt
+index 054f190..f89c669 100644
+--- a/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt
++++ b/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt
+@@ -25,6 +25,7 @@ import android.util.Log
+ import com.android.launcher3.icons.BaseIconFactory.IconOptions
+ import com.android.launcher3.icons.BitmapInfo
+ import com.android.launcher3.icons.IconProvider
++import java.util.Locale
+ 
+ object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
+     const val TAG = "LauncherActivityCachingLogic"
+@@ -33,7 +34,19 @@ object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
+ 
+     override fun getUser(info: LauncherActivityInfo): UserHandle = info.user
+ 
+-    override fun getLabel(info: LauncherActivityInfo): CharSequence? = info.label
++    // LECH OS: names of LECH OS for apps whose own name a resource overlay cannot replace (prebuilt apps that
++    // declare overlayable resources, such as the browser Vanadium): package -> (Slovak, English). The Slovak name
++    // when the device language is Slovak, the English one otherwise.
++    private val LECH_LABELS = mapOf(
++        "app.vanadium.browser" to ("Prehliadač" to "Browser"),
++        "org.fdroid.fdroid" to ("Obchod aplikácií" to "App store"),
++        "app.organicmaps" to ("Mapy" to "Maps"),
++    )
++
++    override fun getLabel(info: LauncherActivityInfo): CharSequence? =
++        LECH_LABELS[info.componentName.packageName]?.let { (sk, en) ->
++            if (Locale.getDefault().language == "sk") sk else en
++        } ?: info.label
+ 
+     override fun getApplicationInfo(info: LauncherActivityInfo) = info.applicationInfo
+ 
+-- 
+2.43.0
+
