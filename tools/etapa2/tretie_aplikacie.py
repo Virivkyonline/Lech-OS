@@ -12,7 +12,8 @@ Apps (owner, 12. 11. 2026: customers must not download the app store by hand):
   F-Droid (org.fdroid.fdroid, GPL-3.0-or-later) - the app store. Certificate SHA-256 as published by F-Droid in the
   client whitelist of its Privileged Extension (gitlab.com/fdroid/privileged-extension, ClientWhitelist.java:
   "certificate SHA-256 of https://f-droid.org/F-Droid.apk").
-  HeliBoard (helium314.keyboard, GPL-3.0-only) - the keyboard. Reproducible build: the APK in the F-Droid repo carries
+  HeliBoard (helium314.keyboard) was in 0.5.6-0.5.7-dev; removed (owner, 13. 11. 2026: one simple keyboard) - the
+  Android keyboard LatinIME with the Slovak dictionary (12-zostav-pixel.sh) replaces it. Former entry: Reproducible build: the APK in the F-Droid repo carries
   the developer's signature, SHA-256 as allowed in F-Droid's metadata (gitlab.com/fdroid/fdroiddata,
   metadata/helium314.keyboard.yml, AllowedAPKSigningKeys).
   Organic Maps (app.organicmaps) is NOT in the system: its F-Droid APK stores liborganicmaps.so compressed, Android
@@ -51,15 +52,6 @@ APPS = [
         "package": "org.fdroid.fdroid",
         "cert_sha256": "43238d512c1e5eb2d6569f4a3afbf5523418b82e0a3ed1552770abb9a9c9ccab",
         "license_kind": "SPDX-license-identifier-GPL-3.0-or-later",
-    },
-    {
-        "module": "LechHeliBoard",
-        "label": "HeliBoard",
-        "file": "HeliBoard.apk",
-        "fdroid_index": True,
-        "package": "helium314.keyboard",
-        "cert_sha256": "5ec0a5313aa43558ee75b20b58ccd8194cdbf066df94a43ba288d933d60b86ce",
-        "license_kind": ["SPDX-license-identifier-GPL-3.0-only", "SPDX-license-identifier-GPL-3.0"],
     },
 ]
 

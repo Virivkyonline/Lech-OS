@@ -119,6 +119,25 @@ else
   echo "  (zatiaľ bez nich – aapt2, apksigner a zipalign ešte nie sú zostavené)"
 fi
 
+# Slovak dictionary of the Android keyboard (LatinIME has none; owner, 13. 11. 2026: word suggestions without any
+# setup). main_sk.dict of the AOSP dictionaries that HeliBoard's README points to; accepted only with the SHA-256
+# recorded on 13. 11. 2026 (magic 9bc13afe of the AOSP binary dictionary). LatinIME looks up raw/main_<language>.
+echo "Slovenský slovník klávesnice:"
+dict_url="https://codeberg.org/Helium314/aosp-dictionaries/raw/branch/main/dictionaries/main_sk.dict"
+dict_sha="a955a81ecf7cc1267484cdecc53e5f9092c080d36a16d7d335434bf59d976627"
+dict_cache="$WORKDIR/slovnik/main_sk.dict"
+dict_dest="$AOSP_DIR/packages/inputmethods/LatinIME/java/res/raw/main_sk.dict"
+mkdir -p "$WORKDIR/slovnik"
+if ! echo "$dict_sha  $dict_cache" | sha256sum -c --status 2>/dev/null; then
+  curl -fsSL -o "$dict_cache.part" "$dict_url" && mv "$dict_cache.part" "$dict_cache" || rm -f "$dict_cache.part"
+fi
+if echo "$dict_sha  $dict_cache" | sha256sum -c --status 2>/dev/null; then
+  cp "$dict_cache" "$dict_dest" && echo "  v zostave (main_sk.dict, odtlačok overený)"
+else
+  rm -f "$dict_dest"
+  echo "  NIE JE v zostave (súbor sa nepodarilo stiahnuť alebo má iný odtlačok – neoverený súbor sa nepoužije)"
+fi
+
 # The vendor module records the adevtool revision it was generated with (only a warning in the build, --noVerify).
 # A different revision means the LECH patches of adevtool changed: generate the module again first.
 gen_rev=$(sed -n 's/^ifneq (\$(shell git -C [^ ]* rev-parse HEAD),\([0-9a-f]\{40\}\))$/\1/p' \
