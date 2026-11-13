@@ -86,21 +86,22 @@
 | E3-03 Plocha: tapeta, tvar ikon, 10 ikon (`branding/ikony`), 4 stĺpce s ikonami 66 dp (`patches/packages/apps/Launcher3`) | v zostave **0.2.0-dev** (používateľ zostavuje); po aktualizácii `adb … shell pm clear com.android.launcher3` |
 | Nová animácia pri štarte (logo z tapety, kruhy, „YOUR SECURE PHONE“, `tools/make_bootanimation.py`, logo `branding/logo`) | zip v `vendor/lech/bootanimation`, v telefóne od 0.2.1-dev, schválená |
 
-## Ďalšie kroky (poradie, 12. 11. 2026 večer)
+## Ďalšie kroky (poradie, 13. 11. 2026)
 
 Čo chýba oproti bežnému Androidu: [docs/17](17-chyba-oproti-androidu.md). Každá zostava: verzia vyššia než v telefóne,
-po aktualizácii hneď zapísať sem.
+po aktualizácii hneď zapísať sem. Hotové 12.–13. 11.: Obchod aplikácií (F-Droid, názov, ikona), Mapy v systéme
+(názov, ikona), klávesnica so slovenským slovníkom a prepínačom Prediktívny text.
 
-1. **0.5.4-dev v telefóne (hotové 12. 11.).** Zostáva: QR vo Fotoaparáte. F-Droid aktualizuje sám
-   (overené, nič netreba meniť).
-2. **Kontakty: import a export .vcf** – zadané vláknu „LECH OS – pokračovanie (etapa 3)“
-   (session_013B5DEdokH9dxeZDJMiVh7g) 12. 11.; skontrolovať `git log`, či je hotové, inak dokončiť.
-3. **Wi-Fi sa občas odpojí** (sieť Tina29, potom sa pripojí sama): čaká sa na výpis po odpojení
+1. **Banky (vlastník, bez zostavy):** z Obchodu aplikácií nainštalovať Aurora Store, z neho aplikáciu svojej banky,
+   zapísať, čo funguje (krok 1 z `docs/13`).
+2. **Kontakty: import a export .vcf** – vlákno session_013B5DEdokH9dxeZDJMiVh7g nič nepushlo (13. 11.); dokončiť tu,
+   do zostavy 0.5.10-dev spolu s názvom „Klávesnica“.
+3. **GPS vonku** – overiť polohu do ~1 min (PSDS z kópie GrapheneOS, v 0.5.9-dev). **QR vo Fotoaparáte** – overiť.
+4. **Wi-Fi sa občas odpojí** (sieť Tina29): čaká sa na výpis po odpojení
    (`adb … shell "dumpsys wifi | grep -iE 'disconnect|reason' | tail -25"`).
-4. **HeliBoard a Organic Maps** – v skripte hotové (12. 11.), prídu v 0.5.5-dev; potom slovenský slovník a
-   prípadne HeliBoard ako predvolená klávesnica.
 5. **Plocha podľa návrhu:** presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (Launcher3).
-6. **Server LECH OS (E2-08b):** overenie internetu (prihlásenie do hotelovej Wi-Fi), pomocné dáta A-GPS, push (ntfy).
+6. **Server LECH OS (E2-08b):** overenie internetu (prihlásenie do hotelovej Wi-Fi), vlastné PSDS, push (ntfy).
+   **Hardvér:** odpovede výrobcov – [docs/19](19-dopyt-na-vyrobcov-hardveru.md) (čaká sa na Connectech/UNIWA a Blackview).
 7. **Banky:** krok 1 z `docs/13` – vyskúšať bankové aplikácie (cez Aurora Store / F-Droid).
    **Platenie mobilom (NFC)** bez Google Peňaženky – kandidáti na skúšku (13. 11., zdroje: fóra GrapheneOS a Privacy
    Guides, neoverené na LECH OS): Curve Pay (EHP, bez Play Integrity; v 2026 hlásené aj výpadky), vlastné NFC platenie
