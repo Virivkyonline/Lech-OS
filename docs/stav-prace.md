@@ -5,7 +5,10 @@
 - **Etapa 2 a brána 1 – Overený základ: splnená** ([docs/08](08-plan-etap.md)): LECH OS na Pixeli 9 so zamknutým
   bootloaderom a vlastným kľúčom, 3 OTA aktualizácie s návratom po chybnej, generálka mesačnej aktualizácie,
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
-- **Telefón: LECH OS 0.5.7-dev** (OTA 12. 11. 2026 ~21:40 do slotu _b): Organic Maps mimo systému, názov „Mapy“
+- **Telefón: LECH OS 0.5.8-dev** (13. 11. 2026, slot _a; presný obsah neistý – zostavená skôr, než prišli všetky
+  zmeny nižšie). Ďalšia zostava **0.5.9-dev** so všetkým: ikona Máp, Mapy prepodpísané v systéme, slovenský slovník,
+  prepínač Prediktívny text, bez HeliBoard, GPS s PSDS z kópie GrapheneOS.
+- **Predtým 0.5.7-dev** (OTA 12. 11. 2026 ~21:40 do slotu _b): Organic Maps mimo systému, názov „Mapy“
   a „Obchod aplikácií“ – **overené v telefóne** (13. 11.): názvy, nová ikona Obchodu, Mapy sa otvárajú (kópia v /data). Ďalšia zostava **0.5.8-dev**: **ikona Máp** (obrázok vlastníka 13. 11. → `branding/ikony/mapy`,
   vrstvy `ic_mapy`, tematická ikona = špendlík; cez `lech.os.ikony`). **Mapy znova súčasťou systému** (vlastník: po obnovení výrobných
   nastavení nesmú zmiznúť): Organic Maps overená z F-Droid a **prepodpísaná zostavou** (`default_dev_cert`, v podpísanom
