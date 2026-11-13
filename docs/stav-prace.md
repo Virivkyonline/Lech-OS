@@ -100,7 +100,7 @@ po aktualizácii hneď zapísať sem.
    **Platenie mobilom (NFC)** bez Google Peňaženky – kandidáti na skúšku (13. 11., zdroje: fóra GrapheneOS a Privacy
    Guides, neoverené na LECH OS): Curve Pay (EHP, bez Play Integrity; v 2026 hlásené aj výpadky), vlastné NFC platenie
    v aplikácii banky, Garmin Pay. **Google v LECH OS:** návrh „zóna Google“ (oddelený profil, prehľad oprávnení,
-   obmedzené údaje namiesto skutočných) – [docs/18](18-google-play-v-sandboxe.md); čaká na súhlas vlastníka → ADR-0003.
+   obmedzené údaje namiesto skutočných) – zapísané v [docs/18](18-google-play-v-sandboxe.md) a ADR-0003 (upresnenie 13. 11.); neimplementované.
 8. Meranie spojení po pridaní F-Droid (`tools/etapa2/13-meranie-mimo.sh`, s kontrolným testom internetu).
 9. Popri tom: novembrové bezpečnostné opravy na prispôsobenie, neverejná CVE-2026-58868, červené „Your device is
    corrupt“ pri chybnom slote, eSIM (OpenEUICC), E-mail a Počasie, Telefón (Dialer): nepreložené „Contacts“,

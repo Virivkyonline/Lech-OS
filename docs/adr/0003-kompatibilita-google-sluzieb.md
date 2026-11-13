@@ -43,3 +43,12 @@ Bez riešenia by na LECH OS nefungovala významná časť bežne používaných 
 
 - Ak Google technicky znemožní beh Play Services bez privilégií.
 - Ak sa UnifiedPush a ďalšie otvorené alternatívy rozšíria natoľko, že vrstva kompatibility prestane byť potrebná pre väčšinu aplikácií.
+
+## Upresnenie 13. 11. 2026 (smer vlastníka)
+
+- Google Play len v oddelenej, dobrovoľnej **„zóne Google“** (samostatný profil), nie v hlavnom profile; s prehľadom
+  aplikácií, oprávnení a pripojení a s možnosťou zónu pozastaviť alebo vymazať.
+- Aplikáciám v zóne obmedzené údaje namiesto skutočných (kontakty, súbory, poloha); žiadne predstieranie iného
+  zariadenia ani obchádzanie Play Integrity.
+- Platenie pri pokladni: bez Google Peňaženky; skúšať Curve Pay a vlastné NFC platenie bánk, dlhodobo dohoda s bankami.
+- Podrobnosti a vety pre zákazníkov: [docs/18](../18-google-play-v-sandboxe.md). Stav: návrh, neimplementované.

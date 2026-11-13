@@ -28,13 +28,52 @@ Prihlásenie je dobrovoľné – je potrebné len na sťahovanie z Obchodu Play 
 **Poloha:** aplikácie, ktoré chcú polohu cez Google, ju dostanú zo systému LECH OS – Google polohu nezisťuje
 (GrapheneOS: „Reroute location requests to OS APIs“, predvolene zapnuté).
 
-## Kde ju mať (profily)
+## Zóna Google (smer vlastníka, 13. 11. 2026)
 
-- **Najjednoduchšie:** v hlavnom profile. Aj tam je izolovaná a nič zvláštne nevidí.
-- **Viac súkromia:** v samostatnom profile (napr. „Banka a auto“) – Google Play potom vidí len aplikácie v tom
-  profile, vaše bežné aplikácie v hlavnom profile o nej nevedia. Odporúčané pre tých, komu záleží na súkromí najviac.
-- Návrh pre LECH OS: pri prvom spustení dať zákazníkovi jasnú voľbu medzi „bez Googlu“ (predvolené), „v hlavnom
-  profile“ a „v samostatnom profile“ – s týmto vysvetlením.
+Súkromie je hlavná hodnota značky, preto Google Play **nie je v hlavnom profile**, ale len v oddelenej, dobrovoľnej
+**„zóne Google“** (samostatný profil):
+
+- *„Čo je v zóne Google, môže komunikovať s Googlom. Čo je mimo nej, o Googli nevie a Google o tom nevie.“*
+- Predvolene žiadny Google; zónu zapne zákazník jedným ťuknutím, keď potrebuje banku, Android Auto a pod.
+- **Prehľad zóny Google:** ktoré aplikácie v nej sú, aké oprávnenia má každá z nich aj Google Play (s možnosťou
+  vypnúť), kam sa pripájajú.
+- Zónu možno pozastaviť (nič v nej nebeží) alebo celú vymazať.
+- **Čo sľúbiť nevieme:** presný obsah toho, čo aplikácia Googlu posiela (je šifrovaný). Vieme ukázať, ktoré
+  aplikácie Google používajú, s akými oprávneniami a kam sa pripájajú, a zaručiť, že mimo zóny sa nedostanú.
+
+## Obmedzené údaje namiesto skutočných
+
+Poctivá ochrana (ako GrapheneOS): aplikácia funguje, ale dostane prázdne alebo vybrané údaje.
+
+- Kontakty: prázdny zoznam alebo len vybrané kontakty. Súbory a fotky: len vybrané.
+- Poloha: len od systému a len po povolení, prípadne iba približná.
+- Identifikátory zóny sú oddelené od zvyšku telefónu, po vymazaní zóny nové; reklamné ID vypnuteľné.
+- Internetová adresa: VPN len pre zónu.
+- **Nerobíme:** predstieranie iného zariadenia ani obchádzanie kontroly pravosti Googlu (Play Integrity) – je to
+  klamanie o zariadení, banky to odhaľujú (blokovanie účtu) a pre značku je to právne riziko.
+
+Veta pre zákazníka: *„Google dostane len to, čo mu sami povolíte, a namiesto ostatného prázdne údaje.“*
+
+## Platené služby Google Play
+
+- Fungujú (podľa návodu GrapheneOS): platené aplikácie a hry, nákupy v aplikáciách, predplatné, kontrola licencií.
+- Podmienka: prihlásenie do účtu Google v zóne a platobná karta v ňom – Google vtedy pozná účet, kartu a nákupy.
+- Nefunguje: platenie pri pokladni cez Google Peňaženku (NFC) – Google ho povoľuje len na zariadeniach, ktoré
+  certifikoval.
+
+## Platenie mobilom pri pokladni (NFC) bez Google Peňaženky
+
+Neoverené na LECH OS; zdroje sú skúsenosti používateľov GrapheneOS (fóra GrapheneOS, Privacy Guides, 2025–2026).
+
+1. **Curve Pay** – karty z banky sa pridajú do Curve, telefón platí cez NFC (predvolená aplikácia na bezkontaktné
+   platby). Hlásené ako funkčné bez Play Integrity v krajinách EHP; pre Slovensko nepotvrdené; v 2026 aj hlásené
+   výpadky. Curve vidí všetky platby (tretia strana).
+2. **Vlastné NFC platenie v aplikácii banky** – niektoré európske banky ho majú; slovenské treba vyskúšať.
+3. **Mimo telefónu** – hodinky (napr. Garmin Pay), prsteň, nálepka, karta: funguje hneď.
+4. **Dohoda s bankami** – telefón vie hardvérovo dokázať nezmenený LECH OS so zamknutým bootloaderom; banka by
+   LECH OS musela zaradiť medzi dôveryhodné systémy (obchodné rokovanie, dlhodobé).
+
+Veta pre zákazníka (zatiaľ): *„Platenie mobilom pri pokladni závisí od vašej banky. Google Peňaženka v LECH OS nie je.“*
 
 ## Android Auto
 
