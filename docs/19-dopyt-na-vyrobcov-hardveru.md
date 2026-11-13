@@ -32,6 +32,9 @@ Koho osloviť: menšie značky zo Šen-čenu, ktoré robia aj výrobu na zákazk
 Blackview, Cubot) – **mená sú len tipy na oslovenie, ich podmienky nie sú overené**. K textu dopytu pridať body
 o kľúčoch secure boot, BSP a písomnej dĺžke podpory (nižšie bod 7).
 
+**Blackview – prvý na oslovenie:** vlastník má na nich kontakt a vlastní ich mobil aj tablet (13. 11. 2026); modely
+a čipsety doplniť, na zariadeniach overiť odomknutie bootloadera a verziu Androidu.
+
 ## Čo musí ponuka obsahovať (bez toho LECH OS nenahráme bezpečne)
 
 1. **Bootloader:** odomknutie bez obmedzení a **zamknutie s vlastnými kľúčmi AVB** (overený štart s kľúčom LECH OS),
