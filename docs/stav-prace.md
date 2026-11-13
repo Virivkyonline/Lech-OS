@@ -86,6 +86,18 @@
 | E3-03 Plocha: tapeta, tvar ikon, 10 ikon (`branding/ikony`), 4 stĺpce s ikonami 66 dp (`patches/packages/apps/Launcher3`) | v zostave **0.2.0-dev** (používateľ zostavuje); po aktualizácii `adb … shell pm clear com.android.launcher3` |
 | Nová animácia pri štarte (logo z tapety, kruhy, „YOUR SECURE PHONE“, `tools/make_bootanimation.py`, logo `branding/logo`) | zip v `vendor/lech/bootanimation`, v telefóne od 0.2.1-dev, schválená |
 
+## Prechod na základ GrapheneOS (ADR-0012, rozhodnutie vlastníka 13. 11. 2026)
+
+Dôvod: zóna Google (Fio banka a ďalšie aplikácie závislé od Google Play) – [docs/18](18-google-play-v-sandboxe.md).
+Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom je `~/gos`.
+
+1. **Stiahnuť strom GrapheneOS** – `tools/etapa2/15-grapheneos-strom.sh` (značku vydania zapísať do
+   `manifests/grapheneos-tag`). *Spustené vlastníkom? – doplniť.*
+2. Triedenie záplat: ktoré odpadnú (už sú v GrapheneOS), ktoré treba nasadiť znova (`aplikuj-zaplaty.sh --kontrola`
+   s `AOSP_DIR=~/gos`); `manifests/lech-pixel.xml` sa v novom strome nepoužije (projekty sú v manifeste GrapheneOS).
+3. Produkt `lech_tokay` nad GrapheneOS, kľúče LECH OS, prvá zostava a čistá inštalácia na Pixel 9.
+4. Vypnúť/presmerovať spojenia na servery GrapheneOS, sieťový audit, preskúšanie telefónu, zóna Google + Fio.
+
 ## Ďalšie kroky (poradie, 13. 11. 2026)
 
 Čo chýba oproti bežnému Androidu: [docs/17](17-chyba-oproti-androidu.md). Každá zostava: verzia vyššia než v telefóne,
