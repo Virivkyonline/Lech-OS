@@ -92,7 +92,7 @@ Dôvod: zóna Google (Fio banka a ďalšie aplikácie závislé od Google Play) 
 Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom je `~/gos`.
 
 1. **Stiahnuť strom GrapheneOS** – `tools/etapa2/15-grapheneos-strom.sh` (značku vydania zapísať do
-   `manifests/grapheneos-tag`). *Spustené vlastníkom? – doplniť.*
+   `manifests/grapheneos-tag`). Spustené 13. 11. ~11:10, vydanie **2026110800** (pripnuté v `manifests/grapheneos-tag`), sťahuje sa do `~/gos`.
 2. Triedenie záplat: ktoré odpadnú (už sú v GrapheneOS), ktoré treba nasadiť znova (`aplikuj-zaplaty.sh --kontrola`
    s `AOSP_DIR=~/gos`); `manifests/lech-pixel.xml` sa v novom strome nepoužije (projekty sú v manifeste GrapheneOS).
 3. Produkt `lech_tokay` nad GrapheneOS, kľúče LECH OS, prvá zostava a čistá inštalácia na Pixel 9.
