@@ -16,9 +16,12 @@ Apps (owner, 12. 11. 2026: customers must not download the app store by hand):
   Android keyboard LatinIME with the Slovak dictionary (12-zostav-pixel.sh) replaces it. Former entry: Reproducible build: the APK in the F-Droid repo carries
   the developer's signature, SHA-256 as allowed in F-Droid's metadata (gitlab.com/fdroid/fdroiddata,
   metadata/helium314.keyboard.yml, AllowedAPKSigningKeys).
-  Organic Maps (app.organicmaps) is NOT in the system: its F-Droid APK stores liborganicmaps.so compressed, Android
-  does not extract native libraries of system apps and android_app_import has no way to extract them, so the app
-  crashed ("liborganicmaps.so not found", Pixel 9, 0.5.6-dev). Installed as a normal app it works (adb install -r).
+  Organic Maps (app.organicmaps, Apache-2.0) - offline maps ("Mapy"). Its F-Droid APK stores liborganicmaps.so
+  compressed and Android does not extract native libraries of system apps: with the F-Droid signature kept
+  (presigned, preprocessed) the app crashed ("liborganicmaps.so not found", Pixel 9, 0.5.6-dev). It is therefore
+  verified like the others and then re-signed by the build ("resign": default_dev_cert, LECH OS key in a signed
+  release): Soong stores the JNI libraries uncompressed and aligned, and Android loads them from the APK. Updates
+  come with LECH OS (every build takes the current verified version), not from F-Droid.
 
 Apps with "fdroid_index" come from the main F-Droid repo: index-v1.jar is downloaded and accepted only when its JAR
 signature (jarsigner) is valid and made by the repo key, whose SHA-256 is the repo fingerprint 43238d51... (the same
@@ -54,6 +57,16 @@ APPS = [
         "license_kind": "SPDX-license-identifier-GPL-3.0-or-later",
     },
 ]
+
+APPS.append({
+    "module": "LechOrganicMaps",
+    "label": "Organic Maps",
+    "file": "OrganicMaps.apk",
+    "fdroid_index": True,
+    "resign": True,
+    "package": "app.organicmaps",
+    "license_kind": "SPDX-license-identifier-Apache-2.0",
+})
 
 FDROID_REPO = "https://f-droid.org/repo"
 FDROID_REPO_CERT_SHA256 = "43238d512c1e5eb2d6569f4a3afbf5523418b82e0a3ed1552770abb9a9c9ccab"
@@ -261,8 +274,8 @@ def main() -> int:
             "android_app_import {\n"
             f"    name: \"{app['module']}\",\n"
             f"    apk: \"{app['file']}\",\n"
-            "    preprocessed: true,\n"
-            + ("    skip_preprocessed_apk_checks: true,\n" if skip_checks else "")
+            + ("    default_dev_cert: true,\n" if app.get("resign") else
+               "    preprocessed: true,\n" + ("    skip_preprocessed_apk_checks: true,\n" if skip_checks else ""))
             + "    product_specific: true,\n"
             "    enforce_uses_libs: false,\n"
             "    dex_preopt: {\n"

@@ -7,7 +7,11 @@
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
 - **Telefón: LECH OS 0.5.7-dev** (OTA 12. 11. 2026 ~21:40 do slotu _b): Organic Maps mimo systému, názov „Mapy“
   a „Obchod aplikácií“ – **overené v telefóne** (13. 11.): názvy, nová ikona Obchodu, Mapy sa otvárajú (kópia v /data). Ďalšia zostava **0.5.8-dev**: **ikona Máp** (obrázok vlastníka 13. 11. → `branding/ikony/mapy`,
-  vrstvy `ic_mapy`, tematická ikona = špendlík; cez `lech.os.ikony`). **Klávesnica:** HeliBoard vyradený; klávesnica
+  vrstvy `ic_mapy`, tematická ikona = špendlík; cez `lech.os.ikony`). **Mapy znova súčasťou systému** (vlastník: po obnovení výrobných
+  nastavení nesmú zmiznúť): Organic Maps overená z F-Droid a **prepodpísaná zostavou** (`default_dev_cert`, v podpísanom
+  vydaní kľúč LECH OS) – Soong uloží knižnice nezbalené, Android ich načíta z APK. Aktualizácie Máp prídu s LECH OS,
+  nie z F-Droid. Kópia v /data s podpisom F-Droid sa po aktualizácii nahradí systémovou. Overiť: Mapy sa otvoria.
+  **Klávesnica:** HeliBoard vyradený; klávesnica
   Androidu (LatinIME) dostane **slovenský slovník** `main_sk.dict` (codeberg Helium314/aosp-dictionaries, 6 694 001 B,
   SHA-256 a955a81e…, overené 13. 11.; krok v `12-zostav-pixel.sh`, kopíruje do LatinIME `java/res/raw`). Prepínač
   **„Prediktívny text“** na prvej obrazovke nastavení klávesnice (`patches/packages/inputmethods/LatinIME` 0001).
