@@ -5,7 +5,9 @@
 - **Etapa 2 a brána 1 – Overený základ: splnená** ([docs/08](08-plan-etap.md)): LECH OS na Pixeli 9 so zamknutým
   bootloaderom a vlastným kľúčom, 3 OTA aktualizácie s návratom po chybnej, generálka mesačnej aktualizácie,
   0 neznámych spojení pri prvom štarte aj počas 24 h (meranie mimo telefónu, `tools/etapa2/13-meranie-mimo.sh`).
-- **Telefón: LECH OS 0.5.6-dev** (12. 11. 2026 ~19:45, OTA do slotu _a; zostava len s `--ulohy 4`, s viac úlohami
+- **Telefón: LECH OS 0.5.7-dev** (OTA 12. 11. 2026 ~21:40 do slotu _b): Organic Maps mimo systému, názov „Mapy“
+  a „Obchod aplikácií“ – **v telefóne ešte neoverené**. Ďalšia zostava **0.5.8-dev** (ikona Máp, keď ju vlastník pošle).
+- **Predtým 0.5.6-dev** (12. 11. 2026 ~19:45, OTA do slotu _a; zostava len s `--ulohy 4`, s viac úlohami
   došla pamäť pri `services.jar`). V nej: HeliBoard 4.2 a Organic Maps z overeného indexu F-Droid, Obchod aplikácií
   (názov + ikona vlastníka). **Organic Maps v systéme padala** („liborganicmaps.so not found“: APK z F-Droid má
   knižnice zbalené, Android ich systémovým aplikáciám nerozbaľuje, `android_app_import` to nevie). Po
@@ -18,7 +20,7 @@
   (12. 11.): zložitosť skryť, v klávesnici len **jeden prepínač prediktívneho textu**. Návrh: vlastná zostava
   „LECH Klávesnica“ zo zdrojov HeliBoard (GPL-3.0) so slovenským slovníkom a zjednodušenými nastaveniami, aktualizácie
   cez OTA LECH OS (nie F-Droid) – väčšia úloha, zatiaľ nezačatá. Overiť ešte: Obchod – názov a ikona.
-  Ďalšia zostava musí mať vyššiu verziu (**0.5.7-dev**). **Čaká na 0.5.7-dev:** Organic Maps mimo systému, názov
+  **V 0.5.7-dev:** Organic Maps mimo systému, názov
   **„Mapy“** (`frameworks/base` 0011, `frameworks/libs/systemui` 0003); ikona Máp (`ic_mapy`) čaká na obrázok od
   vlastníka (ZIP ako pri Obchode).
 - **V 0.5.0-dev až 0.5.2-dev (12. 11.), overiť v telefóne:**
