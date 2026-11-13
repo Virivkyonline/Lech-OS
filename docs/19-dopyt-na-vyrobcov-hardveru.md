@@ -82,3 +82,10 @@ a čipsety doplniť, na zariadeniach overiť odomknutie bootloadera a verziu And
 >
 > Kind regards,
 > Stanislav …, Lechstav s. r. o., Slovakia
+
+## Záznam oslovení
+
+- 13. 11. 2026 **Blackview** (Lily Chen, WeChat): dopyt odoslaný; odpoveď: OEM pri 100/500/1000 ks nerobia („too small
+  quantity“). Odoslaná otázka na MOQ, nákup bežných modelov a technické body (bootloader, BSP, opravy) – čaká sa.
+- 13. 11. 2026 **Shenzhen Connectech Technology (Cwell)** (Ada Guo, Alibaba, „Verified Custom Manufacturer“, 9 rokov,
+  online tržby 1–2 mil. USD): dopyt odoslaný – čaká sa. Overiť, či majú vlastný vývoj dosiek a BSP.
