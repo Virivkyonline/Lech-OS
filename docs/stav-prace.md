@@ -98,6 +98,8 @@ po aktualizácii hneď zapísať sem. Hotové 12.–13. 11.: Obchod aplikácií 
    udelení povolenia nejde ďalej – logcat: „requires the Google Play Store, but it is missing“, služba polohy Google
    (`com.google.android.gms…location`) `SERVICE_INVALID`. **Bez služieb Google Play nefunguje** → potrebná zóna Google
    (docs/18, vrstva kompatibility GrapheneOS) – zvyšuje jej prioritu.
+   **Tatra banka, 13. 11., 0.5.9-dev:** vlastník: „aplikácia ide“ bez Googlu (rozsah – prihlásenie, platba –
+   ešte upresniť).
 2. **Kontakty: import a export .vcf** – vlákno session_013B5DEdokH9dxeZDJMiVh7g nič nepushlo (13. 11.); dokončiť tu,
    do zostavy 0.5.10-dev spolu s názvom „Klávesnica“.
 3. **GPS vonku** – overiť polohu do ~1 min (PSDS z kópie GrapheneOS, v 0.5.9-dev). **QR vo Fotoaparáte** – overiť.
