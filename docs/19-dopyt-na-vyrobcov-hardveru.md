@@ -94,3 +94,4 @@ a čipsety doplniť, na zariadeniach overiť odomknutie bootloadera a verziu And
   poplatok**; technické body (bootloader s naším kľúčom AVB, eFuse, opravy, ceny, MOQ) postúpené technikom – čaká sa.
   Pýtajú vizitku, termín uvedenia a či sú vzorky len na interné testy.
 - 13. 11. 2026 **Shenzhen Pretech Industrial** (Wendy Wang, Alibaba, „Verified Multispecialty Supplier“ – skôr obchodná firma než výrobca; 10 rokov, 6 hodnotení, miera sporov 8,2 %): dopyt odoslaný – čaká sa.
+- 13. 11. 2026 **Shenzhen Teckunion Electronic** (Alibaba; uvádza „Manufacturer“, ale 5–10 zamestnancov a hlavný tovar použité a repasované telefóny, bez overenia Alibabou, odpovedá na 50 % správ – takmer isto obchodník, nie výrobca): dopyt odoslaný – čaká sa.
