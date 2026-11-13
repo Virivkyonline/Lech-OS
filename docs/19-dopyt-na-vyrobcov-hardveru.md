@@ -98,3 +98,11 @@ a čipsety doplniť, na zariadeniach overiť odomknutie bootloadera a verziu And
   Odpoveď 13. 11. (Wendy Wang): tvrdia „full ODM“ (vlastný hardvér aj softvér); jediný model: Unisoc T606, 6 GB + 128 GB, 6,5" 720×1600, len 4G, NFC, Android 14/16; **MOQ 3000 ks**. Hodnotenie: slabý čip z roku 2021, málo RAM (cieľ 12 GB), bez 5G, BSP nie pre Android 17, vysoký minimálny odber – **nevhodné**; bootloader/kľúče/BSP nezodpovedané.
 - 13. 11. 2026 **Shenzhen Cxt Technology** (fiona liu, Alibaba): ponúkli „box phone“ – skrinky so základnými doskami z použitých telefónov Samsung Galaxy (S8–S23, Z Fold/Flip) a Pixel 4a s jedným zdrojom 550 W (farmy telefónov). Nie sú to nové telefóny ani vlastná výroba; Samsung nedovolí zamknutie vlastnými kľúčmi – **nevhodné**.
   Odpoveď technikov 13. 11. (Ada, WeChat; firma vystupuje aj ako značka **UNIWA** / cwelltech.com): **BSP stojí 90 000 USD, MOQ 3000 ks**. Model, čip, verzia Androidu, kľúče a bootloader zatiaľ neuvedené. Hodnotenie: vstupná investícia rádovo stovky tisíc USD – pre začiatok priveľa; lacnejší štart je predaj na Pixeloch (BSP netreba, 7 rokov opráv).
+
+## Podmienky vlastníka pred platbou za BSP (13. 11. 2026)
+
+Ak sa platí 90 000 USD, musí byť všetko pod našou kontrolou a **výrobca nedostane zdrojové kódy LECH OS ani naše
+kľúče**. Výrobcovi stačia hotové podpísané obrazy systému na nahranie vo výrobe (alebo telefóny nahráme sami).
+Pred platbou písomne v zmluve: presný obsah BSP (čo je zdrojový kód a čo len binárne súbory), verzia Androidu,
+licencia na úpravy a šírenie, vlastníctvo kľúčov secure boot, zamknutie bootloadera naším kľúčom AVB, dĺžka
+bezpečnostných opráv, cena za kus, parametre, vzorka na overenie pred výrobou, platba po častiach.
