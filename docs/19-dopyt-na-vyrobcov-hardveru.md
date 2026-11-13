@@ -93,3 +93,4 @@ a čipsety doplniť, na zariadeniach overiť odomknutie bootloadera a verziu And
   dopyt → vzorky → záloha → schválenie vzorky → výroba → doprava, min. ~30 dní od schválenia; **BSP vedia dať, za
   poplatok**; technické body (bootloader s naším kľúčom AVB, eFuse, opravy, ceny, MOQ) postúpené technikom – čaká sa.
   Pýtajú vizitku, termín uvedenia a či sú vzorky len na interné testy.
+- 13. 11. 2026 **Shenzhen Pretech Industrial** (Wendy Wang, Alibaba, „Verified Multispecialty Supplier“ – skôr obchodná firma než výrobca; 10 rokov, 6 hodnotení, miera sporov 8,2 %): dopyt odoslaný – čaká sa.
