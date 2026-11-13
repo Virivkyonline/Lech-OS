@@ -97,6 +97,10 @@ po aktualizácii hneď zapísať sem.
 5. **Plocha podľa návrhu:** presklený dock so svietiacim okrajom, tlačidlo všetkých aplikácií v strede (Launcher3).
 6. **Server LECH OS (E2-08b):** overenie internetu (prihlásenie do hotelovej Wi-Fi), pomocné dáta A-GPS, push (ntfy).
 7. **Banky:** krok 1 z `docs/13` – vyskúšať bankové aplikácie (cez Aurora Store / F-Droid).
+   **Platenie mobilom (NFC)** bez Google Peňaženky – kandidáti na skúšku (13. 11., zdroje: fóra GrapheneOS a Privacy
+   Guides, neoverené na LECH OS): Curve Pay (EHP, bez Play Integrity; v 2026 hlásené aj výpadky), vlastné NFC platenie
+   v aplikácii banky, Garmin Pay. **Google v LECH OS:** návrh „zóna Google“ (oddelený profil, prehľad oprávnení,
+   obmedzené údaje namiesto skutočných) – [docs/18](18-google-play-v-sandboxe.md); čaká na súhlas vlastníka → ADR-0003.
 8. Meranie spojení po pridaní F-Droid (`tools/etapa2/13-meranie-mimo.sh`, s kontrolným testom internetu).
 9. Popri tom: novembrové bezpečnostné opravy na prispôsobenie, neverejná CVE-2026-58868, červené „Your device is
    corrupt“ pri chybnom slote, eSIM (OpenEUICC), E-mail a Počasie, Telefón (Dialer): nepreložené „Contacts“,
