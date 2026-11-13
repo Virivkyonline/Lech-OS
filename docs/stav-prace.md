@@ -9,8 +9,9 @@
   prepodpísané v systéme sa otvoria (po zmene podpisu ostal starý priečinok `/storage/emulated/0/Android/data/
   app.organicmaps` cudzieho UID → „Permission denied“ pri sťahovaní mapy; zmazaný cez adb, sťahovanie ide – len tento
   telefón, nová inštalácia to nemá); klávesnica LatinIME navrhuje slovenské slová (slovník funguje). Prepínač **„Prediktívny text“** je na
-  prvej obrazovke nastavení klávesnice (podržať čiarku → Nastavenia klávesnice Android (AOSP)) – overené. **Neoverené:**
-  ikona Máp, GPS vonku. Nápad: názov „Klávesnica Android (AOSP)“ premenovať na „Klávesnica“. V 0.5.9-dev: ikona Máp, Mapy prepodpísané v systéme, slovenský slovník,
+  prvej obrazovke nastavení klávesnice (podržať čiarku → Nastavenia klávesnice Android (AOSP)) – overené. Ikona Máp nová – overené.
+  **Neoverené:** GPS vonku. **Čaká na 0.5.10-dev:** názov „Klávesnica“ namiesto „Klávesnica Android (AOSP)“
+  (`patches/packages/inputmethods/LatinIME` 0002). V 0.5.9-dev: ikona Máp, Mapy prepodpísané v systéme, slovenský slovník,
   prepínač Prediktívny text, bez HeliBoard, GPS s PSDS z kópie GrapheneOS.
 - **Predtým 0.5.7-dev** (OTA 12. 11. 2026 ~21:40 do slotu _b): Organic Maps mimo systému, názov „Mapy“
   a „Obchod aplikácií“ – **overené v telefóne** (13. 11.): názvy, nová ikona Obchodu, Mapy sa otvárajú (kópia v /data). Ďalšia zostava **0.5.8-dev**: **ikona Máp** (obrázok vlastníka 13. 11. → `branding/ikony/mapy`,

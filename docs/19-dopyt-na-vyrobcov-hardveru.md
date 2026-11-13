@@ -89,3 +89,7 @@ a čipsety doplniť, na zariadeniach overiť odomknutie bootloadera a verziu And
   quantity“). Odoslaná otázka na MOQ, nákup bežných modelov a technické body (bootloader, BSP, opravy) – čaká sa.
 - 13. 11. 2026 **Shenzhen Connectech Technology (Cwell)** (Ada Guo, Alibaba, „Verified Custom Manufacturer“, 9 rokov,
   online tržby 1–2 mil. USD): dopyt odoslaný – čaká sa. Overiť, či majú vlastný vývoj dosiek a BSP.
+  Odpoveď 13. 11. (Ada Guo): robia OEM/ODM vrátane dodania telefónov na nahranie vlastného systému AOSP; postup
+  dopyt → vzorky → záloha → schválenie vzorky → výroba → doprava, min. ~30 dní od schválenia; **BSP vedia dať, za
+  poplatok**; technické body (bootloader s naším kľúčom AVB, eFuse, opravy, ceny, MOQ) postúpené technikom – čaká sa.
+  Pýtajú vizitku, termín uvedenia a či sú vzorky len na interné testy.
