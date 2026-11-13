@@ -94,6 +94,10 @@ po aktualizácii hneď zapísať sem. Hotové 12.–13. 11.: Obchod aplikácií 
 
 1. **Banky (vlastník, bez zostavy):** z Obchodu aplikácií nainštalovať Aurora Store, z neho aplikáciu svojej banky,
    zapísať, čo funguje (krok 1 z `docs/13`).
+   **Fio banka (`sk.fio.sb2`), 13. 11., 0.5.9-dev, z Aurora Store:** spustí sa, na obrazovke „Prístup k polohe“ po
+   udelení povolenia nejde ďalej – logcat: „requires the Google Play Store, but it is missing“, služba polohy Google
+   (`com.google.android.gms…location`) `SERVICE_INVALID`. **Bez služieb Google Play nefunguje** → potrebná zóna Google
+   (docs/18, vrstva kompatibility GrapheneOS) – zvyšuje jej prioritu.
 2. **Kontakty: import a export .vcf** – vlákno session_013B5DEdokH9dxeZDJMiVh7g nič nepushlo (13. 11.); dokončiť tu,
    do zostavy 0.5.10-dev spolu s názvom „Klávesnica“.
 3. **GPS vonku** – overiť polohu do ~1 min (PSDS z kópie GrapheneOS, v 0.5.9-dev). **QR vo Fotoaparáte** – overiť.
