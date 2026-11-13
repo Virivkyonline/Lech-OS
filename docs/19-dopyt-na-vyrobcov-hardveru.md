@@ -12,7 +12,25 @@ Stav: návrh 13. 11. 2026. Cieľ vlastníka: vzorky od menšieho výrobcu, ponuk
 | **Fairphone (Holandsko)** | V pláne ako druhá platforma (docs/07); spolupracuje s /e/OS | Zamknutie s vlastnými kľúčmi oficiálne áno, komunita hlási problémy (docs/07) |
 
 Zdroj k Volla: [bootloader-unlock-wall-of-shame, Volla](https://tangled.org/zenfyr.dev/bootloader-unlock-wall-of-shame/tree/main/brands/volla/README.md).
-Čínski výrobcovia na zákazku (ODM) až neskôr: bez zmluvy zvyčajne nedajú zdrojové kódy ani zamknutie vlastnými kľúčmi.
+
+### Čínski výrobcovia na zákazku (ODM) – voľba vlastníka kvôli cene (13. 11. 2026)
+
+Výhoda: výrazne nižšia cena a ako zákazník ODM môžeme žiadať, aby **náš kľúč overeného štartu zabudovali priamo do
+bootloadera** (telefón potom štartuje bez varovania). Riziká, ktoré musí dopyt pokryť:
+
+- **Kľúče secure boot:** kto ich vlastní a napáli do čipu (eFuse) – musia byť naše alebo nám odovzdané, inak výrobca
+  vie podpísať vlastný firmvér pre naše telefóny.
+- **Zdrojové kódy (BSP):** úplný balík pre čipset (pri MediaTek/Unisoc licencovaný), na akú verziu Androidu; bez neho
+  LECH OS na zariadenie neprenesieme. Android 17 – overiť, či ho čipset vôbec má.
+- **Podpora firmvéru:** lacné modely mávajú opravy modemu a TEE len 1–2 roky – pre značku súkromia zásadné, žiadať
+  písomný záväzok.
+- **Pôvod hardvéru** bude súčasťou našej bezpečnostnej dokumentácie (docs/07); niektorí firemní zákazníci čínsky
+  hardvér obmedzujú.
+- **Minimálny odber** pri vlastnom modeli býva tisíce kusov; vzorky existujúcich modelov sa dajú kúpiť po kusoch.
+
+Koho osloviť: menšie značky zo Šen-čenu, ktoré robia aj výrobu na zákazku (napr. Unihertz, Ulefone, Oukitel, Doogee,
+Blackview, Cubot) – **mená sú len tipy na oslovenie, ich podmienky nie sú overené**. K textu dopytu pridať body
+o kľúčoch secure boot, BSP a písomnej dĺžke podpory (nižšie bod 7).
 
 ## Čo musí ponuka obsahovať (bez toho LECH OS nenahráme bezpečne)
 
@@ -27,6 +45,8 @@ Zdroj k Volla: [bootloader-unlock-wall-of-shame, Volla](https://tangled.org/zenf
 5. **Obchod:** cena vzoriek (2–5 ks), cena pri 100 / 500 / 1000 ks, dodacia lehota, záruka a servis, možnosť dodania
    **bez predinštalovaného systému alebo s odomknutým bootloaderom**, neskôr vlastná značka na zariadení a obale.
 6. **Dôvernosť:** NDA, ak ju výrobca žiada pre zdrojové kódy.
+7. **Len pre ODM:** vlastníctvo kľúčov secure boot (eFuse), zabudovanie nášho kľúča AVB do bootloadera, úplný BSP
+   pre čipset a verzia Androidu, písomný záväzok dĺžky bezpečnostných opráv.
 
 ## Text dopytu (anglicky, na odoslanie e-mailom)
 
@@ -51,6 +71,9 @@ Zdroj k Volla: [bootloader-unlock-wall-of-shame, Volla](https://tangled.org/zenf
 >    CE/RED certification.
 > 5. Prices: 2–5 sample units, and 100 / 500 / 1000 units; lead time, warranty and service; delivery without a
 >    preinstalled OS or with an unlocked bootloader; custom branding at a later stage.
+> 6. (ODM) Secure boot: who owns and burns the secure boot keys (eFuse)? Can the bootloader be built with our AVB
+>    public key? Do you provide the full chipset BSP (which Android version), and can you commit in writing to the
+>    period of security updates for modem, bootloader and TEE?
 >
 > We are happy to sign an NDA if required.
 >
