@@ -7,14 +7,16 @@ LECH OS sends no data to location assistance servers of third parties
 by default. On the Pixel 9 the carrier settings name supl.google.com
 for SUPL (A-GPS) and 1.ssiloc.com (Samsung) for the satellite
 predictions (PSDS); both were contacted at every start (network audit,
-7. 11. 2026). Outside an emergency the GNSS now works standalone: the
-SUPL server is localhost with SUPL_MODE 0 and no PSDS server is set, so
-nothing is downloaded. The first fix takes longer. In an emergency the
+7. 11. 2026). Outside an emergency there is no SUPL (localhost,
+SUPL_MODE 0). The satellite predictions (PSDS) of the Samsung GNSS chip
+come from the cache of GrapheneOS (samsung.psds.grapheneos.org, as on
+GrapheneOS) instead of Samsung: without any PSDS the Pixel 9 found no
+position outdoors (13. 11. 2026). Other PSDS servers are removed. In an emergency the
 configuration of the vendor and the carrier is kept, so a call to 112
 gets a fast location. Servers of LECH OS can take their place later.
 ---
  .../location/gnss/GnssConfiguration.java      | 22 +++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ 1 file changed, 33 insertions(+)
 
 diff --git a/services/core/java/com/android/server/location/gnss/GnssConfiguration.java b/services/core/java/com/android/server/location/gnss/GnssConfiguration.java
 index 04b11c0..0559bde 100644
@@ -30,7 +32,7 @@ index 04b11c0..0559bde 100644
          mEsExtensionSec = getRangeCheckedConfigEsExtensionSec();
  
          logConfigurations();
-@@ -346,6 +349,25 @@ public class GnssConfiguration {
+@@ -346,6 +349,36 @@ public class GnssConfiguration {
          }
      }
  
@@ -38,19 +40,30 @@ index 04b11c0..0559bde 100644
 +     * LECH OS: no location assistance servers outside an emergency. The vendor files and the
 +     * carrier settings name servers of third parties (on the Pixel 9 supl.google.com for SUPL and
 +     * 1.ssiloc.com of Samsung for PSDS), which learn the IP address, the time and the cell of the
-+     * phone. Instead the GNSS works standalone: no SUPL (the server is localhost, SUPL_MODE 0) and
-+     * no download of satellite predictions (no PSDS server) - the first fix takes longer. In an
-+     * emergency the configuration of the vendor and the carrier is kept. Servers of LECH OS can
-+     * take their place later.
++     * phone. No SUPL (the server is localhost, SUPL_MODE 0). The satellite predictions (PSDS) of
++     * the Samsung GNSS chip come from the cache of GrapheneOS instead of Samsung (as on GrapheneOS:
++     * https://grapheneos.org/faq, "samsung.psds.grapheneos.org ... a cache of Samsung's data"); they
++     * carry nothing about the phone and shorten the first fix from minutes to seconds (Pixel 9:
++     * no fix outdoors without them, 13. 11. 2026). Other PSDS servers are removed. In an emergency
++     * the configuration of the vendor and the carrier is kept. Servers of LECH OS can take their
++     * place later.
 +     */
++    private static final String SAMSUNG_PSDS_CACHE = "samsung.psds.grapheneos.org";
++
 +    private static void removeAssistanceServers(Properties properties) {
 +        properties.setProperty(CONFIG_SUPL_HOST, "localhost");
 +        properties.setProperty(CONFIG_SUPL_MODE, "0");
-+        properties.remove(CONFIG_LONGTERM_PSDS_SERVER_1);
-+        properties.remove(CONFIG_LONGTERM_PSDS_SERVER_2);
-+        properties.remove(CONFIG_LONGTERM_PSDS_SERVER_3);
-+        properties.remove(CONFIG_NORMAL_PSDS_SERVER);
-+        properties.remove(CONFIG_REALTIME_PSDS_SERVER);
++        for (String key : new String[] {CONFIG_LONGTERM_PSDS_SERVER_1, CONFIG_LONGTERM_PSDS_SERVER_2,
++                CONFIG_LONGTERM_PSDS_SERVER_3, CONFIG_NORMAL_PSDS_SERVER,
++                CONFIG_REALTIME_PSDS_SERVER}) {
++            String server = properties.getProperty(key);
++            if (server != null && server.matches("https?://([0-9a-z-]+\\.)*ssiloc\\.com/.*")) {
++                properties.setProperty(key,
++                        server.replaceFirst("^https?://[^/]+", "https://" + SAMSUNG_PSDS_CACHE));
++            } else {
++                properties.remove(key);
++            }
++        }
 +    }
 +
      private void logConfigurations() {
