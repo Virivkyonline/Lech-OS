@@ -95,3 +95,4 @@ a čipsety doplniť, na zariadeniach overiť odomknutie bootloadera a verziu And
   Pýtajú vizitku, termín uvedenia a či sú vzorky len na interné testy.
 - 13. 11. 2026 **Shenzhen Pretech Industrial** (Wendy Wang, Alibaba, „Verified Multispecialty Supplier“ – skôr obchodná firma než výrobca; 10 rokov, 6 hodnotení, miera sporov 8,2 %): dopyt odoslaný – čaká sa.
 - 13. 11. 2026 **Shenzhen Teckunion Electronic** (Alibaba; uvádza „Manufacturer“, ale 5–10 zamestnancov a hlavný tovar použité a repasované telefóny, bez overenia Alibabou, odpovedá na 50 % správ – takmer isto obchodník, nie výrobca): dopyt odoslaný – čaká sa.
+  Odpoveď 13. 11. (Wendy Wang): tvrdia „full ODM“ (vlastný hardvér aj softvér); jediný model: Unisoc T606, 6 GB + 128 GB, 6,5" 720×1600, len 4G, NFC, Android 14/16; **MOQ 3000 ks**. Hodnotenie: slabý čip z roku 2021, málo RAM (cieľ 12 GB), bez 5G, BSP nie pre Android 17, vysoký minimálny odber – **nevhodné**; bootloader/kľúče/BSP nezodpovedané.
