@@ -85,3 +85,25 @@ Potrebuje viac prístupu ako bežná aplikácia. GrapheneOS ho podporuje ako roz
 1. Vrstvu kompatibility GrapheneOS (gmscompat) – v našom zdrojovom kóde zatiaľ nie je.
 2. Inštaláciu jedným ťuknutím (overené balíky Google Play) a sprievodcu s voľbou profilu.
 3. Overiť banky ([docs/13](13-bankove-aplikacie.md)) a Android Auto.
+
+## Prieskum 13. 11. 2026: čo zóna Google v systéme potrebuje
+
+Overené v zdrojovom kóde GrapheneOS (vetva 17): vrstva kompatibility nie je samostatný balík, ale je vrastená do
+jeho `frameworks/base` – `core/java/com/android/internal/gmscompat/…` (GmsHooks.java sám 782 riadkov, podbalíky
+client, fileservice, flags, gcarriersettings, sysservice), `android.app.compat.gms.GmsCompat`, pomocné rozhrania
+`android.ext` (napr. `PackageId`) – a k tomu aplikácia `packages/apps/GmsCompat` s konfiguráciou a úpravy Nastavení.
+LECH OS má dnes `frameworks/base` z AOSP a z GrapheneOS berie len 7 projektov (`manifests/lech-pixel.xml`).
+
+Možnosti:
+
+1. **Preniesť vrstvu po kúskoch do nášho AOSP `frameworks/base`** – stovky zmien previazaných s ďalšími úpravami
+   GrapheneOS, každý mesiac znova pri ich aktualizácii. Veľmi veľa práce a ľahko sa pokazí.
+2. **Prevziať `frameworks/base` (a súvisiace projekty) priamo z GrapheneOS** a naše záplaty (dnes 11 pre
+   `frameworks/base`) držať nad ním. Zóna Google, obmedzený prístup ku kontaktom a súborom (scopes), sieťové povolenie
+   a ďalšie spevnenia prídu naraz a udržiava ich GrapheneOS. Cena: väčšia závislosť od GrapheneOS (ADR-0002 ju
+   pôvodne odmietlo, docs/16), jednorazový veľký prechod a nové overenie celého telefónu.
+3. **microG** (náhrada služieb Google) – vyžaduje falšovanie podpisov v systéme; pre značku postavenú na
+   bezpečnosti nevhodné.
+
+Odporúčanie: možnosť 2, najprv ako pokus na samostatnej vetve (telefón ostáva na súčasnej línii, kým pokus
+neprejde). Rozhodnutie patrí vlastníkovi – mení ADR-0002.
