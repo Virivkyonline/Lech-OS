@@ -12,7 +12,8 @@
   vydaní kľúč LECH OS) – Soong uloží knižnice nezbalené, Android ich načíta z APK. Aktualizácie Máp prídu s LECH OS,
   nie z F-Droid. Kópia v /data s podpisom F-Droid sa po aktualizácii nahradí systémovou. Overiť: Mapy sa otvoria.
   **GPS:** bez PSDS telefón vonku polohu nenašiel – `frameworks/base` 0009
-  teraz berie PSDS z kópie GrapheneOS `samsung.psds.grapheneos.org` (ako GrapheneOS), SUPL ostáva vypnutý. Overiť:
+  teraz berie PSDS z kópie GrapheneOS `samsung.psds.grapheneos.org` (ako GrapheneOS), SUPL ostáva vypnutý – **až v 0.5.9-dev**
+  (0.5.8-dev už bežala, keď vznikla). Overiť:
   poloha vonku do ~1 min. **Klávesnica:** HeliBoard vyradený; klávesnica
   Androidu (LatinIME) dostane **slovenský slovník** `main_sk.dict` (codeberg Helium314/aosp-dictionaries, 6 694 001 B,
   SHA-256 a955a81e…, overené 13. 11.; krok v `12-zostav-pixel.sh`, kopíruje do LatinIME `java/res/raw`). Prepínač
