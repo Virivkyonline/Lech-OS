@@ -8,8 +8,9 @@
 - **Telefón: LECH OS 0.5.9-dev** (OTA 13. 11. 2026 ~09:00 do slotu _b). Ďalšia zostava **0.5.10-dev**. **Overené 13. 11.:** Mapy
   prepodpísané v systéme sa otvoria (po zmene podpisu ostal starý priečinok `/storage/emulated/0/Android/data/
   app.organicmaps` cudzieho UID → „Permission denied“ pri sťahovaní mapy; zmazaný cez adb, sťahovanie ide – len tento
-  telefón, nová inštalácia to nemá); klávesnica LatinIME navrhuje slovenské slová (slovník funguje). **Neoverené:**
-  prepínač Prediktívny text, ikona Máp, GPS vonku. V 0.5.9-dev: ikona Máp, Mapy prepodpísané v systéme, slovenský slovník,
+  telefón, nová inštalácia to nemá); klávesnica LatinIME navrhuje slovenské slová (slovník funguje). Prepínač **„Prediktívny text“** je na
+  prvej obrazovke nastavení klávesnice (podržať čiarku → Nastavenia klávesnice Android (AOSP)) – overené. **Neoverené:**
+  ikona Máp, GPS vonku. Nápad: názov „Klávesnica Android (AOSP)“ premenovať na „Klávesnica“. V 0.5.9-dev: ikona Máp, Mapy prepodpísané v systéme, slovenský slovník,
   prepínač Prediktívny text, bez HeliBoard, GPS s PSDS z kópie GrapheneOS.
 - **Predtým 0.5.7-dev** (OTA 12. 11. 2026 ~21:40 do slotu _b): Organic Maps mimo systému, názov „Mapy“
   a „Obchod aplikácií“ – **overené v telefóne** (13. 11.): názvy, nová ikona Obchodu, Mapy sa otvárajú (kópia v /data). Ďalšia zostava **0.5.8-dev**: **ikona Máp** (obrázok vlastníka 13. 11. → `branding/ikony/mapy`,
