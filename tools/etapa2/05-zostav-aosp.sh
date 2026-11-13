@@ -74,6 +74,23 @@ echo "Pripravujem prostredie zostavenia (build/envsetup.sh)…"
 # shellcheck disable=SC1091
 source build/envsetup.sh >>"$LOG" 2>&1 || die "build/envsetup.sh zlyhal – pozri $LOG"
 
+# GrapheneOS tree (ADR-0012): build ID and security patch level are per product (BUILD_ID_<product>, set by
+# vendor/google_devices/<device>/cmds-for-envsetup.sh, which lunch reads only for the product named like the
+# device). The LECH OS product lech_<device> needs the values of its device, else the vendor module refuses the
+# build ("BUILD_ID: expected CP3A…, got CP2A…", 13. 11. 2026).
+if [ "${LECH_BASE:-}" = gos ]; then
+  lech_dev=${PRODUCT#lech_}
+  lech_extra="vendor/google_devices/$lech_dev/cmds-for-envsetup.sh"
+  if [ -f "$lech_extra" ]; then
+    # shellcheck disable=SC1090
+    source "$lech_extra"
+    for lech_var in BUILD_ID PLATFORM_SECURITY_PATCH; do
+      lech_src="${lech_var}_${lech_dev}"
+      if [ -n "${!lech_src:-}" ]; then export "${lech_var}_${PRODUCT}=${!lech_src}"; else unset "${lech_var}_${PRODUCT}"; fi
+    done
+  fi
+fi
+
 release_candidates() {
   if [ -n "${LECH_RELEASE:-}" ] && [ -n "${LECH_RELEASE_ONLY:-}" ]; then echo "$LECH_RELEASE"; return; fi
   [ -n "${LECH_RELEASE:-}" ] && echo "$LECH_RELEASE"
@@ -87,7 +104,7 @@ tried=""
 for release in $(release_candidates | awk 'NF && !seen[$0]++'); do
   candidate="${PRODUCT}-${release}-${VARIANT}"
   tried="$tried $candidate"
-  if lunch "$candidate" >>"$LOG" 2>&1; then
+  if lunch "$candidate" >>"$LOG" 2>&1 && [ "${TARGET_RELEASE:-$release}" = "$release" ] && [ -n "${TARGET_PRODUCT:-}" ]; then
     TARGET=$candidate
     break
   fi
