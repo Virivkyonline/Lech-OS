@@ -39,9 +39,9 @@ mkdir -p "$GOS_DIR" && cd "$GOS_DIR"
 ref=()
 [ -d "$AOSP_DIR/.repo" ] && ref=(--reference="$AOSP_DIR")
 repo init -u "$MANIFEST_URL" -b "refs/tags/$TAG" "${ref[@]}" || die "repo init zlyhal."
-if ! repo sync -c --no-tags -j"$JOBS"; then
+if ! repo sync -c --no-tags --no-clone-bundle -j"$JOBS"; then
   echo "Sťahovanie zlyhalo, skúšam znova pomalšie (-j2)…"
-  repo sync -c --no-tags -j2 || die "repo sync zlyhal – spustite skript znova, pokračuje tam, kde skončil."
+  repo sync -c --no-tags --no-clone-bundle -j2 || die "repo sync zlyhal – spustite skript znova, pokračuje tam, kde skončil."
 fi
 echo "$TAG" > "$GOS_DIR/.lech-gos-tag"
 echo
