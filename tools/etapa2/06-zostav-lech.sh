@@ -88,6 +88,14 @@ if [ ! -f "$KEYS/platform.x509.pem" ] || [ ! -f "$KEYS/avb.pem" ] || [ ! -f "$KE
     echo "  Odtlačok: $(sha256sum "$KEYS/avb_pkmd.bin" | cut -d' ' -f1)"
   fi
 fi
+# Keys the source tree asks for that were added later (e.g. gmscompat_lib of GrapheneOS, ADR-0012): the key script
+# creates only the missing ones and never replaces an existing key.
+missing_keys=$(find "$AOSP_DIR/build/make/target/product/security" -maxdepth 1 -name '*.pk8' -printf '%f\n' 2>/dev/null |
+  sed 's/\.pk8$//' | while read -r n; do [ -f "$KEYS/$n.pk8" ] || printf '%s ' "$n"; done)
+if [ -n "$missing_keys" ]; then
+  echo "Dopĺňam kľúče LECH OS, ktoré strom potrebuje: $missing_keys"
+  LECH_KEYS=$KEYS AOSP_DIR=$AOSP_DIR "$SCRIPT_DIR/07-vytvor-kluce.sh" >/dev/null || die "Kľúče sa nepodarilo doplniť."
+fi
 mkdir -p "$KEYS_DEST" && chmod 700 "$AOSP_DIR/vendor/lech-keys" "$KEYS_DEST"
 cp -p "$KEYS"/*.pk8 "$KEYS"/*.x509.pem "$KEYS/avb.pem" "$KEYS_DEST/" || die "Kľúče sa nepodarilo skopírovať do $KEYS_DEST."
 # Soong modules for keys that apps reference by module name (PRODUCT_CERTIFICATE_OVERRIDES in common.mk).
