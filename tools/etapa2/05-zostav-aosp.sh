@@ -70,6 +70,13 @@ fi
 LOG="$WORKDIR/zostavenie-$(date +%Y%m%d-%H%M%S).log"
 cd "$AOSP_DIR" || die "Nedá sa prejsť do $AOSP_DIR."
 
+# GrapheneOS tree (ADR-0012): its envsetup.sh takes BUILD_DATETIME from out/build_date.txt of the previous build
+# (reproducible releases), so every later build had the build date of the first one and the update was refused as
+# "not newer than the system in the phone" (0.6.6 -> 0.6.7, 14. 11. 2026). Every LECH OS build gets its own date.
+if [ "${LECH_BASE:-}" = gos ] && [ -z "${BUILD_DATETIME:-}" ]; then
+  export BUILD_DATETIME=$(date -u +%s)
+fi
+
 echo "Pripravujem prostredie zostavenia (build/envsetup.sh)…"
 # shellcheck disable=SC1091
 source build/envsetup.sh >>"$LOG" 2>&1 || die "build/envsetup.sh zlyhal – pozri $LOG"

@@ -208,6 +208,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Rozhodnutie vlastníka: predvolená **neutrálna čiernobiela** téma, kto chce, zmení si ju. Pripravené pre
    0.6.7-dev: prekrytie `theming_defaults` = `*|MONOCHROMATIC|#808080` (`vendor/lech/overlay/frameworks-res`); platí
    len pri prvom štarte (sprievodca), neskúšané. Plocha podľa plánu potvrdená fotkou (22:25).
+   **OTA 0.6.6 → 0.6.7 (14. 11. 22:57) odmietnutá skriptom „balík nie je novší“:** envsetup.sh základu berie
+   BUILD_DATETIME z `out/build_date.txt` predošlej zostavy → všetky zostavy mali rovnaký dátum. Opravené
+   v `05-zostav-aosp.sh` (vlastný BUILD_DATETIME pre každú zostavu); zostaviť znova ako 0.6.7-dev a aktualizovať.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
