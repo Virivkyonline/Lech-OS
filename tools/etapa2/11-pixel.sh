@@ -420,8 +420,9 @@ Pôvodný systém sa dá vrátiť cez Android Flash Tool (tools/etapa2/11-pixel.
   echo
   echo "1/2 Nahrávam obrazy (fastboot update, niekoľko minút; telefón sa medzitým prepne do fastbootd)…"
   for attempt in 1 2 3; do
-    # fb runs in C:\lech\pixel (or C:\lech\platform-tools): the package is in the sibling folder pixel-uplne.
-    if [ "$WINDOWS" -eq 1 ]; then out=$(fb update --skip-reboot "../pixel-uplne/$zip") && break
+    # fb is the Windows fastboot.exe: it gets the Windows path of the package. (Until 14. 11. 2026 the path was
+    # fixed to ..\pixel-uplne: with LECH_PIXEL_FULL_DIR of the GrapheneOS line the old 0.5.9 images were flashed.)
+    if [ "$WINDOWS" -eq 1 ]; then out=$(fb update --skip-reboot "$(wslpath -w "$zip_dir/$zip")") && break
     else out=$(fb update --skip-reboot "$zip_dir/$zip") && break; fi
     printf '%s\n' "$out" | tail -n 4
     if printf '%s' "$out" | grep -qiE 'AdbWriteEndpointSync|AdbReadEndpointSync|not functioning|protocol error|no link'; then

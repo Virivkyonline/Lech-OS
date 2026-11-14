@@ -120,6 +120,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    ripcurrentpro-17.0-15819938, baseband g5400c-260604-260807-B-16035863 = v telefóne). Ďalší krok: ladiť
    s **odomknutým bootloaderom** (`11-pixel.sh odomknut`, `gos.sh 11-pixel.sh nahrat-uplne`) – bez návratu do starého
    slotu, ktorý maže stopy; potom znova zamknúť (`zamknut`).
+   **14. 11. 14:10:** bootloader **odomknutý**; `gos.sh 11-pixel.sh nahrat-uplne` nahral omylom obrazy starej línie
+   (cesta `../pixel-uplne` bola v skripte napevno) → telefón beží 0.5.9-dev v slote _b, stav orange. Opravené
+   (`wslpath -w`), nahrať znova.
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
    z 0.5.9-dev (pri zlyhaní štartu sa telefón vráti do starého slotu), inak čistá inštalácia.
