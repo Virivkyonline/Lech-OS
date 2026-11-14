@@ -398,7 +398,7 @@ cmd_nahrat_uplne() {
   esac
   need_tools
   local zip_dir zip=lech-tokay-img.zip out attempt slot product unlocked snapshot
-  if [ "$WINDOWS" -eq 1 ]; then zip_dir=/mnt/c/lech/pixel-uplne; else zip_dir=${LECH_PIXEL_FULL_DIR:-$WORKDIR/pixel-uplne}; fi
+  if [ "$WINDOWS" -eq 1 ]; then zip_dir=${LECH_PIXEL_FULL_DIR:-/mnt/c/lech/pixel-uplne}; else zip_dir=${LECH_PIXEL_FULL_DIR:-$WORKDIR/pixel-uplne}; fi
   [ -f "$zip_dir/$zip" ] || die "Chýba $zip_dir/$zip – najprv zostavte LECH OS pre Pixel 9: tools/etapa2/12-zostav-pixel.sh"
   [ -f "$zip_dir/info.txt" ] && sed -n '1,2p' "$zip_dir/info.txt"
   save_stock_info
@@ -460,7 +460,7 @@ cmd_zamknut() {
   avbtool=${AOSP_DIR:-$HOME/aosp}/out/host/linux-x86/bin/avbtool
   [ -f "$pkmd" ] || die "Chýba verejný kľúč AVB $pkmd – vytvorí ho tools/etapa2/06-zostav-lech.sh --len-skopirovat."
   [ -x "$avbtool" ] || die "Chýba avbtool ($avbtool) – najprv zostavte LECH OS pre Pixel: tools/etapa2/12-zostav-pixel.sh"
-  if [ "$WINDOWS" -eq 1 ]; then zip_dir=/mnt/c/lech/pixel-uplne; else zip_dir=${LECH_PIXEL_FULL_DIR:-$WORKDIR/pixel-uplne}; fi
+  if [ "$WINDOWS" -eq 1 ]; then zip_dir=${LECH_PIXEL_FULL_DIR:-/mnt/c/lech/pixel-uplne}; else zip_dir=${LECH_PIXEL_FULL_DIR:-$WORKDIR/pixel-uplne}; fi
   [ -f "$zip_dir/$zip" ] || die "Chýba $zip_dir/$zip – najprv zostavte a nahrajte LECH OS: 12-zostav-pixel.sh, nahrat-uplne"
   tmp=$(mktemp -d)
   unzip -q -o "$zip_dir/$zip" vbmeta.img -d "$tmp" || { rm -rf "$tmp"; die "V $zip chýba vbmeta.img."; }

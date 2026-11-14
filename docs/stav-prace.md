@@ -114,6 +114,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    prázdny). Ďalší krok: zostava so záznamom štartu na oddiel persist (`init.lech-bootlog.rc`, len userdebug),
    po pokuse prečítať z 0.5.9: `adb shell su root cat /mnt/vendor/persist/lech-bootlog.txt`. V recovery je nápis
    „GrapheneOS Recovery“ – premenovať.
+   **14. 11. popoludní:** záznam na persist nevznikol ani raz (3 pokusy). „Holá“ zostava (`LECH_BARE=true`: len
+   základ + kľúče LECH OS) tiež nenaštartuje → chyba nie je v doplnkoch LECH OS. Zavádzač: `slot-unbootable:a:yes`,
+   `retry-count:a:2`, červená obrazovka – slot odmietnutý, nie obyčajný pád. Firmvér sedí (android-info: bootloader
+   ripcurrentpro-17.0-15819938, baseband g5400c-260604-260807-B-16035863 = v telefóne). Ďalší krok: ladiť
+   s **odomknutým bootloaderom** (`11-pixel.sh odomknut`, `gos.sh 11-pixel.sh nahrat-uplne`) – bez návratu do starého
+   slotu, ktorý maže stopy; potom znova zamknúť (`zamknut`).
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
    z 0.5.9-dev (pri zlyhaní štartu sa telefón vráti do starého slotu), inak čistá inštalácia.
