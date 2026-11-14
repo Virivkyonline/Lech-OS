@@ -21,3 +21,4 @@ Camera, Messaging, ExactCalculator, Auditor, InfoApp.
 
 | `packages/apps/SetupWizard2` 0001 | nové (14. 11.): úvodný sprievodca s názvom a logom LECH OS a slovenskými textami (logo kopíruje `12-zostav-pixel.sh`) |
 | `Launcher3` 0003 | nové (14. 11.): plocha nového telefónu s aplikáciami LECH OS (dock Telefón, Správy, Prehliadač, Fotoaparát; riadok Obchod, Galéria, Mapy, Nastavenia) |
+| `build/make` 0001 | nové (14. 11.): predvolené gestá v `aosp_product.mk` sú len voliteľná hodnota (`?=`), aby `lech_tokay.mk` mohol predvoliť tri tlačidlá |

@@ -108,7 +108,9 @@ endif
 # Three navigation buttons by default (owner, 14. 11. 2026). The GrapheneOS base (ADR-0012) starts with gestures:
 # OverlayManagerService enables the overlays named in this property for a new user ("Default overlays:
 # com.android.internal.systemui.navbar.gestural" in dumpsys overlay on the Pixel 9). Set before the products are
-# inherited: the first assignment of a property wins. The user can still choose gestures in Settings.
+# inherited. The base sets the gesture overlay in build/make/target/product/aosp_product.mk; there it is made an
+# optional default (patches-gos/build/make 0001), else the build fails with "found duplicate sysprop assignments".
+# The user can still choose gestures in Settings.
 PRODUCT_PRODUCT_PROPERTIES += \
     ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.threebutton
 
