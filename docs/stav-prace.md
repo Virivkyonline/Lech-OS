@@ -179,6 +179,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    farby prechodu rovnaké; preklad nahrávania hovorov); odstránená nefunkčná služba `lech-bootlog`. Ikony plochy:
    mriežka „medium“ základu má už 4 stĺpce a ikony 66 dp – netreba meniť. Odložené: zmienka o Google Play
    v sprievodcovi (vyžaduje novú obrazovku), Android Auto, skúška Fio.
+   **Telefón: 0.6.5-dev (14. 11. 21:20, `nahrat-uplne --bez-mazania`, zostava 30 min, všetky záplaty sadli);
+   ďalšia zostava 0.6.6-dev.** V telefóne overiť: obrazovka hovoru, „Nahrať hovor“, stránka „Aplikácie z Google
+   Play“ a tlačidlo zóny Google, potom Fio.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
