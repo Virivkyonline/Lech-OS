@@ -18,6 +18,9 @@ endif
 
 # Kernel of the Pixel 9 family. GrapheneOS names the directory with its release flag RELEASE_KERNEL_TOKAY_DIR,
 # which AOSP does not have; the adevtool device makefile only sets these when they are still undefined (?=).
+# LECH_BARE=true (environment): only the GrapheneOS device product with the LECH OS keys and version, to find
+# out whether the base or the LECH OS additions keep the phone from starting (14. 11. 2026).
+ifneq ($(LECH_BARE),true)
 TARGET_KERNEL_DIR := device/google/caimito-kernels/6.1/grapheneos
 # The kernel package has no kernel-headers directory (adevtool would point there) and Soong reports a missing
 # source path as an error. All vendor modules are prebuilt from the stock image, so no kernel headers are needed:
@@ -27,6 +30,8 @@ TARGET_BOARD_KERNEL_HEADERS :=
 # Development build: the generic ARMv8-A target of the LECH OS GSI instead of ARMv9 with memory tagging (MTE),
 # so the system already compiled for the GSI is reused (patches/vendor/adevtool/0002). Release builds: false.
 LECH_PIXEL_GENERIC_CPU := true
+endif
+
 
 # Verified boot (E2-12): vbmeta - the hashes of boot, init_boot, vendor_boot, vendor_kernel_boot, dtbo, pvmfw and the
 # hash trees of system, system_ext, product, vendor, system_dlkm, vendor_dlkm - is signed with the LECH OS AVB key
@@ -42,6 +47,7 @@ BOARD_AVB_KEY_PATH := vendor/lech-keys/test/avb.pem
 # Mainline modules from source, so the LECH patches in packages/modules apply (as in lech_gsi_arm64.mk).
 # The release configuration is cp2a (tools/etapa2/12-zostav-pixel.sh): vendor API level 202604 of the stock
 # vendor files.
+ifneq ($(LECH_BARE),true)
 MODULE_BUILD_FROM_SOURCE := true
 
 # No eSIM support for now: the eSIM apps of Google are left out (patches/vendor/adevtool/0004), so the device does
@@ -88,6 +94,8 @@ PRODUCT_PACKAGES += \
     LechKalkulacka \
     LechSmsOverlay \
     LechDialerOverlay \
+
+endif
 
 # Gate 1 test only: an update that does not start, to check the automatic return to the previous slot
 # (tools/etapa2/12-zostav-pixel.sh --chybna sets LECH_TEST_BROKEN_UPDATE; vendor/lech/config/init/init.lech-test-chybna.rc).

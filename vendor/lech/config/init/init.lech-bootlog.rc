@@ -6,7 +6,9 @@
 # GrapheneOS showed the boot animation for about 2 minutes and fell back to the previous slot; adb was not reachable
 # and the old slot erased /data and /metadata (Pixel 9, 14. 11. 2026). Read it from any running system:
 #   adb shell su root cat /mnt/vendor/persist/lech-bootlog.txt
-service lech-bootlog /system/bin/logcat -b all -v threadtime -f /mnt/vendor/persist/lech-bootlog.txt -r 6144 -n 1
+# The shell (root) opens the file: logcat itself gives up root and could not create a file in the root-owned
+# directory (two attempts with "logcat -f" wrote nothing). At most 12 MB.
+service lech-bootlog /system/bin/sh -c "/system/bin/logcat -b all -v threadtime | /system/bin/head -c 12000000 > /mnt/vendor/persist/lech-bootlog.txt"
     user root
     group root system log
     seclabel u:r:su:s0
