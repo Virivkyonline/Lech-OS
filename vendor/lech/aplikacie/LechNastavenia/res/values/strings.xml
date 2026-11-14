@@ -118,4 +118,15 @@
     <string name="accounts_sub">Backup, data transfer from another device</string>
     <string name="emergency">Safety and emergency</string>
     <string name="emergency_sub">Emergency SOS, medical info, alerts</string>
+    <string name="gplay_title">Apps from Google Play</string>
+    <string name="gplay_sub">Banking and other apps, Google zone</string>
+    <string name="gplay_intro">LECH OS contains no Google services and sends nothing to Google. Some apps (for example banking apps) are not in the App store or need Google services to work.</string>
+    <string name="gplay_zone_title">Google zone</string>
+    <string name="gplay_zone_text">You can install the official Google Play as ordinary apps without any special rights in the system. They cannot read the data of your other apps and get only the permissions you allow. You can remove them at any time.</string>
+    <string name="gplay_zone_button">Turn on the Google zone</string>
+    <string name="gplay_zone_sees">On the next screen choose Install. Signing in to a Google account is optional; the Play Store needs it to download apps. With the zone on, Google sees your internet address, basic device data and what the apps using it send.</string>
+    <string name="gplay_state_on">Google zone: on</string>
+    <string name="gplay_state_off">Google zone: off</string>
+    <string name="gplay_other_title">Other sources</string>
+    <string name="gplay_other_text">There are also third-party apps that download from Google Play without a Google account, for example Aurora Store. LECH OS does not provide, recommend or support them. Using them is the decision and responsibility of the user and may be against the terms of Google.</string>
 </resources>

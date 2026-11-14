@@ -164,6 +164,13 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    hovoru, nepreložené „Record call“; v 0.5.x bola obrazovka hovoru z AOSP Dialera (vlastník: „pekné pozadie“).
    LECH OS vlastnú obrazovku hovoru nemá (LechKontakty nemá InCallService). Úloha: vzhľad obrazovky hovoru v štýle
    LECH OS (prekrytie farieb/pozadia Dialera alebo vlastná obrazovka) a preklad „Record call“.
+   **Google Play pre zákazníka (rozhodnutie vlastníka 14. 11.):** Aurora Store sa NEpredinštaluje; v LECH
+   Nastaveniach stránka „Aplikácie z Google Play“ (`GooglePlayActivity`, zobrazí sa len keď je v systéme App Store
+   základu): tlačidlo „Zapnúť zónu Google“ otvorí v App Store základu stránku Google Play services
+   (`ACTION_SHOW_APP_INFO`, inak hlavnú obrazovku, inak hlásenie) + neutrálna informácia o aplikáciách tretích strán
+   (menuje Aurora Store; text dať pozrieť právnikovi). Pre **0.6.5-dev**, neskompilované ani neskúšané. Neskôr:
+   rovnaká zmienka v sprievodcovi, Android Auto (prepínače), skúška Fio. Android Auto: vlastník má v aute vlastné
+   aplikácie mimo Play (režim pre vývojárov Android Auto) – overiť pri skúške.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

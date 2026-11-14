@@ -187,6 +187,12 @@ public class MainActivity extends Activity {
         add(R.drawable.ic_set_sim, R.string.sim, R.string.sim_sub, false, "cmp:com.android.settings/com.android.settings.Settings$IccLockSettingsActivity");
         add(R.drawable.ic_set_pripojene_zariadenia, R.string.devices, R.string.devices_sub, false, "cmp:com.android.settings/com.android.settings.Settings$ConnectedDeviceDashboardActivity");
         add(R.drawable.ic_set_aplikacie, R.string.apps, R.string.apps_sub, true, "cmp:com.android.settings/com.android.settings.Settings$AppDashboardActivity");
+        // Apps from Google Play (sandboxed Google Play of the GrapheneOS base): only where the base provides it.
+        if (GooglePlayActivity.installed(this, GooglePlayActivity.STORE)) {
+            Entry g = new Entry(R.drawable.ic_shield, 0xFF7BE41E, 0xFF1E6A06, R.string.gplay_title, R.string.gplay_sub,
+                    false, "cmp:lech.os.nastavenia/lech.os.nastavenia.GooglePlayActivity");
+            entries.add(g);
+        }
         add(R.drawable.ic_set_upozornenia, R.string.notifications, R.string.notifications_sub, false,
                 "android.settings.NOTIFICATION_SETTINGS");
         add(R.drawable.ic_set_zvuk, R.string.sound, R.string.sound_sub, false, Settings.ACTION_SOUND_SETTINGS);

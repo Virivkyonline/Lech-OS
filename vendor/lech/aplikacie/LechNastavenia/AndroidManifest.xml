@@ -8,6 +8,9 @@
         <intent>
             <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
         </intent>
+        <!-- GooglePlayActivity: the App Store of the GrapheneOS base and whether Google Play services are installed. -->
+        <package android:name="app.grapheneos.apps" />
+        <package android:name="com.google.android.gms" />
     </queries>
 
     <application
@@ -28,6 +31,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".GooglePlayActivity"
+            android:exported="false"
+            android:label="@string/gplay_title" />
 
     </application>
 </manifest>

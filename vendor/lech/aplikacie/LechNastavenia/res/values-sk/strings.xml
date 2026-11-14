@@ -118,4 +118,15 @@
     <string name="accounts_sub">Zálohovanie údajov, prenos údajov z iného zariadenia</string>
     <string name="emergency">Bezpečnosť a tieseň</string>
     <string name="emergency_sub">Pomoc v tiesni, zdravotné údaje, upozornenia</string>
+    <string name="gplay_title">Aplikácie z Google Play</string>
+    <string name="gplay_sub">Bankové a ďalšie aplikácie, zóna Google</string>
+    <string name="gplay_intro">LECH OS neobsahuje služby Google a nič do Googlu neposiela. Niektoré aplikácie (napríklad bankové) nie sú v Obchode aplikácií alebo na svoju činnosť potrebujú služby Google.</string>
+    <string name="gplay_zone_title">Zóna Google</string>
+    <string name="gplay_zone_text">Môžete si nainštalovať oficiálny Google Play ako obyčajné aplikácie bez zvláštnych práv v systéme. Nevidia údaje vašich ostatných aplikácií a dostanú len tie povolenia, ktoré im dáte. Kedykoľvek ich môžete odstrániť.</string>
+    <string name="gplay_zone_button">Zapnúť zónu Google</string>
+    <string name="gplay_zone_sees">Na ďalšej obrazovke zvoľte Inštalovať. Prihlásenie do účtu Google je dobrovoľné; Obchod Play ho potrebuje na sťahovanie aplikácií. So zapnutou zónou vidí Google vašu internetovú adresu, základné údaje o zariadení a to, čo mu pošlú aplikácie, ktoré ho používajú.</string>
+    <string name="gplay_state_on">Zóna Google: zapnutá</string>
+    <string name="gplay_state_off">Zóna Google: vypnutá</string>
+    <string name="gplay_other_title">Iné zdroje</string>
+    <string name="gplay_other_text">Existujú aj aplikácie tretích strán, ktoré umožňujú sťahovať z Google Play bez účtu Google, napríklad Aurora Store. LECH OS ich neposkytuje, neodporúča ani nepodporuje. Ich používanie je rozhodnutím a zodpovednosťou používateľa a môže byť v rozpore s podmienkami spoločnosti Google.</string>
 </resources>
