@@ -186,6 +186,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    závisí od kontaktu (ružová pri neznámom čísle) → `Dialer` 0002: pevný tmavý prechod LECH OS (pre 0.6.6-dev).
    Položka „Aplikácie z Google Play“ sa v LECH Nastaveniach nezobrazila – príčina nezistená (overiť
    `am start -n lech.os.nastavenia/.GooglePlayActivity` a `pm list packages app.grapheneos.apps`).
+   Overené: stránka existuje a otvorí sa (`am start`), App Store je nainštalovaný, názov „Zóna Google“
+   v Nastavenia → Aplikácie funguje; riadok v zozname LECH Nastavení vlastník nenašiel → podmienka odstránená, riadok
+   sa zobrazuje vždy (0.6.6-dev). Drobnosť: Obchod aplikácií má v zozname systému ikonu F-Droid, nie našu.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
