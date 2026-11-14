@@ -160,6 +160,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    `Launcher3` 0001 (4 stĺpce, ikony 66 dp) mení `res/xml/device_profiles.xml`, ktorý sa na Pixeli nepoužíva –
    veľkosť ikon upraviť v `res-stock`, ak ju vlastník bude chcieť. App Store základu ostáva v Nastavenia → Aplikácie
    (návrh: premenovať na neutrálny názov).
+   **Obrazovka hovoru (nález vlastníka 14. 11.):** na novom základe je Dialer GrapheneOS – plochá modrá obrazovka
+   hovoru, nepreložené „Record call“; v 0.5.x bola obrazovka hovoru z AOSP Dialera (vlastník: „pekné pozadie“).
+   LECH OS vlastnú obrazovku hovoru nemá (LechKontakty nemá InCallService). Úloha: vzhľad obrazovky hovoru v štýle
+   LECH OS (prekrytie farieb/pozadia Dialera alebo vlastná obrazovka) a preklad „Record call“.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
