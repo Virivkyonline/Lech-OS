@@ -13,5 +13,10 @@ service lech-bootlog /system/bin/logcat -b all -v threadtime -f /mnt/vendor/pers
     disabled
     oneshot
 
+# As early as the persist partition is mounted (fstab of the vendor, "on fs"); logd runs since "on init". The first
+# version started at post-fs-data and wrote nothing: the start may hang before /data is ready (14. 11. 2026).
+on post-fs
+    start lech-bootlog
+
 on post-fs-data
     start lech-bootlog
