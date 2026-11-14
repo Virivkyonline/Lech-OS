@@ -182,6 +182,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    **Telefón: 0.6.5-dev (14. 11. 21:20, `nahrat-uplne --bez-mazania`, zostava 30 min, všetky záplaty sadli);
    ďalšia zostava 0.6.6-dev.** V telefóne overiť: obrazovka hovoru, „Nahrať hovor“, stránka „Aplikácie z Google
    Play“ a tlačidlo zóny Google, potom Fio.
+   **0.6.5-dev v telefóne – nálezy:** tapeta za hovorom presvitá a „Nahrať hovor“ je preložené, ale farba prechodu
+   závisí od kontaktu (ružová pri neznámom čísle) → `Dialer` 0002: pevný tmavý prechod LECH OS (pre 0.6.6-dev).
+   Položka „Aplikácie z Google Play“ sa v LECH Nastaveniach nezobrazila – príčina nezistená (overiť
+   `am start -n lech.os.nastavenia/.GooglePlayActivity` a `pm list packages app.grapheneos.apps`).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

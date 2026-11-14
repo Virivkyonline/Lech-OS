@@ -1,0 +1,36 @@
+From 7253d6bb97b5e0da1c7015efc8cf9d24fa128d2f Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sat, 14 Nov 2026 20:40:00 +0000
+Subject: [PATCH] Call screen in the colours of LECH OS
+
+The gradient of the call screen took its colour from the contact (blue,
+pink...). Over the wallpaper, shown again since the previous patch, a call
+to an unknown number was bright pink (owner, Pixel 9, 14. 11. 2026). The
+call screen now has one dark, translucent gradient of the LECH OS design
+(dark blue to dark green) for every call.
+---
+ java/com/android/incallui/InCallActivity.java | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/java/com/android/incallui/InCallActivity.java b/java/com/android/incallui/InCallActivity.java
+index 3ff1d26..ec8824d 100644
+--- a/java/com/android/incallui/InCallActivity.java
++++ b/java/com/android/incallui/InCallActivity.java
+@@ -904,9 +904,11 @@ public class InCallActivity extends TransactionSafeFragmentActivity
+       middle = themeColorManager.getBackgroundColorSolid();
+       bottom = themeColorManager.getBackgroundColorSolid();
+     } else {
+-      top = themeColorManager.getBackgroundColorTop();
+-      middle = themeColorManager.getBackgroundColorMiddle();
+-      bottom = themeColorManager.getBackgroundColorBottom();
++      // LECH OS: the same dark, translucent gradient of the LECH OS design for every call, so the wallpaper shows
++      // through. The colour of the base depends on the contact (blue, pink...; owner, Pixel 9, 14. 11. 2026).
++      top = 0xD906141C;
++      middle = 0xA6082630;
++      bottom = 0xCC0B3A1A;
+     }
+ 
+     if (progress < 0) {
+-- 
+2.43.0
+
