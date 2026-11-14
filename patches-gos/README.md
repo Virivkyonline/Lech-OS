@@ -18,3 +18,5 @@ GrapheneOS 2026110800 (`tools/etapa2/16-triedenie-zaplat.sh`): z 40 záplat 18 u
 
 Dvojité aplikácie základu sa odstraňujú cez `overrides` vlastných aplikácií (`vendor/lech/aplikacie/*/Android.bp`):
 Camera, Messaging, ExactCalculator, Auditor, InfoApp.
+
+| `packages/apps/SetupWizard2` 0001 | nové (14. 11.): úvodný sprievodca s názvom a logom LECH OS a slovenskými textami (logo kopíruje `12-zostav-pixel.sh`) |

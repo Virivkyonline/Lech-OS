@@ -1,0 +1,127 @@
+From cea60c0ba417b337d16790c14de3177b68aba668 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sat, 14 Nov 2026 16:40:00 +0000
+Subject: [PATCH] Setup wizard of LECH OS: name, logo and Slovak texts
+
+LECH OS is built on GrapheneOS (ADR-0012) and must not carry its name:
+the setup wizard welcomed with "Welcome to GrapheneOS" and its icon, in
+English only (Pixel 9, 14. 11. 2026). The welcome screen now names LECH OS
+and shows its logo (res/drawable-nodpi/lech_logo.png, copied from
+vendor/lech by tools/etapa2/12-zostav-pixel.sh), and all texts have a
+Slovak translation. The descriptions of the network location and the
+geocoder still name GrapheneOS: its servers provide these services.
+The link for locking the bootloader (grapheneos.org/UBL) stays for now;
+it is shown only with an unlocked bootloader.
+---
+ res/layout/activity_welcome.xml |  2 +-
+ res/values-sk/strings.xml       | 58 +++++++++++++++++++++++++++++++++
+ res/values/strings.xml          |  8 ++---
+ 3 files changed, 63 insertions(+), 5 deletions(-)
+ create mode 100644 res/values-sk/strings.xml
+
+diff --git a/res/layout/activity_welcome.xml b/res/layout/activity_welcome.xml
+index 00bbfa7..6a0af77 100644
+--- a/res/layout/activity_welcome.xml
++++ b/res/layout/activity_welcome.xml
+@@ -66,7 +66,7 @@
+                 android:layout_width="64dp"
+                 android:layout_height="64dp"
+                 android:contentDescription="@string/grapheneos_icon"
+-                android:src="@drawable/grapheneos_icon" />
++                android:src="@drawable/lech_logo" />
+ 
+             <TextView
+                 android:layout_width="match_parent"
+diff --git a/res/values-sk/strings.xml b/res/values-sk/strings.xml
+new file mode 100644
+index 0000000..06f3bba
+--- /dev/null
++++ b/res/values-sk/strings.xml
+@@ -0,0 +1,58 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: Slovak texts of the setup wizard (the base has English only). -->
++<resources>
++    <string name="next">Ďalej</string>
++    <string name="skip">Preskočiť</string>
++    <string name="welcome_to_grapheneos">Vitajte v LECH OS</string>
++    <string name="grapheneos_icon">Ikona LECH OS</string>
++    <string name="grapheneos_desc">Súkromie a bezpečnosť vo vašom telefóne.</string>
++    <string name="lets_setup_your_device">Nastavme vaše zariadenie v niekoľkých krokoch.</string>
++    <string name="lets_setup_your_profile">Nastavme váš používateľský profil v niekoľkých krokoch.</string>
++    <string name="accessibility">Dostupnosť</string>
++    <string name="emergency_call">Tiesňové volanie</string>
++    <string name="connect_to_wi_fi">Pripojenie k sieti Wi-Fi</string>
++    <string name="set_up_without_wi_fi">Nastaviť bez Wi-Fi</string>
++    <string name="connect">Pripojiť</string>
++    <string name="choose_your_language">Vyberte jazyk</string>
++    <string name="location_services">Služby polohy</string>
++    <string name="location_access_title">Používať polohu</string>
++    <string name="location_access_desc">Povoliť aplikáciám, ktoré si vyžiadali vaše povolenie, používať informácie o polohe. Môže ísť o vašu aktuálnu polohu aj o predchádzajúce polohy.</string>
++    <string name="network_location_enabled_title">Sieťová poloha</string>
++    <string name="network_location_enabled_desc">Sieťová poloha určí vašu polohu lepšie (napríklad v budove) a úspornejšie. Identifikátory bezdrôtových sietí v okolí sa odošlú na server spoločnosti Apple cez sprostredkujúci server projektu GrapheneOS, a to len vtedy, keď sa sieťová poloha používa.</string>
++    <string name="wifi_scanning_always_available_enabled_title">Vyhľadávanie sietí Wi-Fi vždy dostupné</string>
++    <string name="wifi_scanning_always_available_enabled_desc">Povoliť aplikáciám a službám s povolením vyhľadávať siete Wi-Fi aj vtedy, keď je Wi-Fi vypnutá. Napríklad zapnutá sieťová poloha tak môže vyhľadávať siete Wi-Fi aj pri vypnutej Wi-Fi, čo spresňuje polohu.</string>
++    <string name="geocoder_enabled_title">Prevod súradníc na adresy</string>
++    <string name="geocoder_enabled_desc">Povoliť aplikáciám používať sieťovú službu prevádzkovanú projektom GrapheneOS, ktorá prevádza zemepisné súradnice na adresy a naopak. Niektoré aplikácie ju potrebujú pre dôležité funkcie.</string>
++    <string name="restore_apps_and_data">Obnoviť aplikácie a údaje</string>
++    <string name="data_restore_desc">Ak máte zálohu z predchádzajúceho zariadenia s LECH OS, môžete ju obnoviť tu.</string>
++    <string name="you_re_all_set_now">Všetko je pripravené!</string>
++    <string name="device_setup_done_desc">Zariadenie môžete začať používať</string>
++    <string name="profile_setup_done_desc">Používateľský profil môžete začať používať</string>
++    <string name="set_up_a_secondary_unlock_method">Nastavte druhý spôsob odomknutia</string>
++    <string name="set_up_fingerprint_unlock">Nastavte odomknutie odtlačkom prsta</string>
++    <string name="optionally_set_up_face_unlock">Voliteľne nastavte odomknutie tvárou</string>
++    <string name="set_up">Nastaviť</string>
++    <string name="start">Začať</string>
++    <string name="date_and_time">Dátum a čas</string>
++    <string name="date_and_time_desc">Nastavte časové pásmo a podľa potreby upravte dátum a čas</string>
++    <string name="date">Dátum</string>
++    <string name="time">Čas</string>
++    <string name="time_zone">Časové pásmo</string>
++    <string name="select_time_zone">Vyberte časové pásmo</string>
++    <string name="select_a_network">Vyberte sieť</string>
++    <string name="cancel">Zrušiť</string>
++    <string name="restore">Obnoviť</string>
++    <string name="swipe_gestures_title">Ovládanie telefónu gestami</string>
++    <string name="swipe_gestures_desc">Naučte sa gestá na návrat na plochu, krok späť a prepínanie medzi aplikáciami</string>
++    <string name="try_it">Vyskúšať</string>
++    <string name="oem_unlocked_warning">Bootloader je odomknutý a neporušenosť softvéru sa nedá zaručiť. Údaje uložené v zariadení môžu byť dostupné útočníkom. Neukladajte doň žiadne citlivé údaje.</string>
++    <string name="visit_this_link_on_another_device">Otvorte tento odkaz na inom zariadení:</string>
++    <string name="lock_your_bootloader">Zamknite bootloader</string>
++    <string name="oem_unlock_fullscreen_desc">Bootloader je odomknutý a neporušenosť softvéru sa nedá zaručiť. Údaje uložené v zariadení môžu byť dostupné útočníkom. Neukladajte doň žiadne citlivé údaje.\n\nNeskoršie zamknutie bootloadera vymaže všetky údaje v zariadení. Aby boli údaje v bezpečí, odporúčame zamknúť bootloader ešte pred nastavením zariadenia.\n\nPostup nájdete na odkaze nižšie (otvorte ho na inom zariadení), potom stlačte „Reštartovať do bootloadera“:</string>
++    <string name="reboot_to_bootloader">Reštartovať do bootloadera</string>
++    <string name="continue_without_locking">Pokračovať bez zamknutia</string>
++    <string name="continue_without_locking_timer">Pokračovať bez zamknutia (%d)</string>
++    <string name="oem_unlock_ack_risks">Rozumiem bezpečnostným rizikám nezamknutého bootloadera.</string>
++    <string name="disable_oem_unlocking">Vypnúť odomknutie OEM</string>
++    <string name="disable_oem_unlocking_desc">Odporúčame vypnúť odomknutie OEM, zvýši to bezpečnosť zariadenia</string>
++</resources>
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index 1aaad57..10a31fa 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -2,9 +2,9 @@
+     <string name="app_name">SetupWizard</string>
+     <string name="next">Next</string>
+     <string name="skip">Skip</string>
+-    <string name="welcome_to_grapheneos">Welcome to GrapheneOS</string>
+-    <string name="grapheneos_icon">GrapheneOS icon</string>
+-    <string name="grapheneos_desc">Privacy and security, crafted for your mobile device, usable by everyone.</string>
++    <string name="welcome_to_grapheneos">Welcome to LECH OS</string>
++    <string name="grapheneos_icon">LECH OS icon</string>
++    <string name="grapheneos_desc">Privacy and security for your phone.</string>
+     <string name="lets_setup_your_device">Let\'s set up your device in a few steps.</string>
+     <string name="lets_setup_your_profile">Let\'s set up your user profile in a few steps.</string>
+     <string name="english_united_states">English (United States)</string>
+@@ -24,7 +24,7 @@
+     <string name="geocoder_enabled_title">Geocoder</string>
+     <string name="geocoder_enabled_desc">Enable geocoder to allow apps to use a network-based service hosted by GrapheneOS to convert between geographic coordinates and human-readable addresses. Some apps need this for critical functionality.</string>
+     <string name="restore_apps_and_data"><![CDATA[Restore apps & data]]></string>
+-    <string name="data_restore_desc">If you have a backup from your previous GrapheneOS device, you can restore it here.</string>
++    <string name="data_restore_desc">If you have a backup from your previous LECH OS device, you can restore it here.</string>
+     <string name="you_re_all_set_now">You\'re all set now!</string>
+     <string name="device_setup_done_desc">You\'re ready to start using your device</string>
+     <string name="profile_setup_done_desc">You\'re ready to start using your user profile</string>
+-- 
+2.43.0
+
