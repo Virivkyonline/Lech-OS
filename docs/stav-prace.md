@@ -189,6 +189,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Overené: stránka existuje a otvorí sa (`am start`), App Store je nainštalovaný, názov „Zóna Google“
    v Nastavenia → Aplikácie funguje; riadok v zozname LECH Nastavení vlastník nenašiel → podmienka odstránená, riadok
    sa zobrazuje vždy (0.6.6-dev). Drobnosť: Obchod aplikácií má v zozname systému ikonu F-Droid, nie našu.
+   **ZÓNA GOOGLE FUNGUJE (14. 11. 2026 ~21:55, 0.6.5-dev):** tlačidlo „Zapnúť zónu Google“ otvorilo App Store
+   základu (celý zoznam, nie stránku Google Play services – `SHOW_APP_INFO` nezabral; v zozname je všade meno
+   GrapheneOS → neskôr vlastná inštalačná obrazovka). Vlastník nainštaloval Google Play services (+ GmsCompat Config,
+   Play Store), bez účtu Google; Aurora Store z Obchodu aplikácií; **Fio banka (`sk.fio.sb2`) prešla cez obrazovku
+   polohy a funguje** – cieľ prechodu na GrapheneOS (ADR-0012) splnený. Ďalej: zamknúť bootloader kľúčom LECH OS
+   a overiť OTA v novej línii, meranie súkromia (čaká na vlastníka), Android Auto, vlastná inštalačná obrazovka.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
