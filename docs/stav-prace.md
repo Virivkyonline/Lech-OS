@@ -131,6 +131,13 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    bootloaderi) – overiť neskôr OTA v rámci novej línie a po zamknutí. Záznam na persist nevznikol ani pri úspešnom
    štarte – služba `lech-bootlog` nefunguje, opraviť alebo odstrániť. V holej zostave chýba ikona Nastavení
    (Launcher3 0002 ju skrýva, LechNastavenia nie sú). Ďalej: plná zostava LECH OS (bez `LECH_BARE`) cez `nahrat-uplne`.
+   **14. 11. 16:31 – plná zostava LECH OS 0.6.1-dev na GrapheneOS beží v telefóne** (`nahrat-uplne --bez-mazania`,
+   bootloader odomknutý, slot _b): naše ikony a aplikácie, Mapy, Obchod (F-Droid), „Build number
+   LECH-OS-0.6.1-dev-userdebug“. **Telefón: 0.6.1-dev; ďalšia zostava 0.6.2-dev.** Treba upratať (z fotky zoznamu
+   aplikácií): dvojice Calculator (GrapheneOS + LECH), Camera (GrapheneOS + LECH), Messaging (GrapheneOS) + SMS
+   (LECH), App Store (GrapheneOS) + Obchod aplikácií; aplikácie Auditor a Info; značka GrapheneOS v recovery,
+   fastbootd, sprievodcovi a inde; jazyk bol anglický (údaje z holej zostavy) – overiť slovenčinu a predvolené
+   aplikácie po čistom štarte. Potom: zamknúť bootloader kľúčom LECH OS, overiť OTA v novej línii, zóna Google + Fio.
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
    z 0.5.9-dev (pri zlyhaní štartu sa telefón vráti do starého slotu), inak čistá inštalácia.
