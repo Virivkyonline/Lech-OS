@@ -16,13 +16,13 @@ with shrink_resources (resource names need not survive for an overlay).
 The list is now in the launcher's own config.xml, which AppFilter reads.
 ---
  res/values/config.xml | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/res/values/config.xml b/res/values/config.xml
 index 2211b9c..942ba71 100644
 --- a/res/values/config.xml
 +++ b/res/values/config.xml
-@@ -133,5 +133,14 @@
+@@ -133,5 +133,17 @@
      </array>
  
 -    <string-array name="filtered_components" ></string-array>
@@ -35,6 +35,9 @@ index 2211b9c..942ba71 100644
 +        <item>com.android.documentsui/com.android.documentsui.LauncherActivity</item>
 +        <item>com.android.dialer/com.android.dialer.main.impl.MainActivity</item>
 +        <item>app.grapheneos.pdfviewer/app.grapheneos.pdfviewer.PdfViewer</item>
++        <!-- App Store of the base: stays for the sandboxed Google Play ("Google zone", docs/18), the customer
++             sees only the LECH OS app store. Activity verified in GrapheneOS/AppStore AndroidManifest.xml. -->
++        <item>app.grapheneos.apps/app.grapheneos.apps.ui.MainActivity</item>
 +    </string-array>
      <string-array name="default_featured_widget_apps" translatable="false">
      </string-array>

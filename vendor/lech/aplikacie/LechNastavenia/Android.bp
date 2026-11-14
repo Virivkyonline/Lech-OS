@@ -11,6 +11,9 @@ package {
 
 android_app {
     name: "LechNastavenia",
+    // Apps of the GrapheneOS base the customer of LECH OS does not get (ADR-0012): Auditor (attestation against
+    // the GrapheneOS service) and Info (news of the GrapheneOS project).
+    overrides: ["Auditor", "InfoApp"],
     product_specific: true,
     sdk_version: "current",
     srcs: ["src/**/*.java"],

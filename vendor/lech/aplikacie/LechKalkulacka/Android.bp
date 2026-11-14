@@ -12,6 +12,8 @@ package {
 
 android_app {
     name: "LechKalkulacka",
+    // The calculator of the GrapheneOS base (ADR-0012).
+    overrides: ["ExactCalculator"],
     product_specific: true,
     sdk_version: "current",
     srcs: ["src/**/*.java"],

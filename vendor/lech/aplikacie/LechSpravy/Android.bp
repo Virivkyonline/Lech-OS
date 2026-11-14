@@ -18,7 +18,8 @@ android_app {
     srcs: ["src/**/*.java"],
     resource_dirs: ["res"],
     static_libs: ["LechUi"],
-    overrides: ["messaging"],
+    // "Messaging": the SMS app of the GrapheneOS base (ADR-0012).
+    overrides: ["messaging", "Messaging"],
     required: ["lech_spravy_default_permissions"],
     dex_preopt: {
         enabled: false,

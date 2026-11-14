@@ -13,3 +13,8 @@ GrapheneOS 2026110800 (`tools/etapa2/16-triedenie-zaplat.sh`): z 40 záplat 18 u
 | `Connectivity`, `DnsResolver`, `NetworkStack`, `RemoteKeyProvisioning`, `WallpaperPicker2` (spojenia na Google) | konflikt – GrapheneOS ich rieši inak (vlastné servery); rozhodnúť po sieťovom audite |
 | `packages/apps/Messaging` | projekt v GrapheneOS chýba; SMS robí LechSpravy |
 | `device/google/cuttlefish` | len pre virtuálny telefón, zatiaľ neprenesená |
+| `bootable/recovery` 0001 | nové (14. 11.): obrazovky recovery a fastbootd sa volajú „LECH OS Recovery“ / „LECH OS Fastboot“ |
+| `Launcher3` 0002 | doplnené (14. 11.): skrytá ikona App Store základu (`app.grapheneos.apps`), ostáva pre zónu Google |
+
+Dvojité aplikácie základu sa odstraňujú cez `overrides` vlastných aplikácií (`vendor/lech/aplikacie/*/Android.bp`):
+Camera, Messaging, ExactCalculator, Auditor, InfoApp.

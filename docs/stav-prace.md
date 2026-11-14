@@ -138,6 +138,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (LECH), App Store (GrapheneOS) + Obchod aplikácií; aplikácie Auditor a Info; značka GrapheneOS v recovery,
    fastbootd, sprievodcovi a inde; jazyk bol anglický (údaje z holej zostavy) – overiť slovenčinu a predvolené
    aplikácie po čistom štarte. Potom: zamknúť bootloader kľúčom LECH OS, overiť OTA v novej línii, zóna Google + Fio.
+   **Upratovanie pripravené pre 0.6.2-dev (14. 11., neskúšané):** `overrides` odstránia Camera, Messaging,
+   ExactCalculator, Auditor a InfoApp základu; App Store základu skrytý na ploche (ostáva pre zónu Google, rozhodnutie
+   vlastníka); recovery a fastbootd premenované (`patches-gos/bootable/recovery` 0001). Zostáva: úvodný sprievodca
+   (SetupWizard2) a ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
+   zostavou prehliadača), služba `lech-bootlog` (nefunguje).
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
    z 0.5.9-dev (pri zlyhaní štartu sa telefón vráti do starého slotu), inak čistá inštalácia.
