@@ -1,0 +1,117 @@
+From 578888e9accc8798eac4915febb8fd6f6f4edeee Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sat, 14 Nov 2026 17:10:00 +0000
+Subject: [PATCH] Home screen of a new phone with the apps of LECH OS
+
+The default workspace asked for "the app market" and "the messaging
+app": on the GrapheneOS base (ADR-0012) the market entry chose the App
+Store of the base, which LECH OS hides, and the dock had a gap (Pixel 9,
+14. 11. 2026). The 4-column layout now names the apps directly: dock
+Telefon, Spravy, Prehliadac, Fotoaparat; bottom row Obchod aplikacii
+(F-Droid), Galeria, Mapy (Organic Maps), Nastavenia.
+---
+ res/xml/default_workspace_4x4.xml | 59 +++++++++++++++----------------
+ 1 file changed, 28 insertions(+), 31 deletions(-)
+
+diff --git a/res/xml/default_workspace_4x4.xml b/res/xml/default_workspace_4x4.xml
+index bf3c62c..2d5fdc4 100644
+--- a/res/xml/default_workspace_4x4.xml
++++ b/res/xml/default_workspace_4x4.xml
+@@ -16,8 +16,11 @@
+ 
+ <favorites xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher3">
+ 
+-    <!-- Hotseat (We use the screen as the position of the item in the hotseat) -->
+-    <!-- Dialer, Messaging, Browser, Camera -->
++    <!-- LECH OS: the home screen of a new phone. The apps of LECH OS are named directly: the generic entries of
++         the base ("the app market", "the messaging app") chose the App Store of the base and left gaps
++         (Pixel 9, 14. 11. 2026). Activities verified on the phone (cmd package resolve-activity). -->
++
++    <!-- Hotseat: Telefón, Správy, Prehliadač, Fotoaparát -->
+     <resolve
+         launcher:container="-101"
+         launcher:screen="0"
+@@ -27,19 +30,13 @@
+         <favorite launcher:uri="tel:123" />
+         <favorite launcher:uri="#Intent;action=android.intent.action.CALL_BUTTON;end" />
+     </resolve>
+-
+-    <resolve
++    <favorite
++        launcher:packageName="lech.os.spravy"
++        launcher:className="lech.os.spravy.MainActivity"
+         launcher:container="-101"
+         launcher:screen="1"
+         launcher:x="1"
+-        launcher:y="0" >
+-        <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_MESSAGING;end" />
+-        <favorite launcher:uri="sms:" />
+-        <favorite launcher:uri="smsto:" />
+-        <favorite launcher:uri="mms:" />
+-        <favorite launcher:uri="mmsto:" />
+-    </resolve>
+-
++        launcher:y="0" />
+     <resolve
+         launcher:container="-101"
+         launcher:screen="2"
+@@ -49,7 +46,6 @@
+             launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_BROWSER;end" />
+         <favorite launcher:uri="http://www.example.com/" />
+     </resolve>
+-
+     <resolve
+         launcher:container="-101"
+         launcher:screen="3"
+@@ -59,29 +55,30 @@
+         <favorite launcher:uri="#Intent;action=android.intent.action.CAMERA_BUTTON;end" />
+     </resolve>
+ 
+-    <!-- Bottom row -->
+-    <resolve
++    <!-- Bottom row: Obchod aplikácií (F-Droid), Galéria, Mapy (Organic Maps), Nastavenia -->
++    <favorite
++        launcher:packageName="org.fdroid.fdroid"
++        launcher:className="org.fdroid.IconActivity"
+         launcher:screen="0"
+         launcher:x="0"
+-        launcher:y="-1" >
+-        <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_EMAIL;end" />
+-        <favorite launcher:uri="mailto:" />
+-    </resolve>
+-
+-    <resolve
++        launcher:y="-1" />
++    <favorite
++        launcher:packageName="lech.os.galeria"
++        launcher:className="lech.os.galeria.MainActivity"
+         launcher:screen="0"
+         launcher:x="1"
+-        launcher:y="-1" >
+-        <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_GALLERY;end" />
+-        <favorite launcher:uri="#Intent;type=images/*;end" />
+-    </resolve>
+-
+-    <resolve
++        launcher:y="-1" />
++    <favorite
++        launcher:packageName="app.organicmaps"
++        launcher:className="app.organicmaps.DownloadResourcesActivity"
++        launcher:screen="0"
++        launcher:x="2"
++        launcher:y="-1" />
++    <favorite
++        launcher:packageName="lech.os.nastavenia"
++        launcher:className="lech.os.nastavenia.MainActivity"
+         launcher:screen="0"
+         launcher:x="3"
+-        launcher:y="-1" >
+-        <favorite launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_MARKET;end" />
+-        <favorite launcher:uri="market://details?id=com.android.launcher" />
+-    </resolve>
++        launcher:y="-1" />
+ 
+ </favorites>
+-- 
+2.43.0
+

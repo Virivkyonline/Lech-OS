@@ -144,7 +144,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    logom LECH OS a po slovensky (`patches-gos/packages/apps/SetupWizard2` 0001; odkaz grapheneos.org/UBL pri
    odomknutom bootloaderi ostal). **0.6.2-dev v telefóne (14. 11. večer):** sprievodca po slovensky, ale záverečná
    obrazovka mala veľké logo GrapheneOS – opravené pre **0.6.3-dev** (záplata odstráni vektorovú ikonu základu, logo
-   LECH OS dostane jej meno, platí pre všetky obrazovky). Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
+   LECH OS dostane jej meno, platí pre všetky obrazovky). Ďalšie nálezy vlastníka v 0.6.2-dev: App Store základu na
+   ploche a diera v docku (predvolená plocha → `Launcher3` 0003 s pevnými aplikáciami LECH OS, aktivity overené
+   v telefóne); **chýbajú tri navigačné tlačidlá** (v telefóne zapnuté prekrytie `navbar.gestural`,
+   `navigation_mode=2`, `ro.boot.vendor.overlay.theme` prázdne – zistiť, kde ho základ zapína, a predvoliť
+   `navbar.threebutton`); „Kontakty nesedia“ – neupresnené (APP_CONTACTS → `lech.os.kontakty`); texty „F-Droid“ vnútri
+   Obchodu ostávajú (vlastník súhlasí). Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
    zostavou prehliadača), služba `lech-bootlog` (nefunguje).
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA

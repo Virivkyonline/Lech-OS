@@ -20,3 +20,4 @@ Dvojité aplikácie základu sa odstraňujú cez `overrides` vlastných aplikác
 Camera, Messaging, ExactCalculator, Auditor, InfoApp.
 
 | `packages/apps/SetupWizard2` 0001 | nové (14. 11.): úvodný sprievodca s názvom a logom LECH OS a slovenskými textami (logo kopíruje `12-zostav-pixel.sh`) |
+| `Launcher3` 0003 | nové (14. 11.): plocha nového telefónu s aplikáciami LECH OS (dock Telefón, Správy, Prehliadač, Fotoaparát; riadok Obchod, Galéria, Mapy, Nastavenia) |
