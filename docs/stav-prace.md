@@ -196,7 +196,8 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    polohy a funguje** – cieľ prechodu na GrapheneOS (ADR-0012) splnený. Ďalej: zamknúť bootloader kľúčom LECH OS
    a overiť OTA v novej línii, meranie súkromia (čaká na vlastníka), Android Auto, vlastná inštalačná obrazovka.
    **Telefón: 0.6.6-dev (14. 11. 22:09, `nahrat-uplne --bez-mazania`, zostava 16 min); ďalšia zostava 0.6.7-dev.**
-   Overiť: farby obrazovky hovoru, riadok „Aplikácie z Google Play“, či Fio a zóna Google ostali. Chyba v skripte:
+   **Overené vlastníkom 14. 11. 22:15:** obrazovka hovoru tmavá (prechod LECH OS), Fio funguje aj po aktualizácii,
+   riadok „Aplikácie z Google Play“ je v hlavnom zozname LECH Nastavení (vlastník ho hľadal vnútri „Aplikácie“). Chyba v skripte:
    pri bežiacej zostave v inom okne hlási zámok „zostavenie nebeží… kill PID“ (`lech_build_lock_report`) – opraviť.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
