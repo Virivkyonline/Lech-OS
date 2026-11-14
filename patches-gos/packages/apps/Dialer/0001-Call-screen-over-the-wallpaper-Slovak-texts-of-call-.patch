@@ -1,0 +1,103 @@
+From 632372047e71b83dca5c366bbcdc41c78ea8db05 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sat, 14 Nov 2026 19:40:00 +0000
+Subject: [PATCH] Call screen over the wallpaper, Slovak texts of call
+ recording
+
+LECH OS on the GrapheneOS base (ADR-0012): the call screen was a flat
+blue (windowShowWallpaper false in the themes of InCallActivity), on the
+AOSP Dialer of LECH OS 0.5.x the wallpaper showed through the translucent
+gradient (owner, Pixel 9, 14. 11. 2026). The wallpaper is shown again.
+The texts of call recording were English only ("Record call"): Slovak
+translations added, and the recording notice names LECH OS.
+---
+ .../impl/res/values-sk/strings_lech.xml       |  9 ++++++++
+ .../incallui/res/values-sk/strings_ext.xml    | 23 +++++++++++++++++++
+ .../incallui/res/values/strings_ext.xml       |  2 +-
+ .../incallui/theme/res/values/styles.xml      |  4 ++--
+ 4 files changed, 35 insertions(+), 3 deletions(-)
+ create mode 100644 java/com/android/incallui/incall/impl/res/values-sk/strings_lech.xml
+ create mode 100644 java/com/android/incallui/res/values-sk/strings_ext.xml
+
+diff --git a/java/com/android/incallui/incall/impl/res/values-sk/strings_lech.xml b/java/com/android/incallui/incall/impl/res/values-sk/strings_lech.xml
+new file mode 100644
+index 0000000..e9ba538
+--- /dev/null
++++ b/java/com/android/incallui/incall/impl/res/values-sk/strings_lech.xml
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: Slovak texts of automatic call recording (the base has them in English only). -->
++<resources>
++  <string name="auto_call_recording_started_message">Automatické nahrávanie hovoru je zapnuté</string>
++  <string name="auto_call_recording_will_start_message">Hovor sa nahrá automaticky</string>
++  <string name="auto_call_recording_mic_permission_message">Treba prístup k mikrofónu</string>
++  <string name="auto_call_recording_contacts_permission_message">Treba prístup ku kontaktom</string>
++  <string name="auto_call_recording_permissions_message">Treba mikrofón a kontakty</string>
++</resources>
+diff --git a/java/com/android/incallui/res/values-sk/strings_ext.xml b/java/com/android/incallui/res/values-sk/strings_ext.xml
+new file mode 100644
+index 0000000..4b431a4
+--- /dev/null
++++ b/java/com/android/incallui/res/values-sk/strings_ext.xml
+@@ -0,0 +1,23 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: Slovak texts of call recording (the base has them in English only). -->
++<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
++    <string name="call_recording_failed_message">Nahrávanie hovoru sa nepodarilo spustiť</string>
++    <string name="call_recording_error_title">Nahrávanie hovoru zlyhalo</string>
++    <string name="call_recording_error_message">Nahrávanie hovoru sa zastavilo pre chybu</string>
++    <string name="call_recording_file_location">Nahrávka hovoru je uložená v <xliff:g id="filename">%1$s</xliff:g></string>
++    <string name="call_recording_permission_required_title">Treba povolenie mikrofónu</string>
++    <string name="call_recording_permission_required_message">Nahrávanie hovorov potrebuje prístup k mikrofónu. Povoľte ho v Nastaveniach a skúste to znova.</string>
++    <string name="call_recording_permission_open_settings">Otvoriť nastavenia</string>
++    <string name="call_recording_unlock_to_record_message">Na nahrávanie hovorov odomknite telefón</string>
++    <string name="onscreenCallRecordText">Nahrať hovor</string>
++    <string name="onscreenCallRecordingText">Nahráva sa – <xliff:g id="duration" example="00:10">%1$s</xliff:g></string>
++    <string name="onscreenStopCallRecordText">Zastaviť nahrávanie</string>
++    <string name="call_recording_warning_settings_title">Upozornenie k nahrávaniu hovorov</string>
++    <string name="recording_time_text">Nahrávanie</string>
++    <string name="recording_warning_title">Zapnúť nahrávanie hovorov?</string>
++    <string name="recording_warning_text">Upozornenie:
++    Za dodržanie všetkých zákonov, predpisov a pravidiel, ktoré sa vzťahujú na nahrávanie hovorov a na používanie alebo šírenie nahrávok, zodpovedáte v plnom rozsahu vy.
++    Ďalším používaním nahrávania hovorov potvrdzujete, že ste si toto upozornenie prečítali a že LECH OS nenesie žiadnu zodpovednosť za prípadné následky
++    používania funkcie nahrávania hovorov.
++    </string>
++</resources>
+diff --git a/java/com/android/incallui/res/values/strings_ext.xml b/java/com/android/incallui/res/values/strings_ext.xml
+index 4bc0bf4..3656dda 100644
+--- a/java/com/android/incallui/res/values/strings_ext.xml
++++ b/java/com/android/incallui/res/values/strings_ext.xml
+@@ -33,7 +33,7 @@
+     <string name="recording_warning_title">Enable call recording?</string>
+     <string name="recording_warning_text">Warning:
+     You are fully responsible for compliance with any laws, regulations and rules that apply to the use of call recording functionality and the use or distribution of those recordings.
+-    By continuing to use call recording, you acknowledge that you fully read this and GrapheneOS will not be held liable in any way for any possible consequences should there be any
++    By continuing to use call recording, you acknowledge that you fully read this and LECH OS will not be held liable in any way for any possible consequences should there be any
+     due to your usage of the call recording feature.
+     </string>
+ </resources>
+diff --git a/java/com/android/incallui/theme/res/values/styles.xml b/java/com/android/incallui/theme/res/values/styles.xml
+index 09bb1dd..5b65cc3 100644
+--- a/java/com/android/incallui/theme/res/values/styles.xml
++++ b/java/com/android/incallui/theme/res/values/styles.xml
+@@ -30,7 +30,7 @@
+     <item name="android:windowAnimationStyle">@null</item>
+ 
+     <item name="android:windowBackground">@drawable/incall_background_gradient</item>
+-    <item name="android:windowShowWallpaper">false</item>
++    <item name="android:windowShowWallpaper">true</item>
+   </style>
+ 
+   <style name="Theme.InCallScreen" parent="@style/Dialer.Dark.ThemeBase.NoActionBar">
+@@ -47,7 +47,7 @@
+     <item name="android:windowAnimationStyle">@null</item>
+ 
+     <item name="android:windowBackground">@drawable/incall_background_gradient</item>
+-    <item name="android:windowShowWallpaper">false</item>
++    <item name="android:windowShowWallpaper">true</item>
+   </style>
+ 
+   <style name="Theme.InCallScreen.ManageConference" parent="Dialer.ThemeBase.ActionBar">
+-- 
+2.43.0
+

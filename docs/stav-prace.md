@@ -174,6 +174,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    **0.6.4-dev v telefóne (14. 11. 20:20):** App Store základu už na ploche nie je (vlastník); v Nastavenia →
    Aplikácie sa od 0.6.5-dev volá „Zóna Google“ (`frameworks/base` 0011). Fotka plochy zatiaľ neprišla – rozloženie
    (Správy, Obchod, Galéria, Mapy, Nastavenia) potvrdiť.
+   **Dávka pre 0.6.5-dev (pripravené 14. 11. večer, neskúšané):** stránka „Aplikácie z Google Play“; názov „Zóna
+   Google“; `packages/apps/Dialer` 0001 (obrazovka hovoru nad tapetou – základ mal `windowShowWallpaper=false`,
+   farby prechodu rovnaké; preklad nahrávania hovorov); odstránená nefunkčná služba `lech-bootlog`. Ikony plochy:
+   mriežka „medium“ základu má už 4 stĺpce a ikony 66 dp – netreba meniť. Odložené: zmienka o Google Play
+   v sprievodcovi (vyžaduje novú obrazovku), Android Auto, skúška Fio.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
