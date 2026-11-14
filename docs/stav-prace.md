@@ -152,7 +152,14 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Obchodu ostávajú (vlastník súhlasí). **Pripravené pre 0.6.3-dev (neskúšané):** tri tlačidlá predvolene
    (`ro.boot.vendor.overlay.theme=…navbar.threebutton` v `lech_tokay.mk`; v telefóne „Default overlays: …gestural“);
    „Kontakty nesedia“ = ikona Telefón na ploche otvárala Dialer základu namiesto LECH Telefónu → dock v `Launcher3`
-   0003 má pevne `lech.os.kontakty/.PhoneActivity`. Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
+   0003 má pevne `lech.os.kontakty/.PhoneActivity`.
+   **0.6.3-dev v telefóne (14. 11. 19:00, čistá inštalácia):** tri tlačidlá fungujú (po `patches-gos/build/make`
+   0001), sprievodca „Vitajte v LECH OS“ po slovensky, dvojice aplikácií preč, vlastné aplikácie sa otvárajú správne.
+   Plocha ešte zlá: launcher základu berie mriežky z `res-stock` (mriežka „medium“, `launcher_4_by_6.db`), nie
+   z `res/xml` – `Launcher3` 0003 prepísaná na `res-stock/xml/default_workspace_4x6.xml` pre **0.6.4-dev**. Pozor:
+   `Launcher3` 0001 (4 stĺpce, ikony 66 dp) mení `res/xml/device_profiles.xml`, ktorý sa na Pixeli nepoužíva –
+   veľkosť ikon upraviť v `res-stock`, ak ju vlastník bude chcieť. App Store základu ostáva v Nastavenia → Aplikácie
+   (návrh: premenovať na neutrálny názov). Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
    zostavou prehliadača), služba `lech-bootlog` (nefunguje).
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
