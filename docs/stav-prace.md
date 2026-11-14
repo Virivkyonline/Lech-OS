@@ -171,6 +171,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (menuje Aurora Store; text dať pozrieť právnikovi). Pre **0.6.5-dev**, neskompilované ani neskúšané. Neskôr:
    rovnaká zmienka v sprievodcovi, Android Auto (prepínače), skúška Fio. Android Auto: vlastník má v aute vlastné
    aplikácie mimo Play (režim pre vývojárov Android Auto) – overiť pri skúške.
+   **0.6.4-dev v telefóne (14. 11. 20:20):** App Store základu už na ploche nie je (vlastník); v Nastavenia →
+   Aplikácie sa od 0.6.5-dev volá „Zóna Google“ (`frameworks/base` 0011). Fotka plochy zatiaľ neprišla – rozloženie
+   (Správy, Obchod, Galéria, Mapy, Nastavenia) potvrdiť.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

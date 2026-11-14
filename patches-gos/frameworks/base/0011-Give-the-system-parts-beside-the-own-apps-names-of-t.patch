@@ -49,7 +49,7 @@ index c1fd896..b18d4f4 100644
 +        {"com.android.launcher3", "Plocha", "Home screen"},
 +        {"org.fdroid.fdroid", "Obchod aplikácií", "App store"},
 +        {"app.organicmaps", "Mapy", "Maps"},
-+        {"app.grapheneos.apps", "Inštalátor zóny Google", "Google zone installer"},
++        {"app.grapheneos.apps", "Zóna Google", "Google zone"},
 +    };
  
      private LechAppNames() {
