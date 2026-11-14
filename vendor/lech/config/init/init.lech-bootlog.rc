@@ -1,0 +1,17 @@
+# Copyright (C) 2026 The LECH OS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+# LECH OS development builds only (userdebug/eng, vendor/lech/config/common.mk): the log of the start is written
+# to the persist partition, which a factory reset and the other slot do not erase. Reason: the first LECH OS on
+# GrapheneOS showed the boot animation for about 2 minutes and fell back to the previous slot; adb was not reachable
+# and the old slot erased /data and /metadata (Pixel 9, 14. 11. 2026). Read it from any running system:
+#   adb shell su root cat /mnt/vendor/persist/lech-bootlog.txt
+service lech-bootlog /system/bin/logcat -b all -v threadtime -f /mnt/vendor/persist/lech-bootlog.txt -r 6144 -n 1
+    user root
+    group root system log
+    seclabel u:r:su:s0
+    disabled
+    oneshot
+
+on post-fs-data
+    start lech-bootlog

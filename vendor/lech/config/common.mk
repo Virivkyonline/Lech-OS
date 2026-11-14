@@ -78,3 +78,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     vendor/lech/config/init/init.lech.rc:$(TARGET_COPY_OUT_PRODUCT)/etc/init/init.lech.rc \
 
+# Development builds: log of the start on the persist partition (init.lech-bootlog.rc explains why).
+ifneq ($(TARGET_BUILD_VARIANT),user)
+PRODUCT_COPY_FILES += \
+    vendor/lech/config/init/init.lech-bootlog.rc:$(TARGET_COPY_OUT_PRODUCT)/etc/init/init.lech-bootlog.rc \
+
+endif
+

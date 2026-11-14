@@ -108,6 +108,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (`--prompt_and_wipe_data --reason=set_policy_failed:/data/bootchart` – údaje už starý systém nevie odomknúť).
    Poučenie: prechod medzi základmi nie cez OTA so zachovaním údajov. Postup: `adb reboot sideload`, `adb sideload`
    balíka 0.6.0-dev, v recovery vymazať údaje, reštart.
+   **14. 11. dopoludnia:** sideload v starom recovery zlyhal (`kPostInstallMountError`); `aktualizovat --do-recovery`
+   + vymazanie údajov v recovery nového slotu: 0.6.0-dev ukáže logo Google, animáciu LECH OS ~2 min a vráti sa do
+   0.5.9-dev (tá pri návrate vymaže /data aj /metadata – žiadne stopy; adb sa v novom systéme neohlási, pstore
+   prázdny). Ďalší krok: zostava so záznamom štartu na oddiel persist (`init.lech-bootlog.rc`, len userdebug),
+   po pokuse prečítať z 0.5.9: `adb shell su root cat /mnt/vendor/persist/lech-bootlog.txt`. V recovery je nápis
+   „GrapheneOS Recovery“ – premenovať.
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
    z 0.5.9-dev (pri zlyhaní štartu sa telefón vráti do starého slotu), inak čistá inštalácia.
