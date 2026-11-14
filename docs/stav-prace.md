@@ -159,7 +159,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    z `res/xml` – `Launcher3` 0003 prepísaná na `res-stock/xml/default_workspace_4x6.xml` pre **0.6.4-dev**. Pozor:
    `Launcher3` 0001 (4 stĺpce, ikony 66 dp) mení `res/xml/device_profiles.xml`, ktorý sa na Pixeli nepoužíva –
    veľkosť ikon upraviť v `res-stock`, ak ju vlastník bude chcieť. App Store základu ostáva v Nastavenia → Aplikácie
-   (návrh: premenovať na neutrálny názov). Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
+   (návrh: premenovať na neutrálny názov).
+   **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
+   hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
+   záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
+   Meranie (`gos.sh 11-pixel.sh audit`, potom 24 h) **odložené – vlastník povie kedy** (14. 11.). Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
    zostavou prehliadača), služba `lech-bootlog` (nefunguje).
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
