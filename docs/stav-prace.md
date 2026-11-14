@@ -199,6 +199,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    **Overené vlastníkom 14. 11. 22:15:** obrazovka hovoru tmavá (prechod LECH OS), Fio funguje aj po aktualizácii,
    riadok „Aplikácie z Google Play“ je v hlavnom zozname LECH Nastavení (vlastník ho hľadal vnútri „Aplikácie“). Chyba v skripte:
    pri bežiacej zostave v inom okne hlási zámok „zostavenie nebeží… kill PID“ (`lech_build_lock_report`) – opraviť.
+   **BOOTLOADER ZAMKNUTÝ kľúčom LECH OS (14. 11. 22:16, `gos.sh 11-pixel.sh zamknut`, odtlačok 95318521…f4fb)
+   a 0.6.6-dev so zamknutým bootloaderom NAŠTARTOVAL** (fotka rýchlych nastavení 22:21) – zamknutý štart nového
+   základu teda funguje; ranné zlyhanie bolo v ceste cez OTA zo starej línie. Zostáva overiť OTA v rámci novej línie
+   (0.6.6 → 0.6.7). Údaje vymazané: zónu Google, Aurora a Fio nainštalovať znova.
+   Nález: rýchle nastavenia sú olivovozelené – systém odvodzuje farby z tapety (SystemUI `ThemeOverlayController`,
+   farba z tapety); vlastník: „tak to nemá byť“ → určiť pevnú farebnú tému LECH OS (zistiť, akú chce).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
