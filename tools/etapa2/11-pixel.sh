@@ -23,7 +23,7 @@
 #   audit [--minuty N] [--dokoncit] [--vyhodnotit]  network audit in the phone itself (tcpdump, Wi-Fi and mobile network; default
 #              15 min); --dokoncit finishes a started audit after the USB connection dropped,
 #              --vyhodnotit evaluates the last downloaded audit again (no phone needed)
-#   aktualizovat [--subor OTA.zip]  install an A/B update (OTA) of LECH OS from 12-zostav-pixel.sh --ota into the other
+#   aktualizovat [--subor OTA.zip] [--do-recovery]  install an A/B update (OTA) of LECH OS from 12-zostav-pixel.sh --ota into the other
 #              slot with update_engine and restart into it (E2-08 on the Pixel; also with the locked bootloader);
 #              default: the newest package in ~/lech-work/pixel-ota
 #   zamknut   lock the bootloader with the LECH OS verified boot key (E2-12) – ERASES ALL DATA; the phone must run
@@ -538,11 +538,12 @@ EOF
 cmd_aktualizovat() {
   local ota="" ota_dir="$WORKDIR/pixel-ota" server_dir port=${LECH_OTA_PORT:-8008} version file offset size headers
   local before_version before_slot before_build post_ts url server_pid="" pushed="" log status ok after_version after_slot
-  local after_build vb
+  local after_build vb to_recovery=0
   while [ $# -gt 0 ]; do
     case "$1" in
       --subor) ota=${2:?chýba súbor}; shift 2 ;;
-      *) die "Neznámy parameter: $1 (použitie: 11-pixel.sh aktualizovat [--subor OTA.zip])" ;;
+      --do-recovery) to_recovery=1; shift ;;
+      *) die "Neznámy parameter: $1 (použitie: 11-pixel.sh aktualizovat [--subor OTA.zip] [--do-recovery])" ;;
     esac
   done
   [ -n "$ota" ] || ota=$(ls -t "$ota_dir"/lech-tokay-ota-*.zip 2>/dev/null | head -n 1)
@@ -630,6 +631,16 @@ print("\n".join(u["headers"] + ["USER_AGENT=LECH-OS-updater-v0", "NETWORK_ID=0"]
   cleanup_ota; server_pid=""; pushed=""
   trap cleanup EXIT
 
+  # A change of the system base (AOSP -> GrapheneOS, ADR-0012) cannot keep the data: the new slot did not start
+  # with the old data and the old slot could not unlock them afterwards (Pixel 9, 14. 11. 2026). --do-recovery
+  # starts the recovery of the new slot instead, where the data are erased before the first start.
+  if [ "$to_recovery" -eq 1 ]; then
+    echo "Aktualizácia je v druhom slote. Reštartujem telefón do recovery nového systému…"
+    adb_ reboot recovery >/dev/null
+    echo "V telefóne (hlasitosť = pohyb, vypínač = potvrdenie): Wipe data/factory reset → potvrdiť → Reboot system now."
+    echo "Ak sa ukáže ležiaci robot s nápisom No command: podržte vypínač a krátko stlačte zvýšenie hlasitosti."
+    return 0
+  fi
   echo "Aktualizácia je v druhom slote. Reštartujem telefón do LECH OS $version…"
   adb_ reboot >/dev/null
   sleep 20
