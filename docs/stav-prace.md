@@ -102,7 +102,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    CP3A.261005.005, opravy 2026-11-01, ARMv9; balík `~/lech-work-gos/pixel-ota/lech-tokay-ota-0.6.0-dev.zip` 1620 MB,
    obrazy `/mnt/c/lech/pixel-gos`). Opravy cestou: BUILD_ID_<produkt> pre `lech_tokay` (`05-zostav-aosp.sh`), kľúč
    `gmscompat_lib` (`06-zostav-lech.sh` dopĺňa chýbajúce kľúče). Bez Obchodu, Máp a ikon (nástroje vznikli až v nej)
-   – doplní druhá zostava. **Telefón je stále na 0.5.9-dev.**
+   – doplní druhá zostava (hotová 14. 11. 08:33, balík 1675 MB).
+   **OTA 0.5.9-dev → 0.6.0-dev 14. 11. zlyhala:** nový slot _a nenaštartoval (príčina neznáma, pstore prázdny),
+   telefón sa vrátil do _b a starý systém skončil v recovery „Cannot load Android system“
+   (`--prompt_and_wipe_data --reason=set_policy_failed:/data/bootchart` – údaje už starý systém nevie odomknúť).
+   Poučenie: prechod medzi základmi nie cez OTA so zachovaním údajov. Postup: `adb reboot sideload`, `adb sideload`
+   balíka 0.6.0-dev, v recovery vymazať údaje, reštart.
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
    z 0.5.9-dev (pri zlyhaní štartu sa telefón vráti do starého slotu), inak čistá inštalácia.
