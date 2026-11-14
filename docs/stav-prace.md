@@ -123,6 +123,14 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    **14. 11. 14:10:** bootloader **odomknutý**; `gos.sh 11-pixel.sh nahrat-uplne` nahral omylom obrazy starej línie
    (cesta `../pixel-uplne` bola v skripte napevno) → telefón beží 0.5.9-dev v slote _b, stav orange. Opravené
    (`wslpath -w`), nahrať znova.
+   **14. 11. 14:29 – základ GrapheneOS beží v telefóne:** holá zostava 0.6.0-dev (`LECH_BARE=true`), CP3A.261005.005,
+   slot _b, orange (odomknutý), `sys.boot_completed=1`, `app.grapheneos.gmscompat.config` prítomný. Po `nahrat-uplne`
+   ostal telefón najprv vo Fastboot Mode („Enter reason: BL1 requested“; mazanie userdata vo fastbootd zlyhá „DCK
+   wipe failed“, zmaže sa len metadata) – naštartoval až po kroku v recovery. Prečo zlyhávala cesta cez OTA so
+   zamknutým bootloaderom, nie je zistené (kandidáti: prechod medzi základmi cez OTA, overenie pri zamknutom
+   bootloaderi) – overiť neskôr OTA v rámci novej línie a po zamknutí. Záznam na persist nevznikol ani pri úspešnom
+   štarte – služba `lech-bootlog` nefunguje, opraviť alebo odstrániť. V holej zostave chýba ikona Nastavení
+   (Launcher3 0002 ju skrýva, LechNastavenia nie sú). Ďalej: plná zostava LECH OS (bez `LECH_BARE`) cez `nahrat-uplne`.
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
    z 0.5.9-dev (pri zlyhaní štartu sa telefón vráti do starého slotu), inak čistá inštalácia.
