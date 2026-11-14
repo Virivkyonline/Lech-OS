@@ -120,12 +120,14 @@ else
   echo "  (zatiaľ bez nich – aapt2, apksigner a zipalign ešte nie sú zostavené)"
 fi
 
-# LECH OS logo for the setup wizard of the GrapheneOS base (patches-gos/packages/apps/SetupWizard2 0001 refers to
-# @drawable/lech_logo; a binary file cannot be part of the patch).
+# LECH OS logo for the setup wizard of the GrapheneOS base: patches-gos/packages/apps/SetupWizard2 0001 removes the
+# vector icon of the base (welcome and final screen) and this PNG takes its resource name (a binary file cannot be
+# part of the patch).
 if [ "$GOS" -eq 1 ] && [ -d "$AOSP_DIR/packages/apps/SetupWizard2/res" ]; then
   mkdir -p "$AOSP_DIR/packages/apps/SetupWizard2/res/drawable-nodpi"
+  rm -f "$AOSP_DIR/packages/apps/SetupWizard2/res/drawable-nodpi/lech_logo.png"
   cp "$REPO_DIR/vendor/lech/aplikacie/LechUi/res/drawable-nodpi/lech_logo.png" \
-    "$AOSP_DIR/packages/apps/SetupWizard2/res/drawable-nodpi/lech_logo.png" || die "Logo pre sprievodcu sa nepodarilo skopírovať."
+    "$AOSP_DIR/packages/apps/SetupWizard2/res/drawable-nodpi/grapheneos_icon.png" || die "Logo pre sprievodcu sa nepodarilo skopírovať."
 fi
 
 # Slovak dictionary of the Android keyboard (LatinIME has none; owner, 13. 11. 2026: word suggestions without any

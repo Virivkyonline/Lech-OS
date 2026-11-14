@@ -142,7 +142,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    ExactCalculator, Auditor a InfoApp základu; App Store základu skrytý na ploche (ostáva pre zónu Google, rozhodnutie
    vlastníka); recovery a fastbootd premenované (`patches-gos/bootable/recovery` 0001); úvodný sprievodca s názvom,
    logom LECH OS a po slovensky (`patches-gos/packages/apps/SetupWizard2` 0001; odkaz grapheneos.org/UBL pri
-   odomknutom bootloaderi ostal). Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
+   odomknutom bootloaderi ostal). **0.6.2-dev v telefóne (14. 11. večer):** sprievodca po slovensky, ale záverečná
+   obrazovka mala veľké logo GrapheneOS – opravené pre **0.6.3-dev** (záplata odstráni vektorovú ikonu základu, logo
+   LECH OS dostane jej meno, platí pre všetky obrazovky). Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
    zostavou prehliadača), služba `lech-bootlog` (nefunguje).
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA
