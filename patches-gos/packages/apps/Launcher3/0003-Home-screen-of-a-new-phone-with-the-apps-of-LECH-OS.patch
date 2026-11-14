@@ -1,4 +1,4 @@
-From 578888e9accc8798eac4915febb8fd6f6f4edeee Mon Sep 17 00:00:00 2001
+From 0c0f7bef623a2307db6496b9f09386c8cf1a965b Mon Sep 17 00:00:00 2001
 From: LECH OS <dev@lech-os.invalid>
 Date: Sat, 14 Nov 2026 17:10:00 +0000
 Subject: [PATCH] Home screen of a new phone with the apps of LECH OS
@@ -10,33 +10,40 @@ Store of the base, which LECH OS hides, and the dock had a gap (Pixel 9,
 Telefon, Spravy, Prehliadac, Fotoaparat; bottom row Obchod aplikacii
 (F-Droid), Galeria, Mapy (Organic Maps), Nastavenia.
 ---
- res/xml/default_workspace_4x4.xml | 59 +++++++++++++++----------------
- 1 file changed, 28 insertions(+), 31 deletions(-)
+ res/xml/default_workspace_4x4.xml | 70 +++++++++++++++----------------
+ 1 file changed, 33 insertions(+), 37 deletions(-)
 
 diff --git a/res/xml/default_workspace_4x4.xml b/res/xml/default_workspace_4x4.xml
-index bf3c62c..2d5fdc4 100644
+index bf3c62c..34944ce 100644
 --- a/res/xml/default_workspace_4x4.xml
 +++ b/res/xml/default_workspace_4x4.xml
-@@ -16,8 +16,11 @@
+@@ -16,30 +16,26 @@
  
  <favorites xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher3">
  
 -    <!-- Hotseat (We use the screen as the position of the item in the hotseat) -->
 -    <!-- Dialer, Messaging, Browser, Camera -->
+-    <resolve
 +    <!-- LECH OS: the home screen of a new phone. The apps of LECH OS are named directly: the generic entries of
 +         the base ("the app market", "the messaging app") chose the App Store of the base and left gaps
 +         (Pixel 9, 14. 11. 2026). Activities verified on the phone (cmd package resolve-activity). -->
 +
 +    <!-- Hotseat: Telefón, Správy, Prehliadač, Fotoaparát -->
-     <resolve
++    <!-- LECH Telefón (PhoneActivity of LechKontakty), not the Dialer of the base that "the app for DIAL" chooses. -->
++    <favorite
++        launcher:packageName="lech.os.kontakty"
++        launcher:className="lech.os.kontakty.PhoneActivity"
          launcher:container="-101"
          launcher:screen="0"
-@@ -27,19 +30,13 @@
-         <favorite launcher:uri="tel:123" />
-         <favorite launcher:uri="#Intent;action=android.intent.action.CALL_BUTTON;end" />
-     </resolve>
+         launcher:x="0"
+-        launcher:y="0" >
+-        <favorite launcher:uri="#Intent;action=android.intent.action.DIAL;end" />
+-        <favorite launcher:uri="tel:123" />
+-        <favorite launcher:uri="#Intent;action=android.intent.action.CALL_BUTTON;end" />
+-    </resolve>
 -
 -    <resolve
++        launcher:y="0" />
 +    <favorite
 +        launcher:packageName="lech.os.spravy"
 +        launcher:className="lech.os.spravy.MainActivity"
@@ -55,7 +62,7 @@ index bf3c62c..2d5fdc4 100644
      <resolve
          launcher:container="-101"
          launcher:screen="2"
-@@ -49,7 +46,6 @@
+@@ -49,7 +45,6 @@
              launcher:uri="#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_BROWSER;end" />
          <favorite launcher:uri="http://www.example.com/" />
      </resolve>
@@ -63,7 +70,7 @@ index bf3c62c..2d5fdc4 100644
      <resolve
          launcher:container="-101"
          launcher:screen="3"
-@@ -59,29 +55,30 @@
+@@ -59,29 +54,30 @@
          <favorite launcher:uri="#Intent;action=android.intent.action.CAMERA_BUTTON;end" />
      </resolve>
  

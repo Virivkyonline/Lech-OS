@@ -149,7 +149,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    v telefóne); **chýbajú tri navigačné tlačidlá** (v telefóne zapnuté prekrytie `navbar.gestural`,
    `navigation_mode=2`, `ro.boot.vendor.overlay.theme` prázdne – zistiť, kde ho základ zapína, a predvoliť
    `navbar.threebutton`); „Kontakty nesedia“ – neupresnené (APP_CONTACTS → `lech.os.kontakty`); texty „F-Droid“ vnútri
-   Obchodu ostávajú (vlastník súhlasí). Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
+   Obchodu ostávajú (vlastník súhlasí). **Pripravené pre 0.6.3-dev (neskúšané):** tri tlačidlá predvolene
+   (`ro.boot.vendor.overlay.theme=…navbar.threebutton` v `lech_tokay.mk`; v telefóne „Default overlays: …gestural“);
+   „Kontakty nesedia“ = ikona Telefón na ploche otvárala Dialer základu namiesto LECH Telefónu → dock v `Launcher3`
+   0003 má pevne `lech.os.kontakty/.PhoneActivity`. Zostáva: ďalšie výskyty mena GrapheneOS v Nastaveniach, texty „Vanadium“ vnútri prehliadača (len vlastnou
    zostavou prehliadača), služba `lech-bootlog` (nefunguje).
 3. `tools/etapa2/gos.sh 12-priprav-pixel.sh` (adevtool si zostaví nástroje a vytvorí podporu Pixelu), potom
    `tools/etapa2/gos.sh 12-zostav-pixel.sh --ota --verzia 0.6.0-dev --ulohy 4`; prvá skúška aktualizáciou OTA

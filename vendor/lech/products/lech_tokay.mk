@@ -105,6 +105,13 @@ PRODUCT_COPY_FILES += \
 
 endif
 
+# Three navigation buttons by default (owner, 14. 11. 2026). The GrapheneOS base (ADR-0012) starts with gestures:
+# OverlayManagerService enables the overlays named in this property for a new user ("Default overlays:
+# com.android.internal.systemui.navbar.gestural" in dumpsys overlay on the Pixel 9). Set before the products are
+# inherited: the first assignment of a property wins. The user can still choose gestures in Settings.
+PRODUCT_PRODUCT_PROPERTIES += \
+    ro.boot.vendor.overlay.theme=com.android.internal.systemui.navbar.threebutton
+
 $(call inherit-product, vendor/google_devices/tokay/tokay.mk)
 $(call inherit-product, vendor/lech/config/common.mk)
 
