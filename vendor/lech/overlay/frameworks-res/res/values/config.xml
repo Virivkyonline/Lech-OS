@@ -12,4 +12,13 @@
     <string-array name="config_ntpServers" translatable="false">
         <item>ntp://europe.pool.ntp.org</item>
     </string-array>
+
+    <!-- Colours of the system for a new phone (owner, 14. 11. 2026): the neutral black-and-white theme instead of
+         colours taken from the wallpaper, which turned the quick settings olive green under the LECH OS wallpaper.
+         Read by SystemUI ThemeOverlayController.getHardwareColorSetting() at the first start (flag
+         hardware_color_styles): name|style|colour, "*" is the fallback for every device. The user can choose
+         another theme in Wallpaper & style. -->
+    <string-array name="theming_defaults" translatable="false">
+        <item>*|MONOCHROMATIC|#808080</item>
+    </string-array>
 </resources>

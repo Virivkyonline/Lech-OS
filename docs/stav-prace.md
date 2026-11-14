@@ -205,6 +205,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (0.6.6 → 0.6.7). Údaje vymazané: zónu Google, Aurora a Fio nainštalovať znova.
    Nález: rýchle nastavenia sú olivovozelené – systém odvodzuje farby z tapety (SystemUI `ThemeOverlayController`,
    farba z tapety); vlastník: „tak to nemá byť“ → určiť pevnú farebnú tému LECH OS (zistiť, akú chce).
+   Rozhodnutie vlastníka: predvolená **neutrálna čiernobiela** téma, kto chce, zmení si ju. Pripravené pre
+   0.6.7-dev: prekrytie `theming_defaults` = `*|MONOCHROMATIC|#808080` (`vendor/lech/overlay/frameworks-res`); platí
+   len pri prvom štarte (sprievodca), neskúšané. Plocha podľa plánu potvrdená fotkou (22:25).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
