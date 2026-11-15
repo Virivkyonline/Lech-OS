@@ -225,6 +225,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    vypnutý – od 0.6.9-dev ho odstraňuje `overrides` v LechNastavenia; v telefóne overiť
    `pm list packages app.seamlessupdate.client`. Aktualizácia GrapheneOS by sa nenainštalovala (iné podpisové kľúče),
    ale telefón sa na server pýta.
+   (g) v rýchlych nastaveniach je text „17 (CP3A.261005.005…)“ – verzia Androidu a číslo zostavy, SystemUI ho
+   ukazuje pri zapnutých nastaveniach pre vývojárov; nahradiť „LECH OS <verzia>“. Pôvod mena „GrapheneOS“
+   v upozorneniach nie je v `core/res` strings (android_system_label = „Systém Android“) – nájsť grepom v `~/gos`.
+   Settings: 243 textov základu v `res/values/strings_ext.xml` bez slovenčiny (vrátane obb).
    Zostava 0.6.8-dev je hotová (BUILD_DATETIME vlastný), OTA 0.6.6 → 0.6.8 čaká na pripojený odomknutý telefón.
    **OTA SO ZAMKNUTÝM BOOTLOADEROM FUNGUJE (15. 11. 2026 07:45): 0.6.6-dev → 0.6.8-dev cez
    `gos.sh 11-pixel.sh aktualizovat`, telefón naštartoval novú verziu, údaje ostali.** (0.6.7-dev odmietnutá:
