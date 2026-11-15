@@ -133,5 +133,5 @@
     <string name="gplay_auto_app_button">Android Auto settings</string>
     <string name="gplay_auto_missing">Android Auto is not installed. Install it from the Google zone first.</string>
     <string name="all_settings">All system settings</string>
-    <string name="all_settings_sub">The complete list with search</string>
+    <string name="all_settings_sub">For developers: the complete list with search</string>
 </resources>

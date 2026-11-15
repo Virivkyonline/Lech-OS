@@ -75,6 +75,7 @@ public class MainActivity extends Activity {
 
     private final Handler main = new Handler(Looper.getMainLooper());
     private final List<Entry> entries = new ArrayList<>();
+    private Entry allSettings;
     private final List<Entry> systemEntries = new ArrayList<>();
     private boolean inSystem;
     private Ui.Header header;
@@ -156,6 +157,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        syncAllSettings();
         refreshLive();
         render();
     }
@@ -215,9 +217,19 @@ public class MainActivity extends Activity {
         add(R.drawable.ic_set_dostupnost, R.string.accessibility, R.string.accessibility_sub, true,
                 Settings.ACTION_ACCESSIBILITY_SETTINGS);
         // The complete settings of the system with their own search: com.android.settings/.Settings (opened on the
-        // phone with adb 15. 11. 2026). The launcher hides that app, so this row is the only way to it.
-        add(R.drawable.ic_set_system, R.string.all_settings, R.string.all_settings_sub, true,
+        // phone with adb 15. 11. 2026). The launcher hides that app, so this row is the only way to it. It repeats
+        // the list above, so only developers get it (owner, 15. 11. 2026): see syncAllSettings().
+        allSettings = add(R.drawable.ic_set_system, R.string.all_settings, R.string.all_settings_sub, true,
                 "cmp:com.android.settings/com.android.settings.Settings");
+        entries.remove(allSettings);
+    }
+
+    /** The row "All system settings" is listed only while the developer options of the system are turned on. */
+    private void syncAllSettings() {
+        boolean dev = Settings.Global.getInt(getContentResolver(),
+                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0;
+        entries.remove(allSettings);
+        if (dev) entries.add(allSettings);
     }
 
     /** Values that change: storage use, battery level and the LECH OS version. */
