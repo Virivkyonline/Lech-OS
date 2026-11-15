@@ -391,6 +391,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Overené vlastníkom 15. 11. ~20:30 (0.6.16-dev): export kontaktov do .vcf funguje (s prázdnym zoznamom
    hlásil 0, po pridaní kontaktu ide). Import a zvyšné body (náhľad veľkosti zobrazenia, rýchle nastavenia,
    hlavička upozornení) ešte nepotvrdené.
+   Overené vlastníkom 15. 11. ~20:40 (0.6.16-dev): text „LECH OS <verzia>“ v rýchlych nastaveniach je správne;
+   fotoaparát číta QR; dlaždica QR v rýchlych nastaveniach nereaguje (oprava je v 0.6.17-dev). Nepotvrdené:
+   import .vcf, názvy v náhľade veľkosti zobrazenia, hlavička „Zóna Google“ v upozorneniach.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
