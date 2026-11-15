@@ -250,6 +250,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    rovnaký dátum zostavy; vlastný BUILD_DATETIME sa do systému zapíše až so zmenou verzie.)
    **Telefón: LECH OS 0.6.8-dev, zamknutý kľúčom LECH OS; ďalšia zostava 0.6.9-dev** (bez aktualizátora základu,
    čiernobiela téma predvolene; dávka opráv (a)–(d) ešte nepripravená).
+   **Telefón: LECH OS 0.6.9-dev (OTA 15. 11. 2026 09:16, 0.6.8 → 0.6.9, slot _a → _b, yellow – zamknutý, kľúč
+   LECH OS; všetky štyri kontroly skriptu OK). Ďalšia zostava 0.6.10-dev.** V telefóne overiť: štítok „LECH OS“
+   v upozorneniach, ikona Obchodu aplikácií v Nastaveniach, aktualizátor základu preč.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
