@@ -1,0 +1,220 @@
+From e0cc4605d91a71cf052921d5f8c88b9ffe99d3c5 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sun, 15 Nov 2026 14:40:00 +0000
+Subject: [PATCH] Google zone settings of LECH OS: Slovak texts
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The settings of the sandboxed Google Play (Android Auto permissions,
+Play services, notifications of the compatibility layer) were English only
+(Pixel 9, 15. 11. 2026). All texts get a Slovak translation; the screen is
+called "Zóna Google" as in the settings of LECH OS (English: Google zone).
+---
+ res/values-sk/strings.xml | 167 ++++++++++++++++++++++++++++++++++++++
+ res/values/strings.xml    |   6 +-
+ 2 files changed, 170 insertions(+), 3 deletions(-)
+ create mode 100644 res/values-sk/strings.xml
+
+diff --git a/res/values-sk/strings.xml b/res/values-sk/strings.xml
+new file mode 100644
+index 0000000..3114307
+--- /dev/null
++++ b/res/values-sk/strings.xml
+@@ -0,0 +1,167 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- Slovak texts of LECH OS. "Sandboxed Google Play" is called "Zóna Google" in LECH OS. -->
++<resources>
++    <string name="activity_name">Zóna Google</string>
++    <string name="reroute_location_requests_to_os_apis">Žiadosti o polohu vybavuje systém, nie Google</string>
++    <string name="open_app_info">Otvoriť informácie o aplikácii</string>
++    <string name="open_settings">Otvoriť nastavenia</string>
++    <string name="persistent_fg_service_notif">Zóna Google beží</string>
++
++    <string name="usage_guide">Návod na používanie</string>
++    <string name="play_services">Služby Play</string>
++    <string name="play_services_special_permissions">Zvláštne povolenia služieb Play</string>
++    <string name="play_services_special_permissions_summary">Overenie cez SIM, aktivácia RCS</string>
++    <string name="play_store">Obchod Play</string>
++    <string name="android_auto">Android Auto</string>
++    <string name="google_settings">Nastavenia Google</string>
++    <string name="component_system_settings">%s – informácie o aplikácii</string>
++    <string name="gms_network_location_opt_in">Presnosť polohy Google</string>
++    <string name="no_gms_network_location">Služba určovania polohy Googlu je vypnutá. Ťuknutím na „%1$s“ zistíte viac.\nAk ju necháte vypnutú, zvážte zapnutie možnosti „%2$s“ – aplikácie budú fungovať lepšie.</string>
++    <string name="revoke_location_permission">Odobrať službám Play povolenie Poloha.</string>
++
++    <string name="play_services_settings">Služby Play – informácie o aplikácii</string>
++    <string name="play_store_settings">Obchod Play – informácie o aplikácii</string>
++
++    <string name="potential_issues">Možné problémy</string>
++
++    <string name="geolocation">Určovanie polohy</string>
++    <string name="location_access_is_off_for_all_apps">Prístup k polohe je vypnutý pre všetky aplikácie.</string>
++    <string name="location_settings">Nastavenia polohy</string>
++    <string name="location_redirection_extra_permissions">Žiadosti o polohu vybavuje systém, ale služby Play majú stále povolenie Poloha.</string>
++    <string name="play_services_no_location_permission">Služby Play potrebujú povolenie Poloha nastavené na „%s“ a zapnutú možnosť „Používať presnú polohu“.</string>
++    <string name="play_services_no_wifi_control_appop">Služby Play potrebujú povolenie „Ovládanie Wi-Fi“ na vyhľadávanie sietí Wi-Fi, podľa ktorých sa odhaduje poloha.\nPovolenie sa zapína v Nastavenia ⮕ Aplikácie ⮕ Špeciálny prístup aplikácií ⮕ Ovládanie Wi-Fi.</string>
++    <string name="play_services_no_ble_location">Určovanie polohy pomocou vyhľadávania Bluetooth vyžaduje povolenie „Zariadenia v okolí“.</string>
++    <string name="always_on_scanning_settings">Nastavenia nepretržitého vyhľadávania</string>
++    <string name="always_on_wifi_scanning_disabled">Nepretržité vyhľadávanie Wi-Fi je vypnuté.</string>
++    <string name="always_on_bluetooth_scanning_disabled">Nepretržité vyhľadávanie Bluetooth je vypnuté.</string>
++
++    <string name="push_notifications">Upozornenia aplikácií (push)</string>
++    <string name="play_services_no_battery_exemption">Keď sa telefón nepoužíva, upozornenia sa kvôli výdrži batérie oneskoria.\nAk ich chcete dostávať rýchlejšie, nastavte v informáciách o aplikácii Služby Play „Spotreba batérie“ na „Bez obmedzení“.</string>
++
++    <string name="pending_play_store_update_notif_title">Obchod Play potrebuje aktualizovať %1$s</string>
++    <string name="pending_play_store_update_notif_text">Odporúčame to povoliť. Pokračujte ťuknutím.</string>
++    <string name="play_store_pending_user_action_notif">V Obchode Play treba niečo potvrdiť</string>
++    <string name="missing_permission">Chýba povolenie</string>
++    <string name="missing_optional_permission">Chýba nepovinné povolenie</string>
++    <string name="missing_app">Chýba aplikácia</string>
++    <string name="play_store_missing_obb_permission_notif">Na inštaláciu tejto aplikácie potrebuje Obchod Play prístup k priečinku Android/obb</string>
++
++    <string name="missing_permission_nearby_exposurenotifications">Služby Play potrebujú povolenie „Zariadenia v okolí“ na zapnutie upozornení na možnú nákazu</string>
++    <string name="missing_permission_nearby_NearbyShare">Služby Play potrebujú povolenie „Zariadenia v okolí“ na zdieľanie nablízku</string>
++
++    <string name="notif_ch_missing_play_games_app">Chýba aplikácia Hry Play</string>
++    <string name="missing_play_games_app">%1$s potrebuje aplikáciu Hry Play</string>
++    <string name="install">Inštalovať</string>
++
++    <string name="notif_channel_bg_activity_start">Žiadosť o zobrazenie obrazovky</string>
++    <string name="notif_bg_activity_start">%s potrebuje zobraziť obrazovku. Ťuknutím to povolíte</string>
++
++    <string name="notif_gmscore_missing_nearby_devices_perm_generic">Služby Play potrebujú povolenie „Zariadenia v okolí“</string>
++
++    <string name="notif_missing_nofications_perm">%1$s chcela zobraziť upozornenie</string>
++
++    <string name="notif_ch_app_crash">Zlyhanie aplikácie</string>
++    <string name="notif_gms_crash_title">%1$s zlyhala</string>
++    <string name="notif_gms_crash_text">Ťuknutím zobrazíte podrobnosti</string>
++    <string name="notif_gms_crash_report">Nahlásiť vývojárom</string>
++
++    <string name="notif_gmscore_power_exemption">Upozornenia sa oneskoria, lebo služby Play nesmú stále bežať na pozadí. Ťuknutím to vyriešite.</string>
++    <string name="notif_gmscore_background_data_exemption">Upozornenia sa oneskoria, lebo služby Play nesmú na pozadí používať mobilné dáta. Ťuknutím otvoríte nastavenia služieb Play, kde je aj spotreba mobilných dát.</string>
++    <string name="dont_show_again">Viac nezobrazovať</string>
++
++    <string name="missing_speech_services">Táto aplikácia potrebuje súčasť Hlasové služby</string>
++
++    <string name="notif_contacts_sync_prompt">Na synchronizáciu kontaktov z účtu Google potrebujú služby Play povolenie Kontakty. Ťuknutím otvoríte nastavenia.</string>
++
++    <string name="notif_screen_capture_is_running">Prebieha snímanie obrazovky</string>
++
++    <string name="notif_GmsCore_missing_nearby_devices_perm_generic">%1$s vyžaduje, aby služby Play mali povolenie „Zariadenia v okolí“</string>
++
++    <string name="notif_android_auto_needs_baseline_perms_title">Android Auto treba nastaviť</string>
++    <string name="notif_android_auto_needs_baseline_perms_text">Otvorte Nastavenia ➔ Aplikácie ➔ Zóna Google ➔ Android Auto</string>
++    <string name="notif_android_auto_car_connection_lost">Spojenie Android Auto s autom sa nečakane prerušilo</string>
++
++    <string name="notif_ch_manage_play_integrity_api">Používanie kontroly pravosti Play (Play Integrity)</string>
++    <string name="notif_app_used_play_integrity_api_title">Používanie kontroly pravosti Play</string>
++    <string name="notif_app_used_play_integrity_api">%1$s použila kontrolu pravosti Play (Play Integrity)</string>
++    <string name="notif_app_play_integrity_api_blocked">Aplikácii %1$s bolo zablokované použitie kontroly pravosti Play</string>
++    <string name="notif_app_used_play_integrity_api_action_more_info">Viac informácií</string>
++
++    <string name="sign_in_with_google_notif_ch">Prihlásenie cez Google</string>
++    <string name="sign_in_with_google_notif_title">Zapnite službu prihlasovacích údajov Googlu</string>
++    <string name="sign_in_with_google_notif_text">„Prihlásenie cez Google“ vyžaduje zapnutú službu prihlasovacích údajov Googlu. Ťuknutím otvoríte nastavenia.</string>
++
++    <string name="toast_app_location_access_is_globally_off">Prístup k polohe je vypnutý pre všetky aplikácie</string>
++
++    <string name="grant_dialog_button_allow">Povoliť</string>
++    <string name="aauto_settings">Nastavenia Android Auto</string>
++    <string name="aauto_settings_summary_disabled">Android Auto je vypnuté</string>
++
++    <string name="permissions_category">Povolenia</string>
++
++    <string name="aauto_wired_perms_title">Povoliť Android Auto cez kábel</string>
++    <string name="aauto_wired_perms_confirm">Tieto povolenia dovolia Android Auto:\n\n• pripojiť sa k autu cez USB\n• posielať a prijímať obraz displeja auta\n• spúšťať na displeji auta aplikácie, ktoré Android Auto podporujú\n• resetovať port USB a znova pripojiť zariadenia USB\n</string>
++
++    <string name="audio_routing_perm_title">Povoliť presmerovanie zvuku z telefónu do auta</string>
++    <string name="audio_routing_perm_confirm">Toto povolenie dovolí Android Auto presmerovať prehrávanie a snímanie zvuku z telefónu do auta. Snímanie zvuku bude možné, len ak je povolený Mikrofón.</string>
++
++    <string name="aauto_wireless_perms_title">Povoliť bezdrôtové Android Auto</string>
++    <string name="aauto_wireless_perms_confirm">Tieto povolenia dovolia Android Auto:\n\n• pripájať sa k zariadeniam Bluetooth, Wi-Fi a USB a pracovať s nimi\n• resetovať port USB a znova pripojiť zariadenia USB\n• zapínať a vypínať Wi-Fi a Bluetooth\n• čítať zoznam sietí Wi-Fi\n• pripájať sa k sieťam Wi-Fi bez potvrdenia\n• čítať sériové číslo telefónu a adresy MAC rozhraní Bluetooth a Wi-Fi\n• posielať a prijímať obraz displeja auta\n• spúšťať na displeji auta aplikácie, ktoré Android Auto podporujú\n\nPovolí sa aj prístup k sieti – je potrebný na komunikáciu s autom cez Wi-Fi.\n</string>
++
++    <string name="aauto_phone_perm_title">Povoliť telefonovanie cez Android Auto</string>
++    <string name="aauto_phone_perm_confirm">Tieto povolenia dovolia Android Auto:\n\n• volať a prijímať hovory\n• spravovať prebiehajúce hovory\n• zapínať a vypínať Bluetooth\n• spárovať a pripojiť telefón k hands-free auta cez Bluetooth\n</string>
++
++    <string name="aauto_app_info_title">Android Auto – informácie o aplikácii</string>
++    <string name="aauto_app_info_summary">Obsahuje bežné nastavenia povolení</string>
++
++    <string name="notif_listener_settings_title">Prístup k upozorneniam</string>
++    <string name="notif_listener_settings_summary">Vyberte, ku ktorým upozorneniam má Android Auto prístup</string>
++
++    <string name="potential_issues_category">Možné problémy</string>
++
++    <string name="aauto_issue_voice_commands">Hlasové príkazy</string>
++    <string name="aauto_issue_voice_commands_header">Aby fungovali hlasové príkazy:</string>
++    <string name="aauto_issue_aauto_no_microphone_perm">Android Auto potrebuje povolenie Mikrofón</string>
++    <string name="aauto_issue_gsa_not_installed">Aplikáciu Google treba nainštalovať z Obchodu Play</string>
++    <string name="aauto_issue_gsa_disabled">Aplikácia Google musí byť zapnutá</string>
++    <string name="aauto_issue_gsa_no_network_perm">Aplikácia Google potrebuje povolenie Sieť</string>
++    <string name="aauto_issue_gsa_no_microphone_perm">Aplikácia Google potrebuje povolenie Mikrofón</string>
++
++    <string name="optional_deps_category">Nepovinné doplnky</string>
++
++    <string name="app_dep_missing_summary">Nie je nainštalovaná, ťuknutím otvoríte Obchod Play</string>
++    <string name="app_dep_missing_summary_no_play_store">Nie je nainštalovaná</string>
++    <string name="app_dep_installed">Nainštalovaná, ťuknutím otvoríte informácie o aplikácii</string>
++    <string name="app_dep_disabled">Vypnutá, ťuknutím otvoríte informácie o aplikácii</string>
++
++    <string name="google_maps_app">Mapy Google</string>
++    <string name="speech_services_app">Rozpoznávanie a syntéza reči</string>
++    <string name="google_search_app">Aplikácia Google</string>
++    <string name="google_messages_app">Správy Google</string>
++
++    <string name="gmscore_settings">Povolenia služieb Play</string>
++    <string name="gmscore_app_info_title">Služby Play – informácie o aplikácii</string>
++    <string name="gmscore_app_info_summary">Obsahuje bežné nastavenia povolení</string>
++    <string name="rcs_activation_category">Aktivácia RCS</string>
++    <string name="gmscore_icc_auth_perms_title">Povoliť overenie cez SIM s identifikátormi zariadenia</string>
++    <string name="gmscore_icc_auth_perms_confirm">Toto povolenie dovolí službám Google Play:\n\n• použiť vašu SIM kartu a identifikátory zariadenia na overenie u vášho operátora\n\nNiektorí operátori vyžadujú toto overenie na potvrdenie telefónneho čísla a aktiváciu RCS v Správach Google.\n</string>
++
++    <string name="rcs_potential_issues">Možné problémy s aktiváciou RCS</string>
++    <string name="rcs_issue_header">Minimálne požiadavky na aktiváciu RCS:</string>
++    <string name="rcs_issue_gmscore_no_phone_perm">Služby Google Play potrebujú povolenie Telefón</string>
++    <string name="rcs_issue_gmscore_no_internet_perm">Služby Google Play potrebujú povolenie Sieť</string>
++    <string name="rcs_issue_bugle_not_installed">Správy Google treba nainštalovať z Obchodu Play</string>
++    <string name="rcs_issue_bugle_disabled">Správy Google musia byť zapnuté</string>
++    <string name="rcs_issue_bugle_not_from_play_store">Správy Google nie sú nainštalované z Obchodu Play. RCS môže fungovať, ale nemusí byť stabilné.</string>
++    <string name="rcs_issue_bugle_not_sms_app">Správy Google musia byť predvolenou aplikáciou na SMS</string>
++    <string name="rcs_issue_bugle_no_internet_perm">Správy Google potrebujú povolenie Sieť</string>
++    <string name="rcs_issue_not_owner_user">RCS v Správach Google zatiaľ funguje len u hlavného používateľa</string>
++    <string name="rcs_issue_gmscore_no_icc_auth_perm">Služby Google Play môžu potrebovať povolenie na overenie cez SIM s identifikátormi zariadenia</string>
++
++    <string name="notif_rcs_needs_baseline_perms_title">RCS môže vyžadovať povolenia</string>
++    <string name="notif_rcs_not_owner_user_title">RCS nemusí fungovať</string>
++    <string name="notif_rcs_not_owner_user_text">RCS zatiaľ funguje len u hlavného používateľa.</string>
++    <string name="notif_rcs_needs_baseline_perms_text">Niektorým aplikáciám chýbajú povolenia pre RCS a aktivácia sa nemusí dokončiť. Ťuknutím otvoríte zvláštne povolenia služieb Play.</string>
++    <string name="notif_rcs_needs_baseline_perms_text_icc">Váš operátor môže na nastavenie RCS vyžadovať overenie cez SIM. Ťuknutím otvoríte zvláštne povolenia služieb Play.</string>
++    <string name="notif_rcs_needs_baseline_perms_text_icc_and_other_perms">Váš operátor môže na nastavenie RCS vyžadovať overenie cez SIM a treba aj ďalšie povolenia. Ťuknutím otvoríte zvláštne povolenia služieb Play.</string>
++</resources>
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index 29adbe3..83e9906 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -1,10 +1,10 @@
+ <resources>
+     <string name="app_name">GmsCompat</string>
+-    <string name="activity_name">Sandboxed Google Play</string>
++    <string name="activity_name">Google zone</string>
+     <string name="reroute_location_requests_to_os_apis">Reroute location requests to the OS</string>
+     <string name="open_app_info">Open app info</string>
+     <string name="open_settings">Open settings</string>
+-    <string name="persistent_fg_service_notif">Sandboxed Google Play is running</string>
++    <string name="persistent_fg_service_notif">Google zone is running</string>
+ 
+     <string name="usage_guide">Usage guide</string>
+     <string name="play_services">Play services</string>
+@@ -104,7 +104,7 @@ To receive them quicker, set “Battery usage” to “Unrestricted” in Play s
+     <string name="notif_GmsCore_missing_nearby_devices_perm_generic">%1$s requires Play services to have the “Nearby devices” permission</string>
+ 
+     <string name="notif_android_auto_needs_baseline_perms_title">Android Auto needs setup</string>
+-    <string name="notif_android_auto_needs_baseline_perms_text">Go to Settings ➔ Apps ➔ Sandboxed Google Play ➔ Android Auto</string>
++    <string name="notif_android_auto_needs_baseline_perms_text">Go to Settings ➔ Apps ➔ Google zone ➔ Android Auto</string>
+     <string name="notif_android_auto_car_connection_lost">Android Auto car connection was unexpectedly lost</string>
+ 
+     <string name="notif_ch_manage_play_integrity_api">Play Integrity API usage</string>
+-- 
+2.43.0
+

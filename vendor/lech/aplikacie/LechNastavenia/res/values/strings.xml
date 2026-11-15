@@ -130,6 +130,6 @@
     <string name="gplay_other_title">Other sources</string>
     <string name="gplay_other_text">There are also third-party apps that download from Google Play without a Google account, for example Aurora Store. LECH OS does not provide, recommend or support them. Using them is the decision and responsibility of the user and may be against the terms of Google.</string>
     <string name="gplay_auto_title">Android Auto and zone settings</string>
-    <string name="gplay_auto_text">Android Auto is installed from the same list as Google Play. It has no special rights until you allow them: open the Apps screen, choose “Google zone (sandboxed Google Play)”, then Android Auto, and turn on the permissions for wired or wireless Android Auto.</string>
+    <string name="gplay_auto_text">Android Auto is installed from the same list as Google Play. It has no special rights until you allow them:\n1. Open the Apps screen and choose “Google zone (sandboxed Google Play)”, then Android Auto.\n2. Turn on “Allow permissions for wireless Android Auto” (or wired).\n3. Start the first connection from the phone: tap “Connect a car” in the settings of the Android Auto app.</string>
     <string name="gplay_auto_button">Open Apps</string>
 </resources>
