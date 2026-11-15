@@ -242,6 +242,8 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    nastaveniach (grep nič nenašiel). Server aktualizácií: OneDrive nevhodný; balík ~1,65 GB na vydanie a model. Vlastník má
    vlastný server so SSH (~40 GB, neskôr rozšíri) – použiť ho na prvý server aktualizácií (HTTPS, statické súbory
    + `aktualizacie.json`); prístupové údaje nikdy do repozitára ani do správ.
+   Server: IONOS, Ubuntu, prihlásenie kľúčom SSH; vlastník má účet Cloudflare a wrangler na druhom PC (možnosť:
+   doména a HTTPS cez Cloudflare pred serverom, alebo úložisko R2 pre balíky) – rozhodnúť pri stavbe servera.
    Zostava 0.6.8-dev je hotová (BUILD_DATETIME vlastný), OTA 0.6.6 → 0.6.8 čaká na pripojený odomknutý telefón.
    **OTA SO ZAMKNUTÝM BOOTLOADEROM FUNGUJE (15. 11. 2026 07:45): 0.6.6-dev → 0.6.8-dev cez
    `gos.sh 11-pixel.sh aktualizovat`, telefón naštartoval novú verziu, údaje ostali.** (0.6.7-dev odmietnutá:
