@@ -39,6 +39,8 @@ APPS = [
 ICON_PACKAGE_APPS = [
     ("org.fdroid.fdroid", "ic_obchod", "Obchod aplikácií"),
     ("app.organicmaps", "ic_mapy", "Mapy"),
+    # App Store of the GrapheneOS base, shown as "Zóna Google" in the app lists (hidden on the home screen).
+    ("app.grapheneos.apps", "ic_zona", "Zóna Google"),
 ]
 PARTITIONS = ("system", "system_ext", "product")
 DENSITIES = ("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")

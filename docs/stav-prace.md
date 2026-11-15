@@ -260,6 +260,8 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    `frameworks/base` 0013 (21 hlásení). Overené 15. 11.: ikona Obchodu v Nastaveniach je naša, aktualizátor základu
    v zozname nie je. Nález: „Zóna Google“ (App Store základu) má v zozname aplikácií ikonu GrapheneOS – treba
    ikonu LECH (vrstvy v `branding/ikony`, potom `ICON_PACKAGE_APPS` a `hasLechIcon` vo `frameworks/base` 0012).
+   Hotové pre 0.6.10-dev: ikona `ic_zona` (štít so zámkom, nakreslená skriptom – `branding/ikony/zona`), v balíku
+   ikon aj vo `frameworks/base` 0012.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

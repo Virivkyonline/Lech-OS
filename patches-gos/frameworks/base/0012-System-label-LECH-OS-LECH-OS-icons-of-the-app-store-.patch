@@ -1,4 +1,4 @@
-From 40f38dca23320d42d7d62f12cb8c8ec7ca474d4e Mon Sep 17 00:00:00 2001
+From d6a0bfeb3ff5d0dcdf2ebbc541ba6e9fac3244e5 Mon Sep 17 00:00:00 2001
 From: LECH OS <dev@lech-os.invalid>
 Date: Sun, 15 Nov 2026 07:30:00 +0000
 Subject: [PATCH] System label "LECH OS", LECH OS icons of the app store and
@@ -13,32 +13,33 @@ store (F-Droid) and Organic Maps had the LECH OS icon on the home screen
 but their own icon in Settings (owner, Pixel 9, 15. 11. 2026). Both get
 their LECH OS icon everywhere.
 ---
- core/java/android/content/pm/LechAppNames.java | 15 +++++++++++++--
+ core/java/android/content/pm/LechAppNames.java | 16 ++++++++++++++--
  core/res/AndroidManifest.xml                   |  2 +-
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
 diff --git a/core/java/android/content/pm/LechAppNames.java b/core/java/android/content/pm/LechAppNames.java
-index 38946e1..a980d49 100644
+index 38946e1..daf1cb9 100644
 --- a/core/java/android/content/pm/LechAppNames.java
 +++ b/core/java/android/content/pm/LechAppNames.java
-@@ -77,6 +77,16 @@ public final class LechAppNames {
+@@ -77,6 +77,17 @@ public final class LechAppNames {
          return locale != null && "sk".equals(locale.getLanguage());
      }
  
 +    /**
 +     * Prebuilt apps with a LECH OS icon in the icon package (tools/etapa2/ikony_prekrytia.py): the browser and the
-+     * apps taken from their publisher - the app store F-Droid and Organic Maps. Their own icon showed in Settings
++     * apps taken from their publisher - the app store F-Droid, Organic Maps and the App Store of the base
++     * ("Zóna Google"). Their own icon showed in Settings
 +     * (app list, "Install unknown apps") while the home screen had the LECH OS one (owner, 15. 11. 2026).
 +     */
 +    private static boolean hasLechIcon(@Nullable String packageName) {
 +        return BROWSER.equals(packageName) || "org.fdroid.fdroid".equals(packageName)
-+                || "app.organicmaps".equals(packageName);
++                || "app.organicmaps".equals(packageName) || "app.grapheneos.apps".equals(packageName);
 +    }
 +
      /**
       * The LECH OS icon for the app icon of a package item, or null (then the app's own icon is used). Only a
       * preinstalled icon package is used, and only for the icon of the application itself.
-@@ -84,7 +94,7 @@ public final class LechAppNames {
+@@ -84,7 +95,7 @@ public final class LechAppNames {
      @Nullable
      public static Drawable icon(@NonNull PackageManager pm, @NonNull PackageItemInfo item,
              @Nullable ApplicationInfo app) {
@@ -47,7 +48,7 @@ index 38946e1..a980d49 100644
              return null;
          }
          try {
-@@ -93,7 +103,8 @@ public final class LechAppNames {
+@@ -93,7 +104,8 @@ public final class LechAppNames {
                  return null;
              }
              Resources res = pm.getResourcesForApplication(icons);
