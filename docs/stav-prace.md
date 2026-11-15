@@ -380,6 +380,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    kontroly OK; druhý pokus, pri prvom bol zapnutý iný prenos cez USB). Ďalšia zostava 0.6.16-dev** (kontakty
    .vcf, text zostavy v rýchlych nastaveniach, „Zóna Google“ v upozorneniach, frameworks/base 0016, hlásenie
    zámku). Fotka náhľadu z 19:03 bola ešte z 0.6.14.
+   **Telefón: LECH OS 0.6.16-dev (OTA 15. 11. 2026 20:13, 0.6.15 → 0.6.16, slot _b → _a, yellow, všetky
+   kontroly OK). Ďalšia zostava 0.6.17-dev.** Čaká na overenie vlastníkom: import/export kontaktov .vcf, názvy
+   v náhľade veľkosti zobrazenia, ochrana aplikácie po slovensky, „LECH OS <verzia>“ v rýchlych nastaveniach,
+   „Zóna Google“ v hlavičke upozornení, QR vo fotoaparáte.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
