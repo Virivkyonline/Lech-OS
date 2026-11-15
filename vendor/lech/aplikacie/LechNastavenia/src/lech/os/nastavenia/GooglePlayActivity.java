@@ -70,6 +70,13 @@ public class GooglePlayActivity extends Activity {
         zlp.gravity = Gravity.CENTER_HORIZONTAL;
         zlp.topMargin = Ui.dp(this, 10);
         page.addView(zone, zlp);
+        // The settings of the Android Auto app itself ("Connect a car"): the app has no launcher icon.
+        LinearLayout auto = Ui.pillButton(this, R.drawable.ic_settings, getString(R.string.gplay_auto_app_button),
+                v -> openAndroidAutoSettings());
+        LinearLayout.LayoutParams alp = Ui.lp(-2, -2);
+        alp.gravity = Gravity.CENTER_HORIZONTAL;
+        alp.topMargin = Ui.dp(this, 10);
+        page.addView(auto, alp);
         page.addView(heading(R.string.gplay_other_title));
         page.addView(paragraph(R.string.gplay_other_text, Ui.TEXT_2));
 
@@ -121,6 +128,21 @@ public class GooglePlayActivity extends Activity {
             startActivity(i);
         } catch (ActivityNotFoundException | SecurityException e) {
             Toast.makeText(this, R.string.no_screen, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * The in-app settings of Android Auto (package com.google.android.projection.gearhead, seen on the phone
+     * 15. 11. 2026) through the standard action APPLICATION_PREFERENCES, the same one the "Additional settings in
+     * the app" row of the app info screen uses.
+     */
+    private void openAndroidAutoSettings() {
+        Intent i = new Intent(Intent.ACTION_APPLICATION_PREFERENCES)
+                .setPackage("com.google.android.projection.gearhead");
+        try {
+            startActivity(i);
+        } catch (ActivityNotFoundException | SecurityException e) {
+            Toast.makeText(this, R.string.gplay_auto_missing, Toast.LENGTH_LONG).show();
         }
     }
 

@@ -11,6 +11,7 @@
         <!-- GooglePlayActivity: the App Store of the GrapheneOS base and whether Google Play services are installed. -->
         <package android:name="app.grapheneos.apps" />
         <package android:name="com.google.android.gms" />
+        <package android:name="com.google.android.projection.gearhead" />
     </queries>
 
     <application

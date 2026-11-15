@@ -132,4 +132,6 @@
     <string name="gplay_auto_title">Android Auto and zone settings</string>
     <string name="gplay_auto_text">Android Auto is installed from the same list as Google Play. It has no special rights until you allow them:\n1. Open the Apps screen and choose “Google zone (sandboxed Google Play)”, then Android Auto.\n2. Turn on “Allow permissions for wireless Android Auto” (or wired).\n3. Start the first connection from the phone: tap “Connect a car” in the settings of the Android Auto app.</string>
     <string name="gplay_auto_button">Open Apps</string>
+    <string name="gplay_auto_app_button">Android Auto settings</string>
+    <string name="gplay_auto_missing">Android Auto is not installed. Install it from the Google zone first.</string>
 </resources>

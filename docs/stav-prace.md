@@ -316,6 +316,8 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    stránke „Aplikácie z Google Play“; inštalácia APK ťuknutím v LECH Súboroch; slovenské texty nastavení zóny
    Google (`patches-gos/packages/apps/GmsCompat` 0001). Lech-Music sa v aute neukázala/nefungovala (15. 11.,
    príčina nezistená – vlastník skúsi inú aplikáciu).
+   Po spustení zostavy 0.6.12-dev pridané (pôjde až do 0.6.13-dev): tlačidlo „Nastavenia Android Auto“ na
+   stránke „Aplikácie z Google Play“ (akcia APPLICATION_PREFERENCES pre balík Android Auto; aplikácia nemá ikonu).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

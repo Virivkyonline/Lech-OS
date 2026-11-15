@@ -132,4 +132,6 @@
     <string name="gplay_auto_title">Android Auto a nastavenia zóny</string>
     <string name="gplay_auto_text">Android Auto sa inštaluje z toho istého zoznamu ako Google Play. Nemá žiadne zvláštne práva, kým mu ich nepovolíte:\n1. Otvorte obrazovku Aplikácie a zvoľte „Zóna Google (Google Play v izolácii)“, potom Android Auto.\n2. Zapnite „Povoliť bezdrôtové Android Auto“ (alebo cez kábel).\n3. Prvé pripojenie spustite z telefónu: v nastaveniach aplikácie Android Auto ťuknite na „Pripojiť vozidlo“.</string>
     <string name="gplay_auto_button">Otvoriť Aplikácie</string>
+    <string name="gplay_auto_app_button">Nastavenia Android Auto</string>
+    <string name="gplay_auto_missing">Android Auto nie je nainštalované. Najprv ho nainštalujte zo Zóny Google.</string>
 </resources>
