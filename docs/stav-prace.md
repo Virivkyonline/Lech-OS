@@ -409,6 +409,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Pre 0.6.18-dev pripravené (neskúšané): SetupWizard2 0002 – zmienka o zóne Google na záverečnej obrazovke
    sprievodcu (bez novej obrazovky). Návrh ďalšieho kroku: zostava 0.6.18 a potom **skúška „nový zákazník“**
    (výrobné nastavenia): sprievodca, čiernobiely motív, plocha, zóna Google od nuly.
+   **Telefón: LECH OS 0.6.18-dev (OTA 15. 11. 2026 21:56, 0.6.17 → 0.6.18, slot _b → _a, yellow, všetky
+   kontroly OK; zostava začala 21:15). Ďalšia zostava 0.6.19-dev.** Obsahuje SetupWizard2 0002 (pushnuté
+   pred začiatkom zostavy – čas pozri git log). Ďalší krok: skúška „nový zákazník“ (výrobné nastavenia), keď
+   vlastník povie.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
