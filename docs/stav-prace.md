@@ -357,6 +357,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    vývojárov; Settings 0003 (ochrana aplikácie po slovensky, bez mena GrapheneOS); frameworks/base 0014 (názvy
    LECH OS v náhľade veľkosti zobrazenia). Vynechané: text „17 (CP3A…)“ v rýchlych nastaveniach – miesto
    v SystemUI nenájdené (hľadať `bugreport_status` v `~/gos/frameworks/base/packages/SystemUI`).
+   Vlastník 15. 11. ~18:40: Lech-Music v3.9 nešla ani mimo Android Auto (chyba aplikácie, nie systému); iná
+   aplikácia mimo Play nainštalovaná a ide, skúška v aute neskôr. **Poradie určené vlastníkom:** server
+   aktualizácií až nakoniec; meranie súkromia neskôr, deň oznámi vlastník (nepripomínať). Teraz drobnosti
+   viditeľné zákazníkom (text zostavy v rýchlych nastaveniach, úvodný sprievodca, hlásenie pri zamknutej
+   zostave), potom kontakty .vcf, QR vo fotoaparáte, ďalšie jazyky.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
