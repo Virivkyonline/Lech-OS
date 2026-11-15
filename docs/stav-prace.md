@@ -309,6 +309,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    pripojenie káblom; Bluetooth druhého telefónu vypnúť). Stačia bezdrôtové povolenia v zóne Google. Zostáva
    overiť: aplikácie mimo Play (lech-music) v rozhraní auta. Do stránky „Aplikácie z Google Play“ doplniť tento
    postup.
+   Nález 15. 11.: ťuknutie na APK v LECH Súboroch nič neurobilo – aplikácii chýbalo oprávnenie
+   `REQUEST_INSTALL_PACKAGES` (inštalátor systému vtedy žiadosť potichu zahodí). Doplnené do manifestu
+   (0.6.12-dev, neskúšané). Lech-Music (vlastná aplikácia vlastníka) nainštalovaná cez adb (`pm install`).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
