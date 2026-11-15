@@ -388,6 +388,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    QR kódov“ v rýchlych nastaveniach je sivá – `config_defaultQrCodeComponent` základu ukazuje na jeho
    fotoaparát (`app.grapheneos.camera/…QrTile`), ktorý nahrádzame. Prekrytie nastavené na
    `lech.os.fotoaparat/.CameraActivity` (pre 0.6.17-dev, neskúšané).
+   Overené vlastníkom 15. 11. ~20:30 (0.6.16-dev): export kontaktov do .vcf funguje (s prázdnym zoznamom
+   hlásil 0, po pridaní kontaktu ide). Import a zvyšné body (náhľad veľkosti zobrazenia, rýchle nastavenia,
+   hlavička upozornení) ešte nepotvrdené.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
