@@ -1,0 +1,34 @@
+From 46559548d9686917bf88f1eb124a533a3ecc35ab Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sun, 15 Nov 2026 19:10:00 +0000
+Subject: [PATCH] ResolveInfo: LECH OS app names also for labels of an intent
+ query
+
+The display size preview still listed "App Store" and "Vanadium" (Pixel 9,
+15. 11. 2026): results of an intent query carry resolvePackageName and
+their label is read in the first branch of ResolveInfo.loadLabel, which
+the previous change did not cover.
+---
+ core/java/android/content/pm/ResolveInfo.java | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/android/content/pm/ResolveInfo.java b/core/java/android/content/pm/ResolveInfo.java
+index 6ac2d4a..08c2062 100644
+--- a/core/java/android/content/pm/ResolveInfo.java
++++ b/core/java/android/content/pm/ResolveInfo.java
+@@ -243,7 +243,11 @@ public class ResolveInfo implements Parcelable {
+         if (resolvePackageName != null && labelRes != 0) {
+             label = pm.getText(resolvePackageName, labelRes, null);
+             if (label != null) {
+-                return label.toString().trim();
++                // LECH OS: this branch serves the results of an intent query (launcher lists, the display size
++                // preview of the settings); the LECH OS name as below.
++                ApplicationInfo app = getComponentInfo().applicationInfo;
++                return LechAppNames.label(resolvePackageName, label.toString().trim(),
++                        app != null && labelRes == app.labelRes);
+             }
+         }
+         ComponentInfo ci = getComponentInfo();
+-- 
+2.43.0
+

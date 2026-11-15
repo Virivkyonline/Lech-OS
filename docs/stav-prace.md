@@ -372,6 +372,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    15. 11. 18:54: aktualizácia na 0.6.15-dev zlyhala pri 10 % (vlastník popri nej prenášal cez USB iné údaje);
    telefón ostal na 0.6.14-dev, balík 0.6.15 je hotový. Nález z fotky upozornení: hlavička „GmsCompat“ –
    názov aplikácie zmenený na „Zóna Google“ (záplata GmsCompat 0001 doplnená, pre 0.6.16-dev).
+   Fotka 15. 11. 19:03: náhľad veľkosti zobrazenia stále „App Store“, „Vanadium“ (nejasné, či už na 0.6.15).
+   Záplata 0014 nepokrývala prvú vetvu `ResolveInfo.loadLabel` (resolvePackageName) → doplnené záplatou 0016
+   (pre 0.6.16-dev, neskúšané). V náhľade je aj Aurora Store a Obchod Play – to sú aplikácie nainštalované
+   vlastníkom, nie súčasť systému.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
