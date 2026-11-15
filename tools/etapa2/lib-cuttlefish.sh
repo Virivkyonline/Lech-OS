@@ -50,7 +50,11 @@ lech_build_lock_report() {
   users=$(lech_file_users "$LECH_BUILD_LOCK")
   echo "Zámok zostavenia ($LECH_BUILD_LOCK) drží:"
   if [ -n "$users" ]; then printf '%s\n' "$users" | sed 's/^/  /'; else echo "  (proces sa nedá zistiť)"; fi
-  if printf '%s' "$users" | grep -qE '09-nocna-kontrola|11-zostav-gsi'; then
+  if printf '%s' "$users" | grep -qE '12-zostav-pixel|05-zostav-aosp|06-zostav-lech'; then
+    # The build of the phone system in another window holds the lock (it said "no build is running… kill PID"
+    # before, 14. 11. 2026).
+    echo "V inom okne beží zostavenie systému – počkajte, kým skončí. Nič neukončujte."
+  elif printf '%s' "$users" | grep -qE '09-nocna-kontrola|11-zostav-gsi'; then
     echo "Beží nočná kontrola alebo zostavenie – počkajte, kým skončí (priebeh: tail -f ${LECH_WORK:-$HOME/lech-work}/ci/beh.log)."
   elif printf '%s' "$users" | grep -qE 'run_cvd|crosvm|cvd_internal|/cvd/'; then
     echo "Zámok drží bežiaci virtuálny telefón Cuttlefish (zostal po nočnej kontrole). Vypnite ho: cvd reset --yes"
