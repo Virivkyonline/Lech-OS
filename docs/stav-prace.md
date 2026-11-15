@@ -324,6 +324,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Čaká (vlastník 15. 11.): hlavná obrazovka systémových nastavení má ikony základu (farebné dlaždice
    `ic_*_filled` v `res/xml/top_level_settings.xml`), nie ikony LECH OS (`branding/ikony/nastavenia/ic_set_*.png`).
    Výmena = záplata `packages/apps/Settings` (ikony + spôsob kreslenia dlaždice); najprv overiť v zdrojovom kóde.
+   **Telefón: LECH OS 0.6.12-dev (OTA 15. 11. 2026 ~15:10, slot _a, yellow; hlásenie skriptu 16:07 „v telefóne
+   už beží 0.6.12-dev“). Ďalšia zostava 0.6.13-dev.** V 0.6.12 je: tlačidlo „Otvoriť Aplikácie“ + postup Android
+   Auto, inštalácia APK ťuknutím v Súboroch, slovenské nastavenia zóny Google – overiť v telefóne. Druhá zostava
+   s tou istou verziou (16:01, po oprave duplicitných textov) sa do telefónu nedostala; jej obsah (položka
+   „Všetky nastavenia systému“, tlačidlo „Nastavenia Android Auto“) príde s 0.6.13-dev.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
