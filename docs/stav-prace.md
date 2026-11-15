@@ -221,6 +221,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (c) nepreložené „Allow access to Android/obb folder…“ (text základu) – doplniť slovenčinu;
    (d) po zamknutí alebo nečinnosti telefónu port USB nepustí adb („Telefón sa cez adb neozval“) – pre vývojové
    zostavy predvoliť povolený port USB; (e) čiernobiela téma zvolená ručne funguje (tmavý motív na fotkách).
+   (f) aktualizátor základu (`Updater`, `app.seamlessupdate.client`, server releases.grapheneos.org) nebol
+   vypnutý – od 0.6.9-dev ho odstraňuje `overrides` v LechNastavenia; v telefóne overiť
+   `pm list packages app.seamlessupdate.client`. Aktualizácia GrapheneOS by sa nenainštalovala (iné podpisové kľúče),
+   ale telefón sa na server pýta.
    Zostava 0.6.8-dev je hotová (BUILD_DATETIME vlastný), OTA 0.6.6 → 0.6.8 čaká na pripojený odomknutý telefón.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);

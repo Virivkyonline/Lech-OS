@@ -13,7 +13,10 @@ android_app {
     name: "LechNastavenia",
     // Apps of the GrapheneOS base the customer of LECH OS does not get (ADR-0012): Auditor (attestation against
     // the GrapheneOS service) and Info (news of the GrapheneOS project).
-    overrides: ["Auditor", "InfoApp"],
+    // "Updater": the system updater of the base (app.seamlessupdate.client) asks releases.grapheneos.org for
+    // GrapheneOS releases. LECH OS is signed with its own keys, so such an update could never install; LECH OS
+    // gets its updates from its own packages (tools/etapa2/11-pixel.sh aktualizovat, later its own server).
+    overrides: ["Auditor", "InfoApp", "Updater"],
     product_specific: true,
     sdk_version: "current",
     srcs: ["src/**/*.java"],
