@@ -1,0 +1,43 @@
+From 524365288bdf7fe135876c90746beefa3de0b8e1 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sun, 15 Nov 2026 21:20:00 +0000
+Subject: [PATCH] Setup wizard: tell where the Google zone is turned on
+
+The final screen of the wizard says that LECH OS works without Google and
+where the optional Google zone (sandboxed Google Play) is turned on:
+Settings > Apps from Google Play. No new screen, only the description of
+the final one.
+---
+ res/values-sk/strings.xml | 2 +-
+ res/values/strings.xml    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/res/values-sk/strings.xml b/res/values-sk/strings.xml
+index 06f3bba..3142950 100644
+--- a/res/values-sk/strings.xml
++++ b/res/values-sk/strings.xml
+@@ -26,7 +26,7 @@
+     <string name="restore_apps_and_data">Obnoviť aplikácie a údaje</string>
+     <string name="data_restore_desc">Ak máte zálohu z predchádzajúceho zariadenia s LECH OS, môžete ju obnoviť tu.</string>
+     <string name="you_re_all_set_now">Všetko je pripravené!</string>
+-    <string name="device_setup_done_desc">Zariadenie môžete začať používať</string>
++    <string name="device_setup_done_desc">Zariadenie môžete začať používať.\n\nLECH OS funguje bez Googlu. Ak potrebujete aplikácie závislé od Google Play (niektoré bankové aplikácie, Android Auto), zapnete si neskôr zónu Google: Nastavenia → Aplikácie z Google Play.</string>
+     <string name="profile_setup_done_desc">Používateľský profil môžete začať používať</string>
+     <string name="set_up_a_secondary_unlock_method">Nastavte druhý spôsob odomknutia</string>
+     <string name="set_up_fingerprint_unlock">Nastavte odomknutie odtlačkom prsta</string>
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index 10a31fa..8de3f47 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -26,7 +26,7 @@
+     <string name="restore_apps_and_data"><![CDATA[Restore apps & data]]></string>
+     <string name="data_restore_desc">If you have a backup from your previous LECH OS device, you can restore it here.</string>
+     <string name="you_re_all_set_now">You\'re all set now!</string>
+-    <string name="device_setup_done_desc">You\'re ready to start using your device</string>
++    <string name="device_setup_done_desc">You\'re ready to start using your device.\n\nLECH OS works without Google. If you need apps that depend on Google Play (some banking apps, Android Auto), turn on the Google zone later: Settings → Apps from Google Play.</string>
+     <string name="profile_setup_done_desc">You\'re ready to start using your user profile</string>
+     <string name="set_up_a_secondary_unlock_method">Set up a secondary unlock method</string>
+     <string name="set_up_fingerprint_unlock">Set up fingerprint unlock</string>
+-- 
+2.43.0
+

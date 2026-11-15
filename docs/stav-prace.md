@@ -406,6 +406,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    v 0.6.17 (overiť: Nastavenia → Sieť → preferovaný typ siete „Len LTE“).
    Overené vlastníkom 15. 11. ~21:10 (0.6.17-dev): dlaždica QR otvára Fotoaparát, import kontaktov z .vcf
    funguje. Dávky 0.6.12–0.6.17 sú tým overené celé (okrem zvyšných prekladov Settings 0004 – nepotvrdené).
+   Pre 0.6.18-dev pripravené (neskúšané): SetupWizard2 0002 – zmienka o zóne Google na záverečnej obrazovke
+   sprievodcu (bez novej obrazovky). Návrh ďalšieho kroku: zostava 0.6.18 a potom **skúška „nový zákazník“**
+   (výrobné nastavenia): sprievodca, čiernobiely motív, plocha, zóna Google od nuly.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

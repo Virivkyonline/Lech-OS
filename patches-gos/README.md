@@ -20,6 +20,7 @@ Dvojité aplikácie základu sa odstraňujú cez `overrides` vlastných aplikác
 Camera, Messaging, ExactCalculator, Auditor, InfoApp.
 
 | `packages/apps/SetupWizard2` 0001 | nové (14. 11.): úvodný sprievodca s názvom a logom LECH OS a slovenskými textami (logo kopíruje `12-zostav-pixel.sh`) |
+| `packages/apps/SetupWizard2` 0002 | nové (15. 11.): záverečná obrazovka sprievodcu hovorí, že LECH OS funguje bez Googlu a kde sa zapína zóna Google |
 | `Launcher3` 0003 | nové (14. 11.; súbor `res-stock/xml/default_workspace_4x6.xml`, mriežka „medium“): plocha nového telefónu s aplikáciami LECH OS (dock Telefón, Správy, Prehliadač, Fotoaparát; riadok Obchod, Galéria, Mapy, Nastavenia) |
 | `build/make` 0001 | nové (14. 11.): predvolené gestá v `aosp_product.mk` sú len voliteľná hodnota (`?=`), aby `lech_tokay.mk` mohol predvoliť tri tlačidlá |
 | `packages/apps/Dialer` 0001 | nové (14. 11.): obrazovka hovoru znova nad tapetou (`windowShowWallpaper`), slovenské texty nahrávania hovorov („Nahrať hovor“), upozornenie menuje LECH OS |
