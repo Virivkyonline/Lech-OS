@@ -182,6 +182,11 @@ public class MainActivity extends Activity {
      */
     private void define() {
         add(R.drawable.ic_set_siet, R.string.network, R.string.network_sub, false, "cmp:com.android.settings/com.android.settings.Settings$NetworkDashboardActivity");
+        // Mobile network of the SIM: access point names (APN), choice of the operator, roaming, preferred network type.
+        // Settings$MobileNetworkActivity answers android.settings.NETWORK_OPERATOR_SETTINGS (Settings manifest of the
+        // base). The owner did not find these in LECH Nastavenia (15. 11. 2026).
+        entries.add(new Entry(R.drawable.ic_phone_android, 0xFF7BE41E, 0xFF1E6A06, R.string.mobile_network,
+                R.string.mobile_network_sub, false, Settings.ACTION_NETWORK_OPERATOR_SETTINGS));
         // SIM card lock (SIM PIN): Settings$IccLockSettingsActivity (exported, fragment IccLockSettings). In Android it is
         // under Security & privacy > More security & privacy, where the owner did not find it (12. 11. 2026).
         add(R.drawable.ic_set_sim, R.string.sim, R.string.sim_sub, false, "cmp:com.android.settings/com.android.settings.Settings$IccLockSettingsActivity");
