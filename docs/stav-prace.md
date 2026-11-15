@@ -376,6 +376,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Záplata 0014 nepokrývala prvú vetvu `ResolveInfo.loadLabel` (resolvePackageName) → doplnené záplatou 0016
    (pre 0.6.16-dev, neskúšané). V náhľade je aj Aurora Store a Obchod Play – to sú aplikácie nainštalované
    vlastníkom, nie súčasť systému.
+   **Telefón: LECH OS 0.6.15-dev (OTA 15. 11. 2026 19:10, 0.6.14 → 0.6.15, slot _a → _b, yellow, všetky
+   kontroly OK; druhý pokus, pri prvom bol zapnutý iný prenos cez USB). Ďalšia zostava 0.6.16-dev** (kontakty
+   .vcf, text zostavy v rýchlych nastaveniach, „Zóna Google“ v upozorneniach, frameworks/base 0016, hlásenie
+   zámku). Fotka náhľadu z 19:03 bola ešte z 0.6.14.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
