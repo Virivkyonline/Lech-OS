@@ -214,6 +214,10 @@ public class MainActivity extends Activity {
                 "android.settings.EMERGENCY_SETTINGS");
         add(R.drawable.ic_set_dostupnost, R.string.accessibility, R.string.accessibility_sub, true,
                 Settings.ACTION_ACCESSIBILITY_SETTINGS);
+        // The complete settings of the system with their own search: com.android.settings/.Settings (opened on the
+        // phone with adb 15. 11. 2026). The launcher hides that app, so this row is the only way to it.
+        add(R.drawable.ic_set_system, R.string.all_settings, R.string.all_settings_sub, true,
+                "cmp:com.android.settings/com.android.settings.Settings");
     }
 
     /** Values that change: storage use, battery level and the LECH OS version. */
