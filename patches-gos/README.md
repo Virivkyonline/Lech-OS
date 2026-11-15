@@ -28,6 +28,7 @@ Camera, Messaging, ExactCalculator, Auditor, InfoApp.
 | `packages/apps/Settings` 0002 | nové (15. 11.): hlavná obrazovka systémových nastavení má ikony LECH OS (`lech_set_*.png` z `branding/ikony/nastavenia`, 160 px) namiesto dlaždíc základu |
 | `packages/apps/Settings` 0003 | nové (15. 11.): obrazovka „Ochrana pred zneužitím chýb“ pri aplikácii po slovensky, anglický text menuje LECH OS |
 | `frameworks/base` 0014 | nové (15. 11.): názvy LECH OS aj v zoznamoch čítaných cez `ResolveInfo.loadLabel` (náhľad veľkosti zobrazenia ukazoval „PDF Viewer“, „Vanadium“) |
+| `frameworks/base` 0015 | nové (15. 11.): text zostavy v rýchlych nastaveniach (len pri možnostiach pre vývojárov) ukazuje „LECH OS <verzia>“ namiesto „17 (CP3A…)“ |
 | `frameworks/base` 0012 | nové (15. 11.): systémový balík sa volá „LECH OS“ (upozornenia boli podpísané „GrapheneOS“); ikony LECH OS pre Obchod aplikácií a Mapy aj v Nastaveniach |
 | `packages/apps/Settings` 0001 | nové (15. 11.): slovenské texty 231 nastavení základu; núdzové heslo menuje LECH OS, text Play Integrity bez GrapheneOS |
 | `frameworks/base` 0013 | nové (15. 11.): slovenské texty 21 systémových hlásení základu („Treba reštartovať aplikácie“…) |

@@ -362,6 +362,8 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    aktualizácií až nakoniec; meranie súkromia neskôr, deň oznámi vlastník (nepripomínať). Teraz drobnosti
    viditeľné zákazníkom (text zostavy v rýchlych nastaveniach, úvodný sprievodca, hlásenie pri zamknutej
    zostave), potom kontakty .vcf, QR vo fotoaparáte, ďalšie jazyky.
+   Pre 0.6.16-dev pripravené (neskúšané): frameworks/base 0015 – text zostavy v rýchlych nastaveniach
+   (`BuildNumberInteractor.kt`, zobrazuje sa len pri zapnutých možnostiach pre vývojárov) = „LECH OS <verzia>“.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

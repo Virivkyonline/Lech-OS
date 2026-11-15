@@ -1,0 +1,50 @@
+From 4adeb1aef2468cb7c0442514ab0b58af654b877b Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sun, 15 Nov 2026 18:50:00 +0000
+Subject: [PATCH] Quick settings: show the LECH OS version as the build text
+
+With developer options on, the footer of the quick settings showed the
+Android version and the build ID of the base ("17 (CP3A.261005.005)",
+Pixel 9, 15. 11. 2026). It now shows the LECH OS version taken from
+ro.build.display.id ("LECH-OS-<version>"); other builds keep the text of
+the base.
+---
+ .../interactor/BuildNumberInteractor.kt       | 20 +++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/development/domain/interactor/BuildNumberInteractor.kt b/packages/SystemUI/src/com/android/systemui/development/domain/interactor/BuildNumberInteractor.kt
+index cd783fe..5bc78e1 100644
+--- a/packages/SystemUI/src/com/android/systemui/development/domain/interactor/BuildNumberInteractor.kt
++++ b/packages/SystemUI/src/com/android/systemui/development/domain/interactor/BuildNumberInteractor.kt
+@@ -72,14 +72,22 @@ constructor(
+             "🥃 "
+         } else ""
+ 
++    // LECH OS: the version of LECH OS ("LECH OS 0.6.15-dev-userdebug", from ro.build.display.id
++    // "LECH-OS-<version>") instead of the Android version with the build ID of the base ("17 (CP3A…)").
++    private val lechPrefix = "LECH-OS-"
++
+     private val buildText =
+         BuildNumber(
+-            sceneContainerPrefix +
+-                resources.getString(
+-                    InternalR.string.bugreport_status,
+-                    Build.VERSION.RELEASE_OR_CODENAME,
+-                    Build.ID,
+-                )
++            if (Build.DISPLAY.startsWith(lechPrefix)) {
++                "LECH OS " + Build.DISPLAY.substring(lechPrefix.length)
++            } else {
++                sceneContainerPrefix +
++                    resources.getString(
++                        InternalR.string.bugreport_status,
++                        Build.VERSION.RELEASE_OR_CODENAME,
++                        Build.ID,
++                    )
++            }
+         )
+ 
+     private val clipLabel = resources.getString(SystemUIR.string.build_number_clip_data_label)
+-- 
+2.43.0
+
