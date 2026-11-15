@@ -347,6 +347,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Rozhodnutie vlastníka 15. 11.: položka „Všetky nastavenia systému“ len pre vývojárov – zobrazí sa, len keď
    sú zapnuté možnosti pre vývojárov (`Settings.Global.DEVELOPMENT_SETTINGS_ENABLED`). Pripravené pre 0.6.15-dev,
    neskúšané. Android Auto a inštalácia APK ťuknutím: vlastník považuje za hotové.
+   Nález vlastníka 15. 11. 17:54: zoznam App Store základu („Zóna Google“) je po anglicky, všade vydavateľ
+   „GrapheneOS“ a ponúka aj Auditor, Info, Camera, Accrescent, Markup. Overené: je to hotový balík
+   (`external/AppStore`, `android_app_import`, podpísaný kľúčom GrapheneOS) – záplatou sa zmeniť nedá. Riešenie:
+   zostaviť obchod z jeho otvoreného zdrojového kódu pod LECH OS (názov, slovenčina, len položky Google) –
+   rozsah neoverený, súvisí so serverom aktualizácií.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
