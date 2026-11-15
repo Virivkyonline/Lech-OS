@@ -283,6 +283,13 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    **Telefón: LECH OS 0.6.11-dev (OTA 15. 11. 2026 13:05, 0.6.10 → 0.6.11, slot _a → _b, yellow, všetky
    kontroly OK). Ďalšia zostava 0.6.12-dev.** **Overené vlastníkom 15. 11.:** ikona „Zóna Google“ (štít) v Nastaveniach,
    tlačidlo volania v číselníku viditeľné aj pri väčšej veľkosti zobrazenia. Ďalej: skúška Android Auto (bezdrôtovo).
+   **Android Auto – priebeh 15. 11. 13:14:** zóna Google znova nainštalovaná (Play services, Play Store,
+   GmsCompatConfig) a Android Auto 17.9 z App Store základu – nainštalované. Nálezy z fotiek: (1) obrazovka
+   „O aplikácii → Exploit protection“ je celá po anglicky a menuje GrapheneOS („…GrapheneOS exploit protections…“)
+   – texty sú v inom súbore než `strings_ext.xml` (nájsť: `grep -rl "Exploit protection compatibility mode" ~/gos`);
+   (2) App Store základu ukazuje všade „GrapheneOS“ a ponúka aktualizáciu Vanadia zo svojich serverov – prehliadač sa
+   teda aktualizuje cez App Store základu (spojenie na servery GrapheneOS; zohľadniť pri meraní súkromia);
+   (3) stránka Android Auto odkazuje na „Settings > Apps > Sandboxed Google Play“ (u nás „Zóna Google“).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
