@@ -402,7 +402,8 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    nepotvrdený len import .vcf.
    **Telefón: LECH OS 0.6.17-dev (OTA 15. 11. 2026 21:04, 0.6.16 → 0.6.17, slot _a → _b, yellow, všetky
    kontroly OK; zostava začala 20:22). Ďalšia zostava 0.6.18-dev.** V 0.6.17 je dlaždica QR → LECH Fotoaparát
-   (overiť). Settings 0004 (zvyšné preklady) bola pushnutá až po začiatku zostavy → príde s 0.6.18-dev.
+   (overiť). Settings 0004 (zvyšné preklady) bola pushnutá 20:20:39, zostava začala 20:22 → mala by byť
+   v 0.6.17 (overiť: Nastavenia → Sieť → preferovaný typ siete „Len LTE“).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
