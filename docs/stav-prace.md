@@ -329,6 +329,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Auto, inštalácia APK ťuknutím v Súboroch, slovenské nastavenia zóny Google – overiť v telefóne. Druhá zostava
    s tou istou verziou (16:01, po oprave duplicitných textov) sa do telefónu nedostala; jej obsah (položka
    „Všetky nastavenia systému“, tlačidlo „Nastavenia Android Auto“) príde s 0.6.13-dev.
+   **Telefón: LECH OS 0.6.13-dev (OTA 15. 11. 2026 16:46, 0.6.12 → 0.6.13, slot _a → _b, yellow, všetky
+   kontroly OK). Ďalšia zostava 0.6.14-dev.** Overiť v telefóne: položka „Všetky nastavenia systému“, tlačidlá
+   „Otvoriť Aplikácie“ a „Nastavenia Android Auto“ na stránke „Aplikácie z Google Play“, inštalácia APK ťuknutím
+   v Súboroch, slovenská obrazovka „Zóna Google“. Čaká: ikony LECH OS na hlavnej obrazovke systémových nastavení,
+   aplikácia mimo Play v Android Auto.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
