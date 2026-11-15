@@ -229,6 +229,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    ukazuje pri zapnutých nastaveniach pre vývojárov; nahradiť „LECH OS <verzia>“. Pôvod mena „GrapheneOS“
    v upozorneniach nie je v `core/res` strings (android_system_label = „Systém Android“) – nájsť grepom v `~/gos`.
    Settings: 243 textov základu v `res/values/strings_ext.xml` bez slovenčiny (vrátane obb).
+   **Aktualizácie – smer (vlastník 15. 11.):** telefón sa pýta len servera LECH OS; nové vydania GrapheneOS sleduje
+   zostavovací počítač/server LECH OS (značky `platform_manifest`), nie telefón. Postup na vydanie: nová značka
+   základu → `manifests/grapheneos-tag` → zostava → skúška → podpis → zverejnenie na serveri LECH OS. Treba neskôr:
+   server aktualizácií (dnes `ota_server.py` v0 cez kábel), aktualizátor v telefóne nasmerovaný na server LECH OS
+   (upraviť `Updater` základu alebo vlastný), automatické sledovanie vydaní základu, overovanie podpisov značiek.
    Zostava 0.6.8-dev je hotová (BUILD_DATETIME vlastný), OTA 0.6.6 → 0.6.8 čaká na pripojený odomknutý telefón.
    **OTA SO ZAMKNUTÝM BOOTLOADEROM FUNGUJE (15. 11. 2026 07:45): 0.6.6-dev → 0.6.8-dev cez
    `gos.sh 11-pixel.sh aktualizovat`, telefón naštartoval novú verziu, údaje ostali.** (0.6.7-dev odmietnutá:
