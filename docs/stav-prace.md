@@ -304,6 +304,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    „User does not intend to start projection. Not sending start request.“ (stav AWAITING_START): auto v Android
    Auto ešte nie je známe (prvé pripojenie), čaká sa na spustenie používateľom. Ďalší krok: spustiť Android Auto
    z obrazovky auta, prípadne prvé pripojenie káblom (zapnúť aj káblové povolenia).
+   **Android Auto bezdrôtovo FUNGUJE (15. 11. ~14:30, BYD Sealion 7, LECH OS 0.6.11-dev):** prvé pripojenie
+   treba spustiť z telefónu – nastavenia Android Auto → „Pripojiť vozidlo“ (auto nemá vlastnú aplikáciu ani
+   pripojenie káblom; Bluetooth druhého telefónu vypnúť). Stačia bezdrôtové povolenia v zóne Google. Zostáva
+   overiť: aplikácie mimo Play (lech-music) v rozhraní auta. Do stránky „Aplikácie z Google Play“ doplniť tento
+   postup.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
