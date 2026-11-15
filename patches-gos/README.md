@@ -24,3 +24,4 @@ Camera, Messaging, ExactCalculator, Auditor, InfoApp.
 | `build/make` 0001 | nové (14. 11.): predvolené gestá v `aosp_product.mk` sú len voliteľná hodnota (`?=`), aby `lech_tokay.mk` mohol predvoliť tri tlačidlá |
 | `packages/apps/Dialer` 0001 | nové (14. 11.): obrazovka hovoru znova nad tapetou (`windowShowWallpaper`), slovenské texty nahrávania hovorov („Nahrať hovor“), upozornenie menuje LECH OS |
 | `packages/apps/Dialer` 0002 | nové (14. 11.): obrazovka hovoru má jeden tmavý priesvitný prechod LECH OS (farba už nezávisí od kontaktu) |
+| `frameworks/base` 0012 | nové (15. 11.): systémový balík sa volá „LECH OS“ (upozornenia boli podpísané „GrapheneOS“); ikony LECH OS pre Obchod aplikácií a Mapy aj v Nastaveniach |

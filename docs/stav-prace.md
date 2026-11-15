@@ -234,6 +234,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    základu → `manifests/grapheneos-tag` → zostava → skúška → podpis → zverejnenie na serveri LECH OS. Treba neskôr:
    server aktualizácií (dnes `ota_server.py` v0 cez kábel), aktualizátor v telefóne nasmerovaný na server LECH OS
    (upraviť `Updater` základu alebo vlastný), automatické sledovanie vydaní základu, overovanie podpisov značiek.
+   **Pripravené pre 0.6.9-dev (15. 11., neskúšané):** `frameworks/base` 0012 – (a) štítok systému „LECH OS“
+   (`core/res/AndroidManifest.xml` mal `android:label="GrapheneOS"`), (b) ikony LECH OS pre F-Droid a Organic Maps
+   v systéme; (f) bez aktualizátora základu; čiernobiela téma. (d) netreba: v ladiacich zostavách je port USB
+   predvolene povolený (`UsbPortSecurity`, `Build.IS_DEBUGGABLE`) – adb sa neozval, lebo po zamknutí bootloadera
+   boli vymazané údaje a ladenie vypnuté. Ostáva: (c) preklad 243 textov Settings, (g) text zostavy v rýchlych
+   nastaveniach (grep nič nenašiel). Server aktualizácií: OneDrive nevhodný; balík ~1,65 GB na vydanie a model.
    Zostava 0.6.8-dev je hotová (BUILD_DATETIME vlastný), OTA 0.6.6 → 0.6.8 čaká na pripojený odomknutý telefón.
    **OTA SO ZAMKNUTÝM BOOTLOADEROM FUNGUJE (15. 11. 2026 07:45): 0.6.6-dev → 0.6.8-dev cez
    `gos.sh 11-pixel.sh aktualizovat`, telefón naštartoval novú verziu, údaje ostali.** (0.6.7-dev odmietnutá:
