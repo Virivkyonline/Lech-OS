@@ -273,6 +273,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Nastaveniach nový riadok „Mobilná sieť“ (`ACTION_NETWORK_OPERATOR_SETTINGS` → `Settings$MobileNetworkActivity`,
    overené v manifeste Settings základu), pre 0.6.11-dev, neskúšané. **Zrušené 15. 11.:** vlastník APN našiel
    (Sieť a internet → SIM karty), riadok „Mobilná sieť“ nechce – odstránený.
+   **Nálezy 15. 11. 11:35 (0.6.10-dev):** pri väčšej veľkosti zobrazenia/písma je v LECH Telefóne tlačidlo volania
+   pod navigáciou → klávesy číselníka sa prispôsobia dostupnej výške (`LechKontakty/MainActivity.buildDialpadPage`,
+   poslucháč rozloženia; 40–76 dp, text úmerne), pre 0.6.11-dev, neskompilované. V náhľade Nastavenia → Veľkosť
+   zobrazenia a text sú názvy „PDF Vie…“ a „Vanadium“ (názvy aktivít, nie aplikácie) – drobnosť na neskôr.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

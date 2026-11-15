@@ -91,6 +91,8 @@ public class MainActivity extends Activity {
     private LinearLayout contactsPage;
     private LinearLayout historyPage;
     private LinearLayout dialpadPage;
+    private final List<View> dialKeyViews = new java.util.ArrayList<>();
+    private int dialFittedHeight = -1;
     private EditText search;
     private final List<LinearLayout> chips = new ArrayList<>();
     private final List<LinearLayout> navItems = new ArrayList<>();
@@ -656,8 +658,9 @@ public class MainActivity extends Activity {
             row.setGravity(Gravity.CENTER);
             for (int k = 0; k < 3; k++) {
                 String[] key = KEYS[r * 3 + k];
-                row.addView(dialKey(key[0], key[1]), Ui.margins(Ui.lp(Ui.dp(this, 76), Ui.dp(this, 76)),
-                        this, 14, 6, 14, 6));
+                View kv = dialKey(key[0], key[1]);
+                dialKeyViews.add(kv);
+                row.addView(kv, Ui.margins(Ui.lp(Ui.dp(this, 76), Ui.dp(this, 76)), this, 14, 6, 14, 6));
             }
             grid.addView(row);
         }
@@ -672,6 +675,42 @@ public class MainActivity extends Activity {
             }
         });
         page.addView(call, Ui.margins(Ui.lp(Ui.dp(this, 72), Ui.dp(this, 72)), this, 0, 0, 0, 10));
+        // The keys shrink to the height that is left, so the call button stays on the screen: with a larger display
+        // or font size (Settings > Display size and text) it was pushed below the navigation (owner, 15. 11. 2026).
+        page.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            int height = b - t;
+            if (height <= 0 || height == dialFittedHeight) return;
+            dialFittedHeight = height;
+            int callSize = Ui.dp(this, 72);
+            int fixed = numberRow.getHeight() + add.getHeight() + callSize + Ui.dp(this, 10 + 14);
+            int key = Math.max(Ui.dp(this, 40), Math.min(Ui.dp(this, 76), (height - fixed) / 4 - Ui.dp(this, 12)));
+            if (key < Ui.dp(this, 56)) {
+                // Still too tall: a smaller call button as well.
+                callSize = Ui.dp(this, 56);
+                fixed -= Ui.dp(this, 72 - 56);
+                key = Math.max(Ui.dp(this, 40), Math.min(Ui.dp(this, 76), (height - fixed) / 4 - Ui.dp(this, 12)));
+            }
+            final int keySize = key;
+            final int callFinal = callSize;
+            v.post(() -> {
+                for (View kv : dialKeyViews) {
+                    ViewGroup.LayoutParams lp = kv.getLayoutParams();
+                    lp.width = keySize;
+                    lp.height = keySize;
+                    kv.setLayoutParams(lp);
+                    LinearLayout box = (LinearLayout) kv;
+                    ((TextView) box.getChildAt(0)).setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, keySize * 0.38f);
+                    if (box.getChildCount() > 1) {
+                        ((TextView) box.getChildAt(1)).setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,
+                                keySize * 0.14f);
+                    }
+                }
+                ViewGroup.LayoutParams clp = call.getLayoutParams();
+                clp.width = callFinal;
+                clp.height = callFinal;
+                call.setLayoutParams(clp);
+            });
+        });
         setDialNumber("");
         return page;
     }
