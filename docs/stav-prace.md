@@ -400,6 +400,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Overené vlastníkom 15. 11. ~21:00 (0.6.16-dev): náhľad veľkosti zobrazenia už neukazuje „App Store“ ani
    „Vanadium“ (frameworks/base 0014 + 0016); hlavička upozornení je „Zóna Google“. Z dávky 0.6.16 ostáva
    nepotvrdený len import .vcf.
+   **Telefón: LECH OS 0.6.17-dev (OTA 15. 11. 2026 21:04, 0.6.16 → 0.6.17, slot _a → _b, yellow, všetky
+   kontroly OK; zostava začala 20:22). Ďalšia zostava 0.6.18-dev.** V 0.6.17 je dlaždica QR → LECH Fotoaparát
+   (overiť). Settings 0004 (zvyšné preklady) bola pushnutá až po začiatku zostavy → príde s 0.6.18-dev.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
