@@ -369,6 +369,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    vCard 2.1/3.0/4.0 vrátane quoted-printable, zápis vCard 3.0; formát otestovaný na počítači, časť pre Android
    nie); opravené hlásenie zámku zostavenia (`lech_build_lock_report`). Zmienka o Google Play v úvodnom
    sprievodcovi ostáva odložená (vyžaduje novú obrazovku sprievodcu, dá sa overiť len po vymazaní telefónu).
+   15. 11. 18:54: aktualizácia na 0.6.15-dev zlyhala pri 10 % (vlastník popri nej prenášal cez USB iné údaje);
+   telefón ostal na 0.6.14-dev, balík 0.6.15 je hotový. Nález z fotky upozornení: hlavička „GmsCompat“ –
+   názov aplikácie zmenený na „Zóna Google“ (záplata GmsCompat 0001 doplnená, pre 0.6.16-dev).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
