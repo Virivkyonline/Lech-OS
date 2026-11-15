@@ -321,6 +321,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Nález 15. 11. 15:28: úplné systémové nastavenia (`com.android.settings/.Settings`) sa v telefóne nedali
    otvoriť nijako (len cez adb). Do LECH Nastavení pridaná posledná položka „Všetky nastavenia systému“
    (pôjde do 0.6.13-dev).
+   Čaká (vlastník 15. 11.): hlavná obrazovka systémových nastavení má ikony základu (farebné dlaždice
+   `ic_*_filled` v `res/xml/top_level_settings.xml`), nie ikony LECH OS (`branding/ikony/nastavenia/ic_set_*.png`).
+   Výmena = záplata `packages/apps/Settings` (ikony + spôsob kreslenia dlaždice); najprv overiť v zdrojovom kóde.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
