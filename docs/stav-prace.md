@@ -338,6 +338,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    tlačidlá, slovenská Zóna Google, inštalácia APK ťuknutím). Pripravené pre 0.6.14-dev (neskúšané):
    `patches-gos/packages/apps/Settings` 0002 – ikony LECH OS na hlavnej obrazovke systémových nastavení
    (dlaždice `ic_homepage_*.xml` ukazujú `lech_set_*.png`; podpora, dohľad a režim hubu ostávajú pôvodné).
+   **Telefón: LECH OS 0.6.14-dev (OTA 15. 11. 2026 17:45, 0.6.13 → 0.6.14, slot _b → _a, yellow, všetky
+   kontroly OK). Ďalšia zostava 0.6.15-dev.** V 0.6.14 je navyše záplata Settings 0002 (ikony LECH OS na hlavnej
+   obrazovke systémových nastavení) – čaká na fotku od vlastníka.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
