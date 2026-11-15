@@ -29,14 +29,14 @@ PIDS=$($ADB shell ps -A -o PID,NAME | tr -d '\r' \
             n = split(pidlist, p, " "); for (i = 1; i <= n; i++) pids[p[i]] = 1 }
     substr($2, 1, 5) < from { next }
     /Start proc [0-9]+:/ && $0 ~ pkg { split($0, a, "Start proc "); split(a[2], b, ":"); pids[b[1]] = 1 }
-    /ProcStatsManager|ProcessStats|NotifRow|TracingMuxer|V4L2NodeWatcher/ { next }
+    /ProcStatsManager|ProcessStats|NotifRow|TracingMuxer|V4L2NodeWatcher|DeliQueue|NearbyPresence|MediaRouter/ { next }
     ($3 in pids) && ($5 == "E" || $5 == "W" || $5 == "F") { print; next }
     # the connection flow of Android Auto at any level
     ($3 in pids) && tolower($0) ~ /wireless|wifi|rfcomm|bluetooth|handshake|projection|connect|fail|denied|timeout|abort|not allowed/ { print; next }
     /FATAL EXCEPTION|Permission Denial|SecurityException|Access denied/ { print; next }
     /Start proc|has died|Process .* \(pid/ && $0 ~ pkg { print; next }
     /GmcDynStub|GmsCompat/ && ($5 == "E" || $5 == "W") { print }
-  ' "$OUT" | cut -c1-260 | awk '{ k = $0; sub(/^[0-9-]+ [0-9:.]+ +[0-9]+ +[0-9]+ /, "", k); if (c[k]++ < 3) print }' | tail -150
+  ' "$OUT" | cut -c1-260 | awk '{ k = $0; sub(/^[0-9-]+ [0-9:.]+ +[0-9]+ +[0-9]+ /, "", k); if (c[k]++ < 3) print }' | tail -300
 } > "$RES"
 cat "$RES"
 clip.exe < "$RES" 2>/dev/null && echo "--- Výpis je v schránke: vložte ho do správy cez Ctrl+V. ---"
