@@ -226,6 +226,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    `pm list packages app.seamlessupdate.client`. Aktualizácia GrapheneOS by sa nenainštalovala (iné podpisové kľúče),
    ale telefón sa na server pýta.
    Zostava 0.6.8-dev je hotová (BUILD_DATETIME vlastný), OTA 0.6.6 → 0.6.8 čaká na pripojený odomknutý telefón.
+   **OTA SO ZAMKNUTÝM BOOTLOADEROM FUNGUJE (15. 11. 2026 07:45): 0.6.6-dev → 0.6.8-dev cez
+   `gos.sh 11-pixel.sh aktualizovat`, telefón naštartoval novú verziu, údaje ostali.** (0.6.7-dev odmietnutá:
+   rovnaký dátum zostavy; vlastný BUILD_DATETIME sa do systému zapíše až so zmenou verzie.)
+   **Telefón: LECH OS 0.6.8-dev, zamknutý kľúčom LECH OS; ďalšia zostava 0.6.9-dev** (bez aktualizátora základu,
+   čiernobiela téma predvolene; dávka opráv (a)–(d) ešte nepripravená).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
