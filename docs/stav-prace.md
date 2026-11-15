@@ -334,6 +334,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    „Otvoriť Aplikácie“ a „Nastavenia Android Auto“ na stránke „Aplikácie z Google Play“, inštalácia APK ťuknutím
    v Súboroch, slovenská obrazovka „Zóna Google“. Čaká: ikony LECH OS na hlavnej obrazovke systémových nastavení,
    aplikácia mimo Play v Android Auto.
+   Overené vlastníkom 15. 11. ~17:00 (0.6.13-dev): všetkých päť bodov ide (Všetky nastavenia systému, obe
+   tlačidlá, slovenská Zóna Google, inštalácia APK ťuknutím). Pripravené pre 0.6.14-dev (neskúšané):
+   `patches-gos/packages/apps/Settings` 0002 – ikony LECH OS na hlavnej obrazovke systémových nastavení
+   (dlaždice `ic_homepage_*.xml` ukazujú `lech_set_*.png`; podpora, dohľad a režim hubu ostávajú pôvodné).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
