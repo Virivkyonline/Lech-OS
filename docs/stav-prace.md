@@ -211,6 +211,17 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    **OTA 0.6.6 → 0.6.7 (14. 11. 22:57) odmietnutá skriptom „balík nie je novší“:** envsetup.sh základu berie
    BUILD_DATETIME z `out/build_date.txt` predošlej zostavy → všetky zostavy mali rovnaký dátum. Opravené
    v `05-zostav-aosp.sh` (vlastný BUILD_DATETIME pre každú zostavu); zostaviť znova ako 0.6.7-dev a aktualizovať.
+   **Zoznam opráv z testovania vlastníka (15. 11. ráno, 0.6.6-dev zamknutý):**
+   (a) upozornenia systému sú podpísané „GrapheneOS“ (napr. „Ladenie cez USB je zapnuté“) – názov systému
+   v `frameworks/base` (android:string/android_system_label alebo ekvivalent základu) → „LECH OS“; prejsť všetky
+   výskyty mena GrapheneOS v textoch základu;
+   (b) Obchod aplikácií má v systémových obrazovkách (Inštalácia neznámych aplikácií, Všetky aplikácie) ikonu F-Droid
+   – ikona z `lech.os.ikony` sa berie len na ploche (`frameworks/libs/systemui` 0002) a v `LechAppNames` len pre
+   Vanadium; rozšíriť `frameworks/base` 0010 na balíky z `ICON_PACKAGE_APPS`;
+   (c) nepreložené „Allow access to Android/obb folder…“ (text základu) – doplniť slovenčinu;
+   (d) po zamknutí alebo nečinnosti telefónu port USB nepustí adb („Telefón sa cez adb neozval“) – pre vývojové
+   zostavy predvoliť povolený port USB; (e) čiernobiela téma zvolená ručne funguje (tmavý motív na fotkách).
+   Zostava 0.6.8-dev je hotová (BUILD_DATETIME vlastný), OTA 0.6.6 → 0.6.8 čaká na pripojený odomknutý telefón.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
