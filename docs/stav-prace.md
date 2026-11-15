@@ -277,6 +277,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    pod navigáciou → klávesy číselníka sa prispôsobia dostupnej výške (`LechKontakty/MainActivity.buildDialpadPage`,
    poslucháč rozloženia; 40–76 dp, text úmerne), pre 0.6.11-dev, neskompilované. V náhľade Nastavenia → Veľkosť
    zobrazenia a text sú názvy „PDF Vie…“ a „Vanadium“ (názvy aktivít, nie aplikácie) – drobnosť na neskôr.
+   **Android Auto – plán skúšky (vlastník 15. 11.):** používa ho bezdrôtovo → skúšať najprv bezdrôtové povolenia.
+   Postup: zóna Google znova (vymazaná zamknutím) → Android Auto z App Store základu → Nastavenia → Aplikácie → Zóna
+   Google → Android Auto → povolenia pre bezdrôtové → prístup k upozorneniam → spárovať s autom. Podrobnosti docs/18.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
