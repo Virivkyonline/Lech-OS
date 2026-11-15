@@ -298,6 +298,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (signature|privileged) – z adb shell ani z LECH Nastavení sa priamo neotvorí. Otvára ju položka „Zóna Google
    (Google Play v izolácii)“ na obrazovke Aplikácie systémových Nastavení
    (`com.android.settings/.Settings$AppDashboardActivity`); tlačidlo v 0.6.12-dev preto otvára túto obrazovku.
+   Skúška v aute (BYD) 15. 11. 13:58, bezdrôtové povolenia zapnuté, záznam `tools/etapa2/aa-zaznam.sh`:
+   Bluetooth aj riadiaci kanál (RFCOMM) sa spojili, verzie protokolu sa dohodli (auto 4.1, telefón 6.1), našla
+   sa vhodná Wi-Fi – systém teda nič neblokoval (žiadne odmietnuté povolenie). Zastavilo sa na
+   „User does not intend to start projection. Not sending start request.“ (stav AWAITING_START): auto v Android
+   Auto ešte nie je známe (prvé pripojenie), čaká sa na spustenie používateľom. Ďalší krok: spustiť Android Auto
+   z obrazovky auta, prípadne prvé pripojenie káblom (zapnúť aj káblové povolenia).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
