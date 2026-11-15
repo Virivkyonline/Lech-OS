@@ -253,6 +253,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    **Telefón: LECH OS 0.6.9-dev (OTA 15. 11. 2026 09:16, 0.6.8 → 0.6.9, slot _a → _b, yellow – zamknutý, kľúč
    LECH OS; všetky štyri kontroly skriptu OK). Ďalšia zostava 0.6.10-dev.** V telefóne overiť: štítok „LECH OS“
    v upozorneniach, ikona Obchodu aplikácií v Nastaveniach, aktualizátor základu preč.
+   Overené fotkou 09:17: upozornenia sú podpísané „LECH OS“. Nepreložené upozornenie základu „App restart is
+   required / App optimization has completed…“ (`frameworks/base/core/res/res/values/string_ext.xml`) – do dávky
+   prekladov spolu s 243 textmi Settings.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
