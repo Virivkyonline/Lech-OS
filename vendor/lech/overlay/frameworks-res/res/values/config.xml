@@ -21,4 +21,9 @@
     <string-array name="theming_defaults" translatable="false">
         <item>*|MONOCHROMATIC|#808080</item>
     </string-array>
+
+    <!-- The "QR code scanner" tile of the quick settings and of the lock screen: the base points it at its own
+         camera app (app.grapheneos.camera/…QrTile), which LECH Fotoaparát replaces, so the tile was grey and
+         could not be turned on (owner, 15. 11. 2026). LECH Fotoaparát reads QR codes in its preview. -->
+    <string name="config_defaultQrCodeComponent" translatable="false">lech.os.fotoaparat/lech.os.fotoaparat.CameraActivity</string>
 </resources>
