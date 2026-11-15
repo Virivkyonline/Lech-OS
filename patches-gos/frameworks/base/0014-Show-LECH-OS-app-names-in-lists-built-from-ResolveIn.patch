@@ -1,0 +1,44 @@
+From 612ff725d02758d8fe46046487cfcd27f5b1e9a3 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sun, 15 Nov 2026 18:10:00 +0000
+Subject: [PATCH] Show LECH OS app names in lists built from ResolveInfo
+
+The preview of the display size in the settings listed "PDF Viewer" and
+"Vanadium" (Pixel 9, 15. 11. 2026): it reads the names with
+ResolveInfo.loadLabel, which takes the label text directly and passed by
+LechAppNames. The LECH OS name is now applied there too; the name of a
+system part replaces the label only where the component shows the label of
+its application.
+---
+ core/java/android/content/pm/ResolveInfo.java | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/core/java/android/content/pm/ResolveInfo.java b/core/java/android/content/pm/ResolveInfo.java
+index 4b9f07d..6ac2d4a 100644
+--- a/core/java/android/content/pm/ResolveInfo.java
++++ b/core/java/android/content/pm/ResolveInfo.java
+@@ -251,13 +251,19 @@ public class ResolveInfo implements Parcelable {
+         if (labelRes != 0) {
+             label = pm.getText(ci.packageName, labelRes, ai);
+             if (label != null) {
+-                return label.toString().trim();
++                // LECH OS: the LECH OS name of a prebuilt app (LechAppNames), as in PackageItemInfo. The name
++                // of a system part replaces the label only where the component shows the label of its app.
++                return LechAppNames.label(ci.packageName, label.toString().trim(),
++                        ai != null && labelRes == ai.labelRes);
+             }
+         }
+ 
+         CharSequence data = ci.loadLabel(pm);
+         // Make the data safe
+-        if (data != null) data = data.toString().trim();
++        if (data != null) {
++            data = LechAppNames.label(ci.packageName, data.toString().trim(),
++                    ci.labelRes == 0 || (ai != null && ci.labelRes == ai.labelRes));
++        }
+         return data;
+     }
+ 
+-- 
+2.43.0
+

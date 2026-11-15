@@ -352,6 +352,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (`external/AppStore`, `android_app_import`, podpísaný kľúčom GrapheneOS) – záplatou sa zmeniť nedá. Riešenie:
    zostaviť obchod z jeho otvoreného zdrojového kódu pod LECH OS (názov, slovenčina, len položky Google) –
    rozsah neoverený, súvisí so serverom aktualizácií.
+   Rozhodnutie vlastníka 15. 11. ~18:00: obchod základu (App Store / „Zóna Google“) nechať tak, ide sa na
+   dôležitejšie. **Dávka 0.6.15-dev (pripravená, neskúšaná):** položka „Všetky nastavenia systému“ len pre
+   vývojárov; Settings 0003 (ochrana aplikácie po slovensky, bez mena GrapheneOS); frameworks/base 0014 (názvy
+   LECH OS v náhľade veľkosti zobrazenia). Vynechané: text „17 (CP3A…)“ v rýchlych nastaveniach – miesto
+   v SystemUI nenájdené (hľadať `bugreport_status` v `~/gos/frameworks/base/packages/SystemUI`).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
