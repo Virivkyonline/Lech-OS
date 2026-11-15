@@ -413,6 +413,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    kontroly OK; zostava začala 21:15). Ďalšia zostava 0.6.19-dev.** Obsahuje SetupWizard2 0002 (pushnuté
    pred začiatkom zostavy – čas pozri git log). Ďalší krok: skúška „nový zákazník“ (výrobné nastavenia), keď
    vlastník povie.
+   **Výrobné nastavenia 15. 11. ~22:10 (0.6.18-dev)** – skúška „nový zákazník“ (fotky sprievodcu zatiaľ
+   neprišli). Nález: eSIM sa nedá pridať – na obrazovke SIM karty chýba „Pridať SIM“, hoci prepínač „Podpora
+   eSIM“ je zapnutý. Príčina: `vendor/lech/config/sysconfig/lech-no-esim.xml` (zo starej línie AOSP, kde boli
+   aplikácie eSIM Googlu vynechané) vyhlasuje funkciu za nedostupnú aj na novom základe. Oprava pre
+   **0.6.19-dev** (neskúšaná): súbor sa na základe GrapheneOS už nekopíruje. **Do auditu súkromia:** zmerať, kam
+   sa aplikácie eSIM pripájajú pri zapnutom prepínači (na starej línii: lpa.live.esimdiscovery.com, lpa.ds.gsma.com).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

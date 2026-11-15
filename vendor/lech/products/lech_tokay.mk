@@ -50,10 +50,16 @@ BOARD_AVB_KEY_PATH := vendor/lech-keys/test/avb.pem
 ifneq ($(LECH_BARE),true)
 MODULE_BUILD_FROM_SOURCE := true
 
-# No eSIM support for now: the eSIM apps of Google are left out (patches/vendor/adevtool/0004), so the device does
-# not announce the feature either (vendor/lech/config/sysconfig/lech-no-esim.xml).
+# eSIM. On the plain AOSP line the eSIM apps of Google are left out (patches/vendor/adevtool/0004), so the device
+# does not announce the feature either (vendor/lech/config/sysconfig/lech-no-esim.xml). On the GrapheneOS base
+# (ADR-0012, recognised by packages/apps/GmsCompat) the eSIM apps are part of the vendor module and stay disabled
+# until the user turns on "eSIM support" in Network & internet, so the feature is announced there: with the
+# sysconfig file the SIM screen offered no way to add an eSIM (owner, 15. 11. 2026). What these apps contact
+# belongs to the privacy audit of the new base.
+ifeq ($(wildcard packages/apps/GmsCompat),)
 PRODUCT_COPY_FILES += \
-    vendor/lech/config/sysconfig/lech-no-esim.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/sysconfig/lech-no-esim.xml \
+    vendor/lech/config/sysconfig/lech-no-esim.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/sysconfig/lech-no-esim.xml
+endif
 
 # Browser and WebView Vanadium of GrapheneOS (E3-01, ADR-0011; external/vanadium from manifests/lech-pixel.xml)
 # instead of the AOSP WebView of June 2026 and its test shell Browser2: LechVanadium overrides both, and
