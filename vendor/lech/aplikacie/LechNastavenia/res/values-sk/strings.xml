@@ -130,6 +130,6 @@
     <string name="gplay_other_title">Iné zdroje</string>
     <string name="gplay_other_text">Existujú aj aplikácie tretích strán, ktoré umožňujú sťahovať z Google Play bez účtu Google, napríklad Aurora Store. LECH OS ich neposkytuje, neodporúča ani nepodporuje. Ich používanie je rozhodnutím a zodpovednosťou používateľa a môže byť v rozpore s podmienkami spoločnosti Google.</string>
     <string name="gplay_auto_title">Android Auto a nastavenia zóny</string>
-    <string name="gplay_auto_text">Android Auto sa inštaluje z toho istého zoznamu ako Google Play. Nemá žiadne zvláštne práva, kým mu ich nepovolíte: otvorte nastavenia zóny, zvoľte Android Auto a zapnite povolenia pre káblové alebo bezdrôtové Android Auto.</string>
-    <string name="gplay_auto_button">Nastavenia zóny</string>
+    <string name="gplay_auto_text">Android Auto sa inštaluje z toho istého zoznamu ako Google Play. Nemá žiadne zvláštne práva, kým mu ich nepovolíte: otvorte obrazovku Aplikácie, zvoľte „Zóna Google (Google Play v izolácii)“, potom Android Auto a zapnite povolenia pre káblové alebo bezdrôtové Android Auto.</string>
+    <string name="gplay_auto_button">Otvoriť Aplikácie</string>
 </resources>

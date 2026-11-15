@@ -108,11 +108,15 @@ public class GooglePlayActivity extends Activity {
     }
 
     /**
-     * The settings screen of the compatibility layer: app.grapheneos.gmscompat/.MainActivity, action
-     * app.grapheneos.gmscompat.SETTINGS_LINK (verified in the GmsCompat manifest of the base, 15. 11. 2026).
+     * The settings of the zone (app.grapheneos.gmscompat/.MainActivity) need the signature|privileged permission
+     * app.grapheneos.gmscompat.SHOW_UI, which this app does not hold (seen on the phone 15. 11. 2026). The Apps
+     * screen of the system settings holds the entry that opens them (res/xml/apps.xml, key sandboxed_google_play),
+     * so the button opens that screen: com.android.settings/.Settings$AppDashboardActivity (exported, verified in
+     * the Settings manifest of the base).
      */
     private void openZoneSettings() {
-        Intent i = new Intent("app.grapheneos.gmscompat.SETTINGS_LINK").setPackage("app.grapheneos.gmscompat");
+        Intent i = new Intent().setComponent(
+                new ComponentName("com.android.settings", "com.android.settings.Settings$AppDashboardActivity"));
         try {
             startActivity(i);
         } catch (ActivityNotFoundException | SecurityException e) {

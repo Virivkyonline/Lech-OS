@@ -294,6 +294,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Obrazovka nastavení: `app.grapheneos.gmscompat/.MainActivity` (akcia `app.grapheneos.gmscompat.SETTINGS_LINK`,
    overené v manifeste GmsCompat) → Android Auto → „Allow permissions for wireless Android Auto“. Do stránky
    „Aplikácie z Google Play“ pridané tlačidlo „Nastavenia zóny“ (0.6.12-dev, neskúšané).
+   Oprava 15. 11. 13:35: tá obrazovka vyžaduje oprávnenie `app.grapheneos.gmscompat.SHOW_UI`
+   (signature|privileged) – z adb shell ani z LECH Nastavení sa priamo neotvorí. Otvára ju položka „Zóna Google
+   (Google Play v izolácii)“ na obrazovke Aplikácie systémových Nastavení
+   (`com.android.settings/.Settings$AppDashboardActivity`); tlačidlo v 0.6.12-dev preto otvára túto obrazovku.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
