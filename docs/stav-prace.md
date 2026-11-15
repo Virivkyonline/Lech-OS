@@ -290,6 +290,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (2) App Store základu ukazuje všade „GrapheneOS“ a ponúka aktualizáciu Vanadia zo svojich serverov – prehliadač sa
    teda aktualizuje cez App Store základu (spojenie na servery GrapheneOS; zohľadniť pri meraní súkromia);
    (3) stránka Android Auto odkazuje na „Settings > Apps > Sandboxed Google Play“ (u nás „Zóna Google“).
+   **Android Auto 15. 11. ~13:40:** v aute sa nepripojilo – vlastník nenašiel prepínač bezdrôtových povolení.
+   Obrazovka nastavení: `app.grapheneos.gmscompat/.MainActivity` (akcia `app.grapheneos.gmscompat.SETTINGS_LINK`,
+   overené v manifeste GmsCompat) → Android Auto → „Allow permissions for wireless Android Auto“. Do stránky
+   „Aplikácie z Google Play“ pridané tlačidlo „Nastavenia zóny“ (0.6.12-dev, neskúšané).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

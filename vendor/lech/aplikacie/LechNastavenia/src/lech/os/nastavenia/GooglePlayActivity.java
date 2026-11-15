@@ -60,6 +60,16 @@ public class GooglePlayActivity extends Activity {
         lp.topMargin = Ui.dp(this, 10);
         page.addView(button, lp);
         page.addView(paragraph(R.string.gplay_zone_sees, Ui.TEXT_2));
+        // Settings of the sandboxed Google Play of the base (GmsCompat): Android Auto permissions, location
+        // rerouting, links to the Play services settings.
+        page.addView(heading(R.string.gplay_auto_title));
+        page.addView(paragraph(R.string.gplay_auto_text, Ui.TEXT_2));
+        LinearLayout zone = Ui.pillButton(this, R.drawable.ic_settings, getString(R.string.gplay_auto_button),
+                v -> openZoneSettings());
+        LinearLayout.LayoutParams zlp = Ui.lp(-2, -2);
+        zlp.gravity = Gravity.CENTER_HORIZONTAL;
+        zlp.topMargin = Ui.dp(this, 10);
+        page.addView(zone, zlp);
         page.addView(heading(R.string.gplay_other_title));
         page.addView(paragraph(R.string.gplay_other_text, Ui.TEXT_2));
 
@@ -95,6 +105,19 @@ public class GooglePlayActivity extends Activity {
         t.setLineSpacing(Ui.dp(this, 3), 1f);
         t.setPadding(0, Ui.dp(this, 8), 0, 0);
         return t;
+    }
+
+    /**
+     * The settings screen of the compatibility layer: app.grapheneos.gmscompat/.MainActivity, action
+     * app.grapheneos.gmscompat.SETTINGS_LINK (verified in the GmsCompat manifest of the base, 15. 11. 2026).
+     */
+    private void openZoneSettings() {
+        Intent i = new Intent("app.grapheneos.gmscompat.SETTINGS_LINK").setPackage("app.grapheneos.gmscompat");
+        try {
+            startActivity(i);
+        } catch (ActivityNotFoundException | SecurityException e) {
+            Toast.makeText(this, R.string.no_screen, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /** The page of Google Play services in the App Store of the base, else its main screen, else a message. */
