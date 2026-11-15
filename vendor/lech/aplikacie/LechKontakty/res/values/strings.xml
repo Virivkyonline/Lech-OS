@@ -99,4 +99,10 @@
     <string name="nav_settings">Settings</string>
     <string name="phone_search_hint">Search contacts or numbers</string>
     <string name="voicemail_failed">The voicemail number is not set.</string>
+    <string name="menu_import_vcf">Import contacts from a file (.vcf)</string>
+    <string name="menu_export_vcf">Export contacts to a file (.vcf)</string>
+    <string name="vcf_imported">Imported contacts: %1$d, already in the phone: %2$d</string>
+    <string name="vcf_exported">Exported contacts: %1$d</string>
+    <string name="vcf_import_failed">The contacts could not be imported from this file</string>
+    <string name="vcf_export_failed">The contacts could not be exported</string>
 </resources>

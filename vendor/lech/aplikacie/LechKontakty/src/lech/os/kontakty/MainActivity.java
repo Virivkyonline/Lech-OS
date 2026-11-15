@@ -62,6 +62,8 @@ public class MainActivity extends Activity {
     private static final int CHIP_COMPANIES = 3;
     private static final int REQ_PERMISSIONS = 1;
     private static final int REQ_VOICE = 2;
+    private static final int REQ_IMPORT = 3;
+    private static final int REQ_EXPORT = 4;
     private static final String STATE_TAB = "tab";
     private static final String STATE_CHIP = "chip";
 
@@ -219,6 +221,46 @@ public class MainActivity extends Activity {
             ArrayList<String> r = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (r != null && !r.isEmpty()) search.setText(r.get(0));
         }
+        if ((requestCode == REQ_IMPORT || requestCode == REQ_EXPORT) && resultCode == RESULT_OK && data != null
+                && data.getData() != null) {
+            transferContacts(data.getData(), requestCode == REQ_IMPORT);
+        }
+    }
+
+    /** Import from or export to a contact file (.vcf) chosen in the file picker of the system. */
+    private void transferContacts(android.net.Uri file, boolean importing) {
+        bg.execute(() -> {
+            String message;
+            try {
+                if (importing) {
+                    int[] n = Vcf.importFile(this, file);
+                    message = getString(R.string.vcf_imported, n[0], n[1]);
+                } else {
+                    message = getString(R.string.vcf_exported, Vcf.exportAll(this, file));
+                }
+            } catch (Exception e) {
+                message = getString(importing ? R.string.vcf_import_failed : R.string.vcf_export_failed);
+            }
+            final String text = message;
+            main.post(() -> {
+                android.widget.Toast.makeText(this, text, android.widget.Toast.LENGTH_LONG).show();
+                reload();
+            });
+        });
+    }
+
+    private void pickContactFile(boolean importing) {
+        Intent i = new Intent(importing ? Intent.ACTION_OPEN_DOCUMENT : Intent.ACTION_CREATE_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        // Contact files carry different types (text/x-vcard, text/vcard, or none), so the import offers all files.
+        i.setType(importing ? "*/*" : "text/x-vcard");
+        if (!importing) i.putExtra(Intent.EXTRA_TITLE, "kontakty.vcf");
+        try {
+            startActivityForResult(i, importing ? REQ_IMPORT : REQ_EXPORT);
+        } catch (android.content.ActivityNotFoundException e) {
+            android.widget.Toast.makeText(this, importing ? R.string.vcf_import_failed : R.string.vcf_export_failed,
+                    android.widget.Toast.LENGTH_LONG).show();
+        }
     }
 
     private void onBack() {
@@ -315,6 +357,8 @@ public class MainActivity extends Activity {
                 menu.getMenu().add(0, 2, 0, R.string.menu_rename_group);
                 menu.getMenu().add(0, 3, 0, R.string.menu_delete_group);
             }
+            menu.getMenu().add(0, 5, 0, R.string.menu_import_vcf);
+            menu.getMenu().add(0, 6, 0, R.string.menu_export_vcf);
         }
         menu.setOnMenuItemClickListener(item -> {
             final Repo.Bucket g = openGroup;
@@ -341,6 +385,12 @@ public class MainActivity extends Activity {
                 case 4:
                     Actions.confirm(this, R.string.clear_history_q, R.string.delete,
                             () -> background(() -> Repo.clearCalls(this)));
+                    return true;
+                case 5:
+                    pickContactFile(true);
+                    return true;
+                case 6:
+                    pickContactFile(false);
                     return true;
                 default:
                     return false;

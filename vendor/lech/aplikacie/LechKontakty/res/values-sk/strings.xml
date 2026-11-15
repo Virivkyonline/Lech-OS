@@ -99,4 +99,10 @@
     <string name="nav_settings">Nastavenia</string>
     <string name="phone_search_hint">Hľadať v kontaktoch alebo číslach</string>
     <string name="voicemail_failed">Číslo hlasovej schránky nie je nastavené.</string>
+    <string name="menu_import_vcf">Importovať kontakty zo súboru (.vcf)</string>
+    <string name="menu_export_vcf">Exportovať kontakty do súboru (.vcf)</string>
+    <string name="vcf_imported">Importované kontakty: %1$d, už boli v telefóne: %2$d</string>
+    <string name="vcf_exported">Exportované kontakty: %1$d</string>
+    <string name="vcf_import_failed">Kontakty sa z tohto súboru nepodarilo importovať</string>
+    <string name="vcf_export_failed">Kontakty sa nepodarilo exportovať</string>
 </resources>
