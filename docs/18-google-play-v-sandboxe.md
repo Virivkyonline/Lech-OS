@@ -77,8 +77,17 @@ Veta pre zákazníka (zatiaľ): *„Platenie mobilom pri pokladni závisí od va
 
 ## Android Auto
 
-Potrebuje viac prístupu ako bežná aplikácia. GrapheneOS ho podporuje ako rozšírenie s **vlastnými prepínačmi**
-(každý prístup zapína používateľ sám). Rovnako by to bolo v LECH OS.
+Podľa návodu GrapheneOS (grapheneos.org/usage#android-auto, overené 15. 11. 2026; v LECH OS neskúšané):
+
+- Inštaluje sa **len z App Store základu** (u nás „Zóna Google“), nie z Obchodu Play; vyžaduje zónu Google.
+- Predvolene nemá žiadne zvláštne práva. Nastavuje sa v Nastavenia → Aplikácie → Zóna Google (Google Play
+  v izolácii) → Android Auto: prepínače „povolenia pre káblové / bezdrôtové Android Auto“ (káblové potrebuje oveľa
+  menej prístupu; niektoré autá vyžadujú bezdrôtové povolenia aj pri kábli), každý s potvrdením a vysvetlením.
+- Upozornenia do auta: povoliť Android Auto prístup k upozorneniam (odkaz na tej istej obrazovke).
+- V rozhraní auta sa ukážu aplikácie **nainštalované z Obchodu Play** s podporou Android Auto (vlastník má v aute
+  aj aplikácie mimo Play – režim pre vývojárov Android Auto; overiť pri skúške).
+- Pre LECH OS: do stránky „Aplikácie z Google Play“ pridať krok „Android Auto“ (otvorí inštaláciu a obrazovku
+  nastavení základu); texty tej obrazovky sú v GmsCompat základu po anglicky – preložiť.
 
 ## Čo treba v LECH OS urobiť (technicky)
 
