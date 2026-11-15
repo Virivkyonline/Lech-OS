@@ -256,6 +256,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Overené fotkou 09:17: upozornenia sú podpísané „LECH OS“. Nepreložené upozornenie základu „App restart is
    required / App optimization has completed…“ (`frameworks/base/core/res/res/values/string_ext.xml`) – do dávky
    prekladov spolu s 243 textmi Settings.
+   **Pripravené pre 0.6.10-dev (15. 11., neskúšané):** preklady – `packages/apps/Settings` 0001 (231 textov),
+   `frameworks/base` 0013 (21 hlásení). Overené 15. 11.: ikona Obchodu v Nastaveniach je naša, aktualizátor základu
+   v zozname nie je. Nález: „Zóna Google“ (App Store základu) má v zozname aplikácií ikonu GrapheneOS – treba
+   ikonu LECH (vrstvy v `branding/ikony`, potom `ICON_PACKAGE_APPS` a `hasLechIcon` vo `frameworks/base` 0012).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

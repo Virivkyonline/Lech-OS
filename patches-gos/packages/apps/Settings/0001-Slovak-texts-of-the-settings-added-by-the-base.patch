@@ -1,0 +1,284 @@
+From 8ddbc8c039bcb4edfd7b838412e7ec79df86c412 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sun, 15 Nov 2026 08:40:00 +0000
+Subject: [PATCH] Slovak texts of the settings added by the base
+
+LECH OS on the GrapheneOS base (ADR-0012): the settings the base adds
+(exploit protection, USB-C port, duress password, clipboard access,
+carrier overrides, network location...) had English texts only, e.g.
+"Allow access to Android/obb folder" (owner, Pixel 9, 15. 11. 2026).
+All of them get a Slovak translation. Servers of GrapheneOS keep their
+name: the base uses them. The duress password text names LECH OS, and
+the Play Integrity text no longer speaks for GrapheneOS.
+---
+ res/values-sk/strings_ext.xml | 235 ++++++++++++++++++++++++++++++++++
+ res/values/strings_ext.xml    |   4 +-
+ 2 files changed, 237 insertions(+), 2 deletions(-)
+ create mode 100644 res/values-sk/strings_ext.xml
+
+diff --git a/res/values-sk/strings_ext.xml b/res/values-sk/strings_ext.xml
+new file mode 100644
+index 0000000..bb1c103
+--- /dev/null
++++ b/res/values-sk/strings_ext.xml
+@@ -0,0 +1,235 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: Slovak texts of the settings added by the GrapheneOS base (it has them in English only). -->
++<resources>
++    <string name="hardware_sku">Hardvérové označenie (SKU)</string>
++    <string name="auto_off_never">Nikdy</string>
++    <string name="bool_setting_enable">Zapnúť</string>
++    <string name="bool_setting_enabled">Zapnuté</string>
++    <string name="bool_setting_disabled">Vypnuté</string>
++    <string name="exploit_protection_settings">Ochrana pred útokmi</string>
++    <string name="app_exploit_protection_category">Ochrana aplikácie pred útokmi</string>
++    <string name="scramble_pin_title">Náhodné rozloženie číslic pri zadávaní PIN</string>
++    <string name="sandboxed_google_play">Zóna Google (Google Play v izolácii)</string>
++    <string name="sandboxed_google_play_work_profile">Zóna Google (pracovný profil)</string>
++    <string name="private_space_hide_discoverability_warning">Skrytie súkromného priestoru neutají, že ho máte. Iné časti systému môžu jeho prítomnosť prezradiť.</string>
++    <string name="user_settings_send_censored_notifications_to_current">Posielať upozornenia aktuálnemu používateľovi</string>
++    <string name="user_settings_send_censored_notifications_to_current_summary">Keď ste aktívny na pozadí, upozornenia z vašej zamknutej obrazovky sa prepošlú aktuálnemu používateľovi. Zobrazí sa len meno používateľa, názov aplikácie a čas prijatia.</string>
++    <string name="auto_grant_OTHER_SENSORS_permission_title">Predvolene povoliť aplikáciám povolenie Senzory</string>
++    <string name="auto_grant_OTHER_SENSORS_permission_summary_on">Senzory sú neštandardné povolenie, bez neho môžu aplikácie fungovať nesprávne.</string>
++    <string name="auto_grant_OTHER_SENSORS_permission_summary_off">Keď sa aplikácia pokúsi použiť senzory, zobrazí sa žiadosť o povolenie. Niektoré aplikácie treba po udelení povolenia Senzory ručne reštartovať.</string>
++    <string name="keyguard_camera_title">Povoliť fotoaparát pri zamknutom telefóne</string>
++    <string name="auto_reboot_title">Automatický reštart</string>
++    <string name="auto_reboot_footer">Zariadenie sa automaticky reštartuje, ak nebolo počas zvoleného času odomknuté.</string>
++    <string name="screenshot_timestamp_exif_title">Ukladať čas snímky obrazovky do EXIF</string>
++    <string name="screenshot_timestamp_exif_summary">Pridá čas vytvorenia do metadát EXIF snímky obrazovky</string>
++    <string name="pref_gnss_supl_title">Secure User Plane Location (SUPL)</string>
++    <string name="pref_gnss_supl_footer">A-GNSS (asistované určovanie polohy zo satelitov) podľa vysielačov mobilnej siete v okolí.</string>
++    <string name="supl_enabled_grapheneos_proxy">Sprostredkujúci server GrapheneOS</string>
++    <string name="supl_enabled_standard_server">Štandardný server</string>
++    <string name="supl_disabled">Vypnuté</string>
++    <string name="supl_disabled_summary">Určenie polohy bude výrazne pomalšie, najmä ak je vypnutá aj služba PSDS</string>
++    <string name="g_euicc_lpa_title">Podpora eSIM</string>
++    <string name="g_euicc_lpa_enable_dialog_msg">Na zapnutie tohto nastavenia treba zariadenie reštartovať.</string>
++    <string name="g_euicc_lpa_disable_dialog_title">Upozornenie</string>
++    <string name="g_euicc_lpa_disable_dialog_msg">Po vypnutí podpory eSIM nebude fungovať:\n• pridávanie nových eSIM\n• zapínanie a vypínanie existujúcich eSIM\n• odstraňovanie eSIM, aj zo zamknutej obrazovky (napr. keď je eSIM zamknutá zabudnutým kódom PIN)\n• vymazanie eSIM pri obnovení výrobných nastavení\n\nZariadenie sa automaticky reštartuje.</string>
++    <string name="g_euicc_lpa_restart_button">Reštartovať</string>
++    <string name="g_euicc_lpa_proceed_button">Pokračovať</string>
++    <string name="sim_action_esim_support_disabled_title">eSIM sa nedá vypnúť</string>
++    <string name="sim_action_esim_support_disabled_text">Podpora eSIM je vypnutá. Ak chcete eSIM vypnúť, zapnite podporu eSIM.</string>
++    <string name="remote_provisioning_title">Poskytovanie atestačných kľúčov</string>
++    <string name="remote_provisioning_enabled_grapheneos_proxy">Sprostredkujúci server GrapheneOS</string>
++    <string name="remote_provisioning_enabled_google_server">Server Google</string>
++    <string name="remote_provisioning_disabled">Vypnuté</string>
++    <string name="Google_apps_special_accelerator_access_title">Zvláštny prístup aplikácií Google k hardvérovým akcelerátorom</string>
++    <string name="Google_apps_special_accelerator_access_summary_granted">Prístup povolený</string>
++    <string name="Google_apps_special_accelerator_access_summary_not_granted">Prístup nepovolený</string>
++    <string name="Google_apps_special_accelerator_access_main_switch">Povoliť aplikáciám Google zvláštny prístup k hardvérovým akcelerátorom</string>
++    <string name="Google_apps_special_accelerator_access_footer">Niektoré aplikácie Google očakávajú zvláštny, širší prístup k hardvérovým akcelerátorom než bežné aplikácie. Napríklad:\n• Pixel Camera\n• Fotky Google\n• Google Recorder\n\nToto nastavenie platí pre všetkých používateľov zariadenia.</string>
++    <string name="pref_gnss_psds_title">Predpovede polohy satelitov (PSDS)</string>
++    <string name="gnss_psds_footer">Keď je PSDS zapnuté, pravidelne sa sťahujú súbory s údajmi PSDS, ktoré zrýchľujú a spresňujú určenie polohy. Serveru sa neposiela žiadna požiadavka s údajmi o vás. Súbory obsahujú dráhy a stav satelitov, údaje o prostredí Zeme a korekcie času.</string>
++    <string name="psds_enabled_grapheneos_server">Server GrapheneOS</string>
++    <string name="psds_enabled_standard_server">Štandardný server</string>
++    <string name="psds_disabled">Vypnuté</string>
++    <string name="psds_disabled_summary">Určenie polohy bude výrazne pomalšie, najmä ak je vypnuté aj SUPL</string>
++    <string name="contact_scopes">Rozsah kontaktov</string>
++    <string name="storage_scopes">Rozsah úložiska</string>
++    <string name="conn_checks_grapheneos_server">Server GrapheneOS</string>
++    <string name="conn_checks_google_server">Štandardný server (Google)</string>
++    <string name="conn_checks_disabled">Vypnuté</string>
++    <string name="conn_checks_title">Kontroly pripojenia k internetu</string>
++    <string name="conn_checks_footer">Kontrola pripojenia je zvláštna prázdna požiadavka na server, ktorou sa zisťuje, či má aktuálna sieť prístup na internet. Kontroly prebiehajú cez HTTP, HTTPS, DNS, DNS-over-TLS a DNS-over-HTTPS.</string>
++    <string name="wifi_auto_off_title">Automaticky vypínať Wi-Fi</string>
++    <string name="wifi_auto_off_footer">Keď Wi-Fi nie je pripojená, po zvolenom čase sa vypne.</string>
++    <string name="bluetooth_auto_off_title">Automaticky vypínať Bluetooth</string>
++    <string name="bluetooth_auto_off_footer">Keď nie je pripojené žiadne zariadenie, Bluetooth sa po zvolenom čase vypne.</string>
++    <string name="widevine_provisioning_title">Poskytovanie certifikátu Widevine</string>
++    <string name="widevine_provisioning_enabled_grapheneos_proxy">Sprostredkujúci server GrapheneOS</string>
++    <string name="widevine_provisioning_enabled_google_server">Server Google</string>
++    <string name="widevine_provisioning_footer">Získaný certifikát sa používa na prístup k obsahu chránenému DRM.</string>
++    <string name="user_app_install">Inštalácia a aktualizácie aplikácií</string>
++    <string name="user_app_install_enabled">Povolené</string>
++    <string name="user_app_install_enabled_first_party_sources">Povolené len zo zdrojov systému</string>
++    <string name="user_app_install_disabled">Zakázané</string>
++    <string name="user_app_install_enabled_desc">Povoliť inštaláciu a aktualizácie aplikácií</string>
++    <string name="user_app_install_enabled_first_party_sources_desc">Povoliť inštaláciu a aktualizácie aplikácií len zo zdrojov systému</string>
++    <string name="user_app_install_disabled_desc">Zakázať inštaláciu a aktualizácie aplikácií</string>
++    <string name="user_run_in_background">Povoliť beh na pozadí</string>
++    <string name="allow_automatic_per_app_epcm_title">Automatický režim kompatibility ochrany pred útokmi</string>
++    <string name="allow_automatic_per_app_epcm_summary">Povoliť automatické vypnutie ochrán pri aplikáciách, o ktorých je známe, že to potrebujú</string>
++    <string name="app_exploit_protection_default_value_warning">Upozornenie: po zapnutí tohto nastavenia môžu niektoré aplikácie prestať fungovať.</string>
++    <string name="allow_access_to_obb_directory_title">Povoliť prístup k priečinku Android/obb</string>
++    <string name="allow_access_to_obb_directory_summary">Potrebné na inštaláciu niektorých veľkých aplikácií (najmä hier), ktoré používajú rozširujúce súbory OBB</string>
++    <string name="battery_share_description">Nabíjajte iné zariadenia položením na zadnú stranu telefónu</string>
++    <string name="battery_share">Zdieľanie batérie</string>
++    <string name="show_system_process_crash_notifs_title">Upozorňovať na pády systémových procesov</string>
++    <string name="show_system_process_crash_notifs_summary">Také pády môžu naznačovať pokus o útok</string>
++    <string name="view_logs">Zobraziť záznamy</string>
++    <string name="usbc_port_title">Port USB-C</string>
++    <string name="usbc_port_off_title">Vypnutý</string>
++    <string name="usbc_port_off_summary">Vypne port USB-C. Nemá vplyv na samostatný režim nabíjania, ktorý sa spustí po vypnutí zariadenia a pripojení nabíjačky.</string>
++    <string name="usbc_port_charging_only_title">Len nabíjanie</string>
++    <string name="usbc_port_charging_only_summary">Vypne všetky funkcie portu USB-C okrem nabíjania.</string>
++    <string name="usbc_port_charging_only_when_locked_title">Len nabíjanie pri zamknutom zariadení</string>
++    <string name="usbc_port_charging_only_when_locked_summary">Režim len nabíjania sa zapne, keď je zariadenie zamknuté, a vypne sa po odomknutí. Ak je pri zamknutí už niečo pripojené, režim sa zapne až po odpojení.</string>
++    <string name="usbc_port_charging_only_when_locked_afu_title">Len nabíjanie pri zamknutom zariadení, okrem stavu pred prvým odomknutím</string>
++    <string name="usbc_port_charging_only_when_locked_afu_summary">Tento režim sa správa ako režim „%1$s“, navyše s výnimkou pre pripojenia pred prvým odomknutím.</string>
++    <string name="usbc_port_on_title">Zapnutý</string>
++    <string name="usbc_port_on_summary">Bez obmedzení.</string>
++    <string name="usbc_port_and_pogo_pins_title">Port USB-C a kontakty pogo</string>
++    <string name="usbc_port_and_pogo_pins_off_title">Port USB-C vypnutý, kontakty pogo len na nabíjanie</string>
++    <string name="usbc_port_and_pogo_pins_off_summary">Vypne port USB-C a všetky funkcie kontaktov pogo okrem nabíjania. Nemá vplyv na samostatný režim nabíjania, ktorý sa spustí po vypnutí zariadenia a pripojení nabíjačky.</string>
++    <string name="usbc_port_and_pogo_pins_charging_only_summary">Vypne všetky funkcie portu USB-C a kontaktov pogo okrem nabíjania.</string>
++    <string name="usbc_port_and_pogo_pins_charging_only_when_locked_summary">Režim len nabíjania sa zapne, keď je zariadenie zamknuté, a vypne sa po odomknutí. Ak je pri zamknutí už niečo pripojené, režim sa zapne až po odpojení. To isté platí pre kontakty pogo.</string>
++    <string name="duress_pwd_pref_title">Núdzové heslo</string>
++    <string name="duress_pwd_description">Núdzové heslo možno zadať namiesto hesla používateľa všade, kde sa heslo vyžaduje – na zamknutej obrazovke ktoréhokoľvek používateľa aj pri výzve na heslo používateľa či pracovného profilu.\n\nPo zadaní núdzového hesla sa obsah úložiska okamžite a natrvalo zneprístupní, vymažú sa všetky eSIM a zariadenie sa vypne. LECH OS ostane nainštalovaný.\n\nNúdzový PIN funguje rovnako ako núdzové heslo.</string>
++    <string name="duress_pwd_enter_pin">Zadajte núdzový PIN</string>
++    <string name="duress_pwd_confirm_pin">Potvrďte núdzový PIN</string>
++    <string name="duress_pwd_enter_password">Zadajte núdzové heslo</string>
++    <string name="duress_pwd_confirm_password">Potvrďte núdzové heslo</string>
++    <string name="duress_pwd_action_add">Pridať núdzový PIN a heslo</string>
++    <string name="duress_pwd_add_button">Pridať</string>
++    <string name="duress_pwd_toast_added">Núdzový PIN a heslo boli pridané</string>
++    <string name="duress_pwd_toast_updated">Núdzový PIN a heslo boli zmenené</string>
++    <string name="duress_pwd_update_button">Zmeniť</string>
++    <string name="duress_pwd_cancel_button">Zrušiť</string>
++    <string name="duress_pwd_proceed_button">Pokračovať</string>
++    <string name="duress_pwd_delete_button">Odstrániť</string>
++    <string name="duress_pwd_action_update">Zmeniť núdzový PIN a heslo</string>
++    <string name="duress_pwd_action_delete">Odstrániť núdzový PIN a heslo</string>
++    <string name="duress_pwd_action_delete_confirmation">Odstrániť núdzový PIN a heslo?</string>
++    <string name="duress_pwd_save_warning_title">UPOZORNENIE</string>
++    <string name="duress_pwd_save_warning_text">Zadanie núdzového kódu PIN alebo hesla namiesto kódu PIN alebo hesla používateľa <b>okamžite a natrvalo zneprístupní obsah úložiska</b> a vymaže všetky eSIM.</string>
++    <string name="duress_pwd_save_error">Núdzový PIN a heslo sa neuložili.\n\nPodrobnosti:\n%1$s</string>
++    <string name="duress_pwd_delete_error">Núdzový PIN a heslo sa neodstránili.\n\nPodrobnosti:\n%1$s</string>
++    <string name="duress_pwd_error_dialog_dismiss">Zavrieť</string>
++    <string name="alt_touchscreen_mode_title">Alternatívny režim dotykovej obrazovky</string>
++    <string name="alt_touchscreen_mode_summary">Tento režim je menej náchylný na falošné dotyky. Zapnite ho len vtedy, keď máte s dotykovou obrazovkou problémy.</string>
++    <string name="alt_touchscreen_mode_confirm_message">Potvrďte, že dotyková obrazovka funguje. Bez potvrdenia sa alternatívny režim po niekoľkých sekundách vypne.</string>
++    <string name="alt_touchscreen_mode_confirm_button">Potvrdiť</string>
++    <string name="app_play_integrity_api">Play Integrity API</string>
++    <string name="app_play_integrity_top_intro">Play Integrity API umožňuje službám overovať vlastnosti zariadenia cez ich aplikáciu. Väčšina služieb vyžaduje úroveň, ktorú má len nezmenený systém výrobcu na zariadení s licenciou Google Mobile Services. Nie každá aplikácia, ktorá toto rozhranie používa, preto iný systém odmietne. Ak aplikácia LECH OS odmieta, odporúčame napísať jej vývojárovi. Aplikácie môžu hardvér, systém aj seba overiť štandardnou hardvérovou atestáciou Androidu.</string>
++    <string name="app_play_integrity_contact_app_developer">Kontaktovať vývojára aplikácie</string>
++    <string name="app_play_integrity_show_usage_notifications">Zobrazovať upozornenia na použitie</string>
++    <string name="app_play_integrity_block_usage_attempts">Blokovať pokusy o použitie</string>
++    <string name="app_play_integrity_block_usage_attempts_summary_on">Pokusy o použitie Play Integrity API zlyhajú s chybou „API is not available“</string>
++    <string name="app_play_integrity_api_blocked">Blokované</string>
++    <string name="app_play_integrity_api_not_blocked">Neblokované</string>
++    <string name="app_play_integrity_see_all_apps">Zobraziť aplikácie, ktoré použili Play Integrity API</string>
++    <string name="network_location_title">Sieťová poloha</string>
++    <string name="network_location_footer">Sieťová poloha určuje polohu zariadenia podľa signálov v okolí – sietí Wi-Fi, zariadení Bluetooth a vysielačov mobilnej siete. Zariadenie tieto signály vyhľadá a ich identifikátory odošle serveru, ktorý vráti údaje na odhad polohy. V súčasnosti sa používajú siete Wi-Fi a vysielače mobilnej siete.\n\nHodí sa najmä tam, kde je GNSS nedostupné alebo nespoľahlivé, napríklad v budovách. Polohu určí rýchlejšie, než sa podarí zachytiť satelity, alebo keď je ich signál slabý.</string>
++    <string name="network_location_enabled_grapheneos_apple_proxy">Sprostredkujúci server GrapheneOS (Apple)</string>
++    <string name="network_location_enabled_apple">Server Apple</string>
++    <string name="network_location_enabled_apple_china">Server Apple pre Čínu (potrebný pre údaje z Číny)</string>
++    <string name="network_location_disabled">Vypnuté</string>
++    <string name="cross_profile_clipboard_access_title">Schránka zdieľaná medzi profilmi</string>
++    <string name="cross_profile_clipboard_access_allow_defaults_title">Podľa predvolených nastavení</string>
++    <string name="cross_profile_clipboard_access_allow_defaults_summary">Schránka sa zdieľa s nadradeným používateľom a jeho ďalšími profilmi podľa predvolených nastavení systému, oboma smermi.</string>
++    <string name="cross_profile_clipboard_access_allow_import_defaults_title">Predvolené len pre prijímanie</string>
++    <string name="cross_profile_clipboard_access_allow_import_defaults_summary">Schránka sa podľa predvolených nastavení systému prijíma od nadradeného používateľa a jeho ďalších profilov.</string>
++    <string name="cross_profile_clipboard_access_allow_export_defaults_title">Predvolené len pre odosielanie</string>
++    <string name="cross_profile_clipboard_access_allow_export_defaults_summary">Schránka sa podľa predvolených nastavení systému odosiela nadradenému používateľovi a jeho ďalším profilom.</string>
++    <string name="cross_profile_clipboard_access_disallow_title">Zakázané</string>
++    <string name="cross_profile_clipboard_access_disallow_summary">Schránka sa s nadradeným používateľom a jeho ďalšími profilmi nezdieľa.</string>
++    <string name="cross_profile_clipboard_access_footer">Týmto nastavením povolíte alebo zakážete zdieľanie schránky s ostatnými profilmi toho istého nadradeného používateľa vrátane neho samého. Po zákaze nebude nový obsah schránky medzi profilmi dostupný – napríklad medzi súkromným priestorom a nadradeným používateľom alebo medzi súkromným priestorom a pracovným profilom. Obsah schránky zdieľaný pred zvolením prísnejšej možnosti ostáva dostupný, kým sa schránka nezmení.</string>
++    <string name="ps_disallow_delayed_locking_title">Pri zamknutí ihneď ukončiť reláciu</string>
++    <string name="ps_disallow_delayed_locking_description">Zakáže oneskorené zamknutie úložiska pri zastavení alebo zamknutí aktuálneho súkromného profilu. Zamknutie potom funguje ako ukončenie relácie ďalšieho používateľa: na odomknutie úložiska treba silné overenie.</string>
++    <string name="geocoder_title">Prevod súradníc na adresy</string>
++    <string name="geocoder_footer">Geokódovanie prevádza adresy na zemepisné súradnice a spätné geokódovanie súradnice na adresy v okolí. Aplikácie môžu použiť tu zvolenú službu, ktorá tieto prevody robí cez sieť.</string>
++    <string name="geocoder_enabled_grapheneos_server">Server GrapheneOS</string>
++    <string name="geocoder_enabled_openstreetmap_server">Server OpenStreetMap</string>
++    <string name="geocoder_disabled">Vypnuté</string>
++    <string name="carrier_settings_override_gos_title">Prepísanie nastavení operátora</string>
++    <string name="carrier_settings_override_intro_text">Prepíše nastavenia operátora v zariadení pre túto SIM kartu. Najprv zvoľte, čo chcete prepísať, potom prepísanie zapnite.</string>
++    <string name="carrier_settings_override_footer">Tieto miestne zmeny môžu sprístupniť skryté možnosti IMS vašej SIM karty, ale fungovanie závisí od podpory a nastavenia u operátora. Služba môže byť nespoľahlivá. Používate na vlastné riziko.</string>
++    <string name="carrier_settings_override_intro_text_expand">Rozbaliť</string>
++    <string name="carrier_settings_override_intro_text_collapse">Zbaliť</string>
++    <string name="carrier_settings_override_error_title">Chyba</string>
++    <string name="carrier_settings_override_error_unable_to_connect_to_config__s">Nepodarilo sa pripojiť k službe predplatného (%1$s)</string>
++    <string name="carrier_settings_override_no_override_selected_title">Prepísanie sa nedá zapnúť</string>
++    <string name="carrier_settings_override_no_override_selected_message">Nie je zvolené žiadne prepísanie. Všetky nastavenia majú predvolené hodnoty.</string>
++    <string name="carrier_settings_override_main_switch_title">Zapnúť prepísanie</string>
++    <string name="carrier_settings_override_active_title">Prepísanie je aktívne</string>
++    <string name="carrier_settings_override_unrecognized_category_title">Neznáme prepísania</string>
++    <string name="carrier_settings_override_unrecognized_warning_title">Upozornenie</string>
++    <string name="carrier_settings_override_unrecognized_warning_summary">Tieto prepísania nastavení operátora neboli nastavené na tejto obrazovke.</string>
++    <string name="carrier_settings_override_active_summary">Ak chcete robiť zmeny, prepísanie vypnite</string>
++    <string name="carrier_settings_override_apply_button">Použiť prepísanie nastavení operátora</string>
++    <string name="carrier_settings_override_clear_button">Zrušiť všetky prepísania nastavení operátora</string>
++    <string name="carrier_settings_default_bool_true">Dostupné</string>
++    <string name="carrier_settings_default_bool_false">Nedostupné</string>
++    <string name="carrier_settings_default_unknown">Neznáme</string>
++    <string name="carrier_settings_override_bool_true">Vynútene dostupné</string>
++    <string name="carrier_settings_override_bool_false">Vynútene nedostupné</string>
++    <string name="carrier_settings_override_default__s">Bez prepísania (predvolené: %1$s)</string>
++    <string name="carrier_settings_override_volte_availability">Dostupnosť VoLTE / Vo4G</string>
++    <string name="carrier_settings_override_volte_availability_description">Závisí od nastavenia a dostupnosti u operátora.</string>
++    <string name="carrier_settings_override_vonr_enable">Dostupnosť VoNR / Vo5G</string>
++    <string name="carrier_settings_override_vonr_enable_description">Závisí od nastavenia a dostupnosti u operátora.</string>
++    <string name="carrier_settings_override_5g_title">Možnosti 5G</string>
++    <string name="carrier_settings_override_5g_description">Prepíše dostupnosť 5G NR u operátora pre režimy NSA (non-standalone) a SA (standalone)</string>
++    <string name="carrier_settings_override_5g_enabled_all_modes">Vynútiť NSA aj SA</string>
++    <string name="carrier_settings_override_5g_default_all_modes">NSA aj SA</string>
++    <string name="carrier_settings_override_5g_enabled_nsa">Vynútiť NSA</string>
++    <string name="carrier_settings_override_5g_default_nsa">NSA</string>
++    <string name="carrier_settings_override_5g_enabled_sa">Vynútiť SA</string>
++    <string name="carrier_settings_override_5g_default_sa">SA</string>
++    <string name="carrier_settings_override_5g_disabled">Vynútene vypnuté</string>
++    <string name="carrier_settings_default_5g_disabled">Vypnuté</string>
++    <string name="carrier_settings_override_wfc_availability">Dostupnosť volania cez Wi-Fi</string>
++    <string name="carrier_settings_override_wfc_availability_description">Závisí od nastavenia a dostupnosti u operátora. VoLTE / Vo4G musí byť nastavené ako dostupné.</string>
++    <string name="carrier_settings_override_wfc_availability_on_summary">Vrátane volania cez Wi-Fi v roamingu</string>
++    <string name="carrier_settings_override_wfc_availability_enabled_not_editable">Dostupné, stav sa nedá meniť</string>
++    <string name="carrier_settings_override_wfc_availability_enabled_roaming_not_editable">Dostupné, roaming sa nedá meniť</string>
++    <string name="carrier_settings_override_cross_sim">Dostupnosť volania cez druhú SIM (záložné volanie)</string>
++    <string name="carrier_settings_override_cross_sim_description">Len pri dvoch SIM kartách. Keď je táto SIM v roamingu alebo bez signálu a Wi-Fi nie je dostupná, hovory môžu ísť cez dátové pripojenie druhej SIM. Volanie cez Wi-Fi musí byť nastavené ako dostupné.</string>
++    <string name="exploit_protection_title">Ochrana pred útokmi</string>
++    <string name="exploit_protection_summary">Vylepšenia bezpečnosti zariadenia a aplikácií</string>
++    <string name="cert_transparency_dl_title">Sťahovanie zoznamov Certificate Transparency</string>
++    <string name="cert_transparency_dl_grapheneos_server">Server GrapheneOS</string>
++    <string name="cert_transparency_dl_standard_server">Štandardný server (Google)</string>
++    <string name="cert_transparency_dl_off">Vypnuté</string>
++    <string name="cert_transparency_dl_footer">Certificate Transparency (CT) je internetový štandard, ktorý zvyšuje bezpečnosť digitálnych certifikátov. Certifikačné autority musia každý vydaný certifikát zapísať do verejného záznamu, čo sprehľadňuje vydávanie certifikátov. Vďaka overiteľnému záznamu je oveľa ťažšie certifikát sfalšovať alebo vydať omylom. Chráni to aplikácie pred útokmi typu man-in-the-middle a ďalšími hrozbami.</string>
++    <string name="app_clipboard_read_title">Prístup k schránke</string>
++    <string name="app_clipboard_read_summary">Ako aplikácie pristupujú k schránke a či sa o prístupe zobrazujú správy</string>
++    <string name="app_clipboard_read_intro">Zvoľte, kedy môžu aplikácie čítať obsah schránky a či sa má zobraziť správa, keď prístup prebehne alebo je zablokovaný.</string>
++    <string name="app_clipboard_read_messages_category_title">Správy</string>
++    <string name="app_clipboard_read_app_access_category_title">Prístup aplikácií</string>
++    <string name="app_default_clipboard_read_title">Predvolený prístup aplikácií tretích strán</string>
++    <string name="app_default_clipboard_read_description">Zvoľte predvolený prístup aplikácií tretích strán k schránke. Platí pre všetkých používateľov zariadenia.</string>
++    <string name="app_default_clipboard_read_allowed_summary">Aplikácie tretích strán môžu počas používania čítať obsah schránky z iných aplikácií.</string>
++    <string name="app_default_clipboard_read_blocked_summary">Aplikácie tretích strán môžu čítať len to, čo samy skopírovali alebo čo do nich vložíte.</string>
++    <string name="show_clip_access_denial_notification">Zobraziť, keď je prístup k schránke zablokovaný</string>
++    <string name="show_clip_access_denial_notification_summary">Zobrazí správu, keď sa aplikácii zabráni čítať obsah schránky</string>
++    <string name="app_clipboard_read_apps_title">Spravovať prístup aplikácií</string>
++    <string name="app_clipboard_read_apps_summary">Zvoľte, ktoré aplikácie môžu čítať položky skopírované inými aplikáciami bez toho, aby ste použili Vložiť</string>
++    <string name="app_default_clipboard_read_footer">Aplikácie môžu vždy čítať aktuálnu položku schránky, ak ju samy skopírovali.\n\nPre kompatibilitu aplikácie stále vidia metadáta schránky – či v nej niečo je, akého typu a kedy to bolo skopírované.\n\nZapnuté služby dostupnosti, ktoré vidia obsah obrazovky a pracujú s ním, môžu spustiť vloženie a dostať sa k vloženému obsahu.\n\nNiektoré aplikácie a funkcie systému vrátane predvolenej klávesnice môžu schránku čítať vždy, bez ohľadu na tieto nastavenia.</string>
++    <string name="app_clipboard_read_allowed">Povoliť</string>
++    <string name="app_clipboard_read_allowed_summary">Táto aplikácia môže počas používania čítať obsah schránky z iných aplikácií</string>
++    <string name="app_clipboard_read_blocked">Len vloženie</string>
++    <string name="app_clipboard_read_blocked_summary">Táto aplikácia môže čítať len to, čo sama skopírovala alebo čo do nej vložíte</string>
++    <string name="app_clipboard_read_dvr_default_setting">Podľa nastavenia prístupu k schránke v systéme</string>
++    <string name="app_clipboard_read_ir_is_system_app">Toto nastavenie neplatí pre systémové aplikácie</string>
++    <string name="app_clipboard_read_ir_is_default_ime">Predvolená klávesnica má k schránke prístup vždy</string>
++    <string name="app_clipboard_read_footer">Upozornenie: pri voľbe Len vloženie môže táto aplikácia prestať fungovať.\n\nToto nastavenie určuje, či aplikácia môže čítať položky schránky z iných aplikácií, napríklad text, obrázky a odkazy.\n\nPre kompatibilitu aplikácia stále vidí metadáta schránky – či v nej niečo je, akého typu a kedy to bolo skopírované.\n\nZapnuté služby dostupnosti, ktoré vidia obsah obrazovky a pracujú s ním, môžu v tejto aplikácii spustiť vloženie a dostať sa k vloženému obsahu.</string>
++    <string name="app_clipboard_read_shared_uid_warning">Nastavenie prístupu k schránke, nastavenie správy o zablokovanom prístupe a dočasný prístup pri vložení sú spoločné pre tieto aplikácie: %1$s</string>
++</resources>
+diff --git a/res/values/strings_ext.xml b/res/values/strings_ext.xml
+index 0ac5bf5..4b6b8b5 100644
+--- a/res/values/strings_ext.xml
++++ b/res/values/strings_ext.xml
+@@ -198,7 +198,7 @@ There are HTTP, HTTPS, DNS, DNS-over-TLS and DNS-over-HTTPS connectivity checks.
+     <string name="duress_pwd_pref_title">Duress password</string>
+     <string name="duress_pwd_description">"Duress password can be entered instead of the user password in any place that asks for it, such as the lock screen of any user and any user or work profile password prompt.
+ 
+-Submitting the duress password will immediately make the storage contents permanently inaccessible, delete all eSIMs and then power off the device. GrapheneOS will remain installed.
++Submitting the duress password will immediately make the storage contents permanently inaccessible, delete all eSIMs and then power off the device. LECH OS will remain installed.
+ 
+ Duress PIN works the same way duress password does."</string>
+     <string name="duress_pwd_enter_pin">Enter duress PIN</string>
+@@ -228,7 +228,7 @@ Duress PIN works the same way duress password does."</string>
+     <string name="alt_touchscreen_mode_confirm_button">Confirm</string>
+ 
+     <string name="app_play_integrity_api">Play Integrity API</string>
+-    <string name="app_play_integrity_top_intro">The Play Integrity API allows services to verify properties of a device through their app. Most services check for the device or strong integrity level which requires having the unmodified stock OS on a device licensing Google Mobile Services. Not every app using it will ban using GrapheneOS. GrapheneOS passes the basic integrity level and the miscellaneous checks for licensing, Play Protect, etc. work fine. We recommend leaving feedback for apps using it to ban GrapheneOS asking them to stop banning using a much more secure OS. Apps can use the standard Android hardware attestation API to verify the hardware, OS and app with GrapheneOS.</string>
++    <string name="app_play_integrity_top_intro">The Play Integrity API allows services to verify properties of a device through their app. Most services check for a level which requires the unmodified stock OS on a device licensing Google Mobile Services. Not every app using it will refuse another OS. If an app refuses LECH OS, we recommend contacting its developer. Apps can use the standard Android hardware attestation API to verify the hardware, OS and app.</string>
+     <string name="app_play_integrity_contact_app_developer">Contact app developer</string>
+     <string name="app_play_integrity_show_usage_notifications">Show usage notifications</string>
+     <string name="app_play_integrity_block_usage_attempts">Block usage attempts</string>
+-- 
+2.43.0
+

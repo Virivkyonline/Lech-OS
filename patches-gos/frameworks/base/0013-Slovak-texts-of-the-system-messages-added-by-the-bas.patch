@@ -1,0 +1,47 @@
+From 4d94b7f0428a0d90443617eff4e0e93c60be1116 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sun, 15 Nov 2026 08:45:00 +0000
+Subject: [PATCH] Slovak texts of the system messages added by the base
+
+LECH OS on the GrapheneOS base (ADR-0012): its own system messages were
+English only, e.g. the notification "App restart is required" after an
+update (owner, Pixel 9, 15. 11. 2026). Slovak translations added.
+---
+ core/res/res/values-sk/string_ext.xml | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 core/res/res/values-sk/string_ext.xml
+
+diff --git a/core/res/res/values-sk/string_ext.xml b/core/res/res/values-sk/string_ext.xml
+new file mode 100644
+index 0000000..9fce775
+--- /dev/null
++++ b/core/res/res/values-sk/string_ext.xml
+@@ -0,0 +1,25 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: Slovak texts of the system messages added by the GrapheneOS base (it has them in English only). -->
++<resources>
++    <string name="bluetooth_auto_off_attribution_label">Automatické vypnutie Bluetooth</string>
++    <string name="bg_dexopt_notif_ch_title">Optimalizácia aplikácií</string>
++    <string name="bg_dexopt_notif_title">Optimalizujú sa aplikácie (%1$d z %2$d)</string>
++    <string name="bg_dexopt_notif_text">Kým sa optimalizácia aplikácií nedokončí, zariadenie môže byť pomalšie</string>
++    <string name="bg_dexopt_completed_notif_ch_title">Optimalizácia aplikácií je dokončená</string>
++    <string name="bg_dexopt_completed_notif_title">Treba reštartovať aplikácie</string>
++    <string name="bg_dexopt_completed_notif_text">Optimalizácia aplikácií je dokončená. Klepnutím reštartujete optimalizované aplikácie.</string>
++    <string name="notif_channel_exploit_protection">Ochrana pred útokmi</string>
++    <string name="notif_text_tap_to_open_settings">Klepnutím otvoríte nastavenia</string>
++    <string name="notif_text_tap_to_see_details">Klepnutím zobrazíte podrobnosti</string>
++    <string name="notif_action_more_info">Viac informácií</string>
++    <string name="notif_native_debug_title">Aplikácia %1$s sa pokúsila použiť ladenie natívneho kódu</string>
++    <string name="notif_ch_system_journal">Systémový denník</string>
++    <string name="process_crash_notif_title">Proces %1$s spadol</string>
++    <string name="fsck_error_notif_title">Zistila sa chyba systému súborov</string>
++    <string name="notif_memtag_crash_title">Označovanie pamäte zistilo chybu v %1$s</string>
++    <string name="notif_hmalloc_crash_title">hardened_malloc zistil chybu v %1$s</string>
++    <string name="notif_memory_dcl_title">Aplikácia %1$s sa pokúsila načítať kód z pamäte (DCL)</string>
++    <string name="notif_storage_dcl_title">Aplikácia %1$s sa pokúsila načítať kód z úložiska (DCL)</string>
++    <string name="usb_port_security_error_title">Ochrana portu USB-C zlyhala</string>
++    <string name="clipboard_access_blocked">Aplikácii %1$s bol zablokovaný prístup k schránke</string>
++</resources>
+-- 
+2.43.0
+
