@@ -1,0 +1,52 @@
+From 7e155283422b751710c1930261200cd3209690dc Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Sun, 15 Nov 2026 20:50:00 +0000
+Subject: [PATCH] Slovak texts for the remaining settings of the base
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The second factor PIN of the fingerprint unlock, the touch sensitivity
+switch, the bootloader version and the "… only" network modes had no Slovak
+translation and were shown in English.
+---
+ res/values-sk/strings_ext.xml | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/res/values-sk/strings_ext.xml b/res/values-sk/strings_ext.xml
+index bb1c103..28dce16 100644
+--- a/res/values-sk/strings_ext.xml
++++ b/res/values-sk/strings_ext.xml
+@@ -232,4 +232,29 @@
+     <string name="app_clipboard_read_ir_is_default_ime">Predvolená klávesnica má k schránke prístup vždy</string>
+     <string name="app_clipboard_read_footer">Upozornenie: pri voľbe Len vloženie môže táto aplikácia prestať fungovať.\n\nToto nastavenie určuje, či aplikácia môže čítať položky schránky z iných aplikácií, napríklad text, obrázky a odkazy.\n\nPre kompatibilitu aplikácia stále vidí metadáta schránky – či v nej niečo je, akého typu a kedy to bolo skopírované.\n\nZapnuté služby dostupnosti, ktoré vidia obsah obrazovky a pracujú s ním, môžu v tejto aplikácii spustiť vloženie a dostať sa k vloženému obsahu.</string>
+     <string name="app_clipboard_read_shared_uid_warning">Nastavenie prístupu k schránke, nastavenie správy o zablokovanom prístupe a dočasný prístup pri vložení sú spoločné pre tieto aplikácie: %1$s</string>
++
++    <!-- LECH OS: texts of the base that had no Slovak translation (second factor PIN, network modes). -->
++    <string name="biometric_second_factor_pin_choose_header">Nastavte druhý PIN k odtlačku</string>
++    <string name="biometric_second_factor_confirm_header">Zadajte druhý PIN znova</string>
++    <string name="biometric_second_factor_pin_description">Tento PIN bude telefón pri odomykaní z uzamknutej obrazovky vyžadovať navyše k odtlačku prsta.</string>
++    <string name="biometric_second_factor_pin_change_failed">Druhý PIN sa nepodarilo zmeniť!</string>
++    <string name="biometric_second_factor_pin_settings_title">Druhý PIN k odtlačku</string>
++    <string name="biometric_second_factor_pin_settings_category_title">Nastavenia</string>
++    <string name="biometric_second_factor_pin_change_title">Zmeniť PIN</string>
++    <string name="biometric_second_factor_pin_delete_title">Odstrániť PIN</string>
++    <string name="biometric_second_factor_pin_delete_confirmation_dialog_title">Odstrániť druhý PIN?</string>
++    <string name="biometric_second_factor_pin_delete_confirmation_dialog_message">Pri odomykaní odtlačkom odporúčame mať druhý PIN vždy nastavený. Po odstránení bude telefón menej zabezpečený.</string>
++    <string name="biometric_second_factor_pin_delete_confirmation_dialog_positive_button">Odstrániť</string>
++    <string name="biometric_second_factor_pin_title">Druhý PIN k odtlačku</string>
++    <string name="biometric_second_factor_pin_setup_summary">Treba nastaviť</string>
++    <string name="touch_sensitivity_title">Zvýšiť citlivosť dotyku</string>
++    <string name="touch_sensitivity_summary">Zlepší dotyk pri použití ochranného skla alebo fólie</string>
++    <string name="bootloader_version">Verzia bootloadera</string>
++    <string name="manage_storage_text">Spravovať úložisko</string>
++    <string name="preferred_network_mode_lte_only_summary">Preferovaný režim siete: len LTE</string>
++    <string name="network_lte_only">Len LTE</string>
++    <string name="network_5g_only">Len 5G</string>
++    <string name="network_5g_or_lte_only">Len 5G alebo LTE</string>
++    <string name="network_5g_or_4g_only">Len 5G alebo 4G</string>
++    <string name="network_4G_only">Len 4G</string>
+ </resources>
+-- 
+2.43.0
+
