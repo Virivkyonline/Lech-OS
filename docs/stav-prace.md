@@ -262,6 +262,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    ikonu LECH (vrstvy v `branding/ikony`, potom `ICON_PACKAGE_APPS` a `hasLechIcon` vo `frameworks/base` 0012).
    Hotové pre 0.6.10-dev: ikona `ic_zona` (štít so zámkom, nakreslená skriptom – `branding/ikony/zona`), v balíku
    ikon aj vo `frameworks/base` 0012.
+   **Telefón: LECH OS 0.6.10-dev (OTA 15. 11. 2026 11:16, 0.6.9 → 0.6.10, slot _b → _a, yellow, všetky kontroly
+   OK). Ďalšia zostava 0.6.11-dev.** Overiť v telefóne: slovenské texty Nastavení a hlásení, ikona „Zóna Google“.
+   **Jazyky (otázka vlastníka):** Android je preložený do desiatok jazykov; texty pridané základom GrapheneOS sú
+   len anglické (LECH OS k nim pridal slovenčinu); vlastné aplikácie LECH a názvy/úpravy LECH OS majú slovenčinu
+   a angličtinu. V inom jazyku sa teda tieto časti ukážu po anglicky – pred predajom do ďalšej krajiny doplniť
+   jej jazyk (čeština, nemčina…) do vlastných aplikácií, do tabuliek názvov (`LechAppNames`, plocha) a do textov základu.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
