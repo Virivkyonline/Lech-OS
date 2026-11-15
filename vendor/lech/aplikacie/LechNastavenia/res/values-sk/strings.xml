@@ -44,8 +44,6 @@
     <string name="about_sub">LECH OS %1$s, model, verzia Androidu</string>
     <string name="developer">Pre vývojárov</string>
     <string name="developer_sub">Ladenie cez USB a ďalšie</string>
-    <string name="all_settings">Všetky nastavenia</string>
-    <string name="all_settings_sub">Úplné nastavenia Androidu</string>
     <string name="search_system">Hľadať vo všetkých nastaveniach</string>
     <string name="empty_search">Nič sa nenašlo</string>
     <string name="back">Späť</string>

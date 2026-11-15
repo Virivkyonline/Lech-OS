@@ -44,8 +44,6 @@
     <string name="about_sub">LECH OS %1$s, model, Android version</string>
     <string name="developer">Developer options</string>
     <string name="developer_sub">USB debugging and more</string>
-    <string name="all_settings">All settings</string>
-    <string name="all_settings_sub">The full settings of Android</string>
     <string name="search_system">Search in all settings</string>
     <string name="empty_search">Nothing found</string>
     <string name="back">Back</string>
