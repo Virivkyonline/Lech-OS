@@ -129,6 +129,4 @@
     <string name="gplay_state_off">Google zone: off</string>
     <string name="gplay_other_title">Other sources</string>
     <string name="gplay_other_text">There are also third-party apps that download from Google Play without a Google account, for example Aurora Store. LECH OS does not provide, recommend or support them. Using them is the decision and responsibility of the user and may be against the terms of Google.</string>
-    <string name="mobile_network">Mobile network</string>
-    <string name="mobile_network_sub">Access points (APN), operator, roaming</string>
 </resources>

@@ -271,7 +271,8 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    **0.6.10-dev – nálezy:** ikona „Zóna Google“ v zostave nebola (zostava spustená pred jej pushnutím: balík ikon
    v telefóne aj na notebooku ju nemá) – príde s 0.6.11-dev. Vlastník nenašiel APN a výber operátora → v LECH
    Nastaveniach nový riadok „Mobilná sieť“ (`ACTION_NETWORK_OPERATOR_SETTINGS` → `Settings$MobileNetworkActivity`,
-   overené v manifeste Settings základu), pre 0.6.11-dev, neskúšané.
+   overené v manifeste Settings základu), pre 0.6.11-dev, neskúšané. **Zrušené 15. 11.:** vlastník APN našiel
+   (Sieť a internet → SIM karty), riadok „Mobilná sieť“ nechce – odstránený.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

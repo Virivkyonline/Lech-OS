@@ -129,6 +129,4 @@
     <string name="gplay_state_off">Zóna Google: vypnutá</string>
     <string name="gplay_other_title">Iné zdroje</string>
     <string name="gplay_other_text">Existujú aj aplikácie tretích strán, ktoré umožňujú sťahovať z Google Play bez účtu Google, napríklad Aurora Store. LECH OS ich neposkytuje, neodporúča ani nepodporuje. Ich používanie je rozhodnutím a zodpovednosťou používateľa a môže byť v rozpore s podmienkami spoločnosti Google.</string>
-    <string name="mobile_network">Mobilná sieť</string>
-    <string name="mobile_network_sub">Prístupové body (APN), výber operátora, roaming</string>
 </resources>
