@@ -281,8 +281,8 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Postup: zóna Google znova (vymazaná zamknutím) → Android Auto z App Store základu → Nastavenia → Aplikácie → Zóna
    Google → Android Auto → povolenia pre bezdrôtové → prístup k upozorneniam → spárovať s autom. Podrobnosti docs/18.
    **Telefón: LECH OS 0.6.11-dev (OTA 15. 11. 2026 13:05, 0.6.10 → 0.6.11, slot _a → _b, yellow, všetky
-   kontroly OK). Ďalšia zostava 0.6.12-dev.** Overiť: ikona „Zóna Google“ v Nastaveniach, číselník Telefónu pri
-   väčšej veľkosti zobrazenia (tlačidlo volania viditeľné), slovenské texty Nastavení.
+   kontroly OK). Ďalšia zostava 0.6.12-dev.** **Overené vlastníkom 15. 11.:** ikona „Zóna Google“ (štít) v Nastaveniach,
+   tlačidlo volania v číselníku viditeľné aj pri väčšej veľkosti zobrazenia. Ďalej: skúška Android Auto (bezdrôtovo).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
