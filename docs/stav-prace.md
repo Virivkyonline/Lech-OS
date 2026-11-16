@@ -446,6 +446,13 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    16. 11. 10:13: telefón cez prístupový bod notebooku nemal internet, hoci služby zdieľania bežali – pomohlo
    `wsl --shutdown` (bežiace Ubuntu a prístupový bod si prekážajú). **Pred meraním vždy `wsl --shutdown`**,
    Ubuntu otvoriť až na vyhodnotenie po `stop.ps1`.
+   16. 11. ~10:25: meranie cez prístupový bod notebooku sa nepodarilo – telefón dostal adresu
+   (192.168.137.213, ping OK, preposielanie zapnuté), ale internet cez notebook nešiel ani po reštarte
+   (`http://1.1.1.1` sa nenačítalo); potom Windows spadol a zamrzol pri prihlásení (podobne ako 8. 11.).
+   Príčina neznáma (test s druhým telefónom sa nestihol). **Náhradný postup:** záznam v telefóne samotnom
+   (`gos.sh 11-pixel.sh audit --minuty 1440`, tcpdump beží v telefóne aj bez notebooku, potom `--dokoncit`) –
+   stačí na zoznam spojení nového základu; meranie mimo telefónu zopakovať neskôr na spoľahlivejšom zariadení
+   (samostatný smerovač), nie na pracovnom notebooku.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
