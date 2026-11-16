@@ -443,6 +443,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    SIM von, výrobné nastavenia, len Wi-Fi notebooku, zóna Google a „Podpora eSIM“ vypnuté, 24 h → `stop.ps1` →
    `gos.sh 13-meranie-mimo.sh vyhodnotit`. Očakávanie: nebude to 0 – základ sa predvolene pripája na servery
    GrapheneOS (kontrola pripojenia, čas, PSDS, kľúče, zoznamy certifikátov, obchod); cieľom je zoznam spojení.
+   16. 11. 10:13: telefón cez prístupový bod notebooku nemal internet, hoci služby zdieľania bežali – pomohlo
+   `wsl --shutdown` (bežiace Ubuntu a prístupový bod si prekážajú). **Pred meraním vždy `wsl --shutdown`**,
+   Ubuntu otvoriť až na vyhodnotenie po `stop.ps1`.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
