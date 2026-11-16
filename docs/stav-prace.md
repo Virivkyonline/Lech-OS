@@ -438,6 +438,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    prešla). Ďalšia zostava 0.6.21-dev.** Čaká na vlastníka: skúška češtiny (Systém → Jazyky). Stará línia:
    vlastník chce odložiť len 0.5.9 (`C:\lech\archiv-0.5.9` → OneDrive), potom zmazať `~/aosp`; kľúče
    `~/lech-keys` do OneDrive nie – zálohu na šifrovaný USB treba ešte urobiť.
+   **16. 11. ~10:15: vlastník rozhodol spustiť 24 h meranie súkromia na novom základe** (0.6.20-dev). Postup:
+   `tools/etapa2/gos.sh 13-meranie-mimo.sh pripravit` → prístupový bod notebooku → krátky kontrolný test →
+   SIM von, výrobné nastavenia, len Wi-Fi notebooku, zóna Google a „Podpora eSIM“ vypnuté, 24 h → `stop.ps1` →
+   `gos.sh 13-meranie-mimo.sh vyhodnotit`. Očakávanie: nebude to 0 – základ sa predvolene pripája na servery
+   GrapheneOS (kontrola pripojenia, čas, PSDS, kľúče, zoznamy certifikátov, obchod); cieľom je zoznam spojení.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
