@@ -433,6 +433,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    názvy aplikácií v systéme a na ploche). Preklad je strojový (Claude), bez kontroly rodeným hovoriacim –
    pred predajom v ČR dať prečítať. Chýba: český slovník klávesnice (dnes sa sťahuje len `main_sk.dict`),
    názvy v `tools/etapa2/ikony_prekrytia.py` a priečinky plochy (Launcher3 0003) sú stále slovensky/anglicky.
+   **Telefón: LECH OS 0.6.20-dev (OTA 16. 11. 2026 10:00, 0.6.19 → 0.6.20, slot _b → _a, yellow, všetky
+   kontroly OK; zostava začala 07:46, po pushnutí češtiny 07:42 – všetkých 7 českých záplat sadlo a zostava
+   prešla). Ďalšia zostava 0.6.21-dev.** Čaká na vlastníka: skúška češtiny (Systém → Jazyky). Stará línia:
+   vlastník chce odložiť len 0.5.9 (`C:\lech\archiv-0.5.9` → OneDrive), potom zmazať `~/aosp`; kľúče
+   `~/lech-keys` do OneDrive nie – zálohu na šifrovaný USB treba ešte urobiť.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
