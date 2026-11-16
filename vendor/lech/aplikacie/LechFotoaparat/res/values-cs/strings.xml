@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fotoaparát</string>
+    <string name="mode_photo">FOTO</string>
+    <string name="mode_video">VIDEO</string>
+    <string name="shutter">Vyfotit</string>
+    <string name="record">Nahrávat video</string>
+    <string name="stop">Zastavit nahrávání</string>
+    <string name="switch_camera">Přepnout fotoaparát</string>
+    <string name="flash">Blesk</string>
+    <string name="grid">Mřížka</string>
+    <string name="timer">Samospoušť</string>
+    <string name="last_photo">Poslední fotka</string>
+    <string name="permission_needed">Fotoaparát potřebuje přístup ke kameře a mikrofonu (pro videa).</string>
+    <string name="permission_grant">Povolit přístup</string>
+    <string name="saved">Uloženo</string>
+    <string name="save_failed">Fotku se nepodařilo uložit.</string>
+    <string name="camera_error">Fotoaparát není k dispozici.</string>
+    <string name="video_failed">Video se nepodařilo nahrát.</string>
+    <string name="back">Zpět</string>
+    <string name="qr_code">QR kód</string>
+    <string name="qr_link">QR kód · odkaz</string>
+    <string name="qr_wifi">QR kód · síť Wi-Fi</string>
+    <string name="qr_phone">QR kód · telefonní číslo</string>
+    <string name="qr_mail">QR kód · e-mail</string>
+    <string name="qr_text">QR kód · text</string>
+    <string name="qr_open">Otevřít</string>
+    <string name="qr_connect">Připojit</string>
+    <string name="qr_call">Zavolat</string>
+    <string name="qr_write">Napsat</string>
+    <string name="qr_copy">Kopírovat</string>
+    <string name="qr_copy_password">Kopírovat heslo</string>
+    <string name="qr_close">Zavřít</string>
+    <string name="qr_no_app">Žádná aplikace to neumí otevřít.</string>
+    <string name="qr_wifi_manual">Tuto síť je potřeba přidat ručně v nastavení Wi-Fi.</string>
+</resources>

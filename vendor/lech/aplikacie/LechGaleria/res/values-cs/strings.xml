@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Galerie</string>
+    <string name="subtitle">Fotky a videa</string>
+    <string name="chip_photos">Fotky</string>
+    <string name="chip_albums">Alba</string>
+    <string name="chip_videos">Videa</string>
+    <string name="chip_favorites">Oblíbené</string>
+    <string name="nav_gallery">Galerie</string>
+    <string name="nav_share">Sdílet</string>
+    <string name="nav_edit">Upravit</string>
+    <string name="nav_trash">Koš</string>
+    <string name="nav_more">Více</string>
+    <string name="today">Dnes</string>
+    <string name="yesterday">Včera</string>
+    <string name="items" formatted="false">Položky: %d</string>
+    <string name="search_hint">Hledat alba a soubory</string>
+    <string name="search">Hledat</string>
+    <string name="camera">Fotoaparát</string>
+    <string name="more">Další</string>
+    <string name="back">Zpět</string>
+    <string name="empty_photos">Zatím žádné fotky ani videa</string>
+    <string name="empty_photos_text">Fotky, které pořídíte fotoaparátem, se zobrazí tady.</string>
+    <string name="empty_albums">Žádná alba</string>
+    <string name="empty_videos">Žádná videa</string>
+    <string name="empty_favorites">Žádné oblíbené. Fotku označíte hvězdičkou.</string>
+    <string name="empty_trash">Koš je prázdný</string>
+    <string name="empty_search">Nic se nenašlo</string>
+    <string name="trash_title">Koš</string>
+    <string name="trash_info">Položky v koši se po 30 dnech odstraní.</string>
+    <string name="permission_needed">Galerie potřebuje přístup k fotkám a videím.</string>
+    <string name="permission_grant">Povolit přístup</string>
+    <string name="select_first">Fotku vyberete podržením prstu.</string>
+    <string name="select_one">K úpravě vyberte jednu fotku.</string>
+    <string name="selected" formatted="false">Vybráno: %d</string>
+    <string name="select_all">Vybrat vše</string>
+    <string name="cancel_selection">Zrušit výběr</string>
+    <string name="add_favorite">Přidat k oblíbeným</string>
+    <string name="remove_favorite">Odebrat z oblíbených</string>
+    <string name="restore">Obnovit</string>
+    <string name="delete_forever">Odstranit navždy</string>
+    <string name="empty_trash_action">Vysypat koš</string>
+    <string name="move_to_trash">Přesunout do koše</string>
+    <string name="rotate">Otočit</string>
+    <string name="save_copy">Uložit kopii</string>
+    <string name="saved">Uloženo jako kopie</string>
+    <string name="save_failed">Nepodařilo se uložit</string>
+    <string name="edit_video">Upravovat lze jen fotky.</string>
+    <string name="details">Podrobnosti</string>
+    <string name="file_name">Název</string>
+    <string name="file_date">Datum</string>
+    <string name="file_size">Velikost</string>
+    <string name="file_resolution">Rozlišení</string>
+    <string name="file_album">Album</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Zrušit</string>
+    <string name="no_app">Pro tuto akci není žádná aplikace.</string>
+    <string name="cannot_open">Soubor nelze otevřít.</string>
+    <string name="sort_newest">Nejnovější nahoře</string>
+    <string name="sort_oldest">Nejstarší nahoře</string>
+    <string name="play">Přehrát</string>
+</resources>

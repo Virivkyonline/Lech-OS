@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kalkulačka</string>
+    <string name="subtitle">Rychlá • Vědecká • Převody</string>
+    <string name="tab_basic">Základní</string>
+    <string name="tab_scientific">Vědecká</string>
+    <string name="tab_convert">Převody</string>
+    <string name="more">Další možnosti</string>
+    <string name="history">Historie</string>
+    <string name="history_empty">Zatím žádné výpočty.</string>
+    <string name="history_hint">Klepnutím použijete výsledek, podržením celý příklad.</string>
+    <string name="clear_history">Vymazat historii</string>
+    <string name="close">Zavřít</string>
+    <string name="copy">Kopírovat výsledek</string>
+    <string name="err_div_zero">Nulou nelze dělit</string>
+    <string name="err_domain">Není definováno</string>
+    <string name="err_overflow">Příliš velké číslo</string>
+    <string name="err_syntax">Neúplný příklad</string>
+    <string name="backspace">Smazat znak</string>
+    <string name="clear">Smazat vše</string>
+    <string name="plus_minus">Změnit znaménko</string>
+    <string name="swap">Prohodit jednotky</string>
+    <string name="deg_rad">Stupně nebo radiány</string>
+    <string name="choose_unit">Vybrat jednotku</string>
+    <string name="cat_length">Délka</string>
+    <string name="cat_mass">Hmotnost</string>
+    <string name="cat_area">Plocha</string>
+    <string name="cat_volume">Objem</string>
+    <string name="cat_temperature">Teplota</string>
+    <string name="cat_speed">Rychlost</string>
+    <string name="cat_time">Čas</string>
+    <string name="cat_data">Data</string>
+
+    <!-- Jednotky ako „názov|značka“, v poradí podľa Units.java. -->
+    <string-array name="units_length">
+        <item>Milimetr|mm</item>
+        <item>Centimetr|cm</item>
+        <item>Decimetr|dm</item>
+        <item>Metr|m</item>
+        <item>Kilometr|km</item>
+        <item>Palec|in</item>
+        <item>Stopa|ft</item>
+        <item>Yard|yd</item>
+        <item>Míle|mi</item>
+        <item>Námořní míle|nmi</item>
+    </string-array>
+    <string-array name="units_mass">
+        <item>Miligram|mg</item>
+        <item>Gram|g</item>
+        <item>Dekagram|dag</item>
+        <item>Kilogram|kg</item>
+        <item>Tuna|t</item>
+        <item>Unce|oz</item>
+        <item>Libra|lb</item>
+    </string-array>
+    <string-array name="units_area">
+        <item>Čtvereční milimetr|mm²</item>
+        <item>Čtvereční centimetr|cm²</item>
+        <item>Čtvereční decimetr|dm²</item>
+        <item>Čtvereční metr|m²</item>
+        <item>Ar|a</item>
+        <item>Hektar|ha</item>
+        <item>Čtvereční kilometr|km²</item>
+        <item>Čtvereční palec|in²</item>
+        <item>Čtvereční stopa|ft²</item>
+        <item>Čtvereční yard|yd²</item>
+        <item>Akr|ac</item>
+        <item>Čtvereční míle|mi²</item>
+    </string-array>
+    <string-array name="units_volume">
+        <item>Mililitr|ml</item>
+        <item>Centilitr|cl</item>
+        <item>Decilitr|dl</item>
+        <item>Litr|l</item>
+        <item>Hektolitr|hl</item>
+        <item>Krychlový centimetr|cm³</item>
+        <item>Krychlový metr|m³</item>
+        <item>Tekutá unce (US)|fl oz</item>
+        <item>Pinta (US)|pt</item>
+        <item>Galon (US)|gal US</item>
+        <item>Galon (UK)|gal UK</item>
+    </string-array>
+    <string-array name="units_temperature">
+        <item>Stupeň Celsia|°C</item>
+        <item>Stupeň Fahrenheita|°F</item>
+        <item>Kelvin|K</item>
+    </string-array>
+    <string-array name="units_speed">
+        <item>Metr za sekundu|m/s</item>
+        <item>Kilometr za hodinu|km/h</item>
+        <item>Míle za hodinu|mph</item>
+        <item>Uzel|kn</item>
+        <item>Stopa za sekundu|ft/s</item>
+    </string-array>
+    <string-array name="units_time">
+        <item>Milisekunda|ms</item>
+        <item>Sekunda|s</item>
+        <item>Minuta|min</item>
+        <item>Hodina|h</item>
+        <item>Den|d</item>
+        <item>Týden|týd.</item>
+        <item>Rok (365 dní)|r.</item>
+    </string-array>
+    <string-array name="units_data">
+        <item>Bit|bit</item>
+        <item>Bajt|B</item>
+        <item>Kilobajt|kB</item>
+        <item>Megabajt|MB</item>
+        <item>Gigabajt|GB</item>
+        <item>Terabajt|TB</item>
+        <item>Kibibajt|KiB</item>
+        <item>Mebibajt|MiB</item>
+        <item>Gibibajt|GiB</item>
+        <item>Tebibajt|TiB</item>
+    </string-array>
+</resources>
