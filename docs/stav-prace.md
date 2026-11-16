@@ -424,6 +424,9 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (pushnutá 22:18, tesne pred začiatkom zostavy – overiť, či je na obrazovke SIM karty „Pridať SIM“). Čaká na
    vlastníka: pridanie eSIM, správanie po vypnutí „Podpora eSIM“, výsledok skúšky „nový zákazník“ (sprievodca,
    čiernobiely motív, tri tlačidlá).
+   Vlastník 16. 11. ráno (0.6.19-dev): „áno, všetko je ok“ na otázky o eSIM a o skúške „nový zákazník“
+   (sprievodca s textom o zóne Google, čiernobiele rýchle nastavenia, tri tlačidlá). Podrobnosti k eSIM
+   (pridanie profilu, správanie po vypnutí „Podpora eSIM“) vlastník nerozpísal – pri audite súkromia overiť.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
