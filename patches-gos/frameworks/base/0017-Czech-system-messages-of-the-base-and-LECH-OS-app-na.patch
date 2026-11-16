@@ -1,0 +1,107 @@
+From b6f09a0d4a946da32f43f080b443d1958b8771f0 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Mon, 16 Nov 2026 10:10:00 +0000
+Subject: [PATCH] Czech: system messages of the base and LECH OS app names
+
+Czech translation of the system messages added by the base (next to the
+Slovak one) and Czech names of the browser and of the system parts in
+LechAppNames; other languages keep the English names.
+---
+ .../java/android/content/pm/LechAppNames.java | 28 +++++++++++--------
+ core/res/res/values-cs/string_ext.xml         | 25 +++++++++++++++++
+ 2 files changed, 41 insertions(+), 12 deletions(-)
+ create mode 100644 core/res/res/values-cs/string_ext.xml
+
+diff --git a/core/java/android/content/pm/LechAppNames.java b/core/java/android/content/pm/LechAppNames.java
+index daf1cb9..8c4243f 100644
+--- a/core/java/android/content/pm/LechAppNames.java
++++ b/core/java/android/content/pm/LechAppNames.java
+@@ -34,15 +34,15 @@ public final class LechAppNames {
+     /** Only this name is replaced: activities and share targets of the app keep their own labels. */
+     private static final String BROWSER_NAME = "Vanadium";
+     private static final String ICONS_PACKAGE = "lech.os.ikony";
+-    /** Package, Slovak name, name in other languages. */
++    /** Package, Slovak name, name in other languages, Czech name. */
+     private static final String[][] SYSTEM_PARTS = {
+-        {"com.android.settings", "Nastavenia systému", "System settings"},
+-        {"com.android.documentsui", "Výber súborov", "File picker"},
+-        {"app.grapheneos.pdfviewer", "Zobrazovač PDF", "PDF renderer"},
+-        {"com.android.launcher3", "Plocha", "Home screen"},
+-        {"org.fdroid.fdroid", "Obchod aplikácií", "App store"},
+-        {"app.organicmaps", "Mapy", "Maps"},
+-        {"app.grapheneos.apps", "Zóna Google", "Google zone"},
++        {"com.android.settings", "Nastavenia systému", "System settings", "Nastavení systému"},
++        {"com.android.documentsui", "Výber súborov", "File picker", "Výběr souborů"},
++        {"app.grapheneos.pdfviewer", "Zobrazovač PDF", "PDF renderer", "Zobrazovač PDF"},
++        {"com.android.launcher3", "Plocha", "Home screen", "Plocha"},
++        {"org.fdroid.fdroid", "Obchod aplikácií", "App store", "Obchod s aplikacemi"},
++        {"app.organicmaps", "Mapy", "Maps", "Mapy"},
++        {"app.grapheneos.apps", "Zóna Google", "Google zone", "Zóna Google"},
+     };
+ 
+     private LechAppNames() {
+@@ -59,22 +59,26 @@ public final class LechAppNames {
+             return label;
+         }
+         if (BROWSER.equals(packageName) && BROWSER_NAME.contentEquals(label)) {
+-            return slovak() ? "Prehliadač" : "Browser";
++            String language = language();
++            return "sk".equals(language) ? "Prehliadač" : "cs".equals(language) ? "Prohlížeč" : "Browser";
+         }
+         if (application) {
+             for (String[] part : SYSTEM_PARTS) {
+                 if (part[0].equals(packageName)) {
+-                    return slovak() ? part[1] : part[2];
++                    String language = language();
++                    return "sk".equals(language) ? part[1] : "cs".equals(language) ? part[3] : part[2];
+                 }
+             }
+         }
+         return label;
+     }
+ 
+-    private static boolean slovak() {
++    /** The language of the device ("sk", "cs", …), or an empty string. */
++    @NonNull
++    private static String language() {
+         LocaleList locales = Resources.getSystem().getConfiguration().getLocales();
+         Locale locale = locales.isEmpty() ? null : locales.get(0);
+-        return locale != null && "sk".equals(locale.getLanguage());
++        return locale == null ? "" : locale.getLanguage();
+     }
+ 
+     /**
+diff --git a/core/res/res/values-cs/string_ext.xml b/core/res/res/values-cs/string_ext.xml
+new file mode 100644
+index 0000000..04d6239
+--- /dev/null
++++ b/core/res/res/values-cs/string_ext.xml
+@@ -0,0 +1,25 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: Czech texts of the system messages added by the GrapheneOS base (it has them in English only). -->
++<resources>
++    <string name="bluetooth_auto_off_attribution_label">Automatické vypnutí Bluetooth</string>
++    <string name="bg_dexopt_notif_ch_title">Optimalizace aplikací</string>
++    <string name="bg_dexopt_notif_title">Optimalizují se aplikace (%1$d z %2$d)</string>
++    <string name="bg_dexopt_notif_text">Dokud se optimalizace aplikací nedokončí, zařízení může být pomalejší</string>
++    <string name="bg_dexopt_completed_notif_ch_title">Optimalizace aplikací je dokončena</string>
++    <string name="bg_dexopt_completed_notif_title">Je potřeba restartovat aplikace</string>
++    <string name="bg_dexopt_completed_notif_text">Optimalizace aplikací je dokončena. Klepnutím restartujete optimalizované aplikace.</string>
++    <string name="notif_channel_exploit_protection">Ochrana před útoky</string>
++    <string name="notif_text_tap_to_open_settings">Klepnutím otevřete nastavení</string>
++    <string name="notif_text_tap_to_see_details">Klepnutím zobrazíte podrobnosti</string>
++    <string name="notif_action_more_info">Další informace</string>
++    <string name="notif_native_debug_title">Aplikace %1$s se pokusila použít ladění nativního kódu</string>
++    <string name="notif_ch_system_journal">Systémový deník</string>
++    <string name="process_crash_notif_title">Proces %1$s spadl</string>
++    <string name="fsck_error_notif_title">Byla zjištěna chyba systému souborů</string>
++    <string name="notif_memtag_crash_title">Označování paměti zjistilo chybu v %1$s</string>
++    <string name="notif_hmalloc_crash_title">hardened_malloc zjistil chybu v %1$s</string>
++    <string name="notif_memory_dcl_title">Aplikace %1$s se pokusila načíst kód z paměti (DCL)</string>
++    <string name="notif_storage_dcl_title">Aplikace %1$s se pokusila načíst kód z úložiště (DCL)</string>
++    <string name="usb_port_security_error_title">Ochrana portu USB-C selhala</string>
++    <string name="clipboard_access_blocked">Aplikaci %1$s byl zablokován přístup ke schránce</string>
++</resources>
+-- 
+2.43.0
+

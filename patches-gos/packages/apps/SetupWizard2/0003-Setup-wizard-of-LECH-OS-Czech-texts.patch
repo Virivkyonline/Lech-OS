@@ -1,0 +1,78 @@
+From 82aaf0524efab57806d1c89fcb971ba41dafe322 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Mon, 16 Nov 2026 09:50:00 +0000
+Subject: [PATCH] Setup wizard of LECH OS: Czech texts
+
+The Czech translation of the setup wizard, next to the Slovak one.
+---
+ res/values-cs/strings.xml | 58 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
+ create mode 100644 res/values-cs/strings.xml
+
+diff --git a/res/values-cs/strings.xml b/res/values-cs/strings.xml
+new file mode 100644
+index 0000000..e5d45d9
+--- /dev/null
++++ b/res/values-cs/strings.xml
+@@ -0,0 +1,58 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: Slovak texts of the setup wizard (the base has English only). -->
++<resources>
++    <string name="next">Další</string>
++    <string name="skip">Přeskočit</string>
++    <string name="welcome_to_grapheneos">Vítejte v LECH OS</string>
++    <string name="grapheneos_icon">Ikona LECH OS</string>
++    <string name="grapheneos_desc">Soukromí a bezpečnost ve vašem telefonu.</string>
++    <string name="lets_setup_your_device">Nastavme vaše zařízení v několika krocích.</string>
++    <string name="lets_setup_your_profile">Nastavme váš uživatelský profil v několika krocích.</string>
++    <string name="accessibility">Přístupnost</string>
++    <string name="emergency_call">Tísňové volání</string>
++    <string name="connect_to_wi_fi">Připojení k síti Wi-Fi</string>
++    <string name="set_up_without_wi_fi">Nastavit bez Wi-Fi</string>
++    <string name="connect">Připojit</string>
++    <string name="choose_your_language">Vyberte jazyk</string>
++    <string name="location_services">Služby určování polohy</string>
++    <string name="location_access_title">Používat polohu</string>
++    <string name="location_access_desc">Povolit aplikacím, které si vyžádaly vaše svolení, používat informace o poloze. Může jít o vaši aktuální polohu i o předchozí polohy.</string>
++    <string name="network_location_enabled_title">Síťová poloha</string>
++    <string name="network_location_enabled_desc">Síťová poloha určí vaši polohu lépe (například v budově) a úsporněji. Identifikátory bezdrátových sítí v okolí se odešlou na server společnosti Apple přes zprostředkující server projektu GrapheneOS, a to jen tehdy, když se síťová poloha používá.</string>
++    <string name="wifi_scanning_always_available_enabled_title">Vyhledávání sítí Wi-Fi vždy dostupné</string>
++    <string name="wifi_scanning_always_available_enabled_desc">Povolit aplikacím a službám s oprávněním vyhledávat sítě Wi-Fi i tehdy, když je Wi-Fi vypnutá. Například zapnutá síťová poloha tak může vyhledávat sítě Wi-Fi i při vypnuté Wi-Fi, což zpřesňuje polohu.</string>
++    <string name="geocoder_enabled_title">Převod souřadnic na adresy</string>
++    <string name="geocoder_enabled_desc">Povolit aplikacím používat síťovou službu provozovanou projektem GrapheneOS, která převádí zeměpisné souřadnice na adresy a naopak. Některé aplikace ji potřebují pro důležité funkce.</string>
++    <string name="restore_apps_and_data">Obnovit aplikace a data</string>
++    <string name="data_restore_desc">Pokud máte zálohu z předchozího zařízení s LECH OS, můžete ji obnovit zde.</string>
++    <string name="you_re_all_set_now">Vše je připraveno!</string>
++    <string name="device_setup_done_desc">Zařízení můžete začít používat.\n\nLECH OS funguje bez Googlu. Pokud potřebujete aplikace závislé na Google Play (některé bankovní aplikace, Android Auto), zapnete si později zónu Google: Nastavení → Aplikace z Google Play.</string>
++    <string name="profile_setup_done_desc">Uživatelský profil můžete začít používat</string>
++    <string name="set_up_a_secondary_unlock_method">Nastavte druhý způsob odemknutí</string>
++    <string name="set_up_fingerprint_unlock">Nastavte odemknutí otiskem prstu</string>
++    <string name="optionally_set_up_face_unlock">Volitelně nastavte odemknutí obličejem</string>
++    <string name="set_up">Nastavit</string>
++    <string name="start">Začít</string>
++    <string name="date_and_time">Datum a čas</string>
++    <string name="date_and_time_desc">Nastavte časové pásmo a podle potřeby upravte datum a čas</string>
++    <string name="date">Datum</string>
++    <string name="time">Čas</string>
++    <string name="time_zone">Časové pásmo</string>
++    <string name="select_time_zone">Vyberte časové pásmo</string>
++    <string name="select_a_network">Vyberte síť</string>
++    <string name="cancel">Zrušit</string>
++    <string name="restore">Obnovit</string>
++    <string name="swipe_gestures_title">Ovládání telefonu gesty</string>
++    <string name="swipe_gestures_desc">Naučte se gesta pro návrat na plochu, krok zpět a přepínání mezi aplikacemi</string>
++    <string name="try_it">Vyzkoušet</string>
++    <string name="oem_unlocked_warning">Bootloader je odemčený a neporušenost softwaru nelze zaručit. Data uložená v zařízení mohou být dostupná útočníkům. Neukládejte do něj žádná citlivá data.</string>
++    <string name="visit_this_link_on_another_device">Otevřete tento odkaz na jiném zařízení:</string>
++    <string name="lock_your_bootloader">Zamkněte bootloader</string>
++    <string name="oem_unlock_fullscreen_desc">Bootloader je odemčený a neporušenost softwaru nelze zaručit. Data uložená v zařízení mohou být dostupná útočníkům. Neukládejte do něj žádná citlivá data.\n\nPozdější zamknutí bootloaderu vymaže všechna data v zařízení. Aby byla data v bezpečí, doporučujeme zamknout bootloader ještě před nastavením zařízení.\n\nPostup najdete na odkazu níže (otevřete ho na jiném zařízení), potom stiskněte „Restartovat do bootloaderu“:</string>
++    <string name="reboot_to_bootloader">Restartovat do bootloaderu</string>
++    <string name="continue_without_locking">Pokračovat bez zamknutí</string>
++    <string name="continue_without_locking_timer">Pokračovat bez zamknutí (%d)</string>
++    <string name="oem_unlock_ack_risks">Rozumím bezpečnostním rizikům nezamknutého bootloaderu.</string>
++    <string name="disable_oem_unlocking">Vypnout odemknutí OEM</string>
++    <string name="disable_oem_unlocking_desc">Doporučujeme vypnout odemknutí OEM, zvýší to bezpečnost zařízení</string>
++</resources>
+-- 
+2.43.0
+

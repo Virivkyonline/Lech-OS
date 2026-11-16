@@ -29,6 +29,7 @@ Camera, Messaging, ExactCalculator, Auditor, InfoApp.
 | `packages/apps/Settings` 0002 | nové (15. 11.): hlavná obrazovka systémových nastavení má ikony LECH OS (`lech_set_*.png` z `branding/ikony/nastavenia`, 160 px) namiesto dlaždíc základu |
 | `packages/apps/Settings` 0003 | nové (15. 11.): obrazovka „Ochrana pred zneužitím chýb“ pri aplikácii po slovensky, anglický text menuje LECH OS |
 | `packages/apps/Settings` 0004 | nové (15. 11.): zvyšné texty základu po slovensky (druhý PIN k odtlačku, citlivosť dotyku, verzia bootloadera, režimy siete „len …“) |
+| čeština (16. 11.) | `packages/apps/Settings` 0005, `packages/apps/GmsCompat` 0002, `packages/apps/SetupWizard2` 0003, `packages/apps/Dialer` 0003, `packages/inputmethods/LatinIME` 0003, `frameworks/base` 0017 (hlásenia systému + české názvy v `LechAppNames`), `frameworks/libs/systemui` 0004 (názvy na ploche) – české náprotivky slovenských textov; ostatné jazyky ostávajú po anglicky |
 | `frameworks/base` 0014 | nové (15. 11.): názvy LECH OS aj v zoznamoch čítaných cez `ResolveInfo.loadLabel` (náhľad veľkosti zobrazenia ukazoval „PDF Viewer“, „Vanadium“) |
 | `frameworks/base` 0015 | nové (15. 11.): text zostavy v rýchlych nastaveniach (len pri možnostiach pre vývojárov) ukazuje „LECH OS <verzia>“ namiesto „17 (CP3A…)“ |
 | `frameworks/base` 0016 | nové (15. 11.): názvy LECH OS aj v prvej vetve `ResolveInfo.loadLabel` (výsledky dopytu na aktivity – náhľad stále ukazoval „App Store“, „Vanadium“) |

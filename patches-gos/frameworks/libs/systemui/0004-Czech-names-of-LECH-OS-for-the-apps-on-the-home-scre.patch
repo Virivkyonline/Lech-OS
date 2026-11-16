@@ -1,0 +1,45 @@
+From 537a20a7cbf9351240c528a342a27dce95da6cc0 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Mon, 16 Nov 2026 10:20:00 +0000
+Subject: [PATCH] Czech names of LECH OS for the apps on the home screen
+
+The names the home screen shows for the browser, the app store and the
+maps were Slovak or English; Czech names are added for a Czech device
+language.
+---
+ .../icons/cache/LauncherActivityCachingLogic.kt   | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt b/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt
+index 5b91746..3ae49ea 100644
+--- a/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt
++++ b/iconloaderlib/src/com/android/launcher3/icons/cache/LauncherActivityCachingLogic.kt
+@@ -35,17 +35,18 @@ object LauncherActivityCachingLogic : CachingLogic<LauncherActivityInfo> {
+     override fun getUser(info: LauncherActivityInfo): UserHandle = info.user
+ 
+     // LECH OS: names of LECH OS for apps whose own name a resource overlay cannot replace (prebuilt apps that
+-    // declare overlayable resources, such as the browser Vanadium): package -> (Slovak, English). The Slovak name
+-    // when the device language is Slovak, the English one otherwise.
++    // declare overlayable resources, such as the browser Vanadium): package -> names by device language
++    // (Slovak, Czech); the English name in every other language.
+     private val LECH_LABELS = mapOf(
+-        "app.vanadium.browser" to ("Prehliadač" to "Browser"),
+-        "org.fdroid.fdroid" to ("Obchod aplikácií" to "App store"),
+-        "app.organicmaps" to ("Mapy" to "Maps"),
++        "app.vanadium.browser" to mapOf("sk" to "Prehliadač", "cs" to "Prohlížeč", "" to "Browser"),
++        "org.fdroid.fdroid" to
++            mapOf("sk" to "Obchod aplikácií", "cs" to "Obchod s aplikacemi", "" to "App store"),
++        "app.organicmaps" to mapOf("sk" to "Mapy", "cs" to "Mapy", "" to "Maps"),
+     )
+ 
+     override fun getLabel(info: LauncherActivityInfo): CharSequence? =
+-        LECH_LABELS[info.componentName.packageName]?.let { (sk, en) ->
+-            if (Locale.getDefault().language == "sk") sk else en
++        LECH_LABELS[info.componentName.packageName]?.let { names ->
++            names[Locale.getDefault().language] ?: names[""]
+         } ?: info.label
+ 
+     override fun getApplicationInfo(info: LauncherActivityInfo) = info.applicationInfo
+-- 
+2.43.0
+

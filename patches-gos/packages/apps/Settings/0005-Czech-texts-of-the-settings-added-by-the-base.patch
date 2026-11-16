@@ -1,0 +1,382 @@
+From 856b6d2a7f66fa33344d67165324985bc53ccda1 Mon Sep 17 00:00:00 2001
+From: LECH OS <dev@lech-os.invalid>
+Date: Mon, 16 Nov 2026 09:00:00 +0000
+Subject: [PATCH] Czech texts of the settings added by the base
+
+The settings that the GrapheneOS base adds to Android had Slovak texts
+only (LECH OS patches 0001, 0003, 0004); other languages fell back to
+English. This adds the Czech translation of the same texts: the settings
+of the base (strings_ext.xml) and the per-app exploit protection screen.
+---
+ .../strings_app_exploit_protection.xml        |  91 ++++++
+ res/values-cs/strings_ext.xml                 | 260 ++++++++++++++++++
+ 2 files changed, 351 insertions(+)
+ create mode 100644 res/values-cs/strings_app_exploit_protection.xml
+ create mode 100644 res/values-cs/strings_ext.xml
+
+diff --git a/res/values-cs/strings_app_exploit_protection.xml b/res/values-cs/strings_app_exploit_protection.xml
+new file mode 100644
+index 0000000..6badba8
+--- /dev/null
++++ b/res/values-cs/strings_app_exploit_protection.xml
+@@ -0,0 +1,91 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- Slovak texts of LECH OS for the per-app exploit protection settings of the base. -->
++<resources>
++    <string name="exploit_protection_category_title">Ochrana před zneužitím chyb</string>
++
++    <string name="aep_allowed">Povoleno</string>
++    <string name="aep_blocked">Blokováno</string>
++    <string name="aep_default">Výchozí (%1$s)</string>
++    <string name="aep_disabled">Vypnuto</string>
++    <string name="aep_enabled">Zapnuto</string>
++    <string name="aep_restricted">Omezeno</string>
++
++    <string name="aep_confirm_disable_title">Upozornění</string>
++    <string name="aep_confirm_disable_warning_msg">Toto nastavení oslabí ochranu vybrané aplikace před zneužitím chyb.</string>
++    <string name="aep_confirm_disable_proceed_btn">Pokračovat</string>
++
++    <string name="aep_dvr_default_security_setting">Výchozí hodnotu lze změnit v části %1$s</string>
++
++    <string name="aep_dvr_compat_config_hardening_opt_in">O vybrané aplikaci je známo, že s tímto nastavením funguje</string>
++    <string name="aep_dvr_compat_config_hardening_opt_out">Ve výchozím stavu %1$s, protože je známo, že to tato aplikace potřebuje.\nToto chování lze vypnout v části %2$s.</string>
++
++    <string name="aep_dvr_app_is_client_of_gmscore">Ve výchozím stavu %1$s, protože tato aplikace závisí na službách Play</string>
++
++    <string name="aep_default_main_switch_block_for_3p_apps">Ve výchozím stavu blokovat pro aplikace třetích stran</string>
++    <string name="aep_default_main_switch_restrict_for_3p_apps">Ve výchozím stavu omezit pro aplikace třetích stran</string>
++    <string name="aep_default_main_switch_disable_for_3p_apps">Ve výchozím stavu vypnout pro aplikace třetích stran</string>
++    <string name="aep_default_summary_restricted">Ve výchozím stavu omezeno</string>
++    <string name="aep_default_summary_restricted_except_for_gmscore_clients">Ve výchozím stavu omezeno, kromě aplikací, které závisí na službách Play</string>
++    <string name="aep_default_summary_disabled">Ve výchozím stavu vypnuto</string>
++    <string name="aep_default_summary_blocked">Ve výchozím stavu blokováno</string>
++    <string name="aep_default_summary_allowed_for_3p_apps">Ve výchozím stavu povoleno pro aplikace třetích stran</string>
++    <string name="aep_default_summary_enabled_for_3p_apps">Ve výchozím stavu zapnuto pro aplikace třetích stran</string>
++
++    <string name="aep_ir_exploit_protection_compat_mode">Je zapnutý %1$s</string>
++
++    <string name="aep_compat_mode_title">Režim kompatibility ochrany</string>
++    <string name="aep_compat_mode_summary">Pokud aplikace nefunguje, vypne pro ni některé ochrany LECH OS před zneužitím chyb</string>
++
++    <string name="aep_hmalloc">Zpevněná správa paměti</string>
++    <string name="aep_hmalloc_footer">Zpevněná správa paměti (hardened_malloc) výrazně chrání před nejčastějším druhem zranitelností (poškození paměti) a zkracuje dobu, po kterou citlivá data zůstávají v paměti.</string>
++    <string name="aep_hmalloc_ir_no_native_code">Tato aplikace nemá nativní kód</string>
++    <string name="aep_hmalloc_ir_32_bit_native_code">Toto je 32bitová aplikace, zpevněná správa paměti je jen 64bitová</string>
++    <string name="aep_hmalloc_ir_preinstalled_app">Předinstalované aplikaci nelze zpevněnou správu paměti vypnout</string>
++    <string name="aep_hmalloc_ir_debuggable_app">Toto je ladicí aplikace, zpevněnou správu paměti nelze vypnout</string>
++
++    <string name="aep_ext_va_space">Rozšířený adresní prostor</string>
++    <string name="aep_ext_va_space_footer">Rozšiřuje virtuální adresní prostor z 39 na 48 bitů, což výrazně zlepšuje náhodné rozmístění paměti.</string>
++    <string name="aep_ext_va_space_ir_32_bit_native_code">Nefunguje s 32bitovými aplikacemi</string>
++    <string name="aep_ext_va_space_ir_hardened_malloc">Vyžaduje ho zpevněná správa paměti</string>
++    <string name="aep_ext_va_space_ir_zygote_spawning">Potřebný k vypnutí bezpečného spouštění bez zpevněné správy paměti</string>
++
++    <string name="aep_native_debug_title">Ladění nativního kódu</string>
++    <string name="aep_native_debug_notif_toggle_title">Upozorňovat na zablokované pokusy o přístup</string>
++    <string name="aep_native_debug_footer">Ladění nativního kódu (ptrace) mírně oslabuje izolaci aplikace. Některé aplikace (zejména bankovní) ho používají ke zjišťování neoprávněných zásahů.</string>
++    <string name="aep_native_debug_dvr_is_system_app">Předinstalovaným aplikacím je ladění nativního kódu vždy blokováno</string>
++
++    <string name="aep_memtag">Označování paměti</string>
++    <string name="aep_memtag_notif_toggle_time">Upozorňovat na zjištěné chyby</string>
++    <string name="aep_memtag_footer">Označování paměti silně chrání před zneužitím chyb v práci s pamětí (např. použití po uvolnění, přetečení).</string>
++    <string name="aep_memtag_dvr_is_system_app">Předinstalované aplikace mají označování paměti vždy zapnuté</string>
++    <string name="aep_memtag_dvr_no_native_code">Aplikace bez nativního kódu mají označování paměti vždy zapnuté</string>
++    <string name="aep_memtag_dvr_manifest_opt_in">Tato aplikace si označování paměti zapnula sama</string>
++
++    <string name="aep_default_memtag_main_switch_title">Ve výchozím stavu zapnout</string>
++    <string name="aep_default_memtag_main_switch_summary">Netýká se aplikací, o kterých je známo, že s označováním paměti fungují</string>
++    <string name="aep_default_memtag_footer">Označování paměti silně chrání před zneužitím chyb v práci s pamětí (např. použití po uvolnění, přetečení).\n\nPředinstalované aplikace a aplikace třetích stran, o kterých je známo, že s ním fungují (např. aplikace bez nativního kódu), ho mají zapnuté vždy, bez ohledu na toto nastavení.</string>
++    <string name="aep_default_memtag_summary_on">Ve výchozím stavu zapnuto</string>
++    <string name="aep_default_memtag_summary_off">Ve výchozím stavu vypnuto, kromě aplikací, o kterých je známo, že s označováním paměti fungují</string>
++
++    <string name="dcl_notif_toggle_title">Upozorňovat na zablokované pokusy o načtení kódu</string>
++    <string name="aep_default_dcl_footer_ending">Netýká se předinstalovaných aplikací – ty mají dynamické načítání kódu omezené vždy.</string>
++
++    <string name="aep_memory_dcl">Dynamické načítání kódu z paměti</string>
++    <string name="aep_memory_dcl_short">Načítání kódu z paměti</string>
++    <string name="aep_memory_dcl_dvr_is_system_app">Této předinstalované aplikaci je načítání kódu z paměti vždy omezeno</string>
++    <string name="aep_memory_dcl_footer">Dynamické načítání kódu z paměti obvykle provádějí aplikace, které kód překládají za běhu (JIT), aby spustily kód mimo svůj instalační balíček.\nAplikaci to činí zranitelnější, protože takto načtený kód lze pozměnit nebo podvrhnout.</string>
++
++    <string name="aep_storage_dcl">Dynamické načítání kódu z úložiště</string>
++    <string name="aep_storage_dcl_short">Načítání kódu z úložiště</string>
++    <string name="aep_storage_dcl_dvr_is_system_app">Této předinstalované aplikaci je načítání kódu z úložiště vždy omezeno</string>
++    <string name="aep_storage_dcl_footer">Dynamické načítání kódu z úložiště znamená, že aplikace může spouštět cizí kód ze souborů, které nejsou jejím instalačním balíčkem.\nAplikaci to činí zranitelnější, protože takto načtený kód lze pozměnit nebo podvrhnout.\n\nVětšina aplikací, které závisí na službách Play, potřebuje mít načítání kódu z úložiště povolené.</string>
++
++    <string name="aep_webview_jit">Překlad za běhu ve WebView (JIT)</string>
++    <string name="aep_webview_jit_footer">WebView je součást systému, která v aplikacích zobrazuje webový obsah.\nPřeklad kódu za běhu (JIT) WebView výrazně zrychluje, ale činí aplikaci zranitelnější.\n\nNetýká se předinstalovaných aplikací – naprostá většina z nich má JIT ve WebView vždy vypnutý.</string>
++
++    <string name="aep_exec_spawning">Bezpečné spouštění aplikace</string>
++    <string name="aep_exec_spawning_footer">Aplikace se spustí bezpečnějším způsobem než v běžném Androidu; zabere víc paměti a spouští se o něco déle.</string>
++    <string name="aep_default_exec_spawning_main_switch_title">Ve výchozím stavu zapnout</string>
++    <string name="aep_default_exec_spawning_footer">Aplikace se spouštějí bezpečnějším způsobem než v běžném Androidu; trvá to o něco déle a procesy aplikací zaberou víc paměti.</string>
++    <string name="aep_default_exec_spawning_summary_on">Ve výchozím stavu zapnuto</string>
++</resources>
+diff --git a/res/values-cs/strings_ext.xml b/res/values-cs/strings_ext.xml
+new file mode 100644
+index 0000000..9dc5659
+--- /dev/null
++++ b/res/values-cs/strings_ext.xml
+@@ -0,0 +1,260 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- LECH OS: Slovak texts of the settings added by the GrapheneOS base (it has them in English only). -->
++<resources>
++    <string name="hardware_sku">Hardwarové označení (SKU)</string>
++    <string name="auto_off_never">Nikdy</string>
++    <string name="bool_setting_enable">Zapnout</string>
++    <string name="bool_setting_enabled">Zapnuto</string>
++    <string name="bool_setting_disabled">Vypnuto</string>
++    <string name="exploit_protection_settings">Ochrana před útoky</string>
++    <string name="app_exploit_protection_category">Ochrana aplikace před útoky</string>
++    <string name="scramble_pin_title">Náhodné rozložení číslic při zadávání PIN</string>
++    <string name="sandboxed_google_play">Zóna Google (Google Play v izolaci)</string>
++    <string name="sandboxed_google_play_work_profile">Zóna Google (pracovní profil)</string>
++    <string name="private_space_hide_discoverability_warning">Skrytí soukromého prostoru neutají, že ho máte. Jiné části systému mohou jeho přítomnost prozradit.</string>
++    <string name="user_settings_send_censored_notifications_to_current">Posílat oznámení aktuálnímu uživateli</string>
++    <string name="user_settings_send_censored_notifications_to_current_summary">Když jste aktivní na pozadí, oznámení z vaší zamykací obrazovky se přepošlou aktuálnímu uživateli. Zobrazí se jen jméno uživatele, název aplikace a čas přijetí.</string>
++    <string name="auto_grant_OTHER_SENSORS_permission_title">Ve výchozím stavu udělit aplikacím oprávnění Senzory</string>
++    <string name="auto_grant_OTHER_SENSORS_permission_summary_on">Senzory jsou nestandardní oprávnění, bez něj mohou aplikace fungovat nesprávně.</string>
++    <string name="auto_grant_OTHER_SENSORS_permission_summary_off">Když se aplikace pokusí použít senzory, zobrazí se žádost o oprávnění. Některé aplikace je po udělení oprávnění Senzory potřeba ručně restartovat.</string>
++    <string name="keyguard_camera_title">Povolit fotoaparát při zamknutém telefonu</string>
++    <string name="auto_reboot_title">Automatický restart</string>
++    <string name="auto_reboot_footer">Zařízení se automaticky restartuje, pokud nebylo po zvolenou dobu odemknuto.</string>
++    <string name="screenshot_timestamp_exif_title">Ukládat čas snímku obrazovky do EXIF</string>
++    <string name="screenshot_timestamp_exif_summary">Přidá čas vytvoření do metadat EXIF snímku obrazovky</string>
++    <string name="pref_gnss_supl_title">Secure User Plane Location (SUPL)</string>
++    <string name="pref_gnss_supl_footer">A-GNSS (asistované určování polohy ze satelitů) podle vysílačů mobilní sítě v okolí.</string>
++    <string name="supl_enabled_grapheneos_proxy">Zprostředkující server GrapheneOS</string>
++    <string name="supl_enabled_standard_server">Standardní server</string>
++    <string name="supl_disabled">Vypnuto</string>
++    <string name="supl_disabled_summary">Určení polohy bude výrazně pomalejší, zejména pokud je vypnutá i služba PSDS</string>
++    <string name="g_euicc_lpa_title">Podpora eSIM</string>
++    <string name="g_euicc_lpa_enable_dialog_msg">K zapnutí tohoto nastavení je potřeba zařízení restartovat.</string>
++    <string name="g_euicc_lpa_disable_dialog_title">Upozornění</string>
++    <string name="g_euicc_lpa_disable_dialog_msg">Po vypnutí podpory eSIM nebude fungovat:\n• přidávání nových eSIM\n• zapínání a vypínání stávajících eSIM\n• odstraňování eSIM, ani ze zamykací obrazovky (např. když je eSIM zamčená zapomenutým kódem PIN)\n• vymazání eSIM při obnovení továrního nastavení\n\nZařízení se automaticky restartuje.</string>
++    <string name="g_euicc_lpa_restart_button">Restartovat</string>
++    <string name="g_euicc_lpa_proceed_button">Pokračovat</string>
++    <string name="sim_action_esim_support_disabled_title">eSIM nelze vypnout</string>
++    <string name="sim_action_esim_support_disabled_text">Podpora eSIM je vypnutá. Chcete-li eSIM vypnout, zapněte podporu eSIM.</string>
++    <string name="remote_provisioning_title">Poskytování atestačních klíčů</string>
++    <string name="remote_provisioning_enabled_grapheneos_proxy">Zprostředkující server GrapheneOS</string>
++    <string name="remote_provisioning_enabled_google_server">Server Google</string>
++    <string name="remote_provisioning_disabled">Vypnuto</string>
++    <string name="Google_apps_special_accelerator_access_title">Zvláštní přístup aplikací Google k hardwarovým akcelerátorům</string>
++    <string name="Google_apps_special_accelerator_access_summary_granted">Přístup povolen</string>
++    <string name="Google_apps_special_accelerator_access_summary_not_granted">Přístup nepovolen</string>
++    <string name="Google_apps_special_accelerator_access_main_switch">Povolit aplikacím Google zvláštní přístup k hardwarovým akcelerátorům</string>
++    <string name="Google_apps_special_accelerator_access_footer">Některé aplikace Google očekávají zvláštní, širší přístup k hardwarovým akcelerátorům než běžné aplikace. Například:\n• Pixel Camera\n• Fotky Google\n• Google Recorder\n\nToto nastavení platí pro všechny uživatele zařízení.</string>
++    <string name="pref_gnss_psds_title">Předpovědi polohy satelitů (PSDS)</string>
++    <string name="gnss_psds_footer">Když je PSDS zapnuté, pravidelně se stahují soubory s daty PSDS, které zrychlují a zpřesňují určení polohy. Serveru se neposílá žádný požadavek s údaji o vás. Soubory obsahují dráhy a stav satelitů, údaje o prostředí Země a korekce času.</string>
++    <string name="psds_enabled_grapheneos_server">Server GrapheneOS</string>
++    <string name="psds_enabled_standard_server">Standardní server</string>
++    <string name="psds_disabled">Vypnuto</string>
++    <string name="psds_disabled_summary">Určení polohy bude výrazně pomalejší, zejména pokud je vypnuté i SUPL</string>
++    <string name="contact_scopes">Rozsah kontaktů</string>
++    <string name="storage_scopes">Rozsah úložiště</string>
++    <string name="conn_checks_grapheneos_server">Server GrapheneOS</string>
++    <string name="conn_checks_google_server">Standardní server (Google)</string>
++    <string name="conn_checks_disabled">Vypnuto</string>
++    <string name="conn_checks_title">Kontroly připojení k internetu</string>
++    <string name="conn_checks_footer">Kontrola připojení je zvláštní prázdný požadavek na server, kterým se zjišťuje, zda má aktuální síť přístup k internetu. Kontroly probíhají přes HTTP, HTTPS, DNS, DNS-over-TLS a DNS-over-HTTPS.</string>
++    <string name="wifi_auto_off_title">Automaticky vypínat Wi-Fi</string>
++    <string name="wifi_auto_off_footer">Když Wi-Fi není připojená, po zvolené době se vypne.</string>
++    <string name="bluetooth_auto_off_title">Automaticky vypínat Bluetooth</string>
++    <string name="bluetooth_auto_off_footer">Když není připojeno žádné zařízení, Bluetooth se po zvolené době vypne.</string>
++    <string name="widevine_provisioning_title">Poskytování certifikátu Widevine</string>
++    <string name="widevine_provisioning_enabled_grapheneos_proxy">Zprostředkující server GrapheneOS</string>
++    <string name="widevine_provisioning_enabled_google_server">Server Google</string>
++    <string name="widevine_provisioning_footer">Získaný certifikát se používá k přístupu k obsahu chráněnému DRM.</string>
++    <string name="user_app_install">Instalace a aktualizace aplikací</string>
++    <string name="user_app_install_enabled">Povoleno</string>
++    <string name="user_app_install_enabled_first_party_sources">Povoleno jen ze zdrojů systému</string>
++    <string name="user_app_install_disabled">Zakázáno</string>
++    <string name="user_app_install_enabled_desc">Povolit instalaci a aktualizace aplikací</string>
++    <string name="user_app_install_enabled_first_party_sources_desc">Povolit instalaci a aktualizace aplikací jen ze zdrojů systému</string>
++    <string name="user_app_install_disabled_desc">Zakázat instalaci a aktualizace aplikací</string>
++    <string name="user_run_in_background">Povolit běh na pozadí</string>
++    <string name="allow_automatic_per_app_epcm_title">Automatický režim kompatibility ochrany před útoky</string>
++    <string name="allow_automatic_per_app_epcm_summary">Povolit automatické vypnutí ochran u aplikací, o kterých je známo, že to potřebují</string>
++    <string name="app_exploit_protection_default_value_warning">Upozornění: po zapnutí tohoto nastavení mohou některé aplikace přestat fungovat.</string>
++    <string name="allow_access_to_obb_directory_title">Povolit přístup ke složce Android/obb</string>
++    <string name="allow_access_to_obb_directory_summary">Potřebné k instalaci některých velkých aplikací (zejména her), které používají rozšiřující soubory OBB</string>
++    <string name="battery_share_description">Nabíjejte jiná zařízení položením na zadní stranu telefonu</string>
++    <string name="battery_share">Sdílení baterie</string>
++    <string name="show_system_process_crash_notifs_title">Upozorňovat na pády systémových procesů</string>
++    <string name="show_system_process_crash_notifs_summary">Takové pády mohou naznačovat pokus o útok</string>
++    <string name="view_logs">Zobrazit protokoly</string>
++    <string name="usbc_port_title">Port USB-C</string>
++    <string name="usbc_port_off_title">Vypnutý</string>
++    <string name="usbc_port_off_summary">Vypne port USB-C. Nemá vliv na samostatný režim nabíjení, který se spustí po vypnutí zařízení a připojení nabíječky.</string>
++    <string name="usbc_port_charging_only_title">Jen nabíjení</string>
++    <string name="usbc_port_charging_only_summary">Vypne všechny funkce portu USB-C kromě nabíjení.</string>
++    <string name="usbc_port_charging_only_when_locked_title">Jen nabíjení při zamknutém zařízení</string>
++    <string name="usbc_port_charging_only_when_locked_summary">Režim jen nabíjení se zapne, když je zařízení zamknuté, a vypne se po odemknutí. Pokud je při zamknutí už něco připojeno, režim se zapne až po odpojení.</string>
++    <string name="usbc_port_charging_only_when_locked_afu_title">Jen nabíjení při zamknutém zařízení, kromě stavu před prvním odemknutím</string>
++    <string name="usbc_port_charging_only_when_locked_afu_summary">Tento režim se chová jako režim „%1$s“, navíc s výjimkou pro připojení před prvním odemknutím.</string>
++    <string name="usbc_port_on_title">Zapnutý</string>
++    <string name="usbc_port_on_summary">Bez omezení.</string>
++    <string name="usbc_port_and_pogo_pins_title">Port USB-C a kontakty pogo</string>
++    <string name="usbc_port_and_pogo_pins_off_title">Port USB-C vypnutý, kontakty pogo jen k nabíjení</string>
++    <string name="usbc_port_and_pogo_pins_off_summary">Vypne port USB-C a všechny funkce kontaktů pogo kromě nabíjení. Nemá vliv na samostatný režim nabíjení, který se spustí po vypnutí zařízení a připojení nabíječky.</string>
++    <string name="usbc_port_and_pogo_pins_charging_only_summary">Vypne všechny funkce portu USB-C a kontaktů pogo kromě nabíjení.</string>
++    <string name="usbc_port_and_pogo_pins_charging_only_when_locked_summary">Režim jen nabíjení se zapne, když je zařízení zamknuté, a vypne se po odemknutí. Pokud je při zamknutí už něco připojeno, režim se zapne až po odpojení. Totéž platí pro kontakty pogo.</string>
++    <string name="duress_pwd_pref_title">Nouzové heslo</string>
++    <string name="duress_pwd_description">Nouzové heslo lze zadat místo hesla uživatele všude, kde se heslo vyžaduje – na zamykací obrazovce kteréhokoli uživatele i při výzvě k zadání hesla uživatele nebo pracovního profilu.\n\nPo zadání nouzového hesla se obsah úložiště okamžitě a natrvalo znepřístupní, vymažou se všechny eSIM a zařízení se vypne. LECH OS zůstane nainstalovaný.\n\nNouzový PIN funguje stejně jako nouzové heslo.</string>
++    <string name="duress_pwd_enter_pin">Zadejte nouzový PIN</string>
++    <string name="duress_pwd_confirm_pin">Potvrďte nouzový PIN</string>
++    <string name="duress_pwd_enter_password">Zadejte nouzové heslo</string>
++    <string name="duress_pwd_confirm_password">Potvrďte nouzové heslo</string>
++    <string name="duress_pwd_action_add">Přidat nouzový PIN a heslo</string>
++    <string name="duress_pwd_add_button">Přidat</string>
++    <string name="duress_pwd_toast_added">Nouzový PIN a heslo byly přidány</string>
++    <string name="duress_pwd_toast_updated">Nouzový PIN a heslo byly změněny</string>
++    <string name="duress_pwd_update_button">Změnit</string>
++    <string name="duress_pwd_cancel_button">Zrušit</string>
++    <string name="duress_pwd_proceed_button">Pokračovat</string>
++    <string name="duress_pwd_delete_button">Odstranit</string>
++    <string name="duress_pwd_action_update">Změnit nouzový PIN a heslo</string>
++    <string name="duress_pwd_action_delete">Odstranit nouzový PIN a heslo</string>
++    <string name="duress_pwd_action_delete_confirmation">Odstranit nouzový PIN a heslo?</string>
++    <string name="duress_pwd_save_warning_title">UPOZORNĚNÍ</string>
++    <string name="duress_pwd_save_warning_text">Zadání nouzového kódu PIN nebo hesla místo kódu PIN nebo hesla uživatele <b>okamžitě a natrvalo znepřístupní obsah úložiště</b> a vymaže všechny eSIM.</string>
++    <string name="duress_pwd_save_error">Nouzový PIN a heslo se neuložily.\n\nPodrobnosti:\n%1$s</string>
++    <string name="duress_pwd_delete_error">Nouzový PIN a heslo se neodstranily.\n\nPodrobnosti:\n%1$s</string>
++    <string name="duress_pwd_error_dialog_dismiss">Zavřít</string>
++    <string name="alt_touchscreen_mode_title">Alternativní režim dotykové obrazovky</string>
++    <string name="alt_touchscreen_mode_summary">Tento režim je méně náchylný k falešným dotykům. Zapněte ho jen tehdy, když máte s dotykovou obrazovkou potíže.</string>
++    <string name="alt_touchscreen_mode_confirm_message">Potvrďte, že dotyková obrazovka funguje. Bez potvrzení se alternativní režim po několika sekundách vypne.</string>
++    <string name="alt_touchscreen_mode_confirm_button">Potvrdit</string>
++    <string name="app_play_integrity_api">Play Integrity API</string>
++    <string name="app_play_integrity_top_intro">Play Integrity API umožňuje službám ověřovat vlastnosti zařízení přes jejich aplikaci. Většina služeb vyžaduje úroveň, kterou má jen nezměněný systém výrobce na zařízení s licencí Google Mobile Services. Ne každá aplikace, která toto rozhraní používá, proto jiný systém odmítne. Pokud aplikace LECH OS odmítá, doporučujeme napsat jejímu vývojáři. Aplikace mohou hardware, systém i sebe ověřit standardní hardwarovou atestací Androidu.</string>
++    <string name="app_play_integrity_contact_app_developer">Kontaktovat vývojáře aplikace</string>
++    <string name="app_play_integrity_show_usage_notifications">Zobrazovat oznámení o použití</string>
++    <string name="app_play_integrity_block_usage_attempts">Blokovat pokusy o použití</string>
++    <string name="app_play_integrity_block_usage_attempts_summary_on">Pokusy o použití Play Integrity API selžou s chybou „API is not available“</string>
++    <string name="app_play_integrity_api_blocked">Blokováno</string>
++    <string name="app_play_integrity_api_not_blocked">Neblokováno</string>
++    <string name="app_play_integrity_see_all_apps">Zobrazit aplikace, které použily Play Integrity API</string>
++    <string name="network_location_title">Síťová poloha</string>
++    <string name="network_location_footer">Síťová poloha určuje polohu zařízení podle signálů v okolí – sítí Wi-Fi, zařízení Bluetooth a vysílačů mobilní sítě. Zařízení tyto signály vyhledá a jejich identifikátory odešle serveru, který vrátí data k odhadu polohy. V současnosti se používají sítě Wi-Fi a vysílače mobilní sítě.\n\nHodí se hlavně tam, kde je GNSS nedostupné nebo nespolehlivé, například v budovách. Polohu určí rychleji, než se podaří zachytit satelity, nebo když je jejich signál slabý.</string>
++    <string name="network_location_enabled_grapheneos_apple_proxy">Zprostředkující server GrapheneOS (Apple)</string>
++    <string name="network_location_enabled_apple">Server Apple</string>
++    <string name="network_location_enabled_apple_china">Server Apple pro Čínu (potřebný pro data z Číny)</string>
++    <string name="network_location_disabled">Vypnuto</string>
++    <string name="cross_profile_clipboard_access_title">Schránka sdílená mezi profily</string>
++    <string name="cross_profile_clipboard_access_allow_defaults_title">Podle výchozího nastavení</string>
++    <string name="cross_profile_clipboard_access_allow_defaults_summary">Schránka se sdílí s nadřazeným uživatelem a jeho dalšími profily podle výchozího nastavení systému, oběma směry.</string>
++    <string name="cross_profile_clipboard_access_allow_import_defaults_title">Výchozí jen pro přijímání</string>
++    <string name="cross_profile_clipboard_access_allow_import_defaults_summary">Schránka se podle výchozího nastavení systému přijímá od nadřazeného uživatele a jeho dalších profilů.</string>
++    <string name="cross_profile_clipboard_access_allow_export_defaults_title">Výchozí jen pro odesílání</string>
++    <string name="cross_profile_clipboard_access_allow_export_defaults_summary">Schránka se podle výchozího nastavení systému odesílá nadřazenému uživateli a jeho dalším profilům.</string>
++    <string name="cross_profile_clipboard_access_disallow_title">Zakázáno</string>
++    <string name="cross_profile_clipboard_access_disallow_summary">Schránka se s nadřazeným uživatelem a jeho dalšími profily nesdílí.</string>
++    <string name="cross_profile_clipboard_access_footer">Tímto nastavením povolíte nebo zakážete sdílení schránky s ostatními profily téhož nadřazeného uživatele včetně jeho samého. Po zákazu nebude nový obsah schránky mezi profily dostupný – například mezi soukromým prostorem a nadřazeným uživatelem nebo mezi soukromým prostorem a pracovním profilem. Obsah schránky sdílený před zvolením přísnější možnosti zůstává dostupný, dokud se schránka nezmění.</string>
++    <string name="ps_disallow_delayed_locking_title">Při zamknutí ihned ukončit relaci</string>
++    <string name="ps_disallow_delayed_locking_description">Zakáže opožděné zamknutí úložiště při zastavení nebo zamknutí aktuálního soukromého profilu. Zamknutí pak funguje jako ukončení relace dalšího uživatele: k odemknutí úložiště je potřeba silné ověření.</string>
++    <string name="geocoder_title">Převod souřadnic na adresy</string>
++    <string name="geocoder_footer">Geokódování převádí adresy na zeměpisné souřadnice a zpětné geokódování souřadnice na adresy v okolí. Aplikace mohou použít zde zvolenou službu, která tyto převody provádí přes síť.</string>
++    <string name="geocoder_enabled_grapheneos_server">Server GrapheneOS</string>
++    <string name="geocoder_enabled_openstreetmap_server">Server OpenStreetMap</string>
++    <string name="geocoder_disabled">Vypnuto</string>
++    <string name="carrier_settings_override_gos_title">Přepsání nastavení operátora</string>
++    <string name="carrier_settings_override_intro_text">Přepíše nastavení operátora v zařízení pro tuto SIM kartu. Nejdřív zvolte, co chcete přepsat, potom přepsání zapněte.</string>
++    <string name="carrier_settings_override_footer">Tyto místní změny mohou zpřístupnit skryté možnosti IMS vaší SIM karty, ale fungování závisí na podpoře a nastavení u operátora. Služba může být nespolehlivá. Používáte na vlastní riziko.</string>
++    <string name="carrier_settings_override_intro_text_expand">Rozbalit</string>
++    <string name="carrier_settings_override_intro_text_collapse">Sbalit</string>
++    <string name="carrier_settings_override_error_title">Chyba</string>
++    <string name="carrier_settings_override_error_unable_to_connect_to_config__s">Nepodařilo se připojit ke službě předplatného (%1$s)</string>
++    <string name="carrier_settings_override_no_override_selected_title">Přepsání nelze zapnout</string>
++    <string name="carrier_settings_override_no_override_selected_message">Není zvoleno žádné přepsání. Všechna nastavení mají výchozí hodnoty.</string>
++    <string name="carrier_settings_override_main_switch_title">Zapnout přepsání</string>
++    <string name="carrier_settings_override_active_title">Přepsání je aktivní</string>
++    <string name="carrier_settings_override_unrecognized_category_title">Neznámá přepsání</string>
++    <string name="carrier_settings_override_unrecognized_warning_title">Upozornění</string>
++    <string name="carrier_settings_override_unrecognized_warning_summary">Tato přepsání nastavení operátora nebyla nastavena na této obrazovce.</string>
++    <string name="carrier_settings_override_active_summary">Chcete-li dělat změny, přepsání vypněte</string>
++    <string name="carrier_settings_override_apply_button">Použít přepsání nastavení operátora</string>
++    <string name="carrier_settings_override_clear_button">Zrušit všechna přepsání nastavení operátora</string>
++    <string name="carrier_settings_default_bool_true">Dostupné</string>
++    <string name="carrier_settings_default_bool_false">Nedostupné</string>
++    <string name="carrier_settings_default_unknown">Neznámé</string>
++    <string name="carrier_settings_override_bool_true">Vynuceně dostupné</string>
++    <string name="carrier_settings_override_bool_false">Vynuceně nedostupné</string>
++    <string name="carrier_settings_override_default__s">Bez přepsání (výchozí: %1$s)</string>
++    <string name="carrier_settings_override_volte_availability">Dostupnost VoLTE / Vo4G</string>
++    <string name="carrier_settings_override_volte_availability_description">Závisí na nastavení a dostupnosti u operátora.</string>
++    <string name="carrier_settings_override_vonr_enable">Dostupnost VoNR / Vo5G</string>
++    <string name="carrier_settings_override_vonr_enable_description">Závisí na nastavení a dostupnosti u operátora.</string>
++    <string name="carrier_settings_override_5g_title">Možnosti 5G</string>
++    <string name="carrier_settings_override_5g_description">Přepíše dostupnost 5G NR u operátora pro režimy NSA (non-standalone) a SA (standalone)</string>
++    <string name="carrier_settings_override_5g_enabled_all_modes">Vynutit NSA i SA</string>
++    <string name="carrier_settings_override_5g_default_all_modes">NSA i SA</string>
++    <string name="carrier_settings_override_5g_enabled_nsa">Vynutit NSA</string>
++    <string name="carrier_settings_override_5g_default_nsa">NSA</string>
++    <string name="carrier_settings_override_5g_enabled_sa">Vynutit SA</string>
++    <string name="carrier_settings_override_5g_default_sa">SA</string>
++    <string name="carrier_settings_override_5g_disabled">Vynuceně vypnuto</string>
++    <string name="carrier_settings_default_5g_disabled">Vypnuto</string>
++    <string name="carrier_settings_override_wfc_availability">Dostupnost volání přes Wi-Fi</string>
++    <string name="carrier_settings_override_wfc_availability_description">Závisí na nastavení a dostupnosti u operátora. VoLTE / Vo4G musí být nastaveno jako dostupné.</string>
++    <string name="carrier_settings_override_wfc_availability_on_summary">Včetně volání přes Wi-Fi v roamingu</string>
++    <string name="carrier_settings_override_wfc_availability_enabled_not_editable">Dostupné, stav nelze měnit</string>
++    <string name="carrier_settings_override_wfc_availability_enabled_roaming_not_editable">Dostupné, roaming nelze měnit</string>
++    <string name="carrier_settings_override_cross_sim">Dostupnost volání přes druhou SIM (záložní volání)</string>
++    <string name="carrier_settings_override_cross_sim_description">Jen při dvou SIM kartách. Když je tato SIM v roamingu nebo bez signálu a Wi-Fi není dostupná, hovory mohou jít přes datové připojení druhé SIM. Volání přes Wi-Fi musí být nastaveno jako dostupné.</string>
++    <string name="exploit_protection_title">Ochrana před útoky</string>
++    <string name="exploit_protection_summary">Vylepšení zabezpečení zařízení a aplikací</string>
++    <string name="cert_transparency_dl_title">Stahování seznamů Certificate Transparency</string>
++    <string name="cert_transparency_dl_grapheneos_server">Server GrapheneOS</string>
++    <string name="cert_transparency_dl_standard_server">Standardní server (Google)</string>
++    <string name="cert_transparency_dl_off">Vypnuto</string>
++    <string name="cert_transparency_dl_footer">Certificate Transparency (CT) je internetový standard, který zvyšuje bezpečnost digitálních certifikátů. Certifikační autority musí každý vydaný certifikát zapsat do veřejného záznamu, což zprůhledňuje vydávání certifikátů. Díky ověřitelnému záznamu je mnohem těžší certifikát zfalšovat nebo vydat omylem. Chrání to aplikace před útoky typu man-in-the-middle a dalšími hrozbami.</string>
++    <string name="app_clipboard_read_title">Přístup ke schránce</string>
++    <string name="app_clipboard_read_summary">Jak aplikace přistupují ke schránce a zda se o přístupu zobrazují zprávy</string>
++    <string name="app_clipboard_read_intro">Zvolte, kdy mohou aplikace číst obsah schránky a zda se má zobrazit zpráva, když přístup proběhne nebo je zablokován.</string>
++    <string name="app_clipboard_read_messages_category_title">Zprávy</string>
++    <string name="app_clipboard_read_app_access_category_title">Přístup aplikací</string>
++    <string name="app_default_clipboard_read_title">Výchozí přístup aplikací třetích stran</string>
++    <string name="app_default_clipboard_read_description">Zvolte výchozí přístup aplikací třetích stran ke schránce. Platí pro všechny uživatele zařízení.</string>
++    <string name="app_default_clipboard_read_allowed_summary">Aplikace třetích stran mohou během používání číst obsah schránky z jiných aplikací.</string>
++    <string name="app_default_clipboard_read_blocked_summary">Aplikace třetích stran mohou číst jen to, co samy zkopírovaly nebo co do nich vložíte.</string>
++    <string name="show_clip_access_denial_notification">Zobrazit, když je přístup ke schránce zablokován</string>
++    <string name="show_clip_access_denial_notification_summary">Zobrazí zprávu, když se aplikaci zabrání číst obsah schránky</string>
++    <string name="app_clipboard_read_apps_title">Spravovat přístup aplikací</string>
++    <string name="app_clipboard_read_apps_summary">Zvolte, které aplikace mohou číst položky zkopírované jinými aplikacemi, aniž byste použili Vložit</string>
++    <string name="app_default_clipboard_read_footer">Aplikace mohou vždy číst aktuální položku schránky, pokud ji samy zkopírovaly.\n\nKvůli kompatibilitě aplikace stále vidí metadata schránky – zda v ní něco je, jakého typu a kdy to bylo zkopírováno.\n\nZapnuté služby přístupnosti, které vidí obsah obrazovky a pracují s ním, mohou spustit vložení a dostat se k vloženému obsahu.\n\nNěkteré aplikace a funkce systému včetně výchozí klávesnice mohou schránku číst vždy, bez ohledu na tato nastavení.</string>
++    <string name="app_clipboard_read_allowed">Povolit</string>
++    <string name="app_clipboard_read_allowed_summary">Tato aplikace může během používání číst obsah schránky z jiných aplikací</string>
++    <string name="app_clipboard_read_blocked">Jen vložení</string>
++    <string name="app_clipboard_read_blocked_summary">Tato aplikace může číst jen to, co sama zkopírovala nebo co do ní vložíte</string>
++    <string name="app_clipboard_read_dvr_default_setting">Podle nastavení přístupu ke schránce v systému</string>
++    <string name="app_clipboard_read_ir_is_system_app">Toto nastavení neplatí pro systémové aplikace</string>
++    <string name="app_clipboard_read_ir_is_default_ime">Výchozí klávesnice má ke schránce přístup vždy</string>
++    <string name="app_clipboard_read_footer">Upozornění: při volbě Jen vložení může tato aplikace přestat fungovat.\n\nToto nastavení určuje, zda aplikace může číst položky schránky z jiných aplikací, například text, obrázky a odkazy.\n\nKvůli kompatibilitě aplikace stále vidí metadata schránky – zda v ní něco je, jakého typu a kdy to bylo zkopírováno.\n\nZapnuté služby přístupnosti, které vidí obsah obrazovky a pracují s ním, mohou v této aplikaci spustit vložení a dostat se k vloženému obsahu.</string>
++    <string name="app_clipboard_read_shared_uid_warning">Nastavení přístupu ke schránce, nastavení zprávy o zablokovaném přístupu a dočasný přístup při vložení jsou společné pro tyto aplikace: %1$s</string>
++
++    <!-- LECH OS: texts of the base that had no Slovak translation (second factor PIN, network modes). -->
++    <string name="biometric_second_factor_pin_choose_header">Nastavte druhý PIN k otisku</string>
++    <string name="biometric_second_factor_confirm_header">Zadejte druhý PIN znovu</string>
++    <string name="biometric_second_factor_pin_description">Tento PIN bude telefon při odemykání ze zamykací obrazovky vyžadovat navíc k otisku prstu.</string>
++    <string name="biometric_second_factor_pin_change_failed">Druhý PIN se nepodařilo změnit!</string>
++    <string name="biometric_second_factor_pin_settings_title">Druhý PIN k otisku</string>
++    <string name="biometric_second_factor_pin_settings_category_title">Nastavení</string>
++    <string name="biometric_second_factor_pin_change_title">Změnit PIN</string>
++    <string name="biometric_second_factor_pin_delete_title">Odstranit PIN</string>
++    <string name="biometric_second_factor_pin_delete_confirmation_dialog_title">Odstranit druhý PIN?</string>
++    <string name="biometric_second_factor_pin_delete_confirmation_dialog_message">Při odemykání otiskem doporučujeme mít druhý PIN vždy nastavený. Po odstranění bude telefon méně zabezpečený.</string>
++    <string name="biometric_second_factor_pin_delete_confirmation_dialog_positive_button">Odstranit</string>
++    <string name="biometric_second_factor_pin_title">Druhý PIN k otisku</string>
++    <string name="biometric_second_factor_pin_setup_summary">Je potřeba nastavit</string>
++    <string name="touch_sensitivity_title">Zvýšit citlivost dotyku</string>
++    <string name="touch_sensitivity_summary">Zlepší dotyk při použití ochranného skla nebo fólie</string>
++    <string name="bootloader_version">Verze bootloaderu</string>
++    <string name="manage_storage_text">Spravovat úložiště</string>
++    <string name="preferred_network_mode_lte_only_summary">Preferovaný režim sítě: jen LTE</string>
++    <string name="network_lte_only">Jen LTE</string>
++    <string name="network_5g_only">Jen 5G</string>
++    <string name="network_5g_or_lte_only">Jen 5G nebo LTE</string>
++    <string name="network_5g_or_4g_only">Jen 5G nebo 4G</string>
++    <string name="network_4G_only">Jen 4G</string>
++</resources>
+-- 
+2.43.0
+

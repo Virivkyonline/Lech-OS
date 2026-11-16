@@ -427,6 +427,12 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    Vlastník 16. 11. ráno (0.6.19-dev): „áno, všetko je ok“ na otázky o eSIM a o skúške „nový zákazník“
    (sprievodca s textom o zóne Google, čiernobiele rýchle nastavenia, tri tlačidlá). Podrobnosti k eSIM
    (pridanie profilu, správanie po vypnutí „Podpora eSIM“) vlastník nerozpísal – pri audite súkromia overiť.
+   **Čeština (16. 11., pripravené pre 0.6.20-dev, neskúšané, nezostavené):** `values-cs` pre všetkých 10
+   aplikácií LECH OS (730 textov) a české náprotivky všetkých slovenských textov v záplatách základu
+   (Settings 323, zóna Google 127, sprievodca 54, hlásenia systému 21, nahrávanie hovorov 20, klávesnica 6,
+   názvy aplikácií v systéme a na ploche). Preklad je strojový (Claude), bez kontroly rodeným hovoriacim –
+   pred predajom v ČR dať prečítať. Chýba: český slovník klávesnice (dnes sa sťahuje len `main_sk.dict`),
+   názvy v `tools/etapa2/ikony_prekrytia.py` a priečinky plochy (Launcher3 0003) sú stále slovensky/anglicky.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
