@@ -453,6 +453,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (`gos.sh 11-pixel.sh audit --minuty 1440`, tcpdump beží v telefóne aj bez notebooku, potom `--dokoncit`) –
    stačí na zoznam spojení nového základu; meranie mimo telefónu zopakovať neskôr na spoľahlivejšom zariadení
    (samostatný smerovač), nie na pracovnom notebooku.
+   **24 h záznam v telefóne beží od 16. 11. 2026 10:34** (`gos.sh 11-pixel.sh audit --minuty 1440`, LECH OS
+   0.6.20-dev, domáca Wi-Fi; koniec 17. 11. ~10:34). Telefón nereštartovať, nič v ňom nespúšťať. Po skončení
+   (alebo po prerušení spojenia): `gos.sh 11-pixel.sh audit --dokoncit`. Stav telefónu pri meraní (SIM, zóna
+   Google, Podpora eSIM) – doplniť podľa vlastníka. Možná príčina nefunkčného prístupového bodu: firewall ESET
+   na notebooku (neoverené).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
