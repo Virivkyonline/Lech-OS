@@ -419,6 +419,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    aplikácie eSIM Googlu vynechané) vyhlasuje funkciu za nedostupnú aj na novom základe. Oprava pre
    **0.6.19-dev** (neskúšaná): súbor sa na základe GrapheneOS už nekopíruje. **Do auditu súkromia:** zmerať, kam
    sa aplikácie eSIM pripájajú pri zapnutom prepínači (na starej línii: lpa.live.esimdiscovery.com, lpa.ds.gsma.com).
+   **Telefón: LECH OS 0.6.19-dev (OTA dobehla v noci 15./16. 11. 2026, 0.6.18 → 0.6.19, slot _a → _b, yellow,
+   všetky kontroly OK; zostava začala 15. 11. 22:19). Ďalšia zostava 0.6.20-dev.** Obsahuje opravu eSIM
+   (pushnutá 22:18, tesne pred začiatkom zostavy – overiť, či je na obrazovke SIM karty „Pridať SIM“). Čaká na
+   vlastníka: pridanie eSIM, správanie po vypnutí „Podpora eSIM“, výsledok skúšky „nový zákazník“ (sprievodca,
+   čiernobiely motív, tri tlačidlá).
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
