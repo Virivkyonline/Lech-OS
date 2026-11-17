@@ -470,6 +470,10 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    asi automatický reštart po 18 h. Denník DNS po reštarte ukazuje dopyty, ktoré v zázname nie sú:
    `com.google.android.euicc` `l***` 2× (aplikácia eSIM od Googlu) a gps/systém `s***` (asi SUPL). Ďalej: krátky
    audit so zachytením pripojenia k sieti, rozhodnutie o predvolenom stave „Podpora eSIM“.
+   17. 11. 14:05 krátky audit pri pripojení k sieti: `connectivitycheck.grapheneos.network`,
+   `supl.grapheneos.org`, `gstatic.grapheneos.org`, ePDG operátora – žiadny Google, žiadny dopyt aplikácie eSIM.
+   Otvorené: čo robí `com.google.android.euicc` (dopyty `l***` 17. 11. 08:09), kto zapol „Podpora eSIM“,
+   účel `gstatic.grapheneos.org`, zoznam povolených spojení pre nový základ.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

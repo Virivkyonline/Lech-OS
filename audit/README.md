@@ -302,3 +302,12 @@ Otvorené: (1) zachytiť štart telefónu a prvé pripojenie k sieti (mená za `
 „Podpora eSIM“ zapnutá vlastníkom alebo predvolene, (3) celých 24 h s vypnutým automatickým reštartom,
 (4) meranie mimo telefónu na samostatnom smerovači, (5) nový zoznam povolených spojení pre základ GrapheneOS.
 
+### Doplnenie 17. 11. 2026 14:05 – pripojenie k sieti (20 min, režim v lietadle zapnutý a vypnutý)
+
+`audit-20261117-140540`, cieľov 6, domén 4: `connectivitycheck.grapheneos.network` (6×, po 45 s),
+`supl.grapheneos.org` (len DNS, 2×, po 45 s – pomocné údaje GPS cez server GrapheneOS; vysvetľuje `s***`
+z denníka DNS), `epdg.epc.mnc003.mcc231.pub.3gppnetwork.org` (operátor SIM), `gstatic.grapheneos.org` (DNS, TLS,
+6×, po 420 s – sprostredkujúci server GrapheneOS pre súbory z gstatic Googlu; účel neoverený, pravdepodobne
+zoznamy Certificate Transparency). **Žiadna doména Googlu, žiadny dopyt aplikácie eSIM (`l***`)** v týchto
+20 minútach. Tabuľku „kto sa pýtal“ a ciele tohto merania treba ešte vidieť (celá správa).
+
