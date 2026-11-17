@@ -278,7 +278,8 @@ LECH OS 0.6.20-dev (základ GrapheneOS 2026110800, ADR-0012), zamknutý bootload
 notebooku nepúšťal internet a Windows spadol (16. 11.). Záznam je preto slabší dôkaz než merania 15 a 16.
 
 **Záznam pokrýva len 18,2 h** (posledný paket po 65 640 s, t. j. 17. 11. ~04:48), nie 24 h. Pravdepodobná príčina:
-automatický reštart základu po 18 h bez odomknutia (ukončil `tcpdump`) – neoverené.
+automatický reštart základu po 18 h bez odomknutia (ukončil `tcpdump`); nastavenie potvrdil vlastník 17. 11.
+(Zabezpečenie → Ochrana pred útokmi → Automatický reštart: 18 h). Pri dlhom meraní ho treba vypnúť.
 
 | Cieľ | Kedy | Kto | Hodnotenie |
 |------|------|-----|------------|
