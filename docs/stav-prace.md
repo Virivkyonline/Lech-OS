@@ -465,6 +465,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    `time.grapheneos.org` (DNS, TLS; 2×, po 61 394 s), `epdg.epc.mnc003.mcc231.pub.3gppnetwork.org` (len DNS, 1×,
    po 50 584 s – hľadanie brány volania cez Wi-Fi operátora 231 03, teda SIM bola v telefóne). Žiadna doména
    Googlu. Celú správu (ciele bez mena, UID) ešte treba vidieť; stav telefónu pri meraní vlastník nepotvrdil.
+   **Vyhodnotenie (17. 11., audit/README.md, 17. meranie):** v 18,2 h zázname žiadny Google; servery GrapheneOS
+   (kontrola pripojenia 5×, čas 2×); operátor SIM (IMS, tunel volania cez Wi-Fi). Záznam skončil po 18,2 h –
+   asi automatický reštart po 18 h. Denník DNS po reštarte ukazuje dopyty, ktoré v zázname nie sú:
+   `com.google.android.euicc` `l***` 2× (aplikácia eSIM od Googlu) a gps/systém `s***` (asi SUPL). Ďalej: krátky
+   audit so zachytením pripojenia k sieti, rozhodnutie o predvolenom stave „Podpora eSIM“.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

@@ -268,3 +268,36 @@ pred obnovením výrobných nastavení, telefón bez SIM len na Wi-Fi prístupov
 
 **0 neznámych spojení.** Spolu s 15. meraním (24 h nečinnosti bez ďalšieho spojenia) je splnená podmienka brány 1
 „0 neznámych spojení pri prvom spustení a počas 24 h nečinnosti, overené meraním mimo telefónu“ (ADR-0008).
+
+## 17. meranie – 16.–17. 11. 2026, nový základ (GrapheneOS), záznam v telefóne
+
+LECH OS 0.6.20-dev (základ GrapheneOS 2026110800, ADR-0012), zamknutý bootloader, domáca Wi-Fi, **SIM operátora
+231 03 v telefóne**, telefón v nečinnosti na nabíjačke. Záznam `tcpdump` v telefóne samotnom
+(`tools/etapa2/gos.sh 11-pixel.sh audit --minuty 1440`, začiatok 16. 11. 10:34; správa
+`~/lech-work-gos/pixel/audit-20261116-103443/sprava.md`). Meranie mimo telefónu sa nepodarilo: prístupový bod
+notebooku nepúšťal internet a Windows spadol (16. 11.). Záznam je preto slabší dôkaz než merania 15 a 16.
+
+**Záznam pokrýva len 18,2 h** (posledný paket po 65 640 s, t. j. 17. 11. ~04:48), nie 24 h. Pravdepodobná príčina:
+automatický reštart základu po 18 h bez odomknutia (ukončil `tcpdump`) – neoverené.
+
+| Cieľ | Kedy | Kto | Hodnotenie |
+|------|------|-----|------------|
+| `connectivitycheck.grapheneos.network` (87.249.129.100, TCP 80 a 443), 5× | prvý raz po 18 170 s | network_stack (UID 1073) | kontrola pripojenia na serveri GrapheneOS; nie Google; cudzí server vidí adresu telefónu |
+| `time.grapheneos.org` (87.249.129.100, TCP 443), 2× | po 61 394 s | systém (UID 1000) | čas zo servera GrapheneOS |
+| `epdg.epc.mnc003.mcc231.pub.3gppnetwork.org` → 84.245.114.26 UDP 500/4500 (118 paketov) | od 257 s, cez Wi-Fi | telefónia | tunel volania cez Wi-Fi k operátorovi SIM; operátor tak vidí adresu Wi-Fi |
+| 84.245.112.69 TCP 5060/5062, ESP | od 99 s, mobilná sieť aj Wi-Fi | telefónia | registrácia hovorov (IMS) u operátora SIM |
+
+**Žiadne spojenie s Googlom v zázname.** Všetky položky sú v správe „NEZNÁME“, lebo
+`spec/povolene-spojenia.txt` je ešte zo starej línie.
+
+**Mimo záznamu** (denník DNS telefónu, `dumpsys dnsresolver querylog`, 10 dopytov od 06:20:57, teda po konci
+záznamu; Android ukáže len prvé písmeno mena): network_stack `c***` 3× a systém `t***` 1× (kontrola pripojenia,
+čas), **gps (UID 1021) `s***` 1× a systém `s***` 1×** (pravdepodobne SUPL – pomocné údaje GPS; neoverené),
+**`com.google.android.euicc` (UID 10130) `l***` 2× o 08:09** (aplikácia eSIM od Googlu; na starej línii išlo
+o `lpa.live.esimdiscovery.com` a `lpa.ds.gsma.com` – meno ani cieľ teraz zachytené nie sú), systém `e***` 2×
+(ePDG operátora).
+
+Otvorené: (1) zachytiť štart telefónu a prvé pripojenie k sieti (mená za `s***` a `l***`), (2) zistiť, či bola
+„Podpora eSIM“ zapnutá vlastníkom alebo predvolene, (3) celých 24 h s vypnutým automatickým reštartom,
+(4) meranie mimo telefónu na samostatnom smerovači, (5) nový zoznam povolených spojení pre základ GrapheneOS.
+
