@@ -44,6 +44,17 @@ lech_file_users() {
   done
 }
 
+# The list of known connections for the network audit: the one of the GrapheneOS base when LECH_BASE=gos
+# (tools/etapa2/gos.sh), else the one of the plain AOSP line.
+lech_allowlist() {
+  local root=${REPO_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}
+  if [ "${LECH_BASE:-}" = gos ] && [ -f "$root/spec/povolene-spojenia-gos.txt" ]; then
+    printf '%s\n' "$root/spec/povolene-spojenia-gos.txt"
+  else
+    printf '%s\n' "$root/spec/povolene-spojenia.txt"
+  fi
+}
+
 # Who holds the build lock, and what to do about it.
 lech_build_lock_report() {
   local users

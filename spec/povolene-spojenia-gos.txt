@@ -1,0 +1,26 @@
+# Známe spojenia LECH OS na základe GrapheneOS (ADR-0012) pri pripojení k sieti a v pokoji.
+# Používa ho tools/etapa2/analyzuj_audit.py pri LECH_BASE=gos (tools/etapa2/gos.sh): všetko, čo tu nie je,
+# sa v správe označí ako NEZNÁME. Formát ako spec/povolene-spojenia.txt.
+#
+# „Známe“ neznamená „želané“: servery projektu GrapheneOS sú tu preto, že ich základ predvolene používa
+# a nejde o Google (17. meranie, audit/README.md, 16.–17. 11. 2026). Cieľ: nahradiť ich vlastnými servermi
+# LECH OS spolu so serverom aktualizácií – potom z tohto zoznamu vypadnú.
+
+# Kontrola, či sieť má prístup na internet (Nastavenia → Sieť a internet → Kontroly pripojenia k internetu).
+connectivitycheck.grapheneos.network
+
+# Sieťový čas cez HTTPS.
+time.grapheneos.org
+
+# Pomocné údaje GPS (SUPL) cez sprostredkujúci server GrapheneOS (Poloha → SUPL).
+supl.grapheneos.org
+
+# Sprostredkujúci server GrapheneOS pre súbory z gstatic Googlu (telefón sa na Google nepripája priamo).
+# Účel neoverený – pravdepodobne zoznamy Certificate Transparency.
+gstatic.grapheneos.org
+
+# Operátor SIM karty: brána volania cez Wi-Fi (ePDG) a registrácia hovorov (IMS). Mená sú v doméne
+# 3gppnetwork.org podľa kódu operátora; adresy nižšie patria operátorovi skúšobnej SIM (231 03) a nie sú
+# súčasťou LECH OS – pri inej SIM budú iné.
+pub.3gppnetwork.org
+84.245.112.0/22

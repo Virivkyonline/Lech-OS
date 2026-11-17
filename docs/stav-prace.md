@@ -474,6 +474,11 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    `supl.grapheneos.org`, `gstatic.grapheneos.org`, ePDG operátora – žiadny Google, žiadny dopyt aplikácie eSIM.
    Otvorené: čo robí `com.google.android.euicc` (dopyty `l***` 17. 11. 08:09), kto zapol „Podpora eSIM“,
    účel `gstatic.grapheneos.org`, zoznam povolených spojení pre nový základ.
+   Vlastník 17. 11.: „Podporu eSIM“ zapol sám ešte pred meraním – dopyty aplikácie eSIM od Googlu sú teda
+   dôsledok jeho voľby, nie predvolený stav (predvolený stav prepínača overiť pri najbližšej obnove). Pridaný
+   zoznam známych spojení nového základu `spec/povolene-spojenia-gos.txt` (servery GrapheneOS, operátor SIM);
+   audit ho použije pri `gos.sh`. Ostáva zmerať, kam sa pripája `com.google.android.euicc` pri zapnutej
+   podpore (dlhší záznam, nie súrne), a meranie mimo telefónu.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.

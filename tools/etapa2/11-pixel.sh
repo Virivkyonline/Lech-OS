@@ -1177,7 +1177,7 @@ audit_report() {   # audit directory
   echo
   python3 -B "$REPO_DIR/tools/etapa2/analyzuj_audit.py" "$dir/zachytenie.pcap" --out "$dir/sprava.md" --ptr \
     --dns-siete "$dir/dns-siete.txt" \
-    --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" --zariadenie --rozhrania "$dir/rozhrania.txt" \
+    --allowlist "$(lech_allowlist)" --zariadenie --rozhrania "$dir/rozhrania.txt" \
     --siete "$dir/siete.txt" --dns-log "$dir/dns-dopyty.txt" --packages "$dir/balicky.txt" \
     --title "Sieťový audit LECH OS na Pixeli 9 – $(basename "$dir" | sed 's/^audit-//')" || die "Vyhodnotenie zlyhalo ($dir)."
   echo

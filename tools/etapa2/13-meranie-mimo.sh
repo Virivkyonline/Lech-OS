@@ -173,7 +173,7 @@ cmd_vyhodnotit() {
   n=$(capinfos -c -M "$out/zachytenie.pcapng" 2>/dev/null | sed -n 's/^Number of packets: *//p')
   echo "Záznam: ${#files[@]} súbor(y), ${n:-?} paketov; telefón v sieti $net."
   python3 -B "$SCRIPT_DIR/analyzuj_audit.py" "$out/zachytenie.pcapng" --out "$out/sprava.md" --hotspot "$net" \
-    --allowlist "$REPO_DIR/spec/povolene-spojenia.txt" --ptr \
+    --allowlist "$(lech_allowlist)" --ptr \
     --title "Meranie mimo telefónu – Wi-Fi prístupový bod notebooku ($(date '+%d. %m. %Y'))" \
     || die "Vyhodnotenie zlyhalo."
   cp "$out/sprava.md" "$WIN_DIR/sprava-$(basename "$out").md" 2>/dev/null && \
