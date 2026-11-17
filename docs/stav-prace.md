@@ -458,6 +458,13 @@ Súčasná línia `~/aosp` (0.5.x) ostáva, kým prechod neprejde; nový strom j
    (alebo po prerušení spojenia): `gos.sh 11-pixel.sh audit --dokoncit`. Stav telefónu pri meraní (SIM, zóna
    Google, Podpora eSIM) – doplniť podľa vlastníka. Možná príčina nefunkčného prístupového bodu: firewall ESET
    na notebooku (neoverené).
+   **Výsledok 24 h záznamu v telefóne (16. 11. 10:34 – 17. 11. 13:55, 0.6.20-dev, domáca Wi-Fi; správa
+   `~/lech-work-gos/pixel/audit-20261116-103443/sprava.md`, kópia `C:\lech\pixel\audit-20261116-103443.md`):**
+   cieľov 7, domén 3, neznámych 10 (zoznam povolených je ešte zo starej línie). Domény:
+   `connectivitycheck.grapheneos.network` (DNS, HTTP, TLS; 5×, prvý raz po 18 170 s),
+   `time.grapheneos.org` (DNS, TLS; 2×, po 61 394 s), `epdg.epc.mnc003.mcc231.pub.3gppnetwork.org` (len DNS, 1×,
+   po 50 584 s – hľadanie brány volania cez Wi-Fi operátora 231 03, teda SIM bola v telefóne). Žiadna doména
+   Googlu. Celú správu (ciele bez mena, UID) ešte treba vidieť; stav telefónu pri meraní vlastník nepotvrdil.
    **Súkromie na novom základe NIE JE zmerané** (24 h testy „0 neznámych spojení“ platili len pre 0.5.x). Základ sa
    hlási serverom GrapheneOS (kontrola internetu, čas, PSDS, aktualizácie, App Store – podľa ich dokumentácie);
    záplaty LECH OS na vypnutie spojení (Connectivity, DnsResolver, NetworkStack…) sú v konflikte a neprenesené.
