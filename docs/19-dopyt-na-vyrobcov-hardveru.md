@@ -204,6 +204,41 @@ nepreverovali). Text zadania:
 
 Príloha zadania: anglický „Text dopytu č. 2“ vyššie.
 
+### Príloha zadania po slovensky – technické otázky na výrobcu (18. 11. 2026)
+
+Slovenská verzia „Textu dopytu č. 2“ pre slovenského sprostredkovateľa (anglická ostáva pre priamy kontakt
+s výrobcami).
+
+> **Technické a obchodné otázky na výrobcu**
+>
+> Plán odberu: 2 vzorky na testovanie → 100 ks na skúšobný predaj → pri úspechu pravidelné väčšie objednávky.
+> Stačí existujúci model z bežnej ponuky; operačný systém si nahrávame sami.
+>
+> **A. Zariadenie**
+> 1. Názov modelu, čipset, pamäť RAM a úložisko (potrebujeme aspoň 8 GB RAM, radšej 12 GB), displej, batéria.
+> 2. Pásma 5G a 4G (musia fungovať v EÚ), NFC, eSIM, snímač odtlačkov.
+> 3. Verzia Androidu, s ktorou sa telefón dodáva, a verzia Androidu, ktorú podporujú ovládače výrobcu (BSP).
+> 4. Certifikácia CE / RED pre predaj v EÚ.
+>
+> **B. Prístup k softvéru (nevyhnutné – bez toho telefón nevieme použiť)**
+> 5. Dá sa bootloader odomknúť bez obmedzení (fastboot)?
+> 6. Dá sa znova zamknúť naším vlastným kľúčom overeného štartu (AVB), aby telefón spúšťal náš systém
+>    v zamknutom stave?
+> 7. Poskytne výrobca zdrojový kód jadra, popis zariadenia (device tree) a binárne ovládače s právom šíriť ich
+>    ako súčasť nášho systému? Je to spoplatnené a koľko to stojí?
+> 8. Nástroj a postup na nahranie systému a na obnovu telefónu, ktorý nenabehne.
+> 9. Ako dlho a ako často výrobca vydáva bezpečnostné opravy modemu, bootloadera a firmvéru TEE?
+>
+> **C. Obchodné podmienky**
+> 10. Cena za 2 vzorky a cena za kus pri 100 / 500 / 1000 ks.
+> 11. Dodacia lehota vzoriek a 100 ks; doprava na Slovensko (EÚ).
+> 12. Dá sa 100 ks dodať bez loga výrobcu, prípadne s neutrálnym krytom a obalom? Je neskôr možné naše logo
+>     a od akého množstva?
+> 13. Záruka, riešenie chybných kusov, náhradné diely.
+> 14. Platobné podmienky.
+>
+> Vzorky sú len na interné testovanie. Dohodu o mlčanlivosti (NDA) podpíšeme, ak ju výrobca žiada.
+
 ## Záznam oslovení
 
 - 13. 11. 2026 **Blackview** (Lily Chen, WeChat): dopyt odoslaný; odpoveď: OEM pri 100/500/1000 ks nerobia („too small
