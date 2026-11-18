@@ -83,6 +83,71 @@ a čipsety doplniť, na zariadeniach overiť odomknutie bootloadera a verziu And
 > Kind regards,
 > Stanislav …, Lechstav s. r. o., Slovakia
 
+## Text dopytu č. 2 – 2 vzorky, potom 100 ks (18. 11. 2026)
+
+Zadanie vlastníka: najprv 2 vzorky na testovanie, potom 100 ks na skúšku predaja, pri úspechu väčšie objemy.
+Predošlé odpovede: zákazková výroba (OEM) pri 100 ks nie je možná, MOQ 3000 ks – dopyt preto žiada **existujúci
+model zo skladu**, bez úprav hardvéru. Systém nahrávame sami; výrobca nedostane zdrojový kód LECH OS ani kľúče.
+
+> Subject: Inquiry – 2 samples, then 100 pcs of an existing smartphone model (own OS, Slovakia)
+>
+> Hello,
+>
+> we are Lechstav s. r. o. from Slovakia. We develop our own privacy-focused operating system based on Android
+> (AOSP). It already runs on a reference phone with a locked bootloader and our own signing keys. We are looking
+> for a hardware supplier.
+>
+> Our plan:
+> 1. now: 2 sample units for testing,
+> 2. after successful tests: 100 units for a sales trial,
+> 3. if the trial goes well: larger regular orders.
+>
+> We do not need a custom hardware design at this stage – an existing model from your current range is fine.
+> We install the operating system ourselves; we only need the device and the technical access described below.
+>
+> Please send a quotation and answer these points for the model(s) you recommend:
+>
+> A. Device
+>  1. Model name, chipset, RAM / storage (we need at least 8 GB RAM, preferably 12 GB), display, battery.
+>  2. 5G and 4G bands (must work in the EU), NFC, eSIM, fingerprint sensor.
+>  3. Android version currently shipped, and the Android version your drivers (BSP) support.
+>  4. CE / RED certification for sale in the EU.
+>
+> B. Software access (required – without it we cannot use the device)
+>  5. Can the bootloader be unlocked without restrictions (fastboot)?
+>  6. Can it be locked again with our own verified boot (AVB) key, so the phone boots our system in a locked state?
+>  7. Do you provide the kernel source code, device tree and vendor binaries, with the right to distribute the
+>     binaries as part of our system? Is there a fee, and how much?
+>  8. Flashing tool and procedure, and how to recover a device that does not boot.
+>  9. How long and how often do you release security updates for the modem, bootloader and TEE firmware?
+>
+> C. Commercial
+>  10. Price for 2 samples, and unit price for 100 / 500 / 1000 pcs.
+>  11. Delivery time for samples and for 100 pcs; shipping to Slovakia (EU).
+>  12. Can the 100 pcs be delivered without your logo, or with a neutral back cover and box?
+>      Is our own logo possible later, and from what quantity?
+>  13. Warranty, defect rate handling and spare parts.
+>  14. Payment terms.
+>
+> The samples are for internal testing only. We can sign an NDA if you require one.
+>
+> Thank you, we look forward to your offer.
+>
+> Stanislav
+> Lechstav s. r. o., Slovakia
+
+Krátka verzia do chatu (WeChat, Alibaba):
+
+> Hello, we are Lechstav s. r. o. (Slovakia). We develop our own Android-based OS and install it ourselves.
+> We need: 2 samples now, then 100 pcs for a sales trial, larger orders later. An existing model is fine
+> (min. 8 GB RAM, 5G, NFC, EU bands, CE). Required: bootloader unlock, re-lock with our own AVB key, kernel source
+> and vendor binaries. Please send model, specs, price for 2 / 100 / 500 / 1000 pcs and delivery time. Thank you.
+
+Poznámka pre nás (do dopytu nepatrí): LECH OS dnes beží len na Pixeli 9 a stojí na základe GrapheneOS, ktorý
+podporuje len Pixely. Iný telefón znamená preniesť systém na nový hardvér (ovládače od výrobcu, vlastná práca na
+úrovni zariadenia) a niektoré ochrany základu závisia od čipu (napr. označovanie pamäte). Bez bodov 5–7 sa to
+nedá vôbec; s nimi je to práca na týždne až mesiace, ktorú overia až vzorky.
+
 ## Záznam oslovení
 
 - 13. 11. 2026 **Blackview** (Lily Chen, WeChat): dopyt odoslaný; odpoveď: OEM pri 100/500/1000 ks nerobia („too small
