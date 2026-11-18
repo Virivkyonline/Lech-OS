@@ -148,6 +148,62 @@ podporuje len Pixely. Iný telefón znamená preniesť systém na nový hardvér
 úrovni zariadenia) a niektoré ochrany základu závisia od čipu (napr. označovanie pamäte). Bez bodov 5–7 sa to
 nedá vôbec; s nimi je to práca na týždne až mesiace, ktorú overia až vzorky.
 
+## Zadanie pre sprostredkovateľa (slovenská firma, 18. 11. 2026)
+
+Vlastník chce vyhľadanie dodávateľa v Číne zadať slovenskej firme (uviedol názov Incelt; firmu sme
+nepreverovali). Text zadania:
+
+> **Predmet: Zadanie – vyhľadanie dodávateľa smartfónov v Číne (2 vzorky, potom 100 ks)**
+>
+> Dobrý deň,
+>
+> sme Lechstav s. r. o. Vyvíjame vlastný operačný systém pre telefóny postavený na Androide, zameraný na
+> súkromie a bezpečnosť. Systém je hotový na referenčnom telefóne a hľadáme výrobcu hardvéru, na ktorý ho
+> nahráme. Prosíme o ponuku na vyhľadanie a preverenie dodávateľa.
+>
+> **Čo hľadáme**
+> Existujúci model smartfónu z bežnej ponuky výrobcu (nie vývoj na zákazku). Operačný systém si do telefónov
+> nahrávame sami, od výrobcu potrebujeme zariadenie a technický prístup k nemu.
+>
+> **Postup a množstvá**
+> 1. 2 vzorky na testovanie,
+> 2. po úspešnom teste 100 ks na skúšobný predaj,
+> 3. pri úspechu pravidelné väčšie objednávky.
+>
+> **Nevyhnutné podmienky (bez nich je telefón pre nás nepoužiteľný)**
+> - bootloader sa dá odomknúť bez obmedzení a znova zamknúť **naším vlastným kľúčom** overeného štartu (AVB),
+> - výrobca dodá zdrojový kód jadra, popis zariadenia (device tree) a binárne ovládače s právom šíriť ich
+>   v našom systéme; ak je to spoplatnené, cenu,
+> - nástroj a postup na nahranie systému a na obnovu telefónu, ktorý nenabehne,
+> - certifikácia CE / RED pre predaj v EÚ, pásma 4G a 5G pre EÚ.
+>
+> **Požadované parametre**
+> - RAM aspoň 8 GB (radšej 12 GB), 5G, NFC, snímač odtlačkov, podľa možnosti eSIM,
+> - ovládače pre čo najnovší Android (uveďte verziu),
+> - písomný údaj, ako dlho a ako často výrobca vydáva bezpečnostné opravy modemu a firmvéru.
+>
+> **Čo od vás potrebujeme**
+> 1. zoznam 3–5 vhodných výrobcov alebo modelov s odpoveďami na priložené technické otázky (anglický dopyt
+>    v prílohe môžete poslať výrobcom priamo),
+> 2. overenie, že ide o skutočného výrobcu, nie o obchodníka ani o repasované či použité zariadenia,
+> 3. ceny: 2 vzorky, 100 / 500 / 1000 ks, dodacie lehoty, doprava na Slovensko, clo a DPH,
+> 4. možnosť dodať 100 ks bez loga výrobcu (neutrálny kryt a obal) a neskôr s naším logom – od akého množstva,
+> 5. záruka, riešenie chybných kusov, platobné podmienky,
+> 6. zabezpečenie nákupu a dovozu 2 vzoriek.
+>
+> **Dôvernosť**
+> Zdrojový kód nášho systému ani podpisové kľúče výrobcovi neodovzdávame a nie sú predmetom rokovania.
+> Dohodu o mlčanlivosti (NDA) podpíšeme, ak ju výrobca žiada.
+>
+> **Prosíme uviesť**
+> cenu vašej služby (vyhľadanie, preverenie, vzorky, prípadne dovoz 100 ks), čas, za ktorý dodáte zoznam
+> výrobcov, a kontaktnú osobu.
+>
+> Ďakujeme.
+> Stanislav, Lechstav s. r. o.
+
+Príloha zadania: anglický „Text dopytu č. 2“ vyššie.
+
 ## Záznam oslovení
 
 - 13. 11. 2026 **Blackview** (Lily Chen, WeChat): dopyt odoslaný; odpoveď: OEM pri 100/500/1000 ks nerobia („too small
